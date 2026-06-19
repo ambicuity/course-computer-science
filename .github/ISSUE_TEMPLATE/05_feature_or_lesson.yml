@@ -1,0 +1,52 @@
+name: "✨ Feature, enhancement, or new lesson"
+description: Propose a site feature, a curriculum improvement, or a new lesson/topic.
+title: "[feature] <short summary>"
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Curriculum changes should preserve the course shape: each lesson is
+        readable alone, builds a concrete artifact, and fits its phase. If your
+        proposal restructures the curriculum, note which of `README.md`,
+        `ROADMAP.md`, and the phase `README.md` would change.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What are you proposing?
+      options:
+        - Website feature / UX improvement
+        - New lesson or topic
+        - Curriculum restructure
+        - Tooling / CI / developer experience
+        - Accessibility improvement
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What gap or pain does this address? Who benefits?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should change? For a new lesson, give the title, phase, artifact, and language.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered (optional)
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true
+        - label: This preserves the course shape (or I described the structural changes needed).
+          required: false
