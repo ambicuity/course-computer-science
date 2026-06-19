@@ -1016,3 +1016,69 @@ body.js-anim .toc-row.in-view {
     max-width: 1240px;
   }
 }
+
+/* ───────────────────────── i18n: language switcher ───────────────────────── */
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.lang-switcher-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.lang-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 1px solid var(--rule-soft);
+  border-radius: 6px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  padding: 4px 22px 4px 8px;
+  cursor: pointer;
+  /* caret */
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-mute) 50%),
+                    linear-gradient(135deg, var(--ink-mute) 50%, transparent 50%);
+  background-position: calc(100% - 12px) 52%, calc(100% - 8px) 52%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.lang-select:hover { border-color: var(--accent); color: var(--ink); }
+.lang-select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.lang-select option { color: #2A1A2E; background: #FFF7EC; }
+
+[dir="rtl"] .lang-select {
+  padding: 4px 8px 4px 22px;
+  background-position: 12px 52%, 8px 52%;
+}
+
+/* ───────────────────────── i18n: lesson translation notice ───────────────── */
+.translation-fallback {
+  margin: 0 0 24px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  background: var(--blueprint-tint);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ───────────────────────── i18n: RTL adjustments ─────────────────────────── */
+[dir="rtl"] { text-align: right; }
+[dir="rtl"] .header-inner,
+[dir="rtl"] .footer-inner,
+[dir="rtl"] .header-nav { flex-direction: row-reverse; }
+[dir="rtl"] .lesson-nav-btn.prev .nav-label::before,
+[dir="rtl"] .lesson-nav-btn.next .nav-label::after { transform: scaleX(-1); display: inline-block; }

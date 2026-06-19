@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # i18n integrity: locale parity, placeholders, RTL flags, valid JSON.
+      - name: Run tests
+        run: node --test
+
+      # Static-site generator must still parse README/ROADMAP/glossary.
+      - name: Build site
+        run: node site/build.js
+
+      # Fail if any locale JSON is malformed (belt-and-suspenders next to node --test).
+      - name: Validate locale JSON
+        run: |
+          for f in site/i18n/locales/*.json; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8'))" || { echo "Invalid JSON: $f"; exit 1; }
+          done
+          echo "All locale files are valid JSON."
