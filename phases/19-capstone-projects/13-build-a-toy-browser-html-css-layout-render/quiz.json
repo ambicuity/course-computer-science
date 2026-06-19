@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which order best represents a browser rendering pipeline?",
+      "options": ["Parse -> style -> layout -> paint", "Layout -> parse -> paint -> style", "Paint -> parse -> layout -> style", "Style -> paint -> parse -> layout"],
+      "correct": 0,
+      "explanation": "Browsers first parse HTML into a DOM tree and CSS into a CSSOM, then resolve styles by matching selectors, compute layout (position and size), and finally paint pixels."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the DOM?",
+      "options": ["A CSS styling engine", "A tree data structure representing the parsed HTML document", "A JavaScript runtime", "A network protocol"],
+      "correct": 1,
+      "explanation": "The Document Object Model is a tree where each HTML element becomes a node. The DOM is the interface between HTML and the rest of the browser: CSS matches against it, JavaScript manipulates it, and layout computes geometry from it."
+    },
+    {
+      "stage": "post",
+      "question": "In a toy block layout engine, what is the primary role of layout?",
+      "options": ["Compute x, y, width, height for each node", "Convert CSS text into tokens", "Fetch external network resources", "Execute JavaScript event handlers"],
+      "correct": 0,
+      "explanation": "Layout assigns geometry to styled nodes. Block layout stacks children vertically; inline layout flows horizontally. Each node gets an (x, y, w, h) box that the paint phase uses to draw pixels."
+    },
+    {
+      "stage": "post",
+      "question": "What determines which CSS rule wins when multiple rules match the same element?",
+      "options": ["Alphabetical order of selectors", "Specificity (inline, id, class, tag) and source order", "The rule closest to the bottom of the file always wins", "The browser randomly picks one"],
+      "correct": 1,
+      "explanation": "CSS specificity is a triple: (inline, id, class, tag). Inline styles beat IDs, IDs beat classes, classes beat tags. When specificity is equal, the later rule in source order wins."
+    },
+    {
+      "stage": "post",
+      "question": "Why is changing 'color' cheaper than changing 'width' in a browser?",
+      "options": ["They cost the same", "Changing 'color' triggers only repaint; changing 'width' triggers layout (reflow) then repaint", "Changing 'width' doesn't trigger anything", "Changing 'color' triggers layout"],
+      "correct": 1,
+      "explanation": "Layout-dependent properties (width, height, margin, padding) trigger a full reflow: the browser must recompute geometry for the affected subtree. Paint-only properties (color, background, opacity) only trigger repaint, which is much cheaper."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 13, "title": "Build a Toy Browser (HTML/CSS layout + render)" }
+}

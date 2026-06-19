@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 18: Devices and Drivers — Char, Block, Net",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the primary difference between a character driver and a block driver?",
+      "options": [
+        "Character drivers are faster than block drivers",
+        "Character drivers transfer data as a sequential byte stream; block drivers transfer data in fixed-size sectors with random access",
+        "Block drivers cannot be accessed from userspace",
+        "Character drivers only work with serial ports"
+      ],
+      "explanation": "Character devices (e.g., serial ports, keyboards) provide a byte stream — sequential access with no concept of position. Block devices (e.g., disks, SSDs) transfer data in fixed-size blocks (sectors) and support random access via block numbers.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "What is the file_operations struct in a Linux driver?",
+      "options": [
+        "A struct that holds the device's physical memory address",
+        "A table of function pointers (open, read, write, ioctl, etc.) that the kernel dispatches through when userspace makes syscalls on the device",
+        "A userspace library for file I/O",
+        "A struct that stores the device's IRQ number and DMA channel"
+      ],
+      "explanation": "The kernel uses the file_operations struct to dispatch syscalls to the appropriate driver. When userspace calls read(fd, ...), the kernel finds fd's file struct, looks up f_op->read, and calls the driver's read function.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "Why can't you sleep in a top-half interrupt handler?",
+      "options": [
+        "Sleeping wastes CPU time",
+        "The top half runs in interrupt context with other interrupts disabled — sleeping would deadlock the system",
+        "The kernel doesn't support sleep in any kernel code",
+        "Sleeping in a handler causes a memory leak"
+      ],
+      "explanation": "Top-half handlers run in hardirq context with local IRQs disabled. Sleeping requires a valid process context (which allows the scheduler to run). Sleeping in interrupt context causes a kernel panic. Heavy work must be deferred to bottom halves (workqueues, softirqs).",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "What is DMA (Direct Memory Access) and why is it important for drivers?",
+      "options": [
+        "A CPU instruction that speeds up arithmetic",
+        "Hardware transfers data directly between the device and RAM without CPU involvement, freeing the CPU for other work",
+        "A type of filesystem cache",
+        "A method for userspace to access kernel memory"
+      ],
+      "explanation": "Without DMA, the CPU must copy every byte between the device and memory (programmed I/O), which is extremely slow for disk and network transfers. DMA lets the device read/write RAM directly; the CPU only sets up the transfer and handles the completion interrupt.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "Why are device drivers typically part of the kernel rather than user-space programs?",
+      "options": [
+        "User-space programs can't use if-statements",
+        "Drivers need direct access to hardware I/O ports, interrupts, and physical memory — privileges only the kernel has",
+        "Drivers are too small to be separate programs",
+        "User-space programs can't communicate with the kernel"
+      ],
+      "correct": 1,
+      "explanation": "Device drivers must access I/O ports, MMIO regions, and register interrupt handlers — operations that require kernel privileges. Moving drivers to userspace (as microkernels do) requires expensive IPC for every hardware access, which is why monolithic kernels keep drivers in kernel space for performance."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 18,
+    "title": "Devices And Drivers Char Block Net"
+  }
+}

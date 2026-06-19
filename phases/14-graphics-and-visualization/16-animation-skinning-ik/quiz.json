@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 16,
+    "title": "Animation, Skinning, IK"
+  },
+  "questions": [
+    {
+      "question": "Why is the inverse bind pose matrix needed in the skinning formula M_i = joint_pose_i × inverse_bind_i?",
+      "options": [
+        "It converts the vertex from model space into the joint's local space so the new pose can be applied correctly",
+        "It inverts the animation transform to restore the mesh to its original shape",
+        "It normalizes the joint weights so they sum to 1",
+        "It converts the vertex from clip space into world space for rendering"
+      ],
+      "correct": 0,
+      "explanation": "The inverse bind pose undoes the bind pose transform, taking the vertex from model space back into the joint's local coordinate space. Then joint_pose_i re-applies the animated transform. Without this step, the new pose matrix would operate on a vertex already in model space, producing incorrect results.",
+      "stage": "pre"
+    },
+    {
+      "question": "Linear Blend Skinning suffers from volume loss (the 'candy-wrapper effect'). When does this artifact become most visible?",
+      "options": [
+        "When a vertex is weighted 100% to a single joint",
+        "When two joints with large rotational difference each influence a vertex with significant weights",
+        "When the skeleton has no more than 2 joints total",
+        "When the bind pose and animation pose are identical"
+      ],
+      "correct": 1,
+      "explanation": "LBS blends transformation matrices linearly. When two joints rotate in opposite directions by large angles, the linear interpolation between their matrices interpolates through non-rigid transformations, collapsing volume. A 50/50 weight split with a 180-degree twist is the worst case — the blended result collapses to zero volume.",
+      "stage": "pre"
+    },
+    {
+      "question": "In CCD (Cyclic Coordinate Descent) IK, what is the fundamental operation performed at each joint during a single iteration?",
+      "options": [
+        "Move the joint to the exact target position, then propagate changes to children",
+        "Compute the rotation that aligns the vector from the joint to the end effector with the vector from the joint to the target",
+        "Scale the bone length to match the distance to the target",
+        "Swap the joint's position with its parent to minimize total chain length"
+      ],
+      "correct": 1,
+      "explanation": "CCD rotates each joint (from end-effector toward root) so that the vector from that joint to the end effector aligns with the vector from that joint to the target. This rotation minimizes the angular error at each step, and iterating through all joints repeatedly converges toward the target.",
+      "stage": "pre"
+    },
+    {
+      "question": "What is a key advantage of FABRIK over CCD for solving IK problems?",
+      "options": [
+        "FABRIK operates in quaternion space and always produces more natural-looking results",
+        "FABRIK adjusts joint positions directly rather than computing rotations, often converging in fewer iterations",
+        "FABRIK can only solve single-chain kinematics while CCD handles branching skeletons",
+        "FABRIK requires GPU acceleration to run efficiently"
+      ],
+      "correct": 1,
+      "explanation": "FABRIK (Forward And Backward Reaching IK) moves joints to new positions and then enforces bone-length constraints, rather than iteratively computing rotation angles like CCD. This direct positional approach typically converges faster and produces more natural poses, though it makes rotational constraints harder to enforce.",
+      "stage": "post"
+    },
+    {
+      "question": "In animation blending (crossfading), what does 'normalized time' mean and why is it essential?",
+      "options": [
+        "Normalized time is the global clock time divided by the total animation duration; it ensures both animations are evaluated at the same absolute time",
+        "Normalized time maps each animation's local keyframe interval to [0, 1], allowing two animations of different durations to be blended in sync at their respective phases",
+        "Normalized time is the blend factor alpha; it controls how much of each animation contributes to the final pose",
+        "Normalized time is the time it takes to compress an animation keyframe; lower means smoother playback"
+      ],
+      "correct": 1,
+      "explanation": "Each animation has its own timeline. When blending idle-to-walk, idle might be at 30% of its cycle while walk is at 72% of its cycle. Normalized time maps each animation's keyframe interval to [0, 1], so we can evaluate both at their correct phases independently. The blend factor alpha is separate — it controls how much of each animation contributes.",
+      "stage": "post"
+    },
+    {
+      "question": "Animation compression uses key reduction and quaternion quantization. Why must quaternion quantization handle the double-cover property (q and -q represent the same rotation)?",
+      "options": [
+        "Because quantizing -q produces different bit patterns that decode to a different rotation",
+        "Because storing both q and -q doubles memory usage for no benefit",
+        "Before quantization, you must canonicalize to a consistent hemisphere (e.g., ensure w >= 0) so that nearby rotations produce nearby quantized values rather than jumping to opposite encodings",
+        "The double-cover property only matters for LBS and can be ignored for IK"
+      ],
+      "correct": 2,
+      "explanation": "Quaternions have the property that q and -q represent the same rotation. If you quantize nearby keyframes without canonicalizing, one might quantize as [0.7, 0.0, 0.7, 0.0] and the next as [-0.7, 0.0, -0.7, 0.0] — which are the same rotation but produce completely different bit patterns and incorrect interpolation. By forcing w >= 0 (or any consistent sign rule) before quantization, nearby rotations map to nearby quantized values.",
+      "stage": "post"
+    }
+  ]
+}

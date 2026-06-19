@@ -1,0 +1,78 @@
+{
+  "lesson": "08-virtual-memory-in-the-os-demand-paging",
+  "questions": [
+    {
+      "id": 1,
+      "type": "mcq",
+      "question": "In demand paging, when does the OS load a page into physical memory?",
+      "options": [
+        "A) When the program is loaded at startup",
+        "B) When the page is first accessed by the process",
+        "C) When the process calls malloc()",
+        "D) When the process calls fork()"
+      ],
+      "explanation": "Demand paging is lazy: pages are only loaded on first access, triggering a page fault if the page is not yet in memory.",
+      "stage": "pre",
+      "correct": "B"
+    },
+    {
+      "id": 2,
+      "type": "mcq",
+      "question": "What is the primary benefit of Copy-on-Write (COW) after fork()?",
+      "options": [
+        "A) It prevents the child from modifying shared data",
+        "B) It eliminates the need for page tables in the child",
+        "C) It avoids duplicating pages until they are written to",
+        "D) It loads all pages from disk immediately"
+      ],
+      "explanation": "COW shares physical pages between parent and child (marked read-only). A copy is only made when either process writes to a page, avoiding unnecessary duplication.",
+      "stage": "pre",
+      "correct": "C"
+    },
+    {
+      "id": 3,
+      "type": "mcq",
+      "question": "In a 64-bit virtual address space with 4 KB pages and 4-level page tables, how many bits are used for the page offset?",
+      "options": [
+        "A) 12",
+        "B) 9",
+        "C) 16",
+        "D) 21"
+      ],
+      "explanation": "4 KB = 2^12 bytes, so 12 bits are needed for the offset within a page. The remaining 52 bits (in practice fewer due to canonical addressing) index the page table levels.",
+      "stage": "post",
+      "correct": "A"
+    },
+    {
+      "id": 4,
+      "type": "mcq",
+      "question": "What happens during a page fault for an anonymous page (not backed by a file)?",
+      "options": [
+        "A) The page is loaded from the executable file",
+        "B) A free frame is allocated and zero-filled",
+        "C) The process is terminated with a segfault",
+        "D) The page is swapped in from the page cache"
+      ],
+      "explanation": "Anonymous pages (heap, stack, BSS) have no file backing. On first access, the OS allocates a physical frame and fills it with zeros.",
+      "stage": "post",
+      "correct": "B"
+    },
+    {
+      "stage": "pre",
+      "question": "What is demand paging?",
+      "options": [
+        "Loading the entire program into memory before execution starts",
+        "Loading pages from disk into physical memory only when they are first accessed",
+        "A technique for compressing memory pages",
+        "A method for allocating memory on demand from the heap"
+      ],
+      "correct": 1,
+      "explanation": "Demand paging defers loading until needed: when a process accesses a page not in physical memory, a page fault occurs, and the OS loads it from disk (swap area or executable). This allows programs larger than physical memory and reduces startup time."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 8,
+    "title": "Virtual Memory In The Os Demand Paging"
+  }
+}

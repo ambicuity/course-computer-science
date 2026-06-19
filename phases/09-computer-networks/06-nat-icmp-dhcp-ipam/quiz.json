@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 6,
+    "title": "NAT, ICMP, DHCP, IPAM",
+    "total_questions": 4
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does PAT (Port Address Translation) allow a NAT device to do?",
+      "options": [
+        "Translate IPv4 addresses to IPv6 addresses",
+        "Map many internal hosts to a single public IP by using unique port numbers",
+        "Encrypt all outbound traffic using port-based keying",
+        "Balance load across multiple public IP addresses"
+      ],
+      "correct": 1,
+      "explanation": "PAT assigns a unique external port number to each internal (IP, port) mapping, allowing many hosts to share a single public IP address."
+    },
+    {
+      "stage": "pre",
+      "question": "What are the four steps of the DHCP lease process?",
+      "options": [
+        "Request, Reply, Confirm, Release",
+        "Discover, Offer, Request, Acknowledge",
+        "Hello, Negotiate, Assign, Verify",
+        "Broadcast, Unicast, Lease, Renew"
+      ],
+      "correct": 1,
+      "explanation": "DORA: the client broadcasts Discover, the server sends an Offer, the client Requests the offered address, and the server Acknowledges the assignment."
+    },
+    {
+      "stage": "post",
+      "question": "How does traceroute discover each hop along a path?",
+      "options": [
+        "It sends packets with the destination's MAC address and records each switch",
+        "It sends packets with incrementing TTL values; each router that drops a packet (TTL=0) sends back ICMP Time Exceeded",
+        "It queries each router's ARP table to learn connected neighbors",
+        "It uses OSPF to request the shortest path tree from the first router"
+      ],
+      "correct": 1,
+      "explanation": "Traceroute sends probes with TTL=1, 2, 3... Each router decrements TTL and, when it reaches 0, sends ICMP Time Exceeded back, revealing its address."
+    },
+    {
+      "stage": "post",
+      "question": "Why does symmetric NAT make peer-to-peer connections difficult?",
+      "options": [
+        "It blocks all UDP traffic by default",
+        "It assigns a different external port for each destination, so the remote peer cannot predict the mapping",
+        "It requires all internal hosts to use the same port number",
+        "It only supports IPv6, which most P2P applications don't use"
+      ],
+      "correct": 1,
+      "explanation": "Symmetric NAT creates a new mapping for each unique (internal IP, port, destination IP, port) tuple. The remote peer has no way to know which external port to use, making NAT traversal hard without STUN/TURN."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does NAT (Network Address Translation) solve?",
+      "options": [
+        "It encrypts all traffic leaving a network",
+        "It allows multiple devices on a private network to share a single public IP address",
+        "It assigns DNS names to devices",
+        "It prevents all incoming connections"
+      ],
+      "correct": 1,
+      "explanation": "NAT translates private IP addresses (192.168.x.x) to a public IP and vice versa. When an internal device sends a packet, NAT rewrites the source address and tracks the mapping. Replies are translated back. This lets an entire office share one public IP, delaying IPv4 address exhaustion."
+    }
+  ]
+}

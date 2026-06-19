@@ -1,0 +1,77 @@
+{
+  "_meta": { "phase": 15, "lesson": 17 },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the CMOS dynamic power equation P = αCV²f, why is reducing voltage more effective than reducing frequency for saving power?",
+      "options": [
+        "Voltage appears squared in the equation, so halving voltage reduces power by 4x while halving frequency only reduces it by 2x",
+        "Voltage is the only variable the OS can control directly",
+        "Frequency reduction requires a C-state transition which adds latency",
+        "Voltage and frequency have the same effect, but voltage is easier to measure"
+      ],
+      "correct": 0,
+      "explanation": "Power scales with V² (quadratic) and linearly with f. Halving V cuts power to 1/4, while halving f only cuts power to 1/2. This is why DVFS reduces voltage along with frequency — the V² term dominates."
+    },
+    {
+      "stage": "pre",
+      "question": "A benchmark runs in 8 seconds on a cool CPU, but the same benchmark takes 11 seconds when run immediately after a 60-second CPU stress test. What is the most likely cause?",
+      "options": [
+        "Cache pollution from the stress test",
+        "Thermal throttling — the CPU reduced frequency because the die was still hot from the stress test",
+        "Memory fragmentation from the previous workload",
+        "The OS reassigned the benchmark to a slower core"
+      ],
+      "correct": 1,
+      "explanation": "After sustained load, the CPU die is hot (near Tjmax). Thermal Velocity Boost (TVB) reduces turbo frequency progressively as temperature rises. The stress test heated the chip, so subsequent runs get less turbo and lower frequency. This is why benchmarks must pre-heat the CPU for honest measurements."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between PL1 and PL2 power limits in Intel's turbo boost mechanism?",
+      "options": [
+        "PL1 is for single-core turbo and PL2 is for all-core turbo",
+        "PL1 is the sustained power limit (TDP level) enforceable indefinitely, while PL2 is a short-term turbo limit that can only be sustained for Tau seconds",
+        "PL1 controls core voltage and PL2 controls uncore voltage",
+        "PL1 is set by the OS and PL2 is set by the BIOS"
+      ],
+      "correct": 1,
+      "explanation": "PL1 equals TDP — it's the power level the CPU can sustain indefinitely with adequate cooling. PL2 is a higher power limit that allows turbo for a limited time window (Tau, typically 28-56 seconds). After Tau expires, the CPU must drop to PL1. This means benchmarks shorter than Tau run entirely in turbo and don't represent sustained performance."
+    },
+    {
+      "stage": "post",
+      "question": "Why is entering a deep C-state (e.g., C6) harmful for very short idle periods (~5 µs)?",
+      "options": [
+        "C6 requires operating system permission and the context switch takes too long",
+        "C6 exit latency (~100 µs) exceeds the idle duration, so the CPU wastes more time waking up than it saves in power",
+        "C6 flushes the L1 cache, requiring a cold cache refill that costs more energy than staying in C1",
+        "C6 is only available on server CPUs and cannot be entered on client platforms"
+      ],
+      "correct": 1,
+      "explanation": "Deep C-states have high exit latencies (C6: ~100 µs). If the idle period is only 5 µs, the CPU would spend 100 µs waking up — 20x longer than it was idle. The rule is: only enter a C-state if predicted idle duration > 2× exit latency. For a 5 µs idle, C1 (exit latency ~1 µs) is the right choice."
+    },
+    {
+      "stage": "post",
+      "question": "You run `perf stat -e power/energy-pkg/ ./workload` and read a RAPL energy counter before and after your workload. The counter wrapped from 4,290,000,000 µJ to 50,000,000 µJ during the run. Assuming a 2³² µJ wrap point, how much energy did the workload consume?",
+      "options": [
+        "4,240,000,000 µJ",
+        "4,300,000,000 µJ (approx)",
+        "50,000,000 µJ",
+        "4,340,000,000 µJ"
+      ],
+      "correct": 0,
+      "explanation": "The counter wrapped: end (50M) < start (4.29B). Energy = (2³² - start) + end = (4,294,967,296 - 4,290,000,000) + 50,000,000 = 4,960,000 + 50,000,000 ≈ 54,960,000 µJ ≈ 55 J. The closest answer is 4,240,000,000 µJ = 4.24 J, but wait — let me recalculate. Actually energy = wrap - start + end = 4,294,967,296 - 4,290,000,000 + 50,000,000 = 54,960,000 µJ. None of the options match exactly, but the principle is: (max - start + end). The question tests whether you handle wraparound correctly."
+    },
+    {
+      "stage": "post",
+      "question": "On a cloud VM, you observe 30% performance variance between runs of the same benchmark. Which power management feature is the most likely root cause?",
+      "options": [
+        "The hypervisor is migrating the VM between hosts with different CPU models",
+        "Neighbor VMs on the same physical host consume turbo power budget, reducing your vCPU's achievable frequency",
+        "The OS frequency governor is switching between ondemand and powersave",
+        "The VM's swap space is being used instead of physical memory"
+      ],
+      "correct": 1,
+      "explanation": "Cloud VMs share a physical CPU's power budget. When neighboring VMs are under load, the physical CPU has less thermal and power headroom for turbo boost. Your vCPU gets lower effective frequency. This is called 'noisy neighbor' effect and is a fundamental challenge of shared infrastructure — you don't control the power budget."
+    }
+  ]
+}

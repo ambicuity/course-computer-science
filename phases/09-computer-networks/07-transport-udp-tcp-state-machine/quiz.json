@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 9,
+    "lesson": 7,
+    "title": "Transport — UDP, TCP State Machine"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which protocol provides reliable, ordered, connection-oriented byte-stream delivery?",
+      "options": [
+        "UDP",
+        "TCP",
+        "ICMP",
+        "IP"
+      ],
+      "correct": 1,
+      "explanation": "TCP is connection-oriented and provides reliable, ordered delivery with sequence numbers and acknowledgments. UDP is connectionless and unreliable."
+    },
+    {
+      "stage": "pre",
+      "question": "How many TCP states are defined in RFC 793?",
+      "options": [
+        "5",
+        "7",
+        "11",
+        "13"
+      ],
+      "correct": 2,
+      "explanation": "RFC 793 defines 11 TCP states: CLOSED, LISTEN, SYN_SENT, SYN_RCVD, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, CLOSE_WAIT, CLOSING, LAST_ACK, and TIME_WAIT."
+    },
+    {
+      "stage": "post",
+      "question": "During the TCP three-way handshake, what does the server send in response to the client's SYN?",
+      "options": [
+        "FIN",
+        "RST",
+        "SYN+ACK",
+        "ACK only"
+      ],
+      "correct": 2,
+      "explanation": "The server responds with a SYN+ACK segment: it acknowledges the client's SYN (ack = client_isn + 1) and sends its own SYN with its initial sequence number."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the TCP active closer enter TIME_WAIT instead of immediately transitioning to CLOSED?",
+      "options": [
+        "To wait for the application to read remaining data",
+        "To allow time for duplicate or delayed segments from the old connection to expire (2×MSL)",
+        "To negotiate a new window size",
+        "Because the kernel buffer is full"
+      ],
+      "correct": 1,
+      "explanation": "TIME_WAIT lasts 2×MSL (Maximum Segment Lifetime) to ensure any delayed segments from the old connection are drained from the network before reusing the same port pair."
+    },
+    {
+      "stage": "pre",
+      "question": "What are the key differences between TCP and UDP?",
+      "options": [
+        "TCP is faster than UDP",
+        "TCP is connection-oriented with reliable delivery and ordering; UDP is connectionless with no guarantees",
+        "UDP encrypts data while TCP does not",
+        "TCP only works on wired networks"
+      ],
+      "correct": 1,
+      "explanation": "TCP establishes a connection (3-way handshake), guarantees ordered delivery with retransmission, and uses flow/congestion control. UDP sends independent datagrams with no connection, ordering, or reliability. UDP is simpler and lower latency — preferred for DNS, gaming, and real-time video."
+    }
+  ]
+}

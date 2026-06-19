@@ -1,0 +1,10 @@
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/12-cryptography-and-security/17-zero-knowledge-proofs-sigma-zk-snark-overview/code/target/debug/deps/autocfg-eb1adbf7d7f824ab.d: /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/lib.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/error.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/rustc.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/version.rs
+
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/12-cryptography-and-security/17-zero-knowledge-proofs-sigma-zk-snark-overview/code/target/debug/deps/libautocfg-eb1adbf7d7f824ab.rlib: /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/lib.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/error.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/rustc.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/version.rs
+
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/12-cryptography-and-security/17-zero-knowledge-proofs-sigma-zk-snark-overview/code/target/debug/deps/libautocfg-eb1adbf7d7f824ab.rmeta: /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/lib.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/error.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/rustc.rs /Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/version.rs
+
+/Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/lib.rs:
+/Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/error.rs:
+/Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/rustc.rs:
+/Users/ritesh/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.0/src/version.rs:

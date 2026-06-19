@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 11,
+    "title": "Ray Tracing II — Path Tracing, Monte Carlo"
+  },
+  "questions": [
+    {
+      "question": "Why can't a Whitted-style ray tracer produce soft shadows or diffuse interreflection (color bleeding)?",
+      "options": [
+        "It only traces specular (mirror/refraction) rays; diffuse surfaces receive no bounced light except from direct light sources",
+        "It uses point lights that are mathematically unable to cast soft shadows regardless of algorithm",
+        "It lacks a framebuffer with enough precision to represent gradual shadow transitions",
+        "Its shadow rays are limited to one per pixel, which is insufficient for smooth gradients"
+      ],
+      "correct": 0,
+      "explanation": "Whitted-style ray tracing traces only mirror reflections and refracted rays recursively. When a ray hits a diffuse surface, it just evaluates the direct illumination from point lights and stops — no further bounces. This means diffuse surfaces never sample bounced light from other diffuse surfaces, so color bleeding and soft shadows from area lights are impossible.",
+      "stage": "pre"
+    },
+    {
+      "question": "In Monte Carlo integration, the estimate ∫f(x)dx ≈ (1/N)Σf(xᵢ)/p(xᵢ) converges to the true integral as N→∞. How does the standard deviation of the estimate scale with N?",
+      "options": [
+        "O(1/N) — double the samples, halve the error",
+        "O(1/√N) — quadruple the samples, halve the error",
+        "O(√N) — error grows with sample count",
+        "O(N) — error is proportional to the number of samples"
+      ],
+      "correct": 1,
+      "explanation": "The central limit theorem tells us that the standard deviation of a Monte Carlo estimator decreases as σ/√N. This means to halve the noise, you need 4× the samples; to reduce it by 10×, you need 100× the samples. This O(1/√N) convergence is independent of dimensionality, which is Monte Carlo's key advantage over deterministic quadrature in high dimensions.",
+      "stage": "pre"
+    },
+    {
+      "question": "In path tracing with Russian roulette, paths are terminated with probability (1 − p_continue) and surviving paths have their contribution divided by p_continue. Why does this keep the estimator unbiased?",
+      "options": [
+        "The random number generator used for roulette is deterministic, so termination doesn't affect expectation",
+        "Terminated paths contribute black (zero), which equals the expected value of all paths",
+        "The expected value of the surviving contribution remains the same: E[X] = p_continue × E[X/p_continue] + (1−p_continue)×0 = E[X]",
+        "Russian roulette is inherently biased; the bias decreases with more samples per pixel"
+      ],
+      "correct": 2,
+      "explanation": "Russian roulette produces an unbiased estimator because the expected value is preserved. A path either survives (probability p_continue) and contributes X/p_continue, or terminates (probability 1−p_continue) and contributes 0. So E[result] = p_continue × E[X/p_continue] + (1−p_continue) × 0 = E[X]. The variance increases (some paths are lost), but the expectation is correct.",
+      "stage": "pre"
+    },
+    {
+      "question": "Derive the cosine-weighted hemisphere sampling formula: given uniform random r₁,r₂ ∈ [0,1), the direction is d = (√r₁·cos(2πr₂), √r₁·sin(2πr₂), √(1−r₁)). What is the PDF of this direction on the hemisphere?",
+      "options": [
+        "p(ω) = 1/(2π) — uniform over the hemisphere",
+        "p(ω) = cos(θ)/π — proportional to the cosine of the polar angle",
+        "p(ω) = sin(θ)/π — proportional to the sine of the polar angle",
+        "p(ω) = 1/π — constant across all directions"
+      ],
+      "correct": 1,
+      "explanation": "Cosine-weighted hemisphere sampling generates directions with PDF = cos(θ)/π. This is because in hemisphere coordinates, the area element is sin(θ)dθdφ, and the Jacobian of the mapping from (r₁,r₂) to (θ,φ) with cos(θ)=1−r₁ and φ=2πr₂ yields p(ω)=cos(θ)/π. This PDF is ideal for Lambertian surfaces because the rendering equation's cos(θ) factor cancels with the PDF, simplifying throughput to just the albedo.",
+      "stage": "post"
+    },
+    {
+      "question": "For a Lambertian (diffuse) surface with BRDF f = ρ/π, when using cosine-weighted hemisphere sampling (PDF = cos(θ)/π), what does the throughput update simplify to at each bounce?",
+      "options": [
+        "throughput *= ρ · cos(θ)² / π",
+        "throughput *= ρ / cos(θ)",
+        "throughput *= ρ (just the albedo — the BRDF, cosine, and PDF cancel)",
+        "throughput *= ρ · cos(θ) / π"
+      ],
+      "correct": 2,
+      "explanation": "The throughput update is: throughput *= BRDF × cos(θ) / PDF = (ρ/π) × cos(θ) / (cos(θ)/π) = ρ. The π and cos(θ) terms cancel perfectly. This is why cosine-weighted sampling is the natural choice for Lambertian surfaces — it makes each bounce's contribution trivially simple.",
+      "stage": "post"
+    },
+    {
+      "question": "Which of the following effects emerge naturally from path tracing WITHOUT any special-case code?",
+      "options": [
+        "Only hard shadows and mirror reflections",
+        "Caustics, soft shadows, color bleeding, and glossy reflections all emerge from the same Monte Carlo sampling of the rendering equation",
+        "Soft shadows and color bleeding require special code; caustics are automatic",
+        "Only diffuse interreflection; everything else needs explicit sampling"
+      ],
+      "correct": 1,
+      "explanation": "Path tracing's elegance is that all these phenomena are just different manifestations of the rendering equation. When a path randomly bounces toward a light source, you get soft shadows (the penumbra is just sampled statistically). When it bounces off a red wall then onto a white floor, you get color bleeding. When it passes through glass, you get caustics. Mirror reflections happen when the BRDF peaks in one direction. No special-case code needed for any of them — though some (like caustics) converge very slowly without dedicated sampling strategies.",
+      "stage": "post"
+    }
+  ]
+}

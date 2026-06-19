@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why do databases use B-trees (m=256) instead of binary search trees on disk?",
+      "options": [
+        "Tradition",
+        "Each tree-node access is a disk page read (~10 ms or hundreds of µs on SSD). A B-tree with m=256 fits 1B keys in height 4. BSTs would need height 30 → 30 disk reads per lookup.",
+        "Memory layout",
+        "Binary is slow"
+      ],
+      "correct": 1,
+      "explanation": "The unit of disk I/O is a page (typically 4 KiB on Linux, larger on SSDs). One pointer chase = one page read. Binary tree: each node is one key, h=log₂(n). B-tree: each node holds ~m keys filling a page, h=log_m(n). For n=10⁹ and m=256, h=4 vs binary's 30. That's the difference between 50 µs and 300 ms per lookup."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the key difference between a B-tree and a B+-tree?",
+      "options": [
+        "Order parameter",
+        "B-tree: data lives in BOTH internal nodes and leaves. B+-tree: data ONLY in leaves; internals are routing keys; leaves are linked → O(k) range scan after locating the start.",
+        "Performance",
+        "License"
+      ],
+      "correct": 1,
+      "explanation": "B+-trees won the database race because of range queries. To scan keys in [lo, hi], a B+-tree walks the leaf chain — O(log n + k). B-tree must traverse the whole tree because data is scattered across internals + leaves. Postgres, MySQL InnoDB, SQLite all use B+. SQLite's table storage is a B-tree (data in interior nodes too); its indexes are B+."
+    },
+    {
+      "stage": "post",
+      "question": "How does a B-tree handle insertion when a node is full?",
+      "options": [
+        "Refuses insert",
+        "Splits the node: median key is pushed UP to the parent; remaining keys become two half-full siblings. If parent overflows, recurse upward. If root splits, tree grows in height.",
+        "Allocates more memory",
+        "Linked list"
+      ],
+      "correct": 1,
+      "explanation": "Split-on-insert is the magic. The tree grows AT THE ROOT (not at the leaves), which is why all leaves stay at the same depth. The median key bubbles up one level each split; eventually if the root is full, we create a new root → height increases by 1 globally. This is THE algorithmic invariant that distinguishes B-trees from other balanced trees."
+    },
+    {
+      "stage": "post",
+      "question": "In a B+-tree, where is the data stored?",
+      "options": [
+        "Everywhere",
+        "Only in LEAVES. Internal nodes contain routing keys only. Leaves are doubly-linked together so a range query walks the leaf chain directly.",
+        "Just the root",
+        "Hashed elsewhere"
+      ],
+      "correct": 1,
+      "explanation": "B+-tree's leaf-only storage gives three benefits: (1) range scans are O(k) along the leaf chain; (2) internal nodes are smaller (no values), so fan-out is higher → shorter tree; (3) updates that change values only touch leaves, not internals. Production databases store full row data in leaves of the clustered index. Postgres's heap is separate from indexes (only TIDs at leaves)."
+    },
+    {
+      "stage": "post",
+      "question": "Rust's `std::collections::BTreeMap` uses m=6. Why so small?",
+      "options": [
+        "Random choice",
+        "It's in-memory, so the constraint is cache lines, not disk pages. m=6 keeps each node ~150 bytes — fits in 2-3 cache lines. Larger m would waste cache lookups; smaller m would lose B-tree's height advantage over RB.",
+        "Backwards compat",
+        "Avoid copyright"
+      ],
+      "correct": 1,
+      "explanation": "Cache-conscious B-trees (Rao & Ross, 1999) showed that for in-memory workloads, the optimal m matches what fits in a cache line. Modern CPUs have 64-byte L1 lines; a node with m=6 (~5 keys, ~6 pointers) fits in 2 lines. Rust's BTreeMap was designed around this; the source is in `library/alloc/src/collections/btree/node.rs` and very readable."
+    },
+    {
+      "stage": "post",
+      "question": "Why is bulk-loading a B-tree faster than N inserts?",
+      "options": [
+        "Same speed",
+        "Bulk-load packs leaves at ~70% fill in sorted order — O(n) work. N inserts do O(n log n) work plus splits along the way. Postgres's CREATE INDEX uses bulk-load; a hot-loop of INSERTs is much slower.",
+        "Compiler magic",
+        "Indexing tricks"
+      ],
+      "correct": 1,
+      "explanation": "Given sorted input: fill leaves linearly, then build internals layer-by-layer bottom up. Each key visits one node — O(n) total. Compared to insert-by-insert, you save all the redundant work of splits and re-balancing. The 70% fill ratio leaves room for future inserts before the next split. Postgres documents this for CREATE INDEX: 10× faster than incremental for large indices."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 12,
+    "title": "B Trees And B Trees"
+  }
+}

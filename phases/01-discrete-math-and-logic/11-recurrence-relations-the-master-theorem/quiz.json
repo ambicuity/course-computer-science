@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "T(n) = 2T(n/2) + n is the recurrence for which algorithm?",
+      "options": [
+        "Binary search",
+        "Merge sort",
+        "Karatsuba multiplication",
+        "Strassen matrix multiplication"
+      ],
+      "correct": 1,
+      "explanation": "Merge sort splits the array in half (a=2 sub-calls of size n/2) and does linear merge work (f(n) = n). Master theorem case 2 gives Θ(n log n)."
+    },
+    {
+      "stage": "pre",
+      "question": "For T(n) = a·T(n/b) + f(n), what is the 'critical exponent' the Master theorem compares f(n) against?",
+      "options": [
+        "log_b a",
+        "log_a b",
+        "a/b",
+        "b^a"
+      ],
+      "correct": 0,
+      "explanation": "The critical exponent is log_b a — the work at the leaves (if all work were O(1)) would be Θ(n^log_b a). The three cases compare f(n) against this value to decide whether leaves, balanced levels, or the root dominate."
+    },
+    {
+      "stage": "post",
+      "question": "Apply the Master theorem to T(n) = 3T(n/2) + n (Karatsuba). What's the runtime?",
+      "options": [
+        "Θ(n)",
+        "Θ(n log n)",
+        "Θ(n^log₂3) ≈ Θ(n^1.585)",
+        "Θ(n²)"
+      ],
+      "correct": 2,
+      "explanation": "a=3, b=2 → log_b a = log₂3 ≈ 1.585. f(n) = n = n^1, smaller than 1.585 → case 1 (leaves dominate). Runtime is Θ(n^log₂3). This is why Karatsuba is faster than the obvious Θ(n²) school-method multiplication."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the Master theorem fail for T(n) = 2T(n/2) + n/log n?",
+      "options": [
+        "It doesn't fail — case 2 applies",
+        "f(n) = n/log n is between n^log₂2 = n and n^(1-ε) for every ε > 0; there's no polynomial gap between f(n) and the critical exponent, so neither case 1, 2, nor 3 fits.",
+        "Master theorem only works for integer coefficients",
+        "It requires b > 2"
+      ],
+      "correct": 1,
+      "explanation": "Master theorem's three cases assume a polynomial relation between f(n) and n^log_b a. Here f(n) = n/log n grows slower than n but only by a log factor, not a polynomial — none of the cases applies. Akra-Bazzi (a generalization) handles this; the answer is Θ(n log log n)."
+    },
+    {
+      "stage": "post",
+      "question": "The Fibonacci closed form Fₙ = (φⁿ - ψⁿ)/√5 (Binet) comes from which method?",
+      "options": [
+        "Master theorem",
+        "Solving the characteristic equation x² - x - 1 = 0 and forming a linear combination of φⁿ and ψⁿ",
+        "Recursion-tree summation",
+        "Stirling's approximation"
+      ],
+      "correct": 1,
+      "explanation": "For a linear homogeneous recurrence, you find the roots of the characteristic polynomial (here x² - x - 1) and express aₙ as α·r₁ⁿ + β·r₂ⁿ + … The initial conditions pin down α and β. For Fibonacci: roots are φ and ψ, coefficients are 1/√5 and -1/√5."
+    },
+    {
+      "stage": "post",
+      "question": "T(n) = T(n/2) + 1 (binary search) gives what runtime via Master theorem?",
+      "options": [
+        "Θ(1)",
+        "Θ(log n) — case 2 with critical exponent log₂1 = 0 and f(n) = n^0",
+        "Θ(n)",
+        "Θ(log² n)"
+      ],
+      "correct": 1,
+      "explanation": "a=1, b=2 → log_b a = 0. f(n) = 1 = n^0, equal to the critical exponent → case 2 with k=0 in f(n) = n^0 · log^0 n. Result is Θ(n^0 · log^1 n) = Θ(log n). The classical halving-on-each-step runtime."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 11,
+    "title": "Recurrence Relations The Master Theorem"
+  }
+}

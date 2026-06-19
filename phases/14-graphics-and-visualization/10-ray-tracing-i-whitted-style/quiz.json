@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 10,
+    "title": "Ray Tracing I — Whitted Style"
+  },
+  "questions": [
+    {
+      "question": "A ray is defined as P(t) = O + tD. If O = (0,0,0) and D = (0,1,0), what point does t = 3 correspond to?",
+      "options": [
+        "(0, 3, 0)",
+        "(0, 0, 3)",
+        "(3, 1, 0)",
+        "(3, 3, 3)"
+      ],
+      "correct": 0,
+      "explanation": "Substituting: P(3) = (0,0,0) + 3*(0,1,0) = (0,3,0). The parameter t scales the direction vector and adds it to the origin.",
+      "stage": "pre"
+    },
+    {
+      "question": "In the ray-sphere intersection quadratic at² + bt + c = 0, the discriminant Δ = b² − 4ac is negative. What does this mean?",
+      "options": [
+        "The ray hits the sphere at exactly one point (tangent)",
+        "The ray hits the sphere at two points, one behind and one in front",
+        "The ray misses the sphere entirely — no real intersection",
+        "The sphere is behind the ray origin"
+      ],
+      "correct": 2,
+      "explanation": "A negative discriminant means the quadratic has no real roots, so the ray never intersects the sphere. A zero discriminant means tangent (one hit), and a positive discriminant means two intersections.",
+      "stage": "pre"
+    },
+    {
+      "question": "When casting a shadow ray from a hit point to a light, why do we use an epsilon offset (e.g., t_min = 0.001) instead of starting at t = 0?",
+      "options": [
+        "To speed up the intersection test by culling far geometry",
+        "To prevent the shadow ray from self-intersecting with the surface the hit point is on",
+        "To account for the finite size of point lights",
+        "To simulate ambient occlusion near the surface"
+      ],
+      "correct": 1,
+      "explanation": "Without an epsilon offset, the shadow ray origin sits exactly on the surface, and floating-point errors can cause the ray to intersect the same surface at t ≈ 0, falsely concluding the point is in shadow — a 'shadow acne' artifact.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why does Whitted-style ray tracing produce sharp (hard) shadows rather than soft shadows?",
+      "options": [
+        "Because it uses only one bounce of reflection",
+        "Because shadow rays are cast toward a single point light, producing binary in/out-of-shadow results",
+        "Because the shadow ray epsilon is too small",
+        "Because Snell's law is not applied to shadow rays"
+      ],
+      "correct": 1,
+      "explanation": "Each shadow ray tests visibility to a single point light. The result is binary: either the light is fully visible or fully blocked. Soft shadows require area lights and multiple jittered shadow rays (stochastic sampling) — which is path tracing, not Whitted.",
+      "stage": "post"
+    },
+    {
+      "question": "A ray enters a glass sphere (ior = 1.5) from air (ior = 1.0) at normal incidence. Under Snell's law, what happens to the refracted ray direction?",
+      "options": [
+        "It refracts away from the normal, making a wider angle",
+        "It remains in the same direction as the incident ray since θ_i = 0 means θ_t = 0",
+        "It reflects entirely due to total internal reflection",
+        "It bends by exactly 45 degrees regardless of the angle"
+      ],
+      "correct": 1,
+      "explanation": "At normal incidence, sin(θ_i) = 0, so Snell's law gives sin(θ_t) = 0, meaning θ_t = 0. The refracted ray continues straight — refraction only bends rays at oblique angles. The Fresnel equations still change the intensity split, but the direction is unchanged at normal incidence.",
+      "stage": "post"
+    },
+    {
+      "question": "In the Whitted algorithm, what terminates the recursion when tracing reflected and refracted rays?",
+      "options": [
+        "A maximum depth counter that decrements on each recursive call; when it reaches 0, the background color is returned",
+        "The algorithm always recurses until it finds a non-reflective surface, regardless of depth",
+        "A timer that stops tracing after a fixed number of milliseconds",
+        "The ray's t parameter exceeding a threshold"
+      ],
+      "correct": 0,
+      "explanation": "Whitted-style tracing uses a depth counter (typically 3–5). Each reflected or refracted ray decrements it. At depth 0, we return the background or local color only, preventing infinite recursion. This is essential because mirror-to-mirror setups could otherwise recurse forever.",
+      "stage": "post"
+    }
+  ]
+}

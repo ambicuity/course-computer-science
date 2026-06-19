@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What problem does the Language Server Protocol solve?",
+      "options": [
+        "Faster compilation",
+        "Decoupling editors from language tooling — any LSP-aware editor can use any LSP server, so language support no longer has to be reimplemented per editor",
+        "Making code smaller",
+        "Speeding up Git operations"
+      ],
+      "correct": 1,
+      "explanation": "Before LSP, every editor that wanted Rust support had to implement (or wrap) a Rust analyzer. With LSP, you ship one language server (e.g., rust-analyzer); every LSP-aware editor uses it. Editor and language are now independent."
+    },
+    {
+      "stage": "pre",
+      "question": "Where does an LSP server typically run, and how does the editor talk to it?",
+      "options": [
+        "Inside the editor's process; via direct function calls",
+        "As a separate process, started by the editor; communication is JSON-RPC over stdio",
+        "On a remote cloud server",
+        "It's a shared library loaded into the editor"
+      ],
+      "correct": 1,
+      "explanation": "The editor spawns the server as a subprocess, then exchanges JSON-RPC messages over its stdin/stdout. This means servers crash in isolation, can be written in any language, and the editor doesn't need to embed language tooling."
+    },
+    {
+      "stage": "post",
+      "question": "C/C++ LSP support depends on a file called `compile_commands.json`. What does it contain and why is it needed?",
+      "options": [
+        "A list of LSP server settings",
+        "For each translation unit: the file path, working directory, and exact compile command — clangd needs this to know which flags, includes, and defines apply to each file",
+        "A list of header dependencies",
+        "A list of test files"
+      ],
+      "correct": 1,
+      "explanation": "Unlike Rust (Cargo) or Python (pyproject), C/C++ has no canonical project file — every project has its own build flags. clangd needs to know how each file would be compiled to give correct diagnostics. `bear -- make`, CMake's `CMAKE_EXPORT_COMPILE_COMMANDS=ON`, and Bazel's `compdb` rule all produce one."
+    },
+    {
+      "stage": "post",
+      "question": "Your Neovim LSP for Rust isn't completing crate items. `:LspInfo` shows rust-analyzer is running. What's the most likely next thing to check?",
+      "options": [
+        "Reinstall Neovim",
+        "`:LspLog` — the rust-analyzer log usually says exactly what's wrong (missing rust-src component, project not in workspace, file outside workspace root)",
+        "Restart your OS",
+        "Disable other plugins"
+      ],
+      "correct": 1,
+      "explanation": "LSP servers log liberally. `:LspLog` (Neovim) or 'View → Output → rust-analyzer' (VS Code) almost always tells you the cause. Common ones: `rust-src` component missing (`rustup component add rust-src`), or you opened a sub-directory and the server can't find Cargo.toml at the workspace root."
+    },
+    {
+      "stage": "post",
+      "question": "What's the role of DAP (Debug Adapter Protocol)?",
+      "options": [
+        "An alternative to LSP",
+        "An adapter layer that lets editors talk to native debuggers (gdb/lldb/debugpy) through a uniform JSON protocol — so editors don't have to integrate each debugger separately",
+        "It replaces gdb",
+        "It's only for VS Code"
+      ],
+      "correct": 1,
+      "explanation": "DAP plays the same role for debuggers that LSP plays for language tools. The editor sets breakpoints, steps, inspects locals via JSON-RPC; an adapter (`codelldb`, `debugpy`, `delve-dap`) translates those into the native debugger's commands. Same decoupling principle as LSP."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 9,
+    "title": "Editor Setup Neovim Vs Code With Lsp Dap"
+  }
+}

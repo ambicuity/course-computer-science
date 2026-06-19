@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 9,
+    "lesson": 8,
+    "title": "TCP Congestion Control — Reno, CUBIC, BBR"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "During TCP slow start, how does cwnd change per RTT?",
+      "options": [
+        "It stays constant",
+        "It increases by 1 MSS per RTT",
+        "It doubles each RTT",
+        "It is halved each RTT"
+      ],
+      "correct": 2,
+      "explanation": "In slow start, cwnd doubles each RTT because every ACK adds 1 MSS to cwnd. With cwnd segments in flight, the sender receives cwnd ACKs per RTT, effectively doubling the window."
+    },
+    {
+      "stage": "pre",
+      "question": "What triggers fast retransmit in TCP?",
+      "options": [
+        "A single packet loss detected by timeout",
+        "Three duplicate ACKs received by the sender",
+        "The receiver closing its window to zero",
+        "The sender exceeding ssthresh"
+      ],
+      "correct": 1,
+      "explanation": "Fast retransmit is triggered by receiving 3 duplicate ACKs. This indicates the receiver got packets after a gap and is requesting retransmission — the network is still working, so the sender retransmits immediately without waiting for a timeout."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between CUBIC and Reno's congestion avoidance phase?",
+      "options": [
+        "CUBIC uses a cubic function for window growth instead of linear growth",
+        "CUBIC never enters slow start",
+        "CUBIC ignores packet loss entirely",
+        "CUBIC uses a smaller initial ssthresh"
+      ],
+      "correct": 0,
+      "explanation": "CUBIC replaces Reno's linear additive increase with a cubic function W(t) = C(t-K)^3 + W_max. This allows faster recovery to the previous window after loss and better utilization on high-bandwidth links where linear growth is too slow."
+    },
+    {
+      "stage": "post",
+      "question": "How does BBR differ fundamentally from loss-based algorithms like Reno and CUBIC?",
+      "options": [
+        "BBR uses a larger initial congestion window",
+        "BBR models the network path (bandwidth + RTT) instead of reacting to packet loss",
+        "BBR disables retransmission entirely",
+        "BBR only works on local networks"
+      ],
+      "correct": 1,
+      "explanation": "BBR estimates the bottleneck bandwidth (BtlBw) and minimum RTT (RTprop) to set a sending rate equal to the bandwidth-delay product. It doesn't use packet loss as a signal, which avoids filling router queues and causing bufferbloat."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does TCP need congestion control?",
+      "options": [
+        "To encrypt data before sending",
+        "To prevent the sender from overwhelming the network, causing packet loss and congestion collapse",
+        "To ensure packets arrive in order",
+        "To compress data for faster transmission"
+      ],
+      "correct": 1,
+      "explanation": "Without congestion control, senders would transmit at full speed, overwhelming routers (which have finite buffers). This causes packet loss, retransmissions, and more congestion — a vicious cycle called congestion collapse. TCP's congestion control (Reno, CUBIC, BBR) adaptively adjusts sending rate."
+    }
+  ]
+}

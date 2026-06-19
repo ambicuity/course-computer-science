@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary advantage of a monolithic architecture over microservices?",
+      "options": [
+        "Independent scaling of individual components",
+        "Simpler development, deployment, and debugging with lower latency due to in-process calls",
+        "Better fault isolation — one module crashing doesn't affect others",
+        "Polyglot persistence — each module can use its own database"
+      ],
+      "correct": 1,
+      "explanation": "Monoliths are simpler: one process, one log stream, one stack trace, one deployment pipeline. In-process function calls are 10–100× faster than network calls. The other options describe microservice advantages, not monolith advantages."
+    },
+    {
+      "stage": "pre",
+      "question": "According to Conway's Law, what determines the architecture of a system?",
+      "options": [
+        "The choice of programming language and framework",
+        "The performance requirements of the system",
+        "The communication structures of the organization that designs it",
+        "The number of databases the system uses"
+      ],
+      "correct": 2,
+      "explanation": "Conway's Law states that 'Organizations which design systems produce designs that are copies of the communication structures of these organizations.' Team boundaries should drive service boundaries, not the other way around."
+    },
+    {
+      "stage": "post",
+      "question": "A startup has 5 engineers and a single-domain product with strict sub-10ms latency requirements. Which architecture should they choose and why?",
+      "options": [
+        "Microservices — they need independent scaling for future growth",
+        "Microservices — the team can be split into 5 one-person services for maximum autonomy",
+        "Monolith — small team, simple domain, and low latency requirements make the monolith's in-process calls far cheaper than network hops between services",
+        "Monolith — microservices are never appropriate for startups"
+      ],
+      "correct": 2,
+      "explanation": "With 5 engineers, a simple domain, and sub-10ms latency requirements, a monolith is the better choice. Each network hop in a microservice architecture adds 0.5–5ms, making it nearly impossible to meet sub-10ms targets when a request touches multiple services. The small team also can't afford the operational overhead of managing multiple services."
+    },
+    {
+      "stage": "post",
+      "question": "What is a bounded context in Domain-Driven Design, and why does it matter for microservices?",
+      "options": [
+        "A bounded context is a network partition boundary that prevents services from communicating during failures — it matters because it enables independent deployments.",
+        "A bounded context is a subdivision of a domain model with its own ubiquitous language, persistent storage, and consistency guarantees — it matters because a microservice should own one, ensuring coherent boundaries and clear data ownership.",
+        "A bounded context is a limit on the number of API calls a service can make per second — it matters because it prevents cascading failures.",
+        "A bounded context is a deployment boundary that groups services into a single container — it matters because it reduces network latency."
+      ],
+      "correct": 1,
+      "explanation": "A bounded context defines a coherent domain model with its own language, data, and consistency rules. If you can't identify bounded contexts, you're not ready for microservices. 'Product' in the Catalog context (name, description, price) is a different model than 'Product' in the Order context (SKU, quantity, line item price). Each microservice should own one bounded context."
+    },
+    {
+      "stage": "post",
+      "question": "What problem does a service mesh (e.g., Istio, Linkerd) solve, and what does it NOT solve?",
+      "options": [
+        "It solves network latency between services by using faster protocols; it does NOT solve service discovery.",
+        "It solves data consistency across services by providing distributed transactions; it does NOT solve observability.",
+        "It solves infrastructure-level networking concerns (mTLS, retries, circuit breaking, traffic shaping, observability) without application code changes; it does NOT solve the fundamental latency cost of network calls or data consistency across services.",
+        "It solves API versioning and contract testing between services; it does NOT solve routing or load balancing."
+      ],
+      "correct": 2,
+      "explanation": "A service mesh uses sidecar proxies (Envoy) to handle mTLS, retries, circuit breaking, traffic shaping, and observability — all without changes to application code. But it doesn't eliminate the fundamental costs of distribution: network latency is still 10–100× slower than in-process calls, and data consistency still requires sagas or eventual consistency."
+    },
+    {
+      "stage": "post",
+      "question": "How does the strangler fig pattern work for migrating from a monolith to microservices?",
+      "options": [
+        "Rewrite the entire monolith as microservices in a single migration, then switch traffic over with a feature flag.",
+        "Gradually redirect individual endpoints from the monolith to new microservices via an API gateway, validating each extraction in production before moving to the next. If a new service has a bug, route traffic back to the monolith.",
+        "Deploy microservices alongside the monolith and run both in parallel indefinitely, synchronizing data between them with a change data capture pipeline.",
+        "Decompose the monolith database first, then extract services. The database split ensures all services have independent data stores before any code is migrated."
+      ],
+      "correct": 1,
+      "explanation": "The strangler fig pattern redirects one endpoint at a time from monolith to microservice via an API gateway. Each extraction is validated in production. If the new service has a bug, traffic is routed back to the monolith. This provides incremental migration with rollback capability — no big-bang rewrite, no overnight risk."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 20,
+    "title": "Microservices Vs Monolith Real Trade Offs"
+  }
+}

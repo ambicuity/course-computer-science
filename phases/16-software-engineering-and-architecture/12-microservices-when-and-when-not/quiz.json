@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 12,
+    "title": "Microservices — When and When Not"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the defining characteristic that distinguishes a microservice architecture from a monolith?",
+      "options": [
+        "Each service uses a different programming language",
+        "Services can be deployed independently without requiring coordinated deployments with other services",
+        "Services communicate only through asynchronous messages",
+        "Each service runs in its own Docker container"
+      ],
+      "correct": 1,
+      "explanation": "Independent deployability is the defining characteristic. Containers, different languages, and async messaging are all possible implementation choices — but if you must coordinate deployments between services, you have a distributed monolith, not microservices."
+    },
+    {
+      "stage": "pre",
+      "question": "A team has built a distributed system with 8 services. Every feature deployment requires updating 4 services simultaneously because they share a common library that all services use. This is an example of:",
+      "options": [
+        "A well-structured microservice architecture with shared utilities",
+        "The saga pattern being correctly implemented across services",
+        "A distributed monolith — the services are coupled in deployment despite being separate",
+        "Bounded contexts correctly enforcing language boundaries"
+      ],
+      "correct": 2,
+      "explanation": "This is the classic distributed monolith anti-pattern. If deploying a feature requires coordinated deployment across multiple services, you have the complexity of microservices (network calls, distributed debugging, operational overhead) without the primary benefit (independent deployability)."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the monolith-first approach recommend starting with a monolith before extracting microservices?",
+      "options": [
+        "Monoliths are always faster to build than microservices",
+        "You need to operate the system in production to learn which modules change together and can be cleanly separated — you can't know boundaries before you have data",
+        "Microservices cannot be built without a monolith to extract from",
+        "Monoliths are more secure than microservices in early development stages"
+      ],
+      "correct": 1,
+      "explanation": "The monolith-first approach is based on the observation that you don't know the correct service boundaries until you've operated the system. A monolithic codebase reveals which modules change together, which have independent scaling needs, and where the actual seams are. Extracting services based on data is far more reliable than guessing based on theory."
+    },
+    {
+      "stage": "post",
+      "question": "In an e-commerce system, the word 'Product' means 'an item for sale' in the Catalog context, 'an SKU in the warehouse' in the Inventory context, and 'a parcel to be shipped' in the Shipping context. This is an example of:",
+      "options": [
+        "A naming conflict that should be resolved by creating a shared Product service",
+        "A bounded context boundary — the same term has different meanings in different contexts, indicating where service boundaries should be drawn",
+        "A distributed monolith anti-pattern caused by ambiguous API design",
+        "An argument for using a shared database to ensure consistency across contexts"
+      ],
+      "correct": 1,
+      "explanation": "This is the core insight from Domain-Driven Design: where the same term has different meanings in different contexts, you have a bounded context boundary. These linguistic boundaries are the strongest signal for where to draw service boundaries, because each context has its own consistent language, data model, and change rate."
+    },
+    {
+      "stage": "post",
+      "question": "A payment service needs to charge a customer's card and an inventory service needs to reserve stock as part of the same order. In a microservice architecture with shared-nothing data, how is consistency maintained across these two operations?",
+      "options": [
+        "Use a distributed two-phase commit transaction across both databases",
+        "Use the saga pattern — each service performs its local transaction and publishes events, with compensating actions (refund, release stock) for rollback if a later step fails",
+        "Both services write to a shared Orders database to ensure atomicity",
+        "The payment service directly queries the inventory database to confirm stock before charging"
+      ],
+      "correct": 1,
+      "explanation": "The saga pattern handles cross-service consistency in microservices. Each step performs a local transaction and publishes an event. If a later step fails, compensating actions are executed in reverse order. Two-phase commit is impractical at microservice scale, shared databases violate the shared-nothing principle, and direct database access creates hidden coupling."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is the strongest argument AGAINST adopting microservices for a new startup with a 5-person team building their first MVP?",
+      "options": [
+        "The team doesn't know which programming languages to use for each service yet",
+        "The domain boundaries are not yet understood, and the operational overhead (CI/CD per service, distributed tracing, independent deployments) is disproportionate to the team's capacity",
+        "Microservices cannot handle the traffic levels that an MVP would receive",
+        "The startup will eventually need to migrate to microservices anyway, so it's better to start early"
+      ],
+      "correct": 1,
+      "explanation": "For a small team at MVP stage, the domain boundaries are unknown (you'll guess wrong), the operational overhead is fixed per service (CI/CD, monitoring, on-call for each service), and the scale doesn't yet justify the complexity. The monolith-first approach provides faster iteration and clearer boundary signals. Starting microservices early is premature architecture optimization."
+    }
+  ]
+}

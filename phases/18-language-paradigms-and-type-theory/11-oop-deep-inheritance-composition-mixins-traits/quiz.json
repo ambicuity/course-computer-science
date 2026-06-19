@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "When is composition often preferable to inheritance?",
+      "options": ["Never", "When behavior combinations change frequently", "Only for static methods", "Only in scripting languages"],
+      "correct": 1,
+      "explanation": "Composition reduces coupling and makes behavior assembly flexible when requirements evolve."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the Liskov Substitution Principle?",
+      "options": ["Subtypes must use the same memory layout", "Subtypes must be substitutable for their base types without breaking correctness", "All types must inherit from Object", "Subtypes cannot add methods"],
+      "correct": 1,
+      "explanation": "LSP requires that any code using a base type should work correctly when given a subtype instance."
+    },
+    {
+      "stage": "post",
+      "question": "What is a common inheritance risk in deep hierarchies?",
+      "options": ["No polymorphism", "Fragile base class coupling", "No code reuse", "No encapsulation"],
+      "correct": 1,
+      "explanation": "Changes in base classes can unexpectedly break derived behavior due to tight hidden dependencies."
+    },
+    {
+      "stage": "post",
+      "question": "How do traits help in Rust-style design?",
+      "options": ["Replace all structs", "Provide capability contracts and reusable behavior composition", "Disable generics", "Enforce inheritance trees"],
+      "correct": 1,
+      "explanation": "Traits define capabilities decoupled from class hierarchies and work well with composition."
+    },
+    {
+      "stage": "post",
+      "question": "What is the 'diamond problem' in inheritance?",
+      "options": ["A UI layout issue", "Ambiguity when a class inherits the same method from two different ancestors", "A memory allocation bug", "A sorting algorithm"],
+      "correct": 1,
+      "explanation": "The diamond problem arises when two parent classes share a common ancestor and override the same method, creating ambiguity about which version to use."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 11, "title": "OOP Deep - Inheritance, Composition, Mixins, Traits" }
+}

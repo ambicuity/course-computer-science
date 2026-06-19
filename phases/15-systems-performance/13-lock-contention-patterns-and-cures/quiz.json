@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 13,
+    "title": "Lock Contention Patterns and Cures"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why does a spinlock's throughput collapse as thread count increases, while a mutex's throughput plateaus?",
+      "options": [
+        "Spinlocks use more memory than mutexes",
+        "Spinlock threads burn CPU in CAS loops causing cache-line bouncing; mutex threads sleep, freeing cores for useful work",
+        "Mutexes use hardware locks while spinlocks use software locks",
+        "Spinlocks have larger critical sections than mutexes"
+      ],
+      "correct": 1,
+      "explanation": "Each spinning thread repeatedly issues CAS operations that invalidate the cache line holding the lock. With N spinners, the line bounces N×attempt times. Mutex threads call futex_wait and sleep, so contending threads consume no CPU until woken."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the ABA problem in the context of compare-and-swap (CAS)?",
+      "options": [
+        "CAS always fails when multiple threads contend",
+        "A thread reads value A, another thread changes it to B and back to A, so the first thread's CAS succeeds despite the intermediate change",
+        "CAS cannot operate on values larger than a pointer width",
+        "CAS is slower than fetch-and-add on all architectures"
+      ],
+      "correct": 1,
+      "explanation": "The ABA problem occurs when a CAS observes value A, the value is changed to B and back to A by other threads, and the original CAS succeeds as if nothing changed. Cures include double-width CAS with version counters, hazard pointers, and epoch-based reclamation."
+    },
+    {
+      "stage": "post",
+      "question": "You have a read-heavy workload (99% reads, 1% writes) on a shared data structure. Which synchronization approach gives the best read-side performance?",
+      "options": [
+        "std::mutex protecting all accesses",
+        "RW lock with shared read access",
+        "Seqlock or RCU (zero-overhead reads)",
+        "Spinlock for both reads and writes"
+      ],
+      "correct": 2,
+      "explanation": "RCU provides true zero-overhead reads (just a pointer dereference with a compiler barrier), and seqlock reads are nearly free (check sequence counter before and after). RW locks still require atomic increment/decrement on every read, bouncing the cache line. Mutex is even worse — readers serialize."
+    },
+    {
+      "stage": "post",
+      "question": "What is priority inversion and how does priority inheritance solve it?",
+      "options": [
+        "Priority inversion is when a high-priority thread runs too much; priority inheritance limits its CPU time",
+        "Priority inversion is when a low-priority thread holds a lock needed by a high-priority thread while medium-priority threads run; priority inheritance temporarily boosts the low-priority thread's priority",
+        "Priority inversion is when threads deadlock; priority inheritance resolves the deadlock cycle",
+        "Priority inversion is when atomic operations are slower than expected; priority inheritance reorders CPU pipelines"
+      ],
+      "correct": 1,
+      "explanation": "Priority inversion occurs when a low-priority thread holds a lock, a high-priority thread waits for it, but medium-priority threads preempt the low-priority thread, effectively inverting priorities. Priority inheritance temporarily raises the lock-holder's priority to that of the highest waiter, allowing it to complete quickly."
+    },
+    {
+      "stage": "post",
+      "question": "A futex (fast userspace mutex) achieves fast uncontended acquisition because:",
+      "options": [
+        "It uses a kernel spinlock internally",
+        "It performs a single atomic CAS in userspace on the fast path, calling the kernel only when the lock is contended",
+        "It disables interrupts during the critical section",
+        "It uses per-CPU data structures to avoid all synchronization"
+      ],
+      "correct": 1,
+      "explanation": "The futex fast path is a single atomic compare_exchange in userspace. If the word transitions 0→1, the lock is acquired without any syscall. Only when the CAS fails (lock is contended) does it call futex(FUTEX_WAIT) to sleep in the kernel."
+    },
+    {
+      "stage": "post",
+      "question": "Per-CPU data eliminates lock contention by:",
+      "options": [
+        "Using a separate lock for each CPU that is faster",
+        "Giving each CPU its own copy of the data so no synchronization is needed on the fast path",
+        "Pinning threads to specific CPUs and using spinlocks",
+        "Using lock-free algorithms that work better on per-CPU caches"
+      ],
+      "correct": 1,
+      "explanation": "Per-CPU data gives each CPU its own private copy. The hot path reads and writes the local copy with no atomic operations at all. Aggregation across CPUs is only needed when reading the global total, which is rare. This is used extensively in the Linux kernel for statistics, memory allocators, and interrupt counters."
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 13,
+    "lesson": 21,
+    "title": "MPI and Distributed-Memory Parallelism"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In distributed-memory parallelism, how do processes exchange data?",
+      "options": [
+        "By reading and writing shared global memory protected by mutexes",
+        "By sending explicit messages through a network",
+        "By using atomic compare-and-swap on a shared cache line",
+        "By spawning threads that inherit the parent's address space"
+      ],
+      "correct": 1,
+      "explanation": "Distributed-memory systems have no shared address space. Processes must communicate by sending messages (e.g., via MPI_Send/MPI_Recv). Shared memory with mutexes or atomics is the shared-memory model."
+    },
+    {
+      "stage": "pre",
+      "question": "What does MPI_COMM_WORLD represent?",
+      "options": [
+        "A communicator containing only processes running on the same physical machine",
+        "A variable that stores the number of MPI processes in the job",
+        "The default communicator that includes every process launched by mpirun",
+        "A function that returns the rank of the calling process"
+      ],
+      "correct": 2,
+      "explanation": "MPI_COMM_WORLD is the default communicator created by MPI_Init. It contains all processes launched by mpirun/mpiexec. Use MPI_Comm_rank to query a process's ID within it."
+    },
+    {
+      "stage": "post",
+      "question": "You write an MPI program where every rank calls MPI_Send before MPI_Recv in a ring. The program hangs. What is the most likely cause?",
+      "options": [
+        "MPI_Init was called after MPI_Send",
+        "The communicator is too small",
+        "A deadlock caused by every process blocking on Send waiting for a matching Recv",
+        "The message tag values are out of order"
+      ],
+      "correct": 2,
+      "explanation": "If every process calls MPI_Send (blocking) before any calls MPI_Recv, a synchronous send waits for a matching receive that never arrives — classic deadlock. Fix: reorder so at least one process posts a Recv first, or use MPI_Sendrecv / non-blocking calls."
+    },
+    {
+      "stage": "post",
+      "question": "In a Jacobi 2-D solver with row-based domain decomposition, what is the purpose of halo exchange?",
+      "options": [
+        "To reduce the total number of floating-point operations per iteration",
+        "To communicate boundary rows between neighbouring sub-domains so interior stencil updates are correct",
+        "To sum the residual across all processes after each iteration",
+        "To evenly divide the grid columns among all processes"
+      ],
+      "correct": 1,
+      "explanation": "Each process owns a slab of rows. The stencil (u[i-1] + u[i+1] + ... ) needs the row above and below the local slab. Those boundary rows come from neighbouring processes — that is the halo exchange. Collectives like MPI_Allreduce then aggregate the global residual."
+    },
+    {
+      "stage": "pre",
+      "question": "What is MPI (Message Passing Interface)?",
+      "options": [
+        "A shared memory programming model",
+        "A standard for message-passing between processes in distributed memory systems (clusters of computers)",
+        "A GPU programming framework",
+        "A web protocol for microservices"
+      ],
+      "correct": 1,
+      "explanation": "MPI is the standard for programming distributed memory clusters. Each process has its own address space and communicates by sending/receiving messages (MPI_Send, MPI_Recv, MPI_Bcast). It enables scaling to thousands of nodes for HPC workloads like weather simulation and molecular dynamics."
+    }
+  ]
+}

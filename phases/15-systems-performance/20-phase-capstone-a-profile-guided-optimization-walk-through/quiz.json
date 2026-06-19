@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 20,
+    "title": "Phase Capstone — A Profile-Guided Optimization Walk-Through"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You profile a program and see that function X accounts for 70% of runtime while function Y accounts for 5%. According to PGO principles, which function should you optimize first and why?",
+      "options": [
+        "Function X — Amdahl's Law says optimizing the largest fraction yields the greatest overall speedup",
+        "Function Y — it's faster to optimize small functions so you get quick wins",
+        "Both equally — PGO requires parallel optimization of all hotspots",
+        "Whichever has more branches — branch mispredictions are always the bottleneck"
+      ],
+      "correct": 0,
+      "explanation": "Amdahl's Law (introduced in L01 and applied throughout this phase) states that the maximum speedup is limited by the fraction of time spent in the optimized code. Optimizing function X (70% of runtime) can yield up to a 3.3x overall speedup, while optimizing function Y (5%) can yield at most ~1.05x. PGO tells you to attack the biggest bottleneck first."
+    },
+    {
+      "stage": "pre",
+      "question": "In a PGO workflow, what is the single most important number you must establish before writing any optimization?",
+      "options": [
+        "The number of CPU cores available for parallelism",
+        "A trusted, reproducibly-measured baseline timing (L02 discipline)",
+        "The cache line size of the target CPU (L05)",
+        "The SIMD register width of the target architecture (L08)"
+      ],
+      "correct": 1,
+      "explanation": "Lesson 02 teaches measurement discipline: the baseline is the single most important number in any optimization campaign. Without a trusted baseline, you cannot demonstrate improvement. Cache line size and SIMD width matter for *how* you optimize, but the baseline tells you *whether* your optimization worked at all."
+    },
+    {
+      "stage": "post",
+      "question": "You apply a cache-friendly data layout optimization (L05) that improves P50 latency by 5x but doubles P99 latency due to a rare worst-case path. What PGO principle tells you this might be unacceptable?",
+      "options": [
+        "Amdahl's Law — the optimization targets the wrong fraction",
+        "Tail latency discipline (L18) — P99 matters more than P50 for latency SLAs",
+        "Branch prediction theory (L07) — the worst case is a branch mispredict",
+        "Little's Law (L19) — capacity planning requires stable latency"
+      ],
+      "correct": 1,
+      "explanation": "Lesson 18 teaches that in latency-sensitive systems, P99 (tail latency) is more important than P50. An optimization that improves the median but doubles the worst case is a net regression in systems that serve SLAs. PGO requires measuring both P50 and P99 — only reporting P50 hides this regression."
+    },
+    {
+      "stage": "post",
+      "question": "Your PGO loop reveals that 40% of runtime is spent in `malloc`/`free` (L09), 30% in cache misses from pointer-chasing data structures (L05), and 20% in branch mispredictions (L07). After replacing `malloc` with an arena allocator, the allocation overhead drops to 5%, but the profile shows the cache misses now account for 45% of the *new* total. What happened?",
+      "options": [
+        "The arena allocator introduced new cache misses",
+        "Amdahl's Law — removing one bottleneck exposes the next-largest one as a proportion of the new (smaller) total",
+        "The profiling tool is broken — percentages should stay the same",
+        "False sharing (L06) between the arena and the data structure"
+      ],
+      "correct": 1,
+      "explanation": "This is Amdahl's Law in action and a core PGO insight: when you remove the top bottleneck, the *next* bottleneck grows as a percentage of the new total. The cache misses didn't get worse in absolute terms — they became a larger fraction because the allocator bottleneck is gone. This is why PGO is an iterative loop, not a one-shot process."
+    },
+    {
+      "stage": "post",
+      "question": "When should you prefer a thread-local counter (L06/L13) over a shared atomic counter in a parallel string processor?",
+      "options": [
+        "Always — thread-local counters are faster in every case",
+        "When the counter is updated frequently from multiple threads, causing cache-line contention (false sharing)",
+        "Only when using SIMD — thread-local counters are required for SIMD correctness",
+        "Never — atomics are always preferable for correctness"
+      ],
+      "correct": 1,
+      "explanation": "Lesson 06 (false sharing) and L13 (lock contention) teach that shared atomic counters cause cache-line ping-pong: each write invalidates the cache line for other cores. Thread-local counters avoid this entirely by having each thread accumulate independently, then merging once at the end. This is a pattern directly from PGO — you'd only discover the contention by profiling."
+    },
+    {
+      "stage": "post",
+      "question": "Compiler PGO (e.g., clang -fprofile-instr-use) and manual PGO (what this capstone teaches) are complementary. Which of the following is a correct characterization of their relationship?",
+      "options": [
+        "They are redundant — compiler PGO makes manual PGO unnecessary",
+        "Compiler PGO optimizes *within* functions (branch layout, inlining); manual PGO optimizes *between* functions (data layout, algorithm choice, parallelism strategy)",
+        "Manual PGO is always better because compilers can't understand high-level intent",
+        "Compiler PGO is only useful for Rust; manual PGO is only useful for C++"
+      ],
+      "correct": 1,
+      "explanation": "The capstone lesson explains that compiler PGO (L03 profiling tools) tells the compiler which branches are likely and which functions are hot — optimizing *within* functions. Manual PGO — the focus of this capstone — decides *between* functions: which data structures to use, whether to apply SIMD, whether to restructure for cache friendliness, whether to parallelize. Both are needed for maximum performance."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+[package]
+name = "crdt-counters-sets-sequences"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "crdt"
+path = "main.rs"

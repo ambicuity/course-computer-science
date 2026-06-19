@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Rust's ownership rules: at any given time, a value can be borrowed by:",
+      "options": [
+        "Anyone, any time",
+        "Any number of shared `&T` references OR exactly one exclusive `&mut T` — never both",
+        "Only one reference total",
+        "Up to 2 references"
+      ],
+      "correct": 1,
+      "explanation": "Exclusive XOR shared. This is the key rule that eliminates data races and most use-after-free bugs at compile time. Internally, the rule is called 'aliasing XOR mutation' — analogously to the Rust standard library's `Cell`/`Mutex` types that re-introduce shared mutation safely via runtime checks."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does `let s2 = s1;` move ownership when `s1: String`, but copy when `s1: i32`?",
+      "options": [
+        "Compiler bug",
+        "`String` owns heap memory; allowing two owners would risk double-free. `i32` is a primitive bit pattern with no resources; copying is free.",
+        "Strings are larger than ints",
+        "It's not — both move"
+      ],
+      "correct": 1,
+      "explanation": "Types that own external resources (heap memory, file handles, sockets) MUST NOT be silently duplicated — that would double-free on drop. They move. Primitive types (i32, bool, fixed arrays of these) implement the `Copy` trait — a marker telling the compiler 'bitwise copy is safe.'"
+    },
+    {
+      "stage": "post",
+      "question": "Why does this Rust code fail to compile?\n```rust\nlet mut v = vec![1, 2, 3];\nlet first = &v[0];\nv.push(4);\nprintln!(\"{}\", first);\n```",
+      "options": [
+        "Syntax error",
+        "`first` is a shared borrow. `v.push(4)` takes a mutable borrow — and may reallocate, invalidating `first`. The borrow checker rejects shared + mutable at once.",
+        "Vec has no push method",
+        "It compiles fine"
+      ],
+      "correct": 1,
+      "explanation": "The classic 'iterator invalidation' bug from C++ — caught at compile time. `&v[0]` would dangle after a reallocating push. Rust's borrow checker sees this statically. Fix: copy `*first` to a local before pushing, or shrink the scope of `first`."
+    },
+    {
+      "stage": "post",
+      "question": "When does Rust call a value's `Drop::drop` method?",
+      "options": [
+        "When the program ends",
+        "Automatically, when the owning binding goes out of scope (matches RAII). On panic-unwind too, unless the panic aborts.",
+        "Only when you call `drop(x)` manually",
+        "Never — it's optional"
+      ],
+      "correct": 1,
+      "explanation": "Drop fires deterministically at scope exit (or earlier with `mem::drop`). No GC, no finalizers. This makes resource cleanup predictable: a `MutexGuard`'s drop releases the lock; a `File`'s drop closes the FD; a `Vec<T>`'s drop frees the buffer. The compiler inserts the drop calls; the user never does."
+    },
+    {
+      "stage": "post",
+      "question": "What's the difference between `&T` and `&mut T`?",
+      "options": [
+        "Speed",
+        "`&T` is shared (many can coexist; read-only). `&mut T` is exclusive (only one at a time; can mutate). The borrow checker enforces this XOR property.",
+        "Size",
+        "Only `&mut T` is real; `&T` is for documentation"
+      ],
+      "correct": 1,
+      "explanation": "`&T`: 'I want to read it; others can read too.' `&mut T`: 'I want sole access; others can't even read while I have this.' This rule lets the compiler safely reorder/optimize through borrows, and it directly prevents data races (Send/Sync extensions in Phase 13)."
+    },
+    {
+      "stage": "post",
+      "question": "When should you call `.clone()` in Rust?",
+      "options": [
+        "Whenever convenient",
+        "When you genuinely need a deep copy AND can afford it. Often the right move is to take a `&T` borrow instead — clone defeats Rust's zero-cost abstraction.",
+        "Never",
+        "Only on i32"
+      ],
+      "correct": 1,
+      "explanation": "Clone is an explicit, possibly-expensive duplication. Reaching for it is often a sign the code structure is wrong — try `&T` borrows or `Rc<T>`/`Arc<T>` shared ownership first. But sometimes (returning owned data, cross-thread move) clone is exactly right."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 10,
+    "title": "Ownership And Borrowing The Rust Model"
+  }
+}

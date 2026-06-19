@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 4,
+    "lesson": 21,
+    "title": "Hashing in Algorithms — Rabin-Karp, Rolling Hashes"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A polynomial rolling hash uses H(s) = Σ s[i]·p^i mod M. When the window slides one position right, which operation is NOT part of the O(1) update?",
+      "options": [
+        "Subtract the contribution of the outgoing character (weighted by p^(m−1))",
+        "Multiply the entire hash by p to shift positions",
+        "Add the incoming character multiplied by p^0 (i.e. as-is)",
+        "Recompute the hash of the entire new window from scratch"
+      ],
+      "correct": 3,
+      "explanation": "The rolling update avoids recomputing from scratch. It removes the old char's weighted contribution, shifts by multiplying by p, and adds the new char. Full recomputation would be O(m), defeating the purpose."
+    },
+    {
+      "stage": "pre",
+      "question": "By the birthday paradox analysis, if you hash q = 10⁴ strings into a space of size M = 10⁹, the collision probability is approximately:",
+      "options": [
+        "q/M ≈ 10^−5 (one in a hundred thousand)",
+        "q²/(2M) ≈ 0.05 (five percent)",
+        "q²/(2M) ≈ 5×10^−5 (negligible)",
+        "1 − (1 − 1/M)^q ≈ 0.5 (fifty percent)"
+      ],
+      "correct": 1,
+      "explanation": "By the birthday paradox, P ≈ q²/(2M). Substituting q=10⁴ and M=10⁹: (10⁴)² / (2 × 10⁹) = 10⁸ / (2×10⁹) = 0.05 — about five percent. Option B. The key insight is that collisions scale with q², not linearly, so even moderate q values can produce surprising collision rates."
+    },
+    {
+      "stage": "post",
+      "question": "What is the worst-case time complexity of Rabin-Karp string search, and what causes it?",
+      "options": [
+        "O(n log n) — caused by sorting the hash table",
+        "O(nm) — caused by hash collisions at every window position requiring full verification",
+        "O(n + m) — always, because rolling hash is O(1) per shift",
+        "O(n²) — caused by recomputing the modulus at each step"
+      ],
+      "correct": 1,
+      "explanation": "In the worst case, every window produces a hash collision with the pattern, forcing a full O(m) character-by-character verification at each of the (n−m+1) positions. Total: O((n−m+1)×m) = O(nm). This happens with adversarial inputs crafted to exploit the hash function."
+    },
+    {
+      "stage": "post",
+      "question": "Double hashing uses two independent (p, M) pairs. If single-hash collision probability is P, double-hash collision probability is approximately:",
+      "options": [
+        "2P (twice as likely — more hashes means more collisions)",
+        "P/2 (half as likely — averaging the two hashes)",
+        "P² (the product — both hashes must collide independently)",
+        "P (unchanged — two hashes don't help with polynomial rolling hashes)"
+      ],
+      "correct": 2,
+      "explanation": "The two hash functions are independent. A false positive occurs only when both collide simultaneously. For independent events with probability P each, the joint probability is P×P = P². If P = 10^−9, then P² = 10^−18 — effectively zero for any practical input size."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a rolling hash, and why is it useful in the Rabin-Karp algorithm?",
+      "options": [
+        "A hash function that only works on sorted data",
+        "A hash that can be updated in O(1) when the window slides by one character",
+        "A cryptographic hash for security",
+        "A hash function that guarantees no collisions"
+      ],
+      "correct": 1,
+      "explanation": "A rolling hash lets you compute the hash of the next window from the previous window's hash by subtracting the outgoing character's contribution and adding the incoming one — all in O(1). This makes Rabin-Karp's average case O(n+m) for single pattern matching."
+    }
+  ]
+}

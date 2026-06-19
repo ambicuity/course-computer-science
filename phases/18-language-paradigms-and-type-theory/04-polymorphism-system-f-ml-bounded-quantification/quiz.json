@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is parametric polymorphism?",
+      "options": ["Runtime reflection", "Uniform behavior for any type parameter", "Subtyping only", "Operator precedence"],
+      "correct": 1,
+      "explanation": "Parametric polymorphism means implementation does not depend on the concrete type."
+    },
+    {
+      "stage": "pre",
+      "question": "What is System F in type theory?",
+      "options": ["A sorting algorithm", "The polymorphic lambda calculus with explicit type abstraction and application", "A database query language", "An operating system kernel"],
+      "correct": 1,
+      "explanation": "System F extends STLC with universal quantification over types, allowing functions to take type arguments explicitly."
+    },
+    {
+      "stage": "post",
+      "question": "How does ad-hoc polymorphism differ from parametric polymorphism?",
+      "options": ["It has no type checking", "It dispatches behavior via type-specific implementations", "It forbids generics", "It only works in OO languages"],
+      "correct": 1,
+      "explanation": "Ad-hoc polymorphism uses per-type implementations (e.g., typeclasses/interfaces) rather than one uniform body."
+    },
+    {
+      "stage": "post",
+      "question": "Why use bounded quantification?",
+      "options": ["To remove constraints", "To require type arguments satisfy specific capabilities", "To disable inference", "To avoid abstraction"],
+      "correct": 1,
+      "explanation": "Bounds constrain generic parameters so APIs can rely on required operations/properties."
+    },
+    {
+      "stage": "post",
+      "question": "What is the 'free theorem' associated with parametric polymorphism?",
+      "options": ["A compiler optimization", "A theorem that the only possible implementation is determined by the type", "A runtime guarantee", "A garbage collection policy"],
+      "correct": 1,
+      "explanation": "Free theorems (due to Wadler) state that polymorphic functions satisfy relational properties purely from their type — the implementation is constrained by the type signature."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 4, "title": "Polymorphism - System F, ML, Bounded Quantification" }
+}

@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 4,
+    "lesson": 6,
+    "title": "Searching — Binary, Exponential, Ternary, Interpolation",
+    "note": "4 MCQs on binary search invariants, lower/upper bound, ternary search applicability."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You implement binary search with `mid = (lo + hi) // 2`. On an array of 2^31 elements in a language with 32-bit signed integers, what happens?",
+      "options": [
+        "It works correctly — Python handles big integers fine",
+        "lo + hi can overflow to a negative number, causing an out-of-bounds access",
+        "The algorithm becomes O(n) instead of O(log n)",
+        "It returns the wrong answer only when the target is missing"
+      ],
+      "correct": 1,
+      "explanation": "In languages with fixed-width integers (C, C++, Rust with usize aside), lo + hi can overflow INT_MAX, wrapping to a negative value. The fix is `mid = lo + (hi - lo) // 2`. This bug existed in Java's JDK for years."
+    },
+    {
+      "stage": "pre",
+      "question": "Given a sorted array with duplicates, what does `lower_bound(target)` return?",
+      "options": [
+        "The last index where arr[i] == target",
+        "The first index where arr[i] > target",
+        "The first index where arr[i] >= target",
+        "The count of elements equal to target"
+      ],
+      "correct": 2,
+      "explanation": "Lower bound returns the first index i where arr[i] >= target. This is the insertion point that preserves sorted order. It equals Python's bisect_left and Rust's partition_point(|x| x < target). Upper bound returns the first index where arr[i] > target."
+    },
+    {
+      "stage": "post",
+      "question": "When does ternary search have an advantage over binary search?",
+      "options": [
+        "When searching for an exact match in a sorted array",
+        "When finding the maximum of a unimodal function on a continuous domain",
+        "When the data is uniformly distributed",
+        "When the array fits entirely in CPU cache"
+      ],
+      "correct": 1,
+      "explanation": "Ternary search applies to continuous domains where you're optimizing a unimodal function (increases then decreases). On discrete sorted data, binary search is strictly better — it discards half the interval per step with one comparison, while ternary search discards one third with two comparisons."
+    },
+    {
+      "stage": "post",
+      "question": "What is the average-case time complexity of interpolation search on uniformly distributed data, and what is its worst case?",
+      "options": [
+        "Average O(log n), worst O(n log n)",
+        "Average O(log log n), worst O(n)",
+        "Average O(log n), worst O(n)",
+        "Average O(1), worst O(log n)"
+      ],
+      "correct": 1,
+      "explanation": "On uniformly distributed data, linear interpolation lands very close to the target, so the search interval shrinks by a square-root factor each step — giving O(log log n) average. On pathological distributions (e.g., exponential), the interpolation guess is consistently wrong, degrading to O(n) linear scan."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the prerequisite for binary search to work correctly on an array?",
+      "options": [
+        "The array must have an even number of elements",
+        "The array must be sorted",
+        "The array must contain only integers",
+        "The array must be stored in contiguous memory"
+      ],
+      "correct": 1,
+      "explanation": "Binary search relies on the sorted invariant to decide which half to discard at each step. Without sorted order, eliminating half the search space is invalid and the algorithm may miss the target."
+    }
+  ]
+}

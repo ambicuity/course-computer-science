@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 11,
+    "title": "Build a userspace TCP/IP stack (toy)"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a TCP/IP stack, what does the pseudo-header used in the TCP checksum computation include?",
+      "options": [
+        "Only the TCP header and payload bytes",
+        "Source IP, destination IP, protocol number, and TCP segment length, prepended to the TCP segment",
+        "The entire Ethernet frame including MAC addresses",
+        "The IP header fields plus the TCP flags"
+      ],
+      "correct": 1,
+      "explanation": "The TCP checksum uses a pseudo-header that includes the source IP (4 bytes), destination IP (4 bytes), reserved byte (0), protocol (6 for TCP), and TCP length (2 bytes) — 12 bytes total — prepended to the TCP segment. This ensures the checksum covers addressing information even though it lives in the IP layer."
+    },
+    {
+      "stage": "pre",
+      "question": "When a TCP server in LISTEN state receives a SYN segment, what is the correct sequence of actions?",
+      "options": [
+        "Send ACK, then create a new connection in ESTABLISHED state",
+        "Create a new connection in SYN_RCVD state, send SYN-ACK, store the client's sequence number",
+        "Move the listener to SYN_RCVD state and wait for the next packet",
+        "Send RST because no connection exists yet"
+      ],
+      "correct": 1,
+      "explanation": "The listener socket stays in LISTEN state. A new connection object is created in SYN_RCVD state with the client's ISN (initial sequence number) + 1 as the acknowledgment. The server sends a SYN-ACK with its own ISN. Only when the client's ACK arrives does the connection move to ESTABLISHED."
+    },
+    {
+      "stage": "post",
+      "question": "What is the purpose of a TUN/TAP device in a userspace TCP/IP stack?",
+      "options": [
+        "It accelerates packet processing by offloading checksums to hardware",
+        "It provides a virtual network interface that delivers raw packets to/from userspace instead of the kernel's network stack",
+        "It encrypts all network traffic between the user process and the kernel",
+        "It converts Ethernet frames into HTTP requests automatically"
+      ],
+      "correct": 1,
+      "explanation": "A TAP device is a virtual network interface. When the kernel sends a packet to the TAP interface, the data becomes readable from the device file in userspace. When userspace writes a raw Ethernet frame to the device, the kernel treats it as an incoming packet. This lets you bypass the kernel's TCP/IP stack entirely."
+    },
+    {
+      "stage": "post",
+      "question": "In your toy TCP/IP stack, what should happen when the stack receives a segment for a port with no listener?",
+      "options": [
+        "Ignore the segment silently",
+        "Send a TCP segment with the RST flag set to tell the sender the port is closed",
+        "Buffer the segment until a listener is created",
+        "Forward the segment to the kernel's TCP stack"
+      ],
+      "correct": 1,
+      "explanation": "When a TCP segment arrives for a port with no listener and no existing connection, the correct behavior is to send a RST (reset) segment. This tells the remote side that the port is closed. Without this, the remote side would retransmit indefinitely, wasting bandwidth."
+    },
+    {
+      "stage": "pre",
+      "question": "Why build a userspace TCP/IP stack?",
+      "options": [
+        "Because the kernel TCP stack is too slow",
+        "To deeply understand protocol internals by implementing them yourself — parsing headers, managing state machines, handling retransmission",
+        "Because Linux doesn't support TCP",
+        "To replace the kernel's networking entirely"
+      ],
+      "correct": 1,
+      "explanation": "Building a userspace TCP/IP stack forces you to implement every detail: Ethernet framing, ARP, IP routing, TCP state machine, sequence numbers, flow control, and congestion control. This hands-on experience reveals why protocols work the way they do and where performance bottlenecks hide."
+    }
+  ]
+}

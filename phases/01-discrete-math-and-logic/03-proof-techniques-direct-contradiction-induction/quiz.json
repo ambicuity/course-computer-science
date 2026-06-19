@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You're proving by induction that `P(n)` holds for all n ≥ 1. You've verified the base P(1) and shown that P(k) implies P(k+1). What did you just prove?",
+      "options": [
+        "P(n) for all n ∈ ℤ",
+        "P(n) for all n ≥ 1",
+        "P(n) for all n ≥ 0",
+        "Only P(1) and P(2)"
+      ],
+      "correct": 1,
+      "explanation": "Induction gives you exactly the claim from the base onward. If your base is P(1), you've covered n ≥ 1. P(0) is NOT proved (you didn't verify it). Always match the base case to the claim's starting point."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is proof by contrapositive equivalent to direct proof of the same claim?",
+      "options": [
+        "It isn't — they prove different things",
+        "Because `P → Q ≡ ¬Q → ¬P` is a tautology of propositional logic",
+        "Only when P is true",
+        "Only when Q is decidable"
+      ],
+      "correct": 1,
+      "explanation": "Logical equivalence: P → Q and ¬Q → ¬P have identical truth tables. Proving one proves the other. Use whichever is easier — often the contrapositive is, because it lets you start from the 'negative' side."
+    },
+    {
+      "stage": "post",
+      "question": "Euclid's proof that there are infinitely many primes is which kind of proof?",
+      "options": [
+        "Direct",
+        "By contradiction (assume only finitely many, derive a contradiction)",
+        "By induction",
+        "By contrapositive"
+      ],
+      "correct": 1,
+      "explanation": "Classic contradiction. Assume the negation ('only finitely many primes p₁..pₙ exist'). Construct N = ∏pᵢ + 1. N can't be divisible by any of the pᵢ (remainder 1), so either it's a new prime or has a prime factor not in the list — contradiction in either case."
+    },
+    {
+      "stage": "post",
+      "question": "When is strong induction *strictly more useful* than ordinary induction?",
+      "options": [
+        "Never — they're equivalent in power",
+        "When proving P(k+1) requires assuming P(m) for some m < k, not just P(k); the prime-factorization proof is a typical example",
+        "Only for negative claims",
+        "Only when n ranges over rationals"
+      ],
+      "correct": 1,
+      "explanation": "Ordinary induction lets you assume only P(k) when proving P(k+1). Strong induction lets you assume P(b) through P(k). They're mutually derivable (you can rewrite either as the other), but for claims like 'every n ≥ 2 has a prime factorization' — where k splits as a · b with 1 < a, b < k — strong induction is the natural fit because you invoke the IH on a and b, neither of which is k-1."
+    },
+    {
+      "stage": "post",
+      "question": "Structural induction is induction on what?",
+      "options": [
+        "Any integer",
+        "The recursive structure of a datatype: prove the property for base constructors (leaf/empty), then prove it for composite constructors assuming it holds for sub-structures",
+        "The number of variables in a formula",
+        "The first letter of a function name"
+      ],
+      "correct": 1,
+      "explanation": "For a datatype defined recursively (lists, trees, expressions, ASTs), the induction principle follows the constructors. Base case = the property holds at base constructors. Step = the property holds at a composite constructor given that it holds for sub-pieces. This is THE main proof technique in PL theory (type soundness, evaluator correctness)."
+    },
+    {
+      "stage": "post",
+      "question": "You see a proof of `P(n)` by induction that has no base case. What's most likely wrong?",
+      "options": [
+        "Nothing — base cases are optional",
+        "The 'proof' is incomplete — without a base, the induction doesn't even fire; you've proved 'IF P(0) then ∀n. P(n)' but not P(0)",
+        "It's a strong induction",
+        "It's a proof by contradiction"
+      ],
+      "correct": 1,
+      "explanation": "Induction is a two-part argument: P(0) AND (∀k. P(k) → P(k+1)). Without P(0), you've proved nothing — the dominos can't fall if the first isn't tipped. Always state and verify the base. This is the single most common induction bug in homework."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 3,
+    "title": "Proof Techniques Direct Contradiction Induction"
+  }
+}

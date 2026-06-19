@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "According to the CAP theorem, what must a system sacrifice during a network partition?",
+      "options": [
+        "Either partition tolerance or availability",
+        "Either consistency or availability",
+        "Either consistency or partition tolerance",
+        "All three of consistency, availability, and partition tolerance simultaneously"
+      ],
+      "correct": 1,
+      "explanation": "CAP states that during a partition, you must sacrifice either consistency (serve stale data) or availability (reject requests). Partition tolerance is mandatory because partitions will happen in any real system, so it's not something you can sacrifice."
+    },
+    {
+      "stage": "pre",
+      "question": "A 'CA' system (consistent and available, but not partition tolerant) is practical for production because:",
+      "options": [
+        "Network partitions are extremely rare in modern data centers",
+        "It is not practical — network partitions will happen, so you cannot ignore P",
+        "It can be achieved with sufficient redundancy and failover mechanisms",
+        "It is the default configuration for most relational databases"
+      ],
+      "correct": 1,
+      "explanation": "A CA system assumes the network never partitions, which is impossible in practice (Fallacy #1: the network is reliable). Since partitions will happen, you must design for P, making CA an untenable choice."
+    },
+    {
+      "stage": "post",
+      "question": "What does PACELC add to the CAP theorem?",
+      "options": [
+        "It adds the concept of partition tolerance, which CAP lacked",
+        "It explains what happens during normal operation: when there is no partition, you choose between latency and consistency",
+        "It proves that eventually consistent systems are always faster than strongly consistent ones",
+        "It shows that all distributed systems converge to the same consistency model over time"
+      ],
+      "correct": 1,
+      "explanation": "PACELC extends CAP by making the trade-off during normal (non-partitioned) operation explicit: If Partition, choose Availability or Consistency; Else, choose Latency or Consistency. This matters because systems spend 99.9%+ of their time in the 'Else' branch."
+    },
+    {
+      "stage": "post",
+      "question": "In a CP system like etcd, what happens to a read request that reaches a node in the minority partition?",
+      "options": [
+        "The node responds with the last known value, which may be stale",
+        "The node forwards the request to a majority-partition node and returns its response",
+        "The node rejects the request with an error, sacrificing availability",
+        "The node queues the request and responds once the partition heals"
+      ],
+      "correct": 2,
+      "explanation": "In CP mode, consistency is prioritized over availability. A minority node cannot guarantee it has the latest data, so it rejects the request rather than risk returning stale data. This is exactly what etcd does during partitions — it returns errors for requests that cannot reach a quorum."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the argument 'CAP lets me use eventual consistency everywhere' wrong?",
+      "options": [
+        "Because eventual consistency can never converge to a consistent state",
+        "Because CAP only forces the consistency sacrifice during partitions; during normal operation you're making a separate latency-vs-consistency trade-off (the PACELC 'E' branch) that you can choose differently",
+        "Because eventually consistent systems are always slower than strongly consistent ones",
+        "Because the CAP theorem was disproven by Gilbert and Lynch"
+      ],
+      "correct": 1,
+      "explanation": "CAP tells you that during a partition, you must sacrifice either C or A. But partitions are rare — the system operates normally most of the time. During normal operation (the PACELC 'Else' branch), you choose between latency and consistency independently. Choosing eventual consistency everywhere because 'CAP' confuses the partition-time constraint with a design choice for normal operation."
+    },
+    {
+      "stage": "post",
+      "question": "Cassandra is classified as PA/EL in PACELC. What does this mean in practice?",
+      "options": [
+        "During a partition it rejects requests (P→C), and during normal operation it prioritizes strong consistency over latency (E→C)",
+        "During a partition it serves requests even with stale data (P→A), and during normal operation it prioritizes low latency over strong consistency (E→L)",
+        "During a partition it rejects requests (P→C), and during normal operation it prioritizes low latency over strong consistency (E→L)",
+        "During a partition it serves requests even with stale data (P→A), and during normal operation it prioritizes strong consistency over latency (E→C)"
+      ],
+      "correct": 1,
+      "explanation": "PA/EL means: during a Partition, choose Availability (serve requests, possibly with stale data); during normal operation (Else), choose Latency over Consistency (read from the nearest replica for speed, at the cost of possibly stale reads). This is Cassandra's default configuration with LOCAL_ONE consistency."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 6,
+    "title": "Cap And Pacelc Read Honestly"
+  }
+}

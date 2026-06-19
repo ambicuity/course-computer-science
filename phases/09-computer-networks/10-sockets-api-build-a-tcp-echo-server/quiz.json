@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 10,
+    "title": "Sockets API — Build a TCP Echo Server"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the correct order, which sequence of system calls does a TCP server use to begin accepting connections?",
+      "options": [
+        "bind() → socket() → listen() → accept()",
+        "socket() → listen() → bind() → accept()",
+        "socket() → bind() → listen() → accept()",
+        "socket() → bind() → accept() → listen()"
+      ],
+      "correct": 2,
+      "explanation": "A TCP server first creates a socket with socket(), binds it to an address/port with bind(), marks it as passive with listen(), and then accepts connections with accept(). The order matters because you cannot listen() or bind() without a socket, and you cannot accept() without first calling listen()."
+    },
+    {
+      "stage": "pre",
+      "question": "Why must you call htons() when setting sin_port in a sockaddr_in struct?",
+      "options": [
+        "To validate that the port number is in the valid range (1-65535)",
+        "To convert the port from host byte order to network byte order (big-endian)",
+        "To encode the port as a string for DNS resolution",
+        "To combine the IP address and port into a single 32-bit value"
+      ],
+      "correct": 1,
+      "explanation": "Network protocols use big-endian (network byte order). Most modern CPUs (x86, ARM) are little-endian. htons() converts a 16-bit value from host byte order to network byte order. Forgetting this causes the server to bind to the wrong port (e.g., port 8080 becomes 20480)."
+    },
+    {
+      "stage": "post",
+      "question": "In a fork()-based TCP server, what must the child process do with the listening socket after calling accept()?",
+      "options": [
+        "Keep it open so the child can accept more connections",
+        "Duplicate it with dup() to share between parent and child",
+        "Close it because the child only needs the connected client socket",
+        "Upgrade it with setsockopt() to enable async I/O"
+      ],
+      "correct": 2,
+      "explanation": "The child process only needs the connected client socket returned by accept(). It should close() the listening socket to decrement its reference count. If the child doesn't close it, the kernel won't send FIN when the last child exits, and the listening socket stays open longer than necessary."
+    },
+    {
+      "stage": "post",
+      "question": "What is the purpose of SO_REUSEADDR when set on a server socket?",
+      "options": [
+        "It allows multiple servers to bind to the same port simultaneously",
+        "It enables address translation for NAT traversal",
+        "It allows bind() to succeed even if the port is in TIME_WAIT state from a previous connection",
+        "It automatically assigns a random available port"
+      ],
+      "correct": 2,
+      "explanation": "Without SO_REUSEADDR, after a server crashes and restarts quickly, bind() fails because the port is in TIME_WAIT state (a 2MSL timeout). SO_REUSEADDR lets the new server bind immediately. It does NOT allow two active servers to share a port — that would require SO_REUSEPORT."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the sequence of system calls to create a TCP server?",
+      "options": [
+        "open, read, write, close",
+        "socket, bind, listen, accept, read/write, close",
+        "connect, send, receive, disconnect",
+        "fork, exec, wait, exit"
+      ],
+      "correct": 1,
+      "explanation": "A TCP server: (1) socket() creates an endpoint, (2) bind() attaches it to an address:port, (3) listen() marks it as passive, (4) accept() waits for connections (returns a new socket per client), (5) read()/write() exchange data, (6) close() cleans up."
+    }
+  ]
+}

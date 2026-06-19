@@ -1,0 +1,16 @@
+program gcd_test;
+
+function gcd(a: int; b: int): int;
+begin
+  while b <> 0 do
+  begin
+    a := a - (a / b) * b;
+    gcd := b;
+    b := a
+  end;
+  gcd := a
+end;
+
+begin
+  print(gcd(48, 18))
+end.

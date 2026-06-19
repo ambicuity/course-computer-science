@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 9,
+    "lesson": 9,
+    "title": "QUIC and HTTP/3"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What transport protocol does QUIC run on top of?",
+      "options": [
+        "TCP",
+        "UDP",
+        "SCTP",
+        "IP directly"
+      ],
+      "correct": 1,
+      "explanation": "QUIC runs on top of UDP. It implements its own reliability, ordering, and congestion control on top of UDP's datagram model, avoiding the need to modify the TCP stack in operating systems."
+    },
+    {
+      "stage": "pre",
+      "question": "What is head-of-line blocking in the context of TCP?",
+      "options": [
+        "When the receiver's buffer is full and stops accepting data",
+        "When a lost packet blocks delivery of all subsequent packets in the stream",
+        "When the server refuses to accept new connections",
+        "When encryption overhead slows down the connection"
+      ],
+      "correct": 1,
+      "explanation": "In TCP, bytes must be delivered in order. If segment N is lost, segments N+1, N+2, etc. cannot be delivered to the application until N is retransmitted and received. This stalls the entire byte stream."
+    },
+    {
+      "stage": "post",
+      "question": "How does QUIC achieve 0-RTT connection establishment?",
+      "options": [
+        "By skipping encryption entirely",
+        "By using a pre-shared key that never expires",
+        "By caching TLS session tickets from a previous connection and sending application data in the first packet",
+        "By maintaining a permanent TCP connection in the background"
+      ],
+      "correct": 2,
+      "explanation": "When a client has previously connected to a server, it caches the TLS session ticket. On reconnect, it can encrypt early data with the cached keys and send application data (like an HTTP request) in the very first QUIC packet — 0 round trips before data flows."
+    },
+    {
+      "stage": "post",
+      "question": "How does QUIC support connection migration when a client changes IP addresses?",
+      "options": [
+        "It doesn't — the connection must be re-established",
+        "Connections are identified by a connection ID in the packet, not by the 5-tuple (IP/port pair)",
+        "It tunnels through the old IP address indefinitely",
+        "The client must complete a new TLS handshake on every IP change"
+      ],
+      "correct": 1,
+      "explanation": "QUIC connections are identified by a Connection ID embedded in every packet, not by the source/destination IP and port. When the client's IP changes (e.g., WiFi to cellular), it simply sends packets with the same Connection ID from the new address. The server validates the new path and the connection continues without interruption."
+    },
+    {
+      "stage": "pre",
+      "question": "What major problem does QUIC solve compared to TCP+TLS?",
+      "options": [
+        "QUIC provides larger bandwidth",
+        "QUIC eliminates head-of-line blocking by running independent streams over UDP, with built-in encryption",
+        "QUIC is simpler to implement than TCP",
+        "QUIC works only on local networks"
+      ],
+      "correct": 1,
+      "explanation": "TCP+TLS requires 2-3 round trips before sending data (TCP handshake + TLS handshake). QUIC combines transport and crypto handshake into 1 RTT (or 0 RTT for resumption). It also runs multiple independent streams — loss in one stream doesn't block others (unlike TCP's single byte stream)."
+    }
+  ]
+}

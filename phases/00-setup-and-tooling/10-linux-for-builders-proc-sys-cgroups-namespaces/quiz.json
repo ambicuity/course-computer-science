@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is `/proc` on Linux?",
+      "options": [
+        "A regular directory of log files",
+        "A pseudo-filesystem with no on-disk backing — reads materialize live kernel/process state into bytes; writes change kernel state",
+        "A cache for systemd",
+        "A swap file"
+      ],
+      "correct": 1,
+      "explanation": "/proc is virtual: nothing is stored on disk. When you `cat /proc/stat`, the kernel synthesizes the bytes on read. This is what every CLI process-inspection tool (ps, top, htop, free) reads under the hood."
+    },
+    {
+      "stage": "pre",
+      "question": "What does a cgroup actually do?",
+      "options": [
+        "Encrypts files",
+        "Tracks a set of processes and enforces collective resource limits (CPU, memory, IO, PIDs) on them",
+        "Provides isolation between users",
+        "Speeds up the scheduler"
+      ],
+      "correct": 1,
+      "explanation": "cgroup = control group. A kernel-tracked set of PIDs with attached limits. Writing a PID into a cgroup's `cgroup.procs` moves it; setting `memory.max=100M` in that cgroup caps memory for the whole group. Docker, systemd, Kubernetes all set these up."
+    },
+    {
+      "stage": "post",
+      "question": "What does a Linux namespace isolate?",
+      "options": [
+        "CPU usage",
+        "A process's view of one specific global resource — its own PIDs, its own mounts, its own network, its own hostname, etc. — without affecting the kernel scheduler",
+        "Filesystem permissions",
+        "Network bandwidth"
+      ],
+      "correct": 1,
+      "explanation": "Namespaces partition kernel-visible global resources per-process. A PID namespace gives a process its own PID space (your PID 1 isn't the system's). A net namespace gives its own routing table. A mount namespace gives its own mount tree. Combining these is the foundation of containers."
+    },
+    {
+      "stage": "post",
+      "question": "What's the minimum stack of kernel features that makes a 'container'?",
+      "options": [
+        "Just Docker",
+        "Namespaces (pid/net/mnt/uts/ipc/user) + cgroup + a root filesystem (chroot or pivot_root) + optional seccomp",
+        "A virtual machine",
+        "An isolated CPU core"
+      ],
+      "correct": 1,
+      "explanation": "A container = a process started inside a fresh set of namespaces, placed in a cgroup with resource limits, with its filesystem pivoted to an image. Optionally constrained by seccomp/SELinux. Docker, podman, containerd, runc are all just user-space orchestrators of these primitives."
+    },
+    {
+      "stage": "post",
+      "question": "You see /proc/1234/maps shows a region marked `[heap]`. What's that?",
+      "options": [
+        "The kernel's heap",
+        "The portion of the process's virtual address space that brk()/sbrk() / malloc has expanded into for dynamic allocations",
+        "Swap space",
+        "Disk cache"
+      ],
+      "correct": 1,
+      "explanation": "`[heap]` is the conventional name for the process heap — the region the libc allocator grows by calling `brk` / `sbrk` (or mmap for large allocations). `/proc/<pid>/maps` shows every memory region (text, data, heap, stack, mmap'd files, libraries) with its address range and protections. Crucial for diagnosing memory bugs."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 10,
+    "title": "Linux For Builders Proc Sys Cgroups Namespaces"
+  }
+}

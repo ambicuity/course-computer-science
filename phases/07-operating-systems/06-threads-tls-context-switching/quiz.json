@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 06: Threads, TLS, Context Switching",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which of the following is PRIVATE to each thread (not shared)?",
+      "options": [
+        "Heap memory",
+        "Open file descriptors",
+        "Stack and registers",
+        "Global variables"
+      ],
+      "explanation": "Each thread has its own stack, registers, and thread-local storage. The heap, code, data, and file descriptors are shared across all threads in a process.",
+      "stage": "pre",
+      "correct": 2
+    },
+    {
+      "id": 2,
+      "question": "In the 1:1 threading model used by Linux pthreads, what does each user thread map to?",
+      "options": [
+        "A process",
+        "A kernel thread",
+        "A coroutine",
+        "A signal handler"
+      ],
+      "explanation": "In the 1:1 model, each user-level thread maps directly to one kernel-level thread. The OS kernel scheduler manages thread scheduling.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "What keyword in C provides thread-local storage?",
+      "options": [
+        "static",
+        "volatile",
+        "__thread",
+        "register"
+      ],
+      "explanation": "The __thread keyword (C11 _Thread_local / thread_local) declares a variable with a separate copy for each thread. Commonly used for errno, random number generators, and per-thread caches.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "id": 4,
+      "question": "Why is a thread-to-thread context switch cheaper than a process-to-process context switch?",
+      "options": [
+        "Threads don't use registers",
+        "The TLB doesn't need flushing since address space is shared",
+        "Threads run in user mode only",
+        "Thread switches don't save the program counter"
+      ],
+      "explanation": "When switching between threads in the same process, the address space stays the same, so the TLB doesn't need flushing and the CPU cache remains partially warm. Process switches require TLB flushes and cause cache pollution.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What resources are shared between threads of the same process?",
+      "options": [
+        "Nothing — threads are completely independent",
+        "Code, data, heap, and open files; each thread has its own stack and registers",
+        "Only the code segment",
+        "Everything including the stack"
+      ],
+      "correct": 1,
+      "explanation": "Threads within a process share the address space (code, data, heap), open file descriptors, and signal handlers. Each thread has its own stack, register set, and thread-local storage. This shared state makes thread communication fast but introduces race conditions."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 6,
+    "title": "Threads Tls Context Switching"
+  }
+}

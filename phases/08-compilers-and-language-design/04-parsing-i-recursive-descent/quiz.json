@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 4,
+    "title": "Parsing I Recursive Descent"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why must left-recursive grammar rules be eliminated before implementing a recursive descent parser?",
+      "options": [
+        "Left recursion causes the parser to consume too many tokens at once",
+        "Left recursion causes infinite recursion since no tokens are consumed before the recursive call",
+        "Left recursion makes the grammar ambiguous in all cases",
+        "Left recursion violates the rules of BNF notation"
+      ],
+      "correct": 1,
+      "explanation": "In left recursion (e.g., `E → E + T`), the function for E immediately calls itself without consuming any input tokens. This infinite loop exhausts the stack. The fix is to rewrite using iteration: `E → T (('+' | '-') T)*`."
+    },
+    {
+      "stage": "pre",
+      "question": "In the grammar `expr → term (('+' | '-') term)*`, how is operator precedence encoded?",
+      "options": [
+        "The parentheses around the alternation make '+' and '-' bind tighter",
+        "The Kleene star ensures left-to-right evaluation",
+        "Precedence is encoded structurally by nesting: expr calls term, which calls factor — deeper levels bind tighter",
+        "The parser explicitly checks operator precedence at runtime"
+      ],
+      "correct": 2,
+      "explanation": "Precedence comes from grammar structure: `parse_expr` calls `parse_term`, which calls `parse_factor`. Because `*` and `/` are matched inside `term`, they bind tighter than `+` and `-` matched in `expr`. No runtime precedence table is needed."
+    },
+    {
+      "stage": "post",
+      "question": "What does the parser return for input `(3 + 4) * 2`?",
+      "options": [
+        "BinOp(Add, Number(3), BinOp(Mul, Number(4), Number(2)))",
+        "BinOp(Mul, Paren(BinOp(Add, Number(3), Number(4))), Number(2))",
+        "BinOp(Mul, BinOp(Add, Number(3), Number(4)), Number(2))",
+        "Paren(BinOp(Mul, BinOp(Add, Number(3), Number(4)), Number(2)))"
+      ],
+      "correct": 1,
+      "explanation": "The parentheses group `3 + 4` into a `Paren` node. That `Paren` is the left child of `* 2`. The parser preserves the paren structure in the AST (parenthesization is visible even though it affects precedence)."
+    },
+    {
+      "stage": "post",
+      "question": "Which major production compilers use hand-written recursive descent parsers?",
+      "options": [
+        "Only interpreted languages like Python and Ruby",
+        "GCC and Clang for C/C++ — they favour hand-written parsers for customisability and error messages",
+        "None — all modern compilers use parser generators like Yacc",
+        "Only compilers for dynamically typed languages"
+      ],
+      "correct": 1,
+      "explanation": "GCC and Clang both use hand-written recursive descent parsers. This approach gives full control over error recovery, diagnostic quality, and incremental parsing — advantages that outweigh the convenience of a parser generator for large, evolving languages."
+    },
+    {
+      "stage": "pre",
+      "question": "What is recursive descent parsing?",
+      "options": [
+        "A parsing technique that uses a stack machine",
+        "A top-down parsing approach where each grammar rule becomes a function that calls other rule-functions recursively",
+        "A bottom-up parsing technique using shift-reduce",
+        "A parsing technique only for regular languages"
+      ],
+      "correct": 1,
+      "explanation": "Recursive descent implements each grammar nonterminal as a function. For example, parseExpr() calls parseTerm() which calls parseFactor(). It's intuitive, easy to debug, and used in production compilers (GCC, Go, Rust). LL(1) grammars avoid backtracking."
+    }
+  ]
+}

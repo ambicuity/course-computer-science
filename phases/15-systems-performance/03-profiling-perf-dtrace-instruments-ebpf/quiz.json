@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 3,
+    "title": "Profiling — perf, dtrace, Instruments, eBPF"
+  },
+  "questions": [
+    {
+      "question": "A sampling profiler records 1000 samples per second for 10 seconds. A function takes 0.5% of total runtime. Approximately how many samples will include this function, and what is the implication?",
+      "options": [
+        "5 samples — the function's cost will be statistically noisy and may be over- or underestimated",
+        "50 samples — the function's cost will be reported accurately within ±1%",
+        "500 samples — the function's cost will dominate the profile",
+        "0 samples — functions below 1% of runtime are invisible to sampling"
+      ],
+      "correct": 0,
+      "explanation": "0.5% of 10,000 total samples = ~50 expected samples, but with such a small count the statistical noise is high. The function might show up as 0.3% or 0.8% — sampling is statistical, not exact. This is why small hotspots can be missed or misestimated.",
+      "stage": "pre"
+    },
+    {
+      "question": "You run `perf stat -e cycles,instructions,cache-misses ./myapp` and see IPC = 0.4 with a 12% cache-miss rate. What is the most likely bottleneck?",
+      "options": [
+        "The program is compute-bound — it needs more CPU cores",
+        "The CPU is stalled waiting for memory — cache misses are causing the low IPC",
+        "Branch mispredictions are the primary bottleneck",
+        "The program has too many syscalls"
+      ],
+      "correct": 1,
+      "explanation": "IPC below 1.0 means the CPU is stalled more often than it's executing instructions. Combined with a high cache-miss rate (12%), the data shows the CPU is waiting for data from memory. Fixing the data access pattern (better locality, prefetching) would improve performance more than adding compute resources.",
+      "stage": "pre"
+    },
+    {
+      "question": "What is the key difference between `perf stat` and `perf record`?",
+      "options": [
+        "perf stat records call graphs; perf record does not",
+        "perf stat counts aggregate hardware events over the full run; perf record samples the instruction pointer over time to build a hotspot profile",
+        "perf stat only works on x86; perf record works on all architectures",
+        "perf stat requires root; perf record does not"
+      ],
+      "correct": 1,
+      "explanation": "perf stat gives you totals: 3 billion cycles, 5 billion instructions, etc. It tells you what happened in aggregate. perf record gives you a profile — which functions consumed the most samples, with call graphs. Use perf stat for 'how many cache misses' and perf record for 'which function is the hotspot'.",
+      "stage": "pre"
+    },
+    {
+      "question": "You need to trace every `open()` syscall a process makes, including the filename argument. Which tool is most appropriate?",
+      "options": [
+        "perf stat — it can count syscall events",
+        "perf record — it samples and will capture open() calls",
+        "dtrace or bpftrace — they can instrument syscall entry and read argument values like filenames",
+        "Instruments Allocations — it tracks all resource opens"
+      ],
+      "correct": 2,
+      "explanation": "Sampling (perf record) gives you statistical distributions, not per-call details with argument values. dtrace and bpftrace are instrumentation tools that fire on every event and can read function arguments (like the filename passed to open()). This is exactly the use case for dynamic tracing.",
+      "stage": "post"
+    },
+    {
+      "question": "What makes eBPF safer for production use than traditional kernel modules?",
+      "options": [
+        "eBPF programs are written in Python, which is memory-safe",
+        "The BPF verifier statically proves the program will terminate and won't crash the kernel before allowing it to run",
+        "eBPF programs run in user space, not kernel space",
+        "eBPF programs are shorter than kernel modules, so they have fewer bugs"
+      ],
+      "correct": 1,
+      "explanation": "The BPF verifier is the key safety mechanism. Before an eBPF program runs, the verifier checks: no unbounded loops (program must terminate), all memory accesses are bounds-checked, no null pointer dereferences, and the stack usage is bounded. If any check fails, the program is rejected. This makes eBPF safe to load into a running production kernel.",
+      "stage": "post"
+    },
+    {
+      "question": "You run `perf report` and see that function `foo()` has 60% 'inclusive' time but only 2% 'self' time. What does this mean?",
+      "options": [
+        "foo() itself is the hotspot — it's consuming 60% of total time",
+        "foo() is not the hotspot — the 58% gap between inclusive and self time means callees of foo() are where time is spent",
+        "The profiler is broken — self time should always be higher than inclusive time",
+        "foo() is called 60 times and each call takes 2ms"
+      ],
+      "correct": 1,
+      "explanation": "Inclusive time = time in foo() + all functions it calls. Self time = time in foo() itself (excluding callees). A function with high inclusive time but low self time means the function itself isn't slow — it's delegating to other functions that are. You should look at foo()'s callees to find the real hotspot.",
+      "stage": "post"
+    }
+  ]
+}

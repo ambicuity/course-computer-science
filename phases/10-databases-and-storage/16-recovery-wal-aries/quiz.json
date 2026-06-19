@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 10,
+    "lesson": 16,
+    "title": "Recovery \u2014 WAL, ARIES"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does the Write-Ahead Log (WAL) invariant guarantee?",
+      "options": [
+        "Log records are written before the corresponding data pages are written to disk",
+        "All transactions are logged before they begin",
+        "The log file is checkpointed every second",
+        "Log records are written in parallel with data pages"
+      ],
+      "correct": 0,
+      "explanation": "The WAL invariant states that the log record describing a change must reach stable storage BEFORE the corresponding dirty page is written to disk. This ensures the log always has enough information to redo or undo any change, even if the system crashes during a page write."
+    },
+    {
+      "stage": "pre",
+      "question": "In ARIES recovery, what is the purpose of the Analysis phase?",
+      "options": [
+        "To reapply all changes from the beginning of time",
+        "To rebuild the Dirty Page Table and Transaction Table by scanning the log from the last checkpoint",
+        "To roll back all uncommitted transactions immediately",
+        "To verify checksums on all database pages"
+      ],
+      "correct": 1,
+      "explanation": "The Analysis phase scans the log forward from the last checkpoint (or the beginning) to reconstruct two critical data structures: the Dirty Page Table (which pages might be dirty, and the LSN of the first change that dirtied each one) and the Transaction Table (which transactions were active, committed, or aborted, plus their last LSN). These structures guide the REDO and UNDO phases."
+    },
+    {
+      "stage": "post",
+      "question": "What does the pageLSN field in a page header represent, and how is it used during ARIES REDO?",
+      "options": [
+        "pageLSN is the LSN of the last checkpoint; REDO skips all records before it",
+        "pageLSN is the LSN of the last log record applied to this page; REDO compares it against each record's LSN to avoid reapplying already-applied changes",
+        "pageLSN is the LSN of the most recent transaction on any page; REDO uses it to find the min DPT LSN",
+        "pageLSN is set to 0 after every crash; REDO always reapplies every change"
+      ],
+      "correct": 1,
+      "explanation": "pageLSN stores the LSN of the most recent WAL record that was applied to this page. During REDO, for each log record, ARIES checks if the page's pageLSN is less than the record's LSN. If pageLSN < recordLSN, the change hasn't been applied yet and is redone. If pageLSN >= recordLSN, the change (or a later one) is already on disk, so REDO skips it."
+    },
+    {
+      "stage": "post",
+      "question": "What is a Compensation Log Record (CLR) in ARIES?",
+      "options": [
+        "A record that compensates for a full page image by storing only the changed bytes",
+        "A record that logs an undo action, enabling ARIES to achieve exactly-once undo semantics even if the system crashes during the UNDO phase",
+        "A record that compresses multiple log entries into a single checkpoint",
+        "A record that marks a transaction as compensated so it can be skipped during REDO"
+      ],
+      "correct": 1,
+      "explanation": "A CLR logs the inverse of an UPDATE that was undone. Each CLR includes an undoNextLSN field pointing to the next record to undo in that transaction's chain. If the system crashes during UNDO, the restarting recovery sees the CLRs: REDO re-applies them (keeping the undone state intact), and UNDO uses the undoNextLSN to skip the chain that was already undone, continuing from where it left off. This guarantees exactly-once undo."
+    },
+    {
+      "stage": "post",
+      "question": "Why does ARIES assume STEAL + NO-FORCE buffer management?",
+      "options": [
+        "STEAL means dirty pages cannot be written to disk before commit; NO-FORCE means committed pages must be flushed immediately",
+        "STEAL means dirty pages may be written to disk before commit (requiring UNDO), and NO-FORCE means dirty pages need not be written at commit time (requiring REDO). ARIES handles both via the WAL",
+        "STEAL allows transactions to steal locks from each other; NO-FORCE means log buffers are never forced to disk",
+        "STEAL and NO-FORCE are checkpointing policies unrelated to buffer management"
+      ],
+      "correct": 1,
+      "explanation": "STEAL permits the buffer manager to flush an uncommitted transaction's dirty pages to disk (requiring UNDO to roll back those changes if the transaction aborts). NO-FORCE means a committing transaction's dirty pages can remain in the buffer pool (requiring REDO to reapply them after a crash before commit is reported to the client). ARIES is the only recovery algorithm that efficiently supports both policies, which is why virtually all production databases use STEAL + NO-FORCE with ARIES."
+    },
+    {
+      "stage": "post",
+      "question": "In a fuzzy checkpoint, what information is written to the log, and why is it 'fuzzy'?",
+      "options": [
+        "A full copy of every dirty page is written; it is 'fuzzy' because pages are compressed",
+        "A snapshot of the Dirty Page Table and Transaction Table is written; it is 'fuzzy' because normal transaction activity continues during the checkpoint, so the snapshot may not reflect the exact page state at any single instant",
+        "The entire log is truncated and archived; 'fuzzy' refers to the approximate log position",
+        "Only the BEGIN records of active transactions are written; 'fuzzy' means the checkpoint is optional"
+      ],
+      "correct": 1,
+      "explanation": "A fuzzy checkpoint writes the current DPT and transaction table to the WAL without stopping normal transaction processing. This is in contrast to a quiescent checkpoint which would require all transactions to complete. The fuzziness means the checkpoint may omit some dirty pages that were dirtied during the checkpoint itself, but the Analysis phase handles this by scanning from the checkpoint onward and will catch those pages."
+    }
+  ]
+}

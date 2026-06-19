@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 9,
+    "title": "Memory Allocators in Production — jemalloc, mimalloc"
+  },
+  "questions": [
+    {
+      "question": "A bump allocator cannot reuse freed individual allocations. What lifetime pattern makes it a good choice despite this limitation?",
+      "options": [
+        "Objects with independent lifetimes freed at arbitrary times",
+        "Arena-style lifetimes where all objects are freed together",
+        "Reference-counted objects with unpredictable deallocation order",
+        "Long-lived singleton objects that persist for the process lifetime"
+      ],
+      "correct": 1,
+      "explanation": "Bump allocators excel in arena-style patterns where you allocate forward and free the entire region at once, such as parse trees, game frames, or temp allocators within a function.",
+      "stage": "pre"
+    },
+    {
+      "question": "A program requests 17 bytes, but the allocator returns a 32-byte block. What type of fragmentation does the 15 wasted bytes represent?",
+      "options": [
+        "External fragmentation — free memory is split into small holes",
+        "Internal fragmentation — wasted space inside the allocated block",
+        "Slab fragmentation — inefficient slab size class selection",
+        "Cache fragmentation — data spans multiple cache lines"
+      ],
+      "correct": 1,
+      "explanation": "Internal fragmentation occurs when the allocator rounds up to a size class (17 → 32 bytes), wasting space inside the block. External fragmentation is about free holes between blocks.",
+      "stage": "pre"
+    },
+    {
+      "question": "In jemalloc, what is the primary purpose of tcache (thread cache)?",
+      "options": [
+        "To reduce internal fragmentation by storing exact-size allocations",
+        "To provide a lock-free fast path for allocation and free operations per thread",
+        "To coordinate arena assignment across multiple threads",
+        "To compress memory pages and reduce RSS usage"
+      ],
+      "correct": 1,
+      "explanation": "tcache is a per-thread LIFO of free slots per size class. Allocation from tcache is lock-free and O(1), avoiding the arena lock. Most allocations hit the tcache fast path.",
+      "stage": "pre"
+    },
+    {
+      "question": "mimalloc uses 'free list sharding' where each page has both a local free list and a thread-free list. When Thread B frees an object allocated by Thread A, what happens?",
+      "options": [
+        "Thread B acquires the arena lock and returns the object to Thread A's arena",
+        "Thread B atomically pushes onto the page's thread-free list; Thread A swaps it in later",
+        "Thread B signals Thread A via a condition variable to reclaim the object",
+        "Thread B immediately returns the object to the OS via madvise"
+      ],
+      "correct": 1,
+      "explanation": "mimalloc's key design: foreign frees use an atomic push to the page's thread-free list. When the owning thread's local free list is empty, it swaps local_free and thread_free in a single atomic operation, batch-reclaiming all foreign frees.",
+      "stage": "post"
+    },
+    {
+      "question": "When should you use a custom allocator instead of the system malloc?",
+      "options": [
+        "When your program is I/O-bound and you want to reduce CPU usage",
+        "When you have measured lock contention or fragmentation in the system allocator and have a known allocation pattern",
+        "When you want to avoid learning how malloc works internally",
+        "When your program allocates fewer than 100 objects per second"
+      ],
+      "correct": 1,
+      "explanation": "Custom allocators are justified when profiling shows a real problem (contention, fragmentation) and your allocation pattern is known and regular (object pools, arenas, fixed sizes). Not when your program is I/O-bound or rarely allocates.",
+      "stage": "post"
+    },
+    {
+      "question": "You benchmark an allocator and find p99 allocation latency spikes at 50μs. What is the most likely cause?",
+      "options": [
+        "Internal fragmentation causing size-class mismatches",
+        "Thread contention on a global or arena lock during slow-path allocation",
+        "The allocator's metadata consuming too much memory",
+        "The program is not calling malloc enough times per second"
+      ],
+      "correct": 1,
+      "explanation": "P99 latency spikes in allocation almost always indicate lock contention — when the fast path (tcache/local free list) is empty and multiple threads compete for the arena lock or page lock simultaneously.",
+      "stage": "post"
+    }
+  ]
+}

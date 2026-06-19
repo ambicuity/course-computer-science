@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 4,
+    "title": "Flamegraphs, Hotspots, and Reading Stacks"
+  },
+  "questions": [
+    {
+      "question": "On a flamegraph, what does the width of a bar represent?",
+      "options": [
+        "The wall-clock time that function was executing",
+        "The number of samples where that stack frame was present, proportional to total samples",
+        "The number of times that function was called",
+        "The percentage of cache misses attributed to that function"
+      ],
+      "correct": 1,
+      "explanation": "Flamegraph bar width represents the number of samples where that frame appeared on the stack, expressed as a proportion of total samples. It is NOT wall-clock time (sampling is statistical), NOT call count (a recursive function could have many samples but few calls), and NOT cache metrics. A wide bar means the function was on-CPU frequently during sampling — that's your hotspot.",
+      "stage": "pre"
+    },
+    {
+      "question": "You see a tall, narrow spike on a flamegraph that reaches from main() to a deep leaf function. Should you optimize that leaf function first?",
+      "options": [
+        "Yes — deep call chains are always the performance bottleneck",
+        "Yes — narrow spikes indicate high-frequency recursive calls",
+        "No — narrow spikes represent few samples; prioritize wide bars instead",
+        "No — tall stacks are always measurement artifacts from frame pointer omission"
+      ],
+      "correct": 2,
+      "explanation": "A tall, narrow spike means a deep call chain that was sampled rarely. The width (sample count) is what matters for optimization priority, not the height. Wide bars represent hotspots that account for many samples. Focus optimization effort where the widest bars are, not on visually dramatic but statistically insignificant narrow spikes.",
+      "stage": "pre"
+    },
+    {
+      "question": "Your web server has low CPU usage (15%) but p99 latency is 800ms. Which flamegraph type will most likely reveal the problem?",
+      "options": [
+        "CPU flamegraph — it shows what code is running",
+        "Memory flamegraph — it shows where allocations happen",
+        "Off-CPU flamegraph — it shows where threads are blocked waiting",
+        "Differential flamegraph — it compares before and after"
+      ],
+      "correct": 2,
+      "explanation": "Low CPU usage with high latency means threads are spending most of their time blocked (waiting for locks, I/O, network), not running on CPU. An off-CPU flamegraph shows exactly where threads are stuck waiting — futex_wait, epoll_wait, mutex_lock, etc. A CPU flamegraph would show very little because the CPU isn't busy. Memory flamegraphs show allocation hotspots, and differential flamegraphs compare two states.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why do frame pointers matter for flamegraph accuracy?",
+      "options": [
+        "Frame pointers are required for perf to sample at frequencies above 99 Hz",
+        "Without frame pointers, perf cannot walk the call stack, producing truncated or single-frame stacks",
+        "Frame pointers reduce the overhead of sampling by caching the stack layout",
+        "Frame pointers allow perf to distinguish user-space from kernel frames"
+      ],
+      "correct": 1,
+      "explanation": "By default, perf walks the stack by following the chain of frame pointers (rbp register on x86-64). Modern compilers omit frame pointers (-fomit-frame-pointer) to free up rbp for other use. Without frame pointers, the stack walk fails after the first frame, and you get single-frame stacks instead of complete call chains. Solutions: compile with -fno-omit-frame-pointer, use DWARF unwinding (--call-graph dwarf), or use LBR on Intel.",
+      "stage": "post"
+    },
+    {
+      "question": "When would you use a differential flamegraph?",
+      "options": [
+        "When you want to see all functions that appear in your program's stack traces",
+        "When you want to compare CPU usage between two different applications",
+        "When you want to verify that an optimization reduced CPU time in specific functions without just shifting the bottleneck",
+        "When you want to profile a multi-threaded application and merge all thread stacks"
+      ],
+      "correct": 2,
+      "explanation": "A differential flamegraph compares two flamegraphs (before/after a change) and color-codes bars by whether each function increased (red/regression) or decreased (blue/improvement) in sample count. This is essential for validating optimizations because a speedup in one function might just shift the same work elsewhere. Differential flamegraphs confirm real improvement, not just redistribution.",
+      "stage": "post"
+    },
+    {
+      "question": "What does the color of a bar in a standard CPU flamegraph indicate?",
+      "options": [
+        "How hot (CPU-intensive) that function is — red = more CPU",
+        "Whether the function is in user-space (warm) or kernel-space (cool)",
+        "Nothing meaningful — colors are random for visual differentiation, not semantic",
+        "The function's stack depth — deeper functions are darker"
+      ],
+      "correct": 2,
+      "explanation": "In standard flamegraphs, colors are randomly assigned from a warm palette (red/orange/yellow) purely to visually distinguish adjacent frames. Color does NOT indicate heat, CPU usage, kernel vs user, or stack depth. The only visual indicator of CPU consumption is bar WIDTH. Some specialized flamegraphs use semantic coloring (--color=io for blue, --color=mem for green), but the default palette carries no semantic meaning.",
+      "stage": "post"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 3,
+    "title": "Hello World As A Bootloader In Asm C"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "On the QEMU RISC-V virt machine, at what address does the CPU begin execution?",
+      "options": [
+        "0x00000000",
+        "0x80000000",
+        "0x10000000",
+        "0xFFFF0000"
+      ],
+      "correct": 1,
+      "explanation": "The RISC-V QEMU virt machine maps RAM starting at 0x80000000. The CPU's program counter is initialized to this address on reset, so bootloader code must be placed there (controlled by the linker script)."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is the `volatile` keyword required for the UART pointer in kernel.c?",
+      "options": [
+        "To make the pointer thread-safe for multi-core systems",
+        "To prevent the compiler from optimizing away memory-mapped I/O writes, since the hardware reads the address, not RAM",
+        "To ensure the pointer is stored in flash memory instead of RAM",
+        "To allow the pointer to be modified by interrupt handlers"
+      ],
+      "correct": 1,
+      "explanation": "Without `volatile`, the compiler sees repeated writes to the same address with no reads in between and may optimize them away or reorder them. `volatile` tells the compiler that the value at this address can change outside the program's control (by hardware), so every read and write must happen exactly as written."
+    },
+    {
+      "stage": "post",
+      "question": "What would happen if the linker script placed `.text` at address 0x0 instead of 0x80000000?",
+      "options": [
+        "The kernel would print the message twice",
+        "QEMU would still run correctly because 0x0 is always valid",
+        "The CPU would execute at 0x80000000 (where RAM starts) but find no valid instructions there, likely crashing",
+        "The bootloader would automatically relocate the code to the correct address"
+      ],
+      "correct": 2,
+      "explanation": "The CPU always starts at 0x80000000 regardless of where the linker places symbols. If the linker thinks code is at 0x0, addresses in the binary will be wrong, and the CPU will either execute garbage at 0x80000000 or jump to unmapped memory when trying to call functions, causing a crash."
+    },
+    {
+      "stage": "post",
+      "question": "What is the purpose of the `wfi` (Wait For Interrupt) instruction in the halt loop?",
+      "options": [
+        "It resets the CPU back to the bootloader entry point",
+        "It puts the CPU in a low-power state until an interrupt arrives, reducing energy consumption compared to a busy-loop",
+        "It waits for the UART to finish transmitting all characters",
+        "It triggers a watchdog timer reset"
+      ],
+      "correct": 1,
+      "explanation": "In a simple `j halt` loop without `wfi`, the CPU would spin at full speed burning power doing nothing. `wfi` halts the CPU core until an interrupt occurs (or is pending), which is the correct behavior for a system that has finished its work and should wait for external events."
+    },
+    {
+      "stage": "pre",
+      "question": "Why must a bootloader be written in assembly (at least partially)?",
+      "options": [
+        "Assembly is the only language that can print to the screen",
+        "At boot, there is no OS, no stack, and no C runtime — you must set up the environment manually",
+        "C compilers can't produce bootable code",
+        "Bootloaders must be exactly 512 bytes, which C can't guarantee"
+      ],
+      "correct": 1,
+      "explanation": "When the BIOS transfers control to the bootloader, there's no stack, no initialized data segments, and no standard library. The first instructions must set up registers, stack pointer, and load the next stage. Only assembly can operate in this bare environment before transitioning to C."
+    }
+  ]
+}

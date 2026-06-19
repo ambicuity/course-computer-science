@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 1,
+    "title": "What An Os Actually Does And Doesn T"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of the following is NOT a core responsibility of an operating system?",
+      "options": [
+        "Scheduling processes across CPU cores",
+        "Translating virtual addresses to physical addresses",
+        "Optimizing the time complexity of user-space algorithms",
+        "Enforcing file permissions between users"
+      ],
+      "correct": 2,
+      "explanation": "The OS manages hardware resources and provides abstractions, but it has no knowledge of your application's algorithms. Optimizing time complexity (e.g., choosing quicksort over bubble sort) is entirely the developer's responsibility."
+    },
+    {
+      "stage": "pre",
+      "question": "In a monolithic kernel architecture, where do device drivers execute?",
+      "options": [
+        "In user-space servers communicating via IPC",
+        "In the same address space as the kernel, in ring 0",
+        "In a hypervisor above the kernel",
+        "In a separate microkernel partition"
+      ],
+      "correct": 1,
+      "explanation": "In a monolithic kernel (like Linux), all subsystems—including device drivers—run in kernel mode within a single address space. There is no message-passing overhead, but a buggy driver can crash the entire kernel."
+    },
+    {
+      "stage": "post",
+      "question": "What mechanism allows each process to believe it has a private, contiguous block of memory?",
+      "options": [
+        "DMA (Direct Memory Access)",
+        "POSIX compliance",
+        "Virtual memory with page tables",
+        "Journaling file systems"
+      ],
+      "correct": 2,
+      "explanation": "Virtual memory gives each process its own address space starting at 0x0. The MMU uses page tables maintained by the OS to translate virtual addresses to physical addresses, creating the illusion of private, contiguous memory."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following correctly describes the relationship between POSIX and operating systems?",
+      "options": [
+        "POSIX is an operating system that competes with Linux and Windows",
+        "POSIX is a standard API specification that enables portable Unix-like code across different OSes",
+        "POSIX is a kernel architecture like monolithic or microkernel",
+        "POSIX is a file system format used by Linux"
+      ],
+      "correct": 1,
+      "explanation": "POSIX (Portable Operating System Interface) is a family of standards specifying APIs, shell utilities, and command-line interfaces. It ensures that code written against POSIX functions like fork(), exec(), and read() can compile and run on any compliant OS (Linux, macOS, FreeBSD, etc.)."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary role of an operating system?",
+      "options": [
+        "To provide a graphical user interface",
+        "To manage hardware resources and provide abstractions for applications",
+        "To compile programs into machine code",
+        "To provide an internet connection"
+      ],
+      "correct": 1,
+      "explanation": "The OS is an intermediary between hardware and applications. It manages CPU time (scheduling), memory (virtual memory), storage (file systems), and devices (drivers). It provides abstractions like processes, files, and sockets so applications don't interact with hardware directly."
+    }
+  ]
+}

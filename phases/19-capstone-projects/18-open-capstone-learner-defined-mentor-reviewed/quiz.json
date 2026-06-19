@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the strongest first deliverable for an open-ended capstone?",
+      "options": ["A scoped proposal with goals, constraints, and milestones", "A full implementation before any design", "A polished slide deck without runnable code", "Only a list of technologies"],
+      "correct": 0,
+      "explanation": "A scoped proposal prevents drift and enables meaningful review checkpoints. If you can't articulate what you're building and why in one page, you don't understand it well enough to build it."
+    },
+    {
+      "stage": "pre",
+      "question": "Why are non-goals as important as goals in a project proposal?",
+      "options": ["They aren't important", "They prevent scope creep and clarify the project's boundary", "They make the document longer", "They are required by the template"],
+      "correct": 1,
+      "explanation": "Non-goals explicitly state what you're not building. Without them, scope creeps: 'oh, I should also add authentication, and monitoring, and...' Non-goals give you permission to ship without building everything."
+    },
+    {
+      "stage": "post",
+      "question": "Which evidence best supports capstone completion quality?",
+      "options": ["Runnable artifact, tests, and a final outcomes report", "Large commit count", "Number of dependencies used", "Length of README only"],
+      "correct": 0,
+      "explanation": "Completion should be backed by executable results and verifiable documentation. A runnable artifact proves it works. Tests prove it's correct. An outcomes report shows you met your goals (or explains why you didn't)."
+    },
+    {
+      "stage": "post",
+      "question": "What is an Architecture Decision Record (ADR)?",
+      "options": ["A bug report", "A short document recording a significant technical choice, alternatives considered, and rationale", "A deployment checklist", "A performance benchmark"],
+      "correct": 1,
+      "explanation": "ADRs record why a design decision was made. They prevent 'why did we do it this way?' questions months later. ADRs include the context, the decision, the alternatives considered, and the consequences."
+    },
+    {
+      "stage": "post",
+      "question": "Why write a demo script before implementation begins?",
+      "options": ["To waste time", "To force thinking about user experience and delivery before building", "To avoid writing code", "To impress reviewers"],
+      "correct": 1,
+      "explanation": "Writing the demo script first forces you to think about what the user will see and do. If the demo is awkward or confusing, the UX needs work. If you can't describe the demo, the scope isn't clear enough."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 18, "title": "Open Capstone — Learner-Defined, Mentor-Reviewed" }
+}

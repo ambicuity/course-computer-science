@@ -1,0 +1,17 @@
+program factorial_test;
+
+function fact(n: int): int;
+var acc: int;
+begin
+  acc := 1;
+  while n > 1 do
+  begin
+    acc := acc * n;
+    n := n - 1
+  end;
+  fact := acc
+end;
+
+begin
+  print(fact(7))
+end.

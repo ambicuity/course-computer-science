@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why prefer Mermaid diagrams over screenshots of diagrams in a project's docs?",
+      "options": [
+        "Mermaid renders faster",
+        "Mermaid source is plain text, so it version-controls cleanly — the same PR that changes the code can change the diagram in the same commit",
+        "Screenshots don't render on GitHub",
+        "Mermaid produces smaller files"
+      ],
+      "correct": 1,
+      "explanation": "The core problem with image-based diagrams is drift: when code changes, no one re-exports the diagram, and six months later the diagram lies. Text-based diagrams diff alongside the code, so reviewers catch mismatches in the same PR."
+    },
+    {
+      "stage": "pre",
+      "question": "What's an ADR (Architecture Decision Record)?",
+      "options": [
+        "A meeting agenda template",
+        "A short, dated, append-only Markdown file capturing one non-obvious design decision, its context, and consequences",
+        "An API doc",
+        "A bug report"
+      ],
+      "correct": 1,
+      "explanation": "ADRs are tiny — usually under one screen. They explain *why* something was done, not how. New ADRs supersede older ones explicitly; the chronological list in `docs/adr/` becomes the history of how the system came to look the way it does."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the README at the top of the 'documentation pyramid' and code comments at the bottom?",
+      "options": [
+        "READMEs are more important than comments",
+        "The pyramid reflects read frequency: most readers will only ever see the README; few drill into docs; even fewer read every comment. Optimize the layers in proportion to their audience",
+        "Code comments are deprecated",
+        "GitHub renders READMEs nicer"
+      ],
+      "correct": 1,
+      "explanation": "The pyramid is about *how often each layer is read*, not their value. A great README pays off on every first contact with the repo. Detailed reference docs pay off when needed. Code comments pay off only to people inside that file. Allocate writing effort proportionally."
+    },
+    {
+      "stage": "post",
+      "question": "When should you reach for PlantUML instead of Mermaid?",
+      "options": [
+        "Always — Mermaid is deprecated",
+        "When Mermaid's layout control or diagram coverage falls short (e.g., complex deployment, BPMN, very large class diagrams). Accept the trade-off: PlantUML needs a Java render step and isn't natively rendered on GitHub",
+        "Only on macOS",
+        "When you don't have Mermaid installed"
+      ],
+      "correct": 1,
+      "explanation": "Start with Mermaid — it's universal and renders inline on GitHub. Use PlantUML for diagrams that Mermaid handles poorly (component diagrams, deployment with many envs, BPMN flows). Commit both the `.puml` source and a rendered SVG/PNG so the README renders correctly on GitHub without a build step."
+    },
+    {
+      "stage": "post",
+      "question": "A reviewer asks 'why is the section TBD?' in a doc PR. The author replies 'we'll fill it in later.' What's the right move?",
+      "options": [
+        "Approve and merge — TBDs are fine",
+        "Remove the section. A TBD that lives in main signals to readers that the content exists and is trusted; weeks later when it's still empty, it actively misleads. Either fill it in, or remove the heading until the content is ready",
+        "Replace TBD with 'coming soon'",
+        "Add a tracking issue but merge anyway"
+      ],
+      "correct": 1,
+      "explanation": "Stale TBDs erode trust in the rest of the docs. Either the section is worth writing now (then write it), or it isn't yet (then don't ship the heading). 'Coming soon' has the same effect as 'TBD' — readers assume content exists and is missing because of the author's failure, not by design."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 12,
+    "title": "Documentation Diagrams Markdown Mermaid Plantuml"
+  }
+}

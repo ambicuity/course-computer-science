@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is a pool allocator faster than `malloc` on hot loops?",
+      "options": [
+        "It uses less memory",
+        "Specialization: one fixed slot size means O(1) pop/push of a free-list head; no size lookup, no fragmentation handling, no general-allocator bookkeeping",
+        "It runs in the kernel",
+        "It's multi-threaded"
+      ],
+      "correct": 1,
+      "explanation": "malloc supports any size, any alignment, any pattern — at cost of dozens-to-hundreds of cycles. A pool knows in advance: every alloc is the same size, so it can just pop the next-pointer from a free-list head. Typically 5-50× faster on workloads that match its shape."
+    },
+    {
+      "stage": "pre",
+      "question": "Where does the pool's free-list 'next' pointer live?",
+      "options": [
+        "In a separate metadata array",
+        "Embedded INSIDE the free slot's own memory — when a slot is free, its first sizeof(void*) bytes hold the pointer; when in use, those bytes are user data",
+        "In a hash table",
+        "In the slot's last byte"
+      ],
+      "correct": 1,
+      "explanation": "The clever trick: each free slot is itself a free-list node. The first 8 bytes of a free slot point to the next free slot. When you alloc, you hand those bytes (and the whole slot) to the user. When you free, you re-stash the head into the slot's first 8 bytes. Zero extra metadata. Requires slot_size ≥ sizeof(void*)."
+    },
+    {
+      "stage": "post",
+      "question": "What's the time complexity of pool_alloc and pool_free?",
+      "options": [
+        "O(n) per call",
+        "Both O(1) — pool_alloc is one pointer load + assign; pool_free is one store + assign",
+        "O(log n)",
+        "Depends on slot size"
+      ],
+      "correct": 1,
+      "explanation": "Pool_alloc: read `free_head`, set free_head = `*free_head`, return the original. Three memory operations. Pool_free: store old head into the slot, set free_head = slot. Also three. Both O(1) and ~3 cycles in steady state. Compare with malloc's tens-to-hundreds of cycles per call."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the lesson's pool show 'perfect LIFO reuse' (1000/1000 pointer matches after alloc → reverse-free → alloc)?",
+      "options": [
+        "Luck",
+        "Free pushes the slot onto the head of the free-list; alloc pops from the head. So freeing in reverse order then re-allocating returns the same pointers in original order — last-in-first-out behavior.",
+        "Pool re-sorts internally",
+        "All pointers happen to match"
+      ],
+      "correct": 1,
+      "explanation": "The free-list is a singly-linked stack: push on free, pop on alloc. If you alloc A,B,C, then free C,B,A, the head walks C → B → A → original. Re-alloc returns A, B, C in order. This LIFO property is great for cache locality (recently-freed memory is hot)."
+    },
+    {
+      "stage": "post",
+      "question": "When is a pool allocator the WRONG choice?",
+      "options": [
+        "Never — always use a pool",
+        "When sizes vary widely (general malloc better), when lifetime is unpredictable (use a region/arena instead), or when you need cross-pool freedom (caller doesn't know which pool to free into)",
+        "On Linux",
+        "When N < 1000"
+      ],
+      "correct": 1,
+      "explanation": "Pools assume: fixed size, known pool, well-defined lifetime. Mismatch → use the right tool: arena/region for batch-free; malloc for varied sizes; per-thread cache for high contention. The pool is a sharp specialization, not a panacea."
+    },
+    {
+      "stage": "post",
+      "question": "What's the canonical use-after-free detection trick in pool allocators?",
+      "options": [
+        "Random sleeps",
+        "Poison freed slots with a recognizable bit pattern (e.g., 0xDD or 0xDEADBEEF). Reads-after-free then return the poison; debugger sees obvious bogus data instead of stale-but-plausible bytes.",
+        "Encrypt the slot",
+        "Refuse to free"
+      ],
+      "correct": 1,
+      "explanation": "Set freed slots to 0xDD (or similar) before linking them onto the free-list. A use-after-free will read 0xDDDDDDDD — not stale-but-plausible data, but obvious garbage. Same idea is used in MSVC's debug runtime (0xDDDDDDDD for freed heap, 0xCDCDCDCD for fresh malloc), glibc's MALLOC_PERTURB_, and AddressSanitizer (more sophisticated)."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 15,
+    "title": "Build A Pool Allocator From Scratch In C"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 5,
+    "title": "Build A Regex Engine Thompson Construction"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In Thompson's construction, how many outgoing ε-transitions can any single state have?",
+      "options": [
+        "Zero",
+        "At most one",
+        "At most two",
+        "Unlimited"
+      ],
+      "correct": 2,
+      "explanation": "Thompson's construction guarantees at most two outgoing ε-transitions from any state. The union case creates a new start state with ε-transitions to two sub-NFAs, which is the maximum."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the worst-case time complexity of simulating a Thompson NFA with |Q| states on a text of length n?",
+      "options": [
+        "O(n)",
+        "O(n log n)",
+        "O(n × |Q|)",
+        "O(n × 2^|Q|)"
+      ],
+      "correct": 2,
+      "explanation": "At each of n input positions, we maintain a set of at most |Q| states. For each state, computing the next set takes O(|Q|) transitions. The ε-closure step is also O(|Q|). Total: O(n × |Q|)."
+    },
+    {
+      "stage": "post",
+      "question": "Why can catastrophic backtracking occur in recursive-descent (backtracking) regex engines like PCRE but NOT in Thompson NFA simulation?",
+      "options": [
+        "Thompson NFA uses caching while backtracking does not",
+        "Thompson NFA explores all paths in parallel via state sets, bounded by the number of NFA states",
+        "Backtracking engines are slower because they use more memory",
+        "Thompson NFA converts to a DFA before matching"
+      ],
+      "correct": 1,
+      "explanation": "Thompson NFA simulation keeps track of all possible current states as a set. The set size is bounded by |Q|, so each step takes O(|Q|) work. Backtracking engines try paths one at a time and may explore exponentially many paths for patterns like (a+)+b."
+    },
+    {
+      "stage": "post",
+      "question": "The regex `a*` is desugared into which Thompson NFA structure?",
+      "options": [
+        "A union of `a` and ε",
+        "A new start/accept pair with ε from start to accept (skip), ε from accept back to start of `a`, and ε from accept of `a` to the new accept",
+        "A concatenation of `a` with itself",
+        "A single state with a self-loop on `a`"
+      ],
+      "correct": 1,
+      "explanation": "Thompson's Kleene star construction creates new start and accept states. It adds: ε from new start to inner start (enter), ε from new start to new accept (skip zero times), ε from inner accept back to inner start (repeat), and ε from inner accept to new accept (exit)."
+    },
+    {
+      "stage": "pre",
+      "question": "What does Thompson's construction produce from a regular expression?",
+      "options": [
+        "A minimized DFA directly",
+        "An epsilon-NFA that recognizes the same language as the regex",
+        "A context-free grammar",
+        "A parse tree of the regex"
+      ],
+      "correct": 1,
+      "explanation": "Thompson's construction recursively builds an epsilon-NFA from a regular expression using simple rules for concatenation, alternation (|), and Kleene star (*). Each rule creates small NFA fragments that are joined with epsilon transitions."
+    }
+  ]
+}

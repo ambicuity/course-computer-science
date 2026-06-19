@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 2,
+    "title": "Measurement Discipline — Benchmarks That Don't Lie"
+  },
+  "questions": [
+    {
+      "question": "You run a benchmark 100 times. The first 5 iterations are significantly slower than the rest. What is the most likely cause?",
+      "options": [
+        "A bug in the benchmark harness causing early iterations to execute extra instructions",
+        "Cache warming (cold misses on first accesses) and CPU turbo boost ramp-up",
+        "The operating system scheduler always preempts the first few iterations",
+        "Memory allocation overhead that affects all iterations equally"
+      ],
+      "correct": 1,
+      "explanation": "The first iterations are slower because data hasn't been loaded into L1/L2/L3 cache yet (cold misses → DRAM access at ~100ns vs L1 at ~1ns) and the CPU hasn't reached its maximum turbo frequency. Both effects resolve after the data is hot in cache and the core has ramped up, typically within 10-50ms.",
+      "stage": "pre"
+    },
+    {
+      "question": "You benchmark a loop that sums an array, but the result is never used. The compiler optimizes the loop away entirely, and you measure ~0ns. This is an example of what pitfall?",
+      "options": [
+        "Branch misprediction",
+        "Dead Code Elimination (DCE)",
+        "Cache thrashing",
+        "Frequency scaling"
+      ],
+      "correct": 1,
+      "explanation": "Dead Code Elimination is when the compiler determines that a computation's result is never observed (never read, never printed, never used as a side effect), and therefore removes the entire computation. The fix is to use a volatile sink, inline assembly barrier, or black_box() to force the optimizer to keep the computation alive.",
+      "stage": "pre"
+    },
+    {
+      "question": "A benchmark produces the following latencies (in ns): [98, 100, 101, 99, 100, 100, 102, 98, 10000, 101]. Which statistic best represents the 'typical' performance a user would experience?",
+      "options": [
+        "Mean (1,079 ns) — because it accounts for all data points including outliers",
+        "Median (100 ns) — because it is resistant to the one extreme outlier",
+        "Max (10,000 ns) — because users will experience the worst case",
+        "Standard deviation (2,995 ns) — because it measures the spread"
+      ],
+      "correct": 1,
+      "explanation": "The median (100 ns) best represents typical performance because it is resistant to outliers. The mean (1,079 ns) is inflated almost 11x by the single 10,000 ns outlier. The max tells you about the worst case but not the typical. Stddev is nearly meaningless here because it's skewed by the outlier. For full picture, report min, median, mean, p99, and max — each tells you something different.",
+      "stage": "pre"
+    },
+    {
+      "question": "When should you use a microbenchmark versus a macrobenchmark?",
+      "options": [
+        "Always use microbenchmarks — they are faster and more precise",
+        "Always use macrobenchmarks — they reflect real-world performance",
+        "Use microbenchmarks to compare algorithms or data structures; use macrobenchmarks to verify end-to-end SLA compliance",
+        "Use whichever gives lower latency numbers"
+      ],
+      "correct": 2,
+      "explanation": "Microbenchmarks isolate a single operation, making them ideal for comparing algorithms or data structures with high statistical power. Macrobenchmarks test full systems under realistic conditions, which is essential for SLA verification. Neither alone is sufficient — 'fast in micro, slow in macro' is common because macrobenchmarks reveal costs (system calls, lock contention, disk I/O) that microbenchmarks miss.",
+      "stage": "post"
+    },
+    {
+      "question": "What is the purpose of warmup iterations in a benchmark harness?",
+      "options": [
+        "To verify the benchmark code compiles correctly before measurement",
+        "To fill CPU caches, allow turbo boost to ramp up, and trigger JIT compilation so steady-state performance is measured",
+        "To increase the total iteration count and reduce the impact of any single measurement",
+        "To trigger garbage collection so it doesn't interfere with the measured phase"
+      ],
+      "correct": 1,
+      "explanation": "Warmup iterations are discarded because they reflect transition costs, not steady-state performance. During warmup: (1) data is loaded from DRAM into CPU cache, (2) the CPU ramps from idle frequency to turbo, taking 10-50ms, and (3) in JIT-compiled languages, hot paths are compiled. Only after warmup do you measure the performance users will actually experience.",
+      "stage": "post"
+    },
+    {
+      "question": "You want 95% confidence that your measured median is within 1% of the true value. Your initial 100 iterations show a coefficient of variation (CV = σ/μ) of 0.12. What should you do?",
+      "options": [
+        "Report the current result — 100 iterations is always enough for 95% confidence",
+        "Double the iterations to 200 and re-measure; continue doubling until CV < 0.05",
+        "Remove all outliers and report the mean instead",
+        "Reduce warmup to get more measured iterations in the same time budget"
+      ],
+      "correct": 1,
+      "explanation": "With CV = 0.12 (12%), the relative error at 95% confidence would be approximately 1.96 × 0.12 / sqrt(100) ≈ 2.4%, which exceeds the 1% target. Doubling iterations reduces the confidence interval by sqrt(2) each time. At ~576 iterations (CV drops toward 0.05 as outliers average out), the CI would be approximately 1.96 × 0.05 / sqrt(576) ≈ 0.4%, well within the 1% target. Removing outliers risks hiding real performance issues.",
+      "stage": "post"
+    }
+  ]
+}

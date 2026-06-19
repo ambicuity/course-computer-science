@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 6,
+    "title": "Pumping Lemma For Regular Languages"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "The pumping lemma for regular languages is proved using which combinatorial principle?",
+      "options": [
+        "Induction on string length",
+        "The pigeonhole principle applied to DFA states visited during a long string",
+        "Contrapositive of closure under union",
+        "Minimization of the DFA via Hopcroft's algorithm"
+      ],
+      "correct": 1,
+      "explanation": "If a DFA has p states and processes a string of length ≥ p, it visits p+1 states. By the pigeonhole principle, at least one state repeats, creating a loop that corresponds to the pumpable substring y."
+    },
+    {
+      "stage": "pre",
+      "question": "To prove L = {aⁿbⁿ | n ≥ 0} is not regular using the pumping lemma, which string is the standard choice for w?",
+      "options": [
+        "w = aᵖ (only a's)",
+        "w = aᵖbᵖ (p a's followed by p b's)",
+        "w = ab (shortest non-empty string in L)",
+        "w = aᵇᵖ (single long string of a's)"
+      ],
+      "correct": 1,
+      "explanation": "w = aᵖbᵖ is in L and has length 2p ≥ p. Since |xy| ≤ p, y consists entirely of a's. Pumping down (i=0) gives fewer a's than b's, which is not in L, completing the contradiction."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is TRUE about the pumping lemma for regular languages?",
+      "options": [
+        "It is both necessary and sufficient for regularity",
+        "It is sufficient but not necessary for regularity",
+        "It is necessary but not sufficient for regularity",
+        "It applies only to finite languages"
+      ],
+      "correct": 2,
+      "explanation": "The pumping lemma is a necessary condition: every regular language satisfies it. However, it is not sufficient — some non-regular languages also satisfy the pumping lemma (though the pumping lemma for CFLs is stricter). You cannot use it alone to prove a language IS regular."
+    },
+    {
+      "stage": "post",
+      "question": "Why does pumping fail to show {aⁿbⁿcⁿ | n ≥ 0} is not regular (if we only try the standard approach)?",
+      "options": [
+        "The string aᵖbᵖcᵖ is too short to apply the lemma",
+        "The pumping lemma cannot handle three symbols",
+        "Pumping down on aᵖbᵖcᵖ might keep it in the language if y lies in the a's — but pumping up breaks it, so the standard approach actually works",
+        "The language is actually regular"
+      ],
+      "correct": 2,
+      "explanation": "The standard pumping lemma approach works for {aⁿbⁿcⁿ}: choosing w = aᵖbᵖcᵖ, any y within the a's region gives xy²z with more a's than b's or c's, so it fails. However, {aⁿbⁿcⁿ} is also not context-free (proven by the CFL pumping lemma), and the regular pumping lemma alone would need the right choice of pumped version to show the contradiction."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the pumping lemma for regular languages primarily used for?",
+      "options": [
+        "Constructing DFAs from regular expressions",
+        "Proving that a language is NOT regular",
+        "Minimizing the number of states in a DFA",
+        "Converting NFAs to DFAs"
+      ],
+      "correct": 1,
+      "explanation": "The pumping lemma states that for any regular language, sufficiently long strings can be 'pumped' (repeated) while staying in the language. If you can show no such pumping is possible for a language, it proves the language is not regular."
+    }
+  ]
+}

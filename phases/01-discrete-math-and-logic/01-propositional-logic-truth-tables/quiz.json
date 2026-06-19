@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the truth value of `P → Q` when P is false and Q is false?",
+      "options": [
+        "true",
+        "false",
+        "undefined",
+        "depends on Q"
+      ],
+      "correct": 0,
+      "explanation": "Material implication is true whenever the premise is false. `P → Q` is only false in the single case P=true, Q=false. 'If it rains, the ground is wet' is vacuously true on a dry day."
+    },
+    {
+      "stage": "pre",
+      "question": "De Morgan's law says `¬(P ∧ Q)` is logically equivalent to which expression?",
+      "options": [
+        "¬P ∧ ¬Q",
+        "¬P ∨ ¬Q",
+        "P ∧ ¬Q",
+        "P → ¬Q"
+      ],
+      "correct": 1,
+      "explanation": "¬(P ∧ Q) ≡ ¬P ∨ ¬Q. 'Not (both happened)' = 'at least one didn't happen'. The dual is ¬(P ∨ Q) ≡ ¬P ∧ ¬Q. De Morgan is the most-used identity in everyday boolean code review."
+    },
+    {
+      "stage": "post",
+      "question": "A formula has 25 atomic propositions. How many rows does its truth table have?",
+      "options": [
+        "25",
+        "50",
+        "2 × 25 = 50",
+        "2^25 = 33,554,432"
+      ],
+      "correct": 3,
+      "explanation": "2^n rows for n variables. This exponential blow-up is the reason SAT (deciding satisfiability) is NP-complete: enumerating the table is infeasible past ~30 variables, so SAT solvers use sophisticated pruning."
+    },
+    {
+      "stage": "post",
+      "question": "Which form does a SAT solver consume?",
+      "options": [
+        "Disjunctive Normal Form (DNF)",
+        "Conjunctive Normal Form (CNF) — an AND of ORs of literals",
+        "Any formula",
+        "Negation Normal Form (NNF)"
+      ],
+      "correct": 1,
+      "explanation": "CNF: ∧ of ∨-clauses, each clause being a disjunction of literals. The DIMACS file format every SAT solver accepts is just a list of clauses. Converting an arbitrary formula to CNF may inflate it exponentially, so practical encodings use the Tseitin transformation (linear blow-up via auxiliary variables)."
+    },
+    {
+      "stage": "post",
+      "question": "The contrapositive of `P → Q` is what, and is it equivalent?",
+      "options": [
+        "`Q → P`; equivalent",
+        "`¬P → ¬Q`; equivalent (the converse)",
+        "`¬Q → ¬P`; equivalent",
+        "`¬P → Q`; not equivalent"
+      ],
+      "correct": 2,
+      "explanation": "Contrapositive: ¬Q → ¬P. ALWAYS equivalent to the original. (The *converse* is Q → P, which is NOT equivalent.) Contrapositive is the basis of proof-by-contrapositive: to prove P → Q, prove ¬Q → ¬P instead, which is often easier."
+    },
+    {
+      "stage": "post",
+      "question": "Which of these is a tautology?",
+      "options": [
+        "P ∧ ¬P",
+        "P ∨ ¬P",
+        "P → P ∧ ¬P",
+        "(P → Q) ∧ ¬Q ∧ P"
+      ],
+      "correct": 1,
+      "explanation": "P ∨ ¬P is the law of excluded middle — true under every assignment. (1) is a contradiction. (3) is a contradiction (right side is contradiction so the implication can be either, but with P=true on the left it forces a contradiction on the right; actually false). (4) is unsatisfiable (modus tollens setup with a wrong conclusion). The lesson's `is_tautology(Or(P, Not(P)))` returns True."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 1,
+    "title": "Propositional Logic Truth Tables"
+  }
+}

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="166" viewBox="0 0 1000 132">
+<style>
+  rect { stroke: #999; stroke-width: 0.5; cursor: pointer; }
+  rect:hover { stroke: #000; stroke-width: 2; }
+  text { font-family: monospace; font-size: 11px; fill: #333; pointer-events: none; }
+  .title { font-size: 14px; font-weight: bold; fill: #000; }
+</style>
+<script type="text/javascript"><![CDATA[
+function details(evt) {
+  var r = evt.target;
+  var info = document.getElementById("info");
+  info.textContent = r.getAttribute("name") + " (" + r.getAttribute("samples") + " samples, " + r.getAttribute("pct") + "%)";
+}
+]]></script>
+<rect x="0" y="0" width="1000" height="166" fill="#f8f8f8" rx="4"/>
+<text x="500" y="16" text-anchor="middle" class="title">CPU Flamegraph (Synthetic)</text>
+<text id="info" x="500" y="122" text-anchor="middle" style="font-size:12px;fill:#666;">Hover over a bar for details</text>
+  <rect x="0.00" y="25" width="1000.00" height="18" fill="#d98939" name="main" samples="1570" pct="100.0" onmouseover="details(evt)"/>
+  <text x="2" y="38">main</text>
+  <rect x="0.00" y="43" width="63.69" height="18" fill="#e56818" name="main;alloc" samples="100" pct="6.3" onmouseover="details(evt)"/>
+  <text x="2" y="56">alloc</text>
+  <rect x="63.69" y="43" width="318.47" height="18" fill="#eb6919" name="main;compress" samples="500" pct="31.8" onmouseover="details(evt)"/>
+  <text x="66" y="56">compress</text>
+  <rect x="382.17" y="43" width="50.96" height="18" fill="#fa9119" name="main;gc" samples="80" pct="5.0" onmouseover="details(evt)"/>
+  <text x="384" y="56">gc</text>
+  <rect x="433.12" y="43" width="133.76" height="18" fill="#cf931b" name="main;io" samples="210" pct="13.3" onmouseover="details(evt)"/>
+  <text x="435" y="56">io</text>
+  <rect x="566.88" y="43" width="433.12" height="18" fill="#ceb038" name="main;parse" samples="680" pct="43.3" onmouseover="details(evt)"/>
+  <text x="569" y="56">parse</text>
+  <rect x="0.00" y="61" width="38.22" height="18" fill="#edac34" name="main;alloc;malloc_large" samples="60" pct="3.8" onmouseover="details(evt)"/>
+  <text x="2" y="74">mal..</text>
+  <rect x="38.22" y="61" width="25.48" height="18" fill="#ee7626" name="main;alloc;malloc_small" samples="40" pct="2.5" onmouseover="details(evt)"/>
+  <rect x="63.69" y="61" width="254.78" height="18" fill="#ee7626" name="main;compress;lz4" samples="400" pct="25.4" onmouseover="details(evt)"/>
+  <text x="66" y="74">lz4</text>
+  <rect x="318.47" y="61" width="63.69" height="18" fill="#e87525" name="main;compress;zstd" samples="100" pct="6.3" onmouseover="details(evt)"/>
+  <text x="320" y="74">zstd</text>
+  <rect x="382.17" y="61" width="50.96" height="18" fill="#fe9a22" name="main;gc;mark_sweep" samples="80" pct="5.0" onmouseover="details(evt)"/>
+  <text x="384" y="74">mark..</text>
+  <rect x="433.12" y="61" width="76.43" height="18" fill="#fe6d1d" name="main;io;read_block" samples="120" pct="7.6" onmouseover="details(evt)"/>
+  <text x="435" y="74">read_b..</text>
+  <rect x="509.55" y="61" width="57.32" height="18" fill="#fdad35" name="main;io;write_block" samples="90" pct="5.7" onmouseover="details(evt)"/>
+  <text x="512" y="74">writ..</text>
+  <rect x="566.88" y="61" width="305.73" height="18" fill="#fe6d1d" name="main;parse;tokenize" samples="480" pct="30.5" onmouseover="details(evt)"/>
+  <text x="569" y="74">tokenize</text>
+  <rect x="872.61" y="61" width="127.39" height="18" fill="#f49f27" name="main;parse;validate" samples="200" pct="12.7" onmouseover="details(evt)"/>
+  <text x="875" y="74">validate</text>
+  <rect x="63.69" y="79" width="159.24" height="18" fill="#e76f1f" name="main;compress;lz4;hash_match" samples="250" pct="15.9" onmouseover="details(evt)"/>
+  <text x="66" y="92">hash_match</text>
+  <rect x="222.93" y="79" width="95.54" height="18" fill="#e76515" name="main;compress;lz4;literal_copy" samples="150" pct="9.5" onmouseover="details(evt)"/>
+  <text x="225" y="92">literal..</text>
+  <rect x="318.47" y="79" width="25.48" height="18" fill="#e69119" name="main;compress;zstd;encode_sequence" samples="40" pct="2.5" onmouseover="details(evt)"/>
+  <rect x="343.95" y="79" width="38.22" height="18" fill="#e69b23" name="main;compress;zstd;find_match" samples="60" pct="3.8" onmouseover="details(evt)"/>
+  <text x="346" y="92">fin..</text>
+  <rect x="382.17" y="79" width="19.11" height="18" fill="#e5951d" name="main;gc;mark_sweep;compact" samples="30" pct="1.9" onmouseover="details(evt)"/>
+  <rect x="401.27" y="79" width="31.85" height="18" fill="#cd8232" name="main;gc;mark_sweep;trace_refs" samples="50" pct="3.1" onmouseover="details(evt)"/>
+  <text x="403" y="92">tr..</text>
+  <rect x="433.12" y="79" width="76.43" height="18" fill="#dc6919" name="main;io;read_block;kernel_read" samples="120" pct="7.6" onmouseover="details(evt)"/>
+  <text x="435" y="92">kernel..</text>
+  <rect x="509.55" y="79" width="57.32" height="18" fill="#dc7d2d" name="main;io;write_block;kernel_write" samples="90" pct="5.7" onmouseover="details(evt)"/>
+  <text x="512" y="92">kern..</text>
+  <rect x="566.88" y="79" width="191.08" height="18" fill="#ca7525" name="main;parse;tokenize;scan_char" samples="300" pct="19.1" onmouseover="details(evt)"/>
+  <text x="569" y="92">scan_char</text>
+  <rect x="757.96" y="79" width="114.65" height="18" fill="#d38838" name="main;parse;tokenize;scan_string" samples="180" pct="11.4" onmouseover="details(evt)"/>
+  <text x="760" y="92">scan_stri..</text>
+  <rect x="872.61" y="79" width="50.96" height="18" fill="#f38f17" name="main;parse;validate;check_range" samples="80" pct="5.0" onmouseover="details(evt)"/>
+  <text x="875" y="92">chec..</text>
+  <rect x="923.57" y="79" width="76.43" height="18" fill="#f5a028" name="main;parse;validate;check_type" samples="120" pct="7.6" onmouseover="details(evt)"/>
+  <text x="926" y="92">check_..</text>
+</svg>

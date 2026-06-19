@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 10
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "When a program calls read(fd, buf, 4096) and the data is already in the page cache, how many copies of the data are created before the program can access buf[0]?",
+      "options": [
+        "Zero — the program accesses the page cache directly",
+        "One — the kernel copies from the page cache to the user buffer",
+        "Two — once into the page cache, once into the user buffer",
+        "Three — disk to kernel, kernel to page cache, page cache to user"
+      ],
+      "correct": 1,
+      "explanation": "Even with the page cache hit, read() still copies data from the kernel's page cache buffer into the user-space buf. This is the fundamental overhead that mmap and zero-copy techniques aim to eliminate."
+    },
+    {
+      "stage": "post",
+      "question": "A process mmap's a 10 GB file with MAP_PRIVATE, then writes to 100 distinct pages (4 KB each). How much additional physical memory is consumed by COW?",
+      "options": [
+        "10 GB — the entire file is copied",
+        "100 × 4 KB = 400 KB — only modified pages are copied",
+        "10 GB minus 100 × 4 KB — the original is freed",
+        "Zero — MAP_PRIVATE writes modify the file in place"
+      ],
+      "correct": 1,
+      "explanation": "COW allocates a new physical page only when a page is written. The 100 modified pages each get a private 4 KB copy (400 KB total), while the remaining ~2,547,964 pages continue sharing the original."
+    },
+    {
+      "stage": "post",
+      "question": "When is mmap SLOWER than read() for file access?",
+      "options": [
+        "When the file is small and accessed once — mmap setup cost exceeds read's copy",
+        "When the file is in the page cache — read is always faster in that case",
+        "When using MAP_SHARED — shared mappings are always slower than read",
+        "When the file is on an SSD — mmap only helps on HDDs"
+      ],
+      "correct": 0,
+      "explanation": "mmap has significant setup cost (VMA creation, page table manipulation). For small files accessed once, this overhead exceeds the cost of a single memcpy. mmap also loses for random access on files larger than RAM due to unpredictable page faults."
+    },
+    {
+      "stage": "post",
+      "question": "What does sendfile() eliminate that read()+write() does not?",
+      "options": [
+        "Disk I/O — sendfile doesn't read from disk",
+        "The copy from kernel page cache to user buffer and back to kernel socket buffer",
+        "Network overhead — sendfile uses a different network protocol",
+        "File descriptor overhead — sendfile doesn't use file descriptors"
+      ],
+      "correct": 1,
+      "explanation": "read()+write() requires two copies through user space: disk→page cache→user buf→socket buffer. sendfile() keeps data in kernel space: page cache→socket buffer (or directly to NIC with scatter-gather DMA), eliminating user-space involvement entirely."
+    },
+    {
+      "stage": "post",
+      "question": "Why do huge pages (2 MB instead of 4 KB) improve performance for large memory allocations?",
+      "options": [
+        "They reduce the number of page faults to zero",
+        "They reduce TLB misses by having fewer page table entries to track",
+        "They make memcpy faster by processing 512× more data per instruction",
+        "They bypass the page cache and read directly from disk"
+      ],
+      "correct": 1,
+      "explanation": "A 1 GB allocation needs 262,144 entries with 4 KB pages but only 512 with 2 MB huge pages. Fewer entries means fewer TLB misses (each miss costs 20-40 cycles), which is the dominant cost in page-table-heavy workloads."
+    },
+    {
+      "stage": "post",
+      "question": "With MSG_ZEROCOPY on a TCP socket, after calling sendmsg(), when is it safe to modify the send buffer?",
+      "options": [
+        "Immediately — the kernel makes its own copy before sendmsg returns",
+        "Only after receiving a completion notification on the socket's error queue",
+        "After calling close() on the socket",
+        "After waiting at least 1 millisecond for the NIC to DMA the data"
+      ],
+      "correct": 1,
+      "explanation": "MSG_ZEROCOPY pins user pages for direct DMA by the NIC. The kernel sends a completion notification via recvmsg(MSG_ERRQUEUE) only after the NIC finishes transmitting. Modifying the buffer before this notification corrupts the data being sent."
+    }
+  ]
+}

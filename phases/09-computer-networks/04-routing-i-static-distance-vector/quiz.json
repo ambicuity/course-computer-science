@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 4,
+    "title": "Routing I — Static, Distance Vector",
+    "total_questions": 4
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a distance-vector protocol, what does each router share with its neighbors?",
+      "options": [
+        "A complete map of the entire network topology",
+        "Its link-state advertisements (LSAs)",
+        "Its distance vector: the cost to reach every known destination",
+        "Only routes that have changed since the last update"
+      ],
+      "correct": 2,
+      "explanation": "Distance-vector routers share their full distance vector — the list of (destination, cost) pairs — with direct neighbors each update period."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of a default route (0.0.0.0/0)?",
+      "options": [
+        "It is the route to the router's own loopback address",
+        "It matches any destination not covered by a more specific entry",
+        "It is used only for routing between IPv6 networks",
+        "It disables dynamic routing on the router"
+      ],
+      "correct": 1,
+      "explanation": "A default route is the catch-all entry. When no more-specific route matches a packet's destination, the router forwards it to the default route's next hop."
+    },
+    {
+      "stage": "post",
+      "question": "What is the count-to-infinity problem?",
+      "options": [
+        "Routers eventually run out of memory for routing table entries",
+        "A link failure causes false routing information to loop, with costs incrementally increasing toward the infinity threshold",
+        "The Bellman-Ford algorithm takes exponential time to converge",
+        "Packets with TTL=0 circulate indefinitely"
+      ],
+      "correct": 1,
+      "explanation": "Count-to-infinity occurs when a link breaks but routers keep learning outdated paths from each other. Each round, the advertised cost increases by 1, slowly counting up toward infinity."
+    },
+    {
+      "stage": "post",
+      "question": "How does split horizon prevent routing loops?",
+      "options": [
+        "By limiting the maximum number of hops to 15",
+        "By refusing to advertise a route back to the neighbor from which it was learned",
+        "By using Dijkstra's algorithm instead of Bellman-Ford",
+        "By synchronizing update timers across all routers"
+      ],
+      "correct": 1,
+      "explanation": "Split horizon says: if you learned about destination X from neighbor N, don't tell N about X. This breaks the feedback loop that causes count-to-infinity."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the 'count to infinity' problem in distance vector routing?",
+      "options": [
+        "Routers counting packets for billing purposes",
+        "When a link fails, routers incrementally increase the cost, potentially taking many iterations to converge or never converging",
+        "An attack that overloads routing tables",
+        "The maximum number of hops in a network"
+      ],
+      "correct": 1,
+      "explanation": "In distance vector routing, if a link fails, routers may form routing loops where they incrementally increase the reported distance to the failed destination. Without mechanisms like split horizon or poison reverse, convergence can take many rounds — hence 'counting to infinity'."
+    }
+  ]
+}

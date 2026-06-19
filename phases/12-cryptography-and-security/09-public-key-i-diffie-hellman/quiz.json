@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 12,
+    "lesson": 9,
+    "title": "Public Key I — Diffie-Hellman"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What mathematical problem is the security of Diffie-Hellman key exchange based on?",
+      "options": [
+        "The integer factorization problem",
+        "The discrete logarithm problem",
+        "The elliptic curve discrete logarithm problem",
+        "The RSA problem"
+      ],
+      "correct": 1,
+      "explanation": "DH security relies on the discrete logarithm problem: given g^x mod p, it is computationally infeasible to recover x when p is a large safe prime."
+    },
+    {
+      "stage": "pre",
+      "question": "What security property does basic Diffie-Hellman key exchange NOT provide?",
+      "options": [
+        "Confidentiality of the shared secret",
+        "Forward secrecy when using ephemeral keys",
+        "Authentication of the communicating parties",
+        "Protection against passive eavesdropping"
+      ],
+      "correct": 2,
+      "explanation": "DH on its own provides no authentication — an active attacker can perform a man-in-the-middle attack by substituting their own public keys."
+    },
+    {
+      "stage": "post",
+      "question": "Why does ephemeral Diffie-Hellman (DHE) provide forward secrecy?",
+      "options": [
+        "Because the generator g is changed every session",
+        "Because the prime p is changed every session",
+        "Because fresh private keys are generated per session and discarded afterward",
+        "Because digital signatures are appended to each key exchange message"
+      ],
+      "correct": 2,
+      "explanation": "DHE generates new ephemeral keypairs for each session. Once the session ends, the private keys are discarded, so an attacker who later compromises the long-term keys cannot decrypt past recorded traffic."
+    },
+    {
+      "stage": "post",
+      "question": "In the Diffie-Hellman protocol, what formula does Alice use to compute the shared secret after receiving Bob's public key B?",
+      "options": [
+        "s = g^(a*b) mod p",
+        "s = B^a mod p",
+        "s = A^b mod p",
+        "s = (A * B) mod p"
+      ],
+      "correct": 1,
+      "explanation": "Alice computes the shared secret as s = B^a mod p, where B is Bob's public key (g^b mod p) and a is Alice's private key. This equals g^(a*b) mod p."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does the Diffie-Hellman key exchange solve?",
+      "options": [
+        "Encrypting data with a shared secret",
+        "Allowing two parties to establish a shared secret over an insecure channel without prior shared secrets",
+        "Generating random numbers for cryptographic use",
+        "Signing digital documents"
+      ],
+      "correct": 1,
+      "explanation": "Diffie-Hellman enables two parties to agree on a shared secret over a public channel. Each party generates a private/public key pair, exchanges public values, and independently computes the same shared secret using modular exponentiation. An eavesdropper cannot compute the secret from the public values (discrete log problem)."
+    }
+  ]
+}

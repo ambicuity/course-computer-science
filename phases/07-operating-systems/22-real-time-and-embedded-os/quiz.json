@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 22,
+    "title": "Real-Time and Embedded OS"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a hard real-time system, what happens if a task misses its deadline?",
+      "options": [
+        "The task is retried next period with no consequence",
+        "System failure — correctness requires every deadline to be met",
+        "Quality degrades but the system continues",
+        "The scheduler raises the task's priority automatically"
+      ],
+      "correct": 1,
+      "explanation": "Hard real-time systems have deadlines that must never be missed. Missing even one constitutes system failure (e.g., an airbag controller failing to fire within 5 ms). Soft real-time systems tolerate occasional misses with degraded quality."
+    },
+    {
+      "stage": "post",
+      "question": "A task set has three periodic tasks: (T=10, C=3), (T=15, C=4), (T=35, C=8). What is the CPU utilization, and what does the Liu-Layland bound tell us?",
+      "options": [
+        "U ≈ 0.795, which exceeds the bound of 0.780, so RM cannot schedule it",
+        "U ≈ 0.795, which exceeds the bound of 0.780, but the bound is sufficient not necessary — the task set may still be RM-schedulable",
+        "U ≈ 0.550, well below the bound, so guaranteed schedulable",
+        "U ≈ 1.200, above 1.0, so definitely unschedulable by any algorithm"
+      ],
+      "correct": 1,
+      "explanation": "U = 3/10 + 4/15 + 8/35 = 0.3 + 0.2667 + 0.2286 ≈ 0.795. The Liu-Layland bound for n=3 is 3(2^(1/3) − 1) ≈ 0.780. Since U > bound, the sufficient condition fails, but this does NOT prove unschedulability — many task sets above the bound are schedulable under RM. The bound guarantees schedulability below it; above it, you need exact analysis (response-time analysis or simulation)."
+    },
+    {
+      "stage": "post",
+      "question": "Why does EDF achieve higher utilization than Rate-Monotonic?",
+      "options": [
+        "EDF uses a faster context-switch mechanism",
+        "EDF dynamically reassigns priorities based on current deadlines rather than fixed periods",
+        "EDF skips deadline checking to reduce overhead",
+        "EDF is limited to single-task systems where it performs better"
+      ],
+      "correct": 1,
+      "explanation": "EDF chooses the task with the nearest absolute deadline at each scheduling point. This dynamic priority assignment can utilize up to 100% of CPU time (U ≤ 1.0), whereas RM's fixed priority assignment is bounded by ln 2 ≈ 69.3% in the worst case (as task count grows)."
+    },
+    {
+      "stage": "post",
+      "question": "Priority inheritance solves priority inversion by:",
+      "options": [
+        "Preventing low-priority tasks from ever acquiring mutexes",
+        "Temporarily raising the mutex holder's priority to match the highest-priority waiter",
+        "Giving medium-priority tasks the same priority as high-priority tasks",
+        "Using busy-waiting instead of blocking on mutexes"
+      ],
+      "correct": 1,
+      "explanation": "When a high-priority task blocks on a mutex held by a low-priority task, the low-priority task inherits the high-priority task's priority. This prevents medium-priority tasks from preempting the low-priority task and extending the unbounded blocking period. After releasing the mutex, the low-priority task's priority returns to normal."
+    },
+    {
+      "stage": "pre",
+      "question": "What distinguishes a real-time operating system (RTOS) from a general-purpose OS?",
+      "options": [
+        "RTOS is always faster than a general-purpose OS",
+        "RTOS guarantees that tasks complete within strict timing deadlines",
+        "RTOS can only run on embedded hardware",
+        "RTOS doesn't support multitasking"
+      ],
+      "correct": 1,
+      "explanation": "A real-time OS prioritizes determinism over throughput. Hard RTOS guarantees deadlines are always met (missing one is a system failure); soft RTOS meets deadlines most of the time. This requires bounded interrupt latency, priority-based preemptive scheduling, and minimal non-deterministic operations."
+    }
+  ]
+}

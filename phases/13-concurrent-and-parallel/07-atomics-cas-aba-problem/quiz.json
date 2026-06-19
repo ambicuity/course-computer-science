@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 7,
+    "title": "Atomics, CAS, ABA Problem"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "id": "q1",
+      "question": "What does a successful CAS (compare-and-swap) operation guarantee about the target memory location?",
+      "options": [
+        "The location has never been modified by any thread",
+        "The location's current value matches the caller's expected value at the moment of the swap",
+        "The location will not be modified again until the next fence",
+        "All threads agree the location holds the new value in the total global order"
+      ],
+      "correct": 1,
+      "explanation": "CAS checks that *addr == expected *at the instant of the atomic operation*. If true, it stores new and returns success. It guarantees nothing about the history before or after — only that the expected value was present when the swap happened."
+    },
+    {
+      "stage": "pre",
+      "id": "q2",
+      "question": "The ABA problem occurs when:",
+      "options": [
+        "A thread modifies a shared variable three times in succession",
+        "A CAS operation succeeds because the pointer's bit pattern matches, even though the memory was freed and reallocated in between",
+        "Two threads deadlock while trying to acquire the same mutex",
+        "A fetch_add operation returns an unexpected value due to memory reordering"
+      ],
+      "correct": 1,
+      "explanation": "The ABA problem: the shared value changes from A to B and back to A. A concurrent CAS that only checks for A (the bit pattern) cannot distinguish 'nothing happened' from 'something happened and was then undone.'"
+    },
+    {
+      "stage": "post",
+      "id": "q3",
+      "question": "A tagged pointer prevents the ABA problem by:",
+      "options": [
+        "Using a garbage collector to defer memory reclamation",
+        "Halting all threads before every CAS operation",
+        "Embedding a version counter in unused pointer bits and incrementing it on every successful CAS",
+        "Storing the previous value in a separate log that is checked before every CAS"
+      ],
+      "correct": 2,
+      "explanation": "A tagged pointer co-locates a monotonic version counter in unused pointer bits (e.g., the low 3 bits which are always 0 due to alignment). Every successful CAS increments the tag. Even if a pointer address cycles back to a previously used value, the tag differs, so CAS fails and the algorithm retries with the current (correct) head."
+    },
+    {
+      "stage": "post",
+      "id": "q4",
+      "question": "Given 8 threads each calling fetch_add(1, Relaxed) on the same AtomicUsize 1 million times, which statement is true?",
+      "options": [
+        "The final value is always exactly 8,000,000, but some increments may be invisible to other threads until a SeqCst fence is issued",
+        "The final value is always exactly 8,000,000 because fetch_add is atomic and monotonic — each increment produces a unique result",
+        "The final value may be less than 8,000,000 because Relaxed ordering allows the writes to be lost",
+        "The final value is undefined because concurrent writes to the same atomic cause a data race"
+      ],
+      "correct": 1,
+      "explanation": "fetch_add is atomic and each call returns a unique value in the sequence. Relaxed ordering is sufficient for a counter because there is no cross-thread dependency on the timing of the increment. The total count will always be 8,000,000 (the join guarantees all threads have completed)."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the Compare-And-Swap (CAS) operation?",
+      "options": [
+        "A way to sort data atomically",
+        "An atomic operation that updates a memory location only if its current value matches an expected value",
+        "A method for swapping two variables",
+        "A network protocol for data exchange"
+      ],
+      "correct": 1,
+      "explanation": "CAS(addr, expected, new) atomically: if *addr == expected, set *addr = new and return true; otherwise return false. This is the foundation of lock-free data structures — you can optimistically compute a new value and retry if someone else changed the memory in the meantime."
+    }
+  ]
+}

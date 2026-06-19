@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 5,
+    "title": "Cache-Aware Algorithm Design"
+  },
+  "questions": [
+    {
+      "question": "On a typical modern x86 CPU, what is the size of an L1 data cache line?",
+      "options": [
+        "16 bytes",
+        "32 bytes",
+        "64 bytes",
+        "128 bytes"
+      ],
+      "correct": 2,
+      "explanation": "Modern x86 CPUs use 64-byte cache lines. This means when any byte is loaded from memory, the entire 64-byte block containing that byte is fetched into cache, enabling spatial locality.",
+      "stage": "pre"
+    },
+    {
+      "question": "In a naive row-major matrix multiply C[i][j] += A[i][k] * B[k][j], which access pattern causes the most cache misses?",
+      "options": [
+        "A[i][k] — sequential access along a row",
+        "B[k][j] — striding across rows by column",
+        "C[i][j] — writing to the same element repeatedly",
+        "All three have equal cache performance"
+      ],
+      "correct": 1,
+      "explanation": "B[k][j] strides across rows in column-major fashion. Each access touches a different cache line because consecutive rows are separated by N elements. With N=1024 and 8-byte doubles, each row is 8 KB — far exceeding L1 capacity. This causes a cache miss on nearly every B access.",
+      "stage": "pre"
+    },
+    {
+      "question": "What is the key advantage of a cache-oblivious algorithm over a cache-aware tiled algorithm?",
+      "options": [
+        "It has better asymptotic complexity (O(n²) vs O(n³))",
+        "It automatically adapts to any cache size without hardcoded parameters",
+        "It uses SIMD instructions that tiled code cannot use",
+        "It avoids all cache misses entirely"
+      ],
+      "correct": 1,
+      "explanation": "Cache-oblivious algorithms recursively divide the problem until sub-problems fit in cache, regardless of the specific cache sizes. This means they perform well on any machine without tuning tile sizes, whereas cache-aware tiled code requires choosing a tile size matched to the cache (e.g., 32 for L1, 128 for L2).",
+      "stage": "pre"
+    },
+    {
+      "question": "You have a struct with 8 fields (total 64 bytes) but a hot loop only accesses 2 fields (16 bytes). Which layout gives better cache utilization?",
+      "options": [
+        "Array of Structures (AoS) — each struct is contiguous in memory",
+        "Structure of Arrays (SoA) — each field stored in its own array",
+        "Both layouts have identical cache utilization",
+        "AoS is better because the full struct fits in one cache line"
+      ],
+      "correct": 1,
+      "explanation": "SoA stores all values of a single field contiguously, so a 64-byte cache line holds 4 doubles of the same field. With AoS, the cache line holds 1 value of the target field plus 3 values of unused fields — only 25% utilization. When the hot loop touches few fields, SoA dramatically reduces cache misses.",
+      "stage": "post"
+    },
+    {
+      "question": "Why does a linked list traverse much slower than an array traverse of the same size?",
+      "options": [
+        "Linked list nodes are smaller than array elements",
+        "Each node's 'next' pointer is at a random memory address, defeating hardware prefetchers",
+        "Arrays use SIMD instructions automatically while linked lists cannot",
+        "Linked lists have O(n log n) traversal complexity versus O(n) for arrays"
+      ],
+      "correct": 1,
+      "explanation": "Sequential array traversal creates a predictable access pattern that hardware prefetchers can detect, loading cache lines ahead of time. Linked list traversal follows pointers to arbitrary addresses, causing a potential cache miss at every node (200+ cycles for DRAM). This is the fundamental reason B-trees outperform BSTs for lookups.",
+      "stage": "post"
+    },
+    {
+      "question": "Thread A writes to field `x` and Thread B writes to field `y` of the same struct. Performance is terrible even though the threads don't share data. What is happening?",
+      "options": [
+        "Race condition causing incorrect results",
+        "False sharing — both fields are on the same 64-byte cache line, causing it to bounce between cores",
+        "Memory allocation overhead from creating too many structs",
+        "The compiler is optimizing away the writes"
+      ],
+      "correct": 1,
+      "explanation": "False sharing occurs when independent variables share a cache line. Each write by Thread A invalidates the cache line in Thread B's core (and vice versa), forcing the line to bounce between caches at DRAM latency. The fix is padding each field to its own 64-byte cache line or using SoA layout so the arrays are on different lines.",
+      "stage": "post"
+    }
+  ]
+}

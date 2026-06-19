@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 5,
+    "title": "Routing II — Link State (OSPF), BGP",
+    "total_questions": 4
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does each router maintain in a link-state protocol?",
+      "options": [
+        "Only its directly connected neighbors and their costs",
+        "A complete map of the network topology",
+        "The distance vectors advertised by all neighbors",
+        "Only the shortest path to the nearest exit router"
+      ],
+      "correct": 1,
+      "explanation": "In link-state routing, every router floods its link information so that all routers build an identical complete topology map (link-state database)."
+    },
+    {
+      "stage": "pre",
+      "question": "What algorithm does each router run on its link-state database?",
+      "options": [
+        "Bellman-Ford",
+        "Dijkstra's shortest-path-first (SPF)",
+        "Ford-Fulkerson maximum flow",
+        "Kruskal's minimum spanning tree"
+      ],
+      "correct": 1,
+      "explanation": "Each link-state router independently runs Dijkstra's algorithm on its LSDB to compute the shortest path tree rooted at itself."
+    },
+    {
+      "stage": "post",
+      "question": "Why does link-state routing converge faster than distance vector?",
+      "options": [
+        "It uses shorter update timers",
+        "After one round of LSA flooding, each router computes optimal paths locally — no iterative relaxation needed",
+        "It requires fewer routers to participate in the protocol",
+        "It only computes paths to directly connected neighbors"
+      ],
+      "correct": 1,
+      "explanation": "LS converges after one flood round because every router has the complete topology and runs Dijkstra locally. DV needs multiple rounds of iterative relaxation proportional to the network diameter."
+    },
+    {
+      "stage": "post",
+      "question": "What is the primary criterion BGP uses to select routes between autonomous systems?",
+      "options": [
+        "Lowest link cost (like OSPF)",
+        "Shortest AS path and policy attributes (local_pref, communities)",
+        "Highest bandwidth available",
+        "Round-trip time measured by ping"
+      ],
+      "correct": 1,
+      "explanation": "BGP is policy-driven. Route selection considers local_pref first, then shortest AS path length, then MED, with many other tiebreakers. Commercial relationships, not just metrics, drive inter-AS routing."
+    },
+    {
+      "stage": "pre",
+      "question": "What is BGP and why is it called the 'glue of the internet'?",
+      "options": [
+        "A protocol for transferring files between servers",
+        "The Border Gateway Protocol that routes traffic between autonomous systems (ISPs, large networks)",
+        "A protocol for assigning IP addresses",
+        "A local area network protocol"
+      ],
+      "correct": 1,
+      "explanation": "BGP is the inter-domain routing protocol that connects autonomous systems (ASes) — ISPs, cloud providers, enterprises. Each AS announces its IP prefixes to neighbors, and BGP selects paths based on policy (not just shortest path). It literally holds the internet together."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of the following is a defining characteristic of a Key-Value store?",
+      "options": [
+        "It supports SQL queries with JOINs",
+        "It provides O(1) lookups by key with no query language or secondary indexes",
+        "It stores data in normalized relational tables",
+        "It uses column families for sparse data"
+      ],
+      "correct": 1,
+      "explanation": "Key-Value stores are the simplest NoSQL family — a global hash map with get/put/delete and no query language. Secondary indexes and JOINs are not supported."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the CAP theorem state about distributed databases during a network partition?",
+      "options": [
+        "You must sacrifice consistency",
+        "You must sacrifice availability",
+        "You must choose between consistency and availability",
+        "You can have all three if you use enough replicas"
+      ],
+      "correct": 2,
+      "explanation": "The CAP theorem says you can have at most two of Consistency, Availability, and Partition tolerance. Since partitions are inevitable in distributed systems, you must choose between consistency and availability during a partition."
+    },
+    {
+      "stage": "post",
+      "question": "Which NoSQL family is best suited for modeling a social network's \"friends-of-friends\" recommendation query?",
+      "options": [
+        "Key-Value store, because it has the fastest lookups",
+        "Document store, because it can embed arrays of friend IDs",
+        "Wide-column store, because it is sparse",
+        "Graph database, because it is optimized for relationship traversal"
+      ],
+      "correct": 3,
+      "explanation": "Graph databases are purpose-built for relationship traversal queries like friends-of-friends. While you could model this in other systems with JOINs or application-level code, a graph database's index-free adjacency makes traversal queries orders of magnitude faster."
+    },
+    {
+      "stage": "post",
+      "question": "When should you choose a Wide-Column store (like Cassandra) over a Document store (like MongoDB)?",
+      "options": [
+        "When you need complex aggregation pipelines with $lookup",
+        "When you have sparse time-series data with high write throughput and need tunable consistency",
+        "When your data has deep nesting and varied document structures",
+        "When you need ACID transactions across multiple records"
+      ],
+      "correct": 1,
+      "explanation": "Wide-column stores excel at time-series and IoT workloads: sparse data (empty columns cost nothing), sorted row-key order, and tunable consistency for high write throughput. Document stores are better for varied structures and rich queries."
+    },
+    {
+      "stage": "post",
+      "question": "A product catalog where each item has different attributes (e.g., a laptop has 'RAM' and 'CPU', a shirt has 'size' and 'color') — which model avoids schema migrations most naturally?",
+      "options": [
+        "Relational with nullable columns for every possible attribute",
+        "Key-Value store, storing full product JSON under product IDs",
+        "Document store, where each document self-describes its fields",
+        "Graph store, using node properties"
+      ],
+      "correct": 2,
+      "explanation": "Document stores are schema-flexible: each document can have its own set of fields with no ALTER TABLE needed. While a KV store could store JSON blobs, only the document store provides query capabilities (filtering on any field) without loading and parsing every document."
+    },
+    {
+      "stage": "post",
+      "question": "etcd (a KV store used by Kubernetes) is CP while DynamoDB is AP. What architectural difference explains this?",
+      "options": [
+        "etcd uses consistent hashing; DynamoDB uses Raft consensus",
+        "etcd uses Raft consensus for linearizable reads; DynamoDB uses leaderless replication with vector clocks for eventual consistency",
+        "etcd stores data on disk; DynamoDB stores data in memory",
+        "etcd supports transactions; DynamoDB does not support any form of transactions"
+      ],
+      "correct": 1,
+      "explanation": "etcd runs Raft consensus to guarantee linearizable consistency at the cost of availability during leader elections (CP). DynamoDB uses leaderless replication with vector clocks and hinted handoff, prioritizing availability and eventual consistency (AP). Both use their respective consensus/replication strategies by design."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 17,
+    "title": "Nosql Kv Document Wide Column Graph"
+  }
+}

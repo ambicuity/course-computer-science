@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 3,
+    "title": "Sorting II — Merge, Quick (and Quickselect)",
+    "note": "4 MCQs: 2 pre-lesson, 2 post-lesson."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "During the Lomuto partition step of quicksort with pivot value 10, the array is [38, 27, 43, 3, 9, 82, 10] and the pivot is placed at index 0 first. After partitioning, which statement is guaranteed?",
+      "options": [
+        "All elements before the pivot's final position are strictly less than 10",
+        "The pivot is at its final sorted position with smaller elements to the left and larger elements to the right",
+        "The left and right sub-arrays are each sorted",
+        "The array is fully sorted"
+      ],
+      "correct": 1,
+      "explanation": "The partition invariant guarantees that the pivot lands at its final sorted index: everything to its left is <= pivot and everything to its right is >= pivot. The sub-arrays themselves are NOT sorted — that's what the recursive calls handle."
+    },
+    {
+      "stage": "pre",
+      "question": "Merge sort is guaranteed O(n log n) in the worst case. What is the primary cost you pay for this guarantee compared to quicksort?",
+      "options": [
+        "More comparisons in the average case",
+        "O(n) additional space for the merge buffer",
+        "It cannot sort linked lists",
+        "It is not stable"
+      ],
+      "correct": 1,
+      "explanation": "Merge sort's guaranteed O(n log n) comes at the cost of O(n) extra space for temporary buffers during merging. Quicksort is in-place (O(log n) stack space) but has O(n^2) worst case."
+    },
+    {
+      "stage": "post",
+      "question": "An array has 1000 elements where 95% of the values are identical. Which sorting approach will be most efficient?",
+      "options": [
+        "Standard quicksort with first-element pivot",
+        "Quicksort with 3-way partition (Dutch National Flag)",
+        "Merge sort with O(n) extra space",
+        "Insertion sort"
+      ],
+      "correct": 1,
+      "explanation": "3-way partition (Dutch National Flag) groups all equal elements in a single pass, so the recursive calls only process the ~5% distinct elements. This gives O(n) performance on inputs with many duplicates, whereas standard quicksort degrades because the pivot doesn't split the array well."
+    },
+    {
+      "stage": "post",
+      "question": "Quickselect with random pivot selection finds the k-th smallest element in an array of n elements. What is its average-case time complexity and why?",
+      "options": [
+        "O(n log n) because it must partially sort the array",
+        "O(n) because each partition step halves the search space on average, summing to n + n/2 + n/4 + ... = O(n)",
+        "O(n^2) because the worst case happens often with random pivots",
+        "O(k log n) because it performs log n partitions each touching k elements"
+      ],
+      "correct": 1,
+      "explanation": "On average, a random pivot splits the array roughly in half, so we recurse into only one side. The work is n + n/2 + n/4 + ... which converges to O(n). This is the same geometric series argument that gives binary search O(log n), but applied to a linear-time partition step."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the worst-case time complexity of quicksort?",
+      "options": [
+        "O(n log n)",
+        "O(n^2)",
+        "O(n)",
+        "O(n log^2 n)"
+      ],
+      "correct": 1,
+      "explanation": "Quicksort degrades to O(n^2) when the pivot consistently splits the array into sizes 0 and n-1 (e.g., already-sorted input with first-element pivot). This creates n recursive calls each doing O(n) work."
+    }
+  ]
+}

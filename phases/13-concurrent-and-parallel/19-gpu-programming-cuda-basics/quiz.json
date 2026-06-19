@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 19,
+    "title": "GPU Programming — CUDA Basics",
+    "type": "Build"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the CUDA programming model, which statement best describes the relationship between warps, blocks, and grids?",
+      "options": [
+        "A warp is a group of blocks; a grid is a group of threads.",
+        "A block contains multiple warps; all blocks in a grid are launched by one kernel call and may execute in any order across SMs.",
+        "A warp is a scheduling unit within a thread block; a grid is the set of all warps on the GPU.",
+        "Threads in different blocks can synchronise via __syncthreads() to coordinate across the grid."
+      ],
+      "correct": 1,
+      "explanation": "A block is divided into warps (32 threads each) for scheduling, and all blocks launched by `<<<grid, block>>>` form a grid. Blocks can execute on any SM in any order; synchronisation primitives like __syncthreads() only work within a single block, not across blocks."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary consequence of thread divergence within a warp on an NVIDIA GPU?",
+      "options": [
+        "Divergent warps are split into separate blocks automatically by the hardware.",
+        "The divergent code paths are executed serially — each path runs while threads not taking that path are masked out — reducing utilisation.",
+        "Divergence improves performance because it allows the warp scheduler to interleave different instructions.",
+        "The compiler automatically eliminates all divergence before kernel launch."
+      ],
+      "correct": 1,
+      "explanation": "SIMT hardware executes one instruction at a time for all 32 threads in a warp. When threads take different branches, all paths are serialised; threads that are not on the current path are disabled via a mask. This reduces warp utilisation. Minimising divergence (e.g., by structuring conditionals around `blockIdx` or `threadIdx` rather than data) is a key optimisation."
+    },
+    {
+      "stage": "post",
+      "question": "A naive matrix multiplication kernel (one output element per thread, dot-product loops over global memory) achieves 40 GFLOPS on a GPU with a peak of 12 TFLOPS. The tiled version using shared memory achieves 320 GFLOPS. What is the most likely reason for the remaining gap to peak?",
+      "options": [
+        "The kernel is still limited by global-memory bandwidth; tiling only reduces the number of global loads but does not eliminate them, and the GPU's compute units are starved waiting for data.",
+        "The tiled version does not use enough warps per SM to hide latency.",
+        "The naive version was already compute-bound; tiling accidentally reduced occupancy.",
+        "Shared memory accesses are slower than register accesses, so the tiled version is now shared-memory-bound."
+      ],
+      "correct": 0,
+      "explanation": "Even with tiling, each thread still reads each element of A and B from global memory once per tile (vs. once per output element in the naive version). For large matrices, the operational intensity (FLOPs / byte loaded) is still far below the GPU's compute-to-bandwidth ratio, so the kernel remains memory-bound. To reach closer to peak, one would need register tiling, Tensor Cores, or both. Answer 1 is unlikely because 256 threads/block already gives high occupancy on most SMs."
+    },
+    {
+      "stage": "post",
+      "question": "You are writing a parallel reduction kernel and observe that the naive tree reduction using shared memory is 1.5× slower than a version using `__shfl_down_sync` for the last 5 steps. What explains this?",
+      "options": [
+        "The shuffle-based version uses fewer shared-memory bank conflicts.",
+        "The shuffle-based version eliminates `__syncthreads()` barriers for the warp-level steps and avoids shared-memory load/store latency, since data stays in registers across the shuffle instructions.",
+        "`__shfl_down_sync` does not require the data to be in shared memory, meaning more threads can be launched per block.",
+        "The shuffle version automatically vectorises the reduction."
+      ],
+      "correct": 1,
+      "explanation": "Warp shuffle instructions (`__shfl_down_sync`) allow threads in the same warp to exchange register values directly without going through shared memory. This eliminates the shared-memory loads/stores and corresponding __syncthreads() barriers for the inner steps of the reduction. The warp-level reduction completes in 5 shuffle operations (steps of 16, 8, 4, 2, 1) with no memory traffic. Answer 0 is incorrect because the difference is not about bank conflicts; answer 2 is incorrect because the block size is the same for both versions."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a CUDA kernel?",
+      "options": [
+        "The operating system kernel modified for GPU use",
+        "A function that runs on the GPU, executed by thousands of threads in parallel, each with a unique thread index",
+        "A GPU driver module",
+        "A CPU function that manages GPU memory"
+      ],
+      "correct": 1,
+      "explanation": "A CUDA kernel is a function written in CUDA C++ that runs on the GPU. When launched, thousands of threads execute the same kernel function, each with a unique index (threadIdx, blockIdx). The programmer writes code for one thread; the GPU hardware runs it across all threads in parallel."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the main tradeoff when moving tests upward from unit to E2E?",
+      "options": [
+        "Higher realism with higher runtime and maintenance cost",
+        "Lower realism and lower runtime",
+        "No tradeoff if CI is parallelized",
+        "Only tooling complexity changes"
+      ],
+      "correct": 0,
+      "explanation": "Higher-level tests usually capture more integrated behavior but cost more to run, diagnose, and stabilize."
+    },
+    {
+      "stage": "pre",
+      "question": "Which defect is most likely to escape a unit-heavy suite with weak integration coverage?",
+      "options": [
+        "Syntax errors",
+        "Cross-service schema mismatch",
+        "Local arithmetic bug",
+        "Unused variable warning"
+      ],
+      "correct": 1,
+      "explanation": "Schema or contract mismatches often emerge at component boundaries, where isolated unit tests provide limited signal."
+    },
+    {
+      "stage": "post",
+      "question": "A frontend-heavy app has high journey risk and moderate boundary risk. Which mix is usually most defensible?",
+      "options": [
+        "Almost all unit tests",
+        "Balanced integration-centric mix with thin critical-path E2E",
+        "Only E2E tests",
+        "No automated tests, manual QA only"
+      ],
+      "correct": 1,
+      "explanation": "Journey-heavy systems need realistic interaction checks, but a thin E2E layer avoids high flake and cost while integration tests carry most realism."
+    },
+    {
+      "stage": "post",
+      "question": "Why is flake rate a portfolio-level metric?",
+      "options": [
+        "Because flakes only happen in unit tests",
+        "Because any flaky level can reduce trust in all pipeline signals",
+        "Because flakes are harmless",
+        "Because retries make flakes irrelevant"
+      ],
+      "correct": 1,
+      "explanation": "Flaky failures consume triage time and train teams to ignore red pipelines, degrading the value of every testing level."
+    },
+    {
+      "stage": "post",
+      "question": "What should drive test-level allocation first?",
+      "options": [
+        "Popular blog opinion",
+        "Framework default configuration",
+        "Risk classification and evidence cost",
+        "Number of engineers on the team"
+      ],
+      "correct": 2,
+      "explanation": "A useful portfolio starts from the risks you need to control, then chooses the cheapest reliable evidence to cover those risks."
+    }
+  ],
+  "_meta": {
+    "phase": 17,
+    "lesson": 2,
+    "title": "Unit, Integration, E2E - Pyramid vs Trophy"
+  }
+}

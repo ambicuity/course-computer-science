@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the defining difference between a B-Tree and a B+ Tree?",
+      "options": [
+        "B+ Trees are binary; B-Trees are not",
+        "B+ Trees store all data in leaves and link leaves together; B-Trees store data in every node",
+        "B+ Trees only support point lookups; B-Trees support range scans",
+        "B+ Trees have lower fanout than B-Trees"
+      ],
+      "correct": 1,
+      "explanation": "In a B+ Tree, internal nodes only contain routing keys and all data records live in the leaf nodes, which are linked via sibling pointers. This enables efficient range scans. In a B-Tree, data can be stored in any node."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does high fanout reduce tree height in a B+ Tree?",
+      "options": [
+        "Because high fanout means each key is larger, so fewer fit per page",
+        "Because each internal node can have many children, so fewer levels are needed to reach N records",
+        "Because the tree rebalances more aggressively",
+        "Because fanout is the same as tree height"
+      ],
+      "correct": 1,
+      "explanation": "Fanout is the number of child pointers per internal node (order + 1). Height is roughly log_{fanout}(N). A fanout of 201 means a tree of 10 million records needs only 3–4 levels."
+    },
+    {
+      "stage": "post",
+      "question": "When inserting into a full leaf node in a B+ Tree of order d, what happens?",
+      "options": [
+        "The leaf is discarded and a new leaf is created",
+        "The leaf is split in half, the median key is promoted to the parent, and the left leaf's next pointer points to the right leaf",
+        "All keys are moved to the parent node",
+        "The tree is rebuilt from scratch"
+      ],
+      "correct": 1,
+      "explanation": "When a leaf exceeds d entries, it splits. The smaller keys stay in the original leaf, the larger keys go to a new leaf, and the smallest key of the new leaf is promoted to the parent as a routing key. The split may cascade upward."
+    },
+    {
+      "stage": "post",
+      "question": "With a clustered index on column a and a secondary index on column b, how many B+ Tree probes does SELECT * FROM t WHERE b = 42 require?",
+      "options": [
+        "One probe on the secondary index; rows are stored there directly",
+        "Two probes: one on the secondary index to get the primary key, then one on the clustered index to fetch the row",
+        "Two probes but they happen in parallel",
+        "One probe on the clustered index; the secondary index is ignored"
+      ],
+      "correct": 1,
+      "explanation": "Secondary indexes store (key, primary_key) pairs. To retrieve the full row, the engine must first find the primary key in the secondary index, then look up the row in the clustered (primary key) index. This is called a double lookup."
+    },
+    {
+      "stage": "post",
+      "question": "A composite index is defined on (last_name, first_name). Which of the following queries can use the leftmost prefix of this index?",
+      "options": [
+        "SELECT * WHERE first_name = 'Jane'",
+        "SELECT * WHERE last_name = 'Smith' AND first_name = 'Jane'",
+        "SELECT * WHERE first_name = 'Jane' AND last_name = 'Smith'",
+        "Both B and C"
+      ],
+      "correct": 3,
+      "explanation": "The leftmost prefix rule says filters must use the leading columns in order. Both B and C filter on last_name first (or include it), so the index can be used. Query A filters only on first_name (not last_name) and cannot use the index."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary reason database B+ Trees use a large order (hundreds of keys per node) instead of a small order like 3 or 4?",
+      "options": [
+        "Large order minimizes the number of disk pages accessed during a lookup",
+        "Large order makes inserts faster by reducing split frequency",
+        "Large order makes delete simpler",
+        "Large order reduces memory usage for internal nodes"
+      ],
+      "correct": 0,
+      "explanation": "B+ Tree nodes are sized to match disk pages (typically 4–16 KB). A page-sized node with hundreds of keys means internal nodes have huge fanout, so the tree height is 3–4 levels. A lookup touches at most 4 pages regardless of total row count."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 7,
+    "title": "Indexing B Trees In Dbs"
+  }
+}

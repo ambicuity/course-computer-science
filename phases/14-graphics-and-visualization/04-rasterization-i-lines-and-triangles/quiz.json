@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 4,
+    "title": "Rasterization I — Lines and Triangles"
+  },
+  "questions": [
+    {
+      "question": "In Bresenham's line algorithm, what does the decision parameter (error term) represent?",
+      "options": [
+        "The Euclidean distance from the current pixel to the ideal line",
+        "Twice the signed vertical distance from the midpoint between two candidate pixels to the true line position",
+        "The slope of the line multiplied by the current x coordinate",
+        "The accumulated rounding error in floating-point y coordinates"
+      ],
+      "correct": 1,
+      "explanation": "The decision parameter is 2·dy·(x - x0) - 2·dx·(y - y0) + dx, which equals twice the signed distance from the midpoint between (x+1, y) and (x+1, y+1) to the true line. This eliminates floating-point arithmetic entirely — the sign of this integer determines which pixel to pick.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why does Bresenham's algorithm avoid all floating-point operations?",
+      "options": [
+        "It approximates the line slope with a lookup table",
+        "It uses fixed-point arithmetic with implicit scaling",
+        "The decision parameter and its increments are derived from integer-only expressions: 2·dy and 2·(dy - dx), so only integer additions and sign checks are needed",
+        "It rounds floating-point values to the nearest integer at each step"
+      ],
+      "correct": 2,
+      "explanation": "Starting from an integer initial value d = 2·dy - dx, the update rules are d += 2·dy (step right) or d += 2·(dy - dx) (step diagonally). All values and increments are integers by construction, so no floats ever appear.",
+      "stage": "pre"
+    },
+    {
+      "question": "Given triangle vertices V0, V1, V2 in counter-clockwise order, a point P has edge function values E01(P) = 3, E12(P) = 5, E20(P) = 2. What can you conclude?",
+      "options": [
+        "P is outside the triangle because the values are not equal",
+        "P is inside the triangle because all three edge function values are positive",
+        "P is on the boundary because one value is close to zero",
+        "P is inside the triangle because the values sum to 10, which equals the triangle area"
+      ],
+      "correct": 1,
+      "explanation": "For counter-clockwise winding, a point is inside the triangle if and only if all three edge functions evaluate to a non-negative value. Since 3, 5, 2 are all positive, P is strictly inside (not on any edge).",
+      "stage": "pre"
+    },
+    {
+      "question": "Barycentric coordinates (w0, w1, w2) are computed as ratios of sub-triangle areas to the total triangle area. What property makes them useful for interpolation?",
+      "options": [
+        "They are always integers, so interpolation is exact",
+        "They sum to 1.0, so any vertex attribute A at point P can be interpolated as A(P) = w0·A0 + w1·A1 + w2·A2",
+        "They are invariant under perspective projection, so no correction is ever needed",
+        "They are unique to each triangle shape, so they can be used as a hash key"
+      ],
+      "correct": 1,
+      "explanation": "Because w0 + w1 + w2 = 1 (the three sub-areas partition the full triangle), any quantity stored at the vertices — color, depth, texture coordinates, normals — can be linearly interpolated using these weights. This is the foundation of all per-fragment attribute interpolation in GPUs.",
+      "stage": "post"
+    },
+    {
+      "question": "What problem does the top-left fill rule solve?",
+      "options": [
+        "It determines which triangle is drawn on top when two triangles overlap in depth",
+        "It ensures triangles with horizontal edges are always rasterized before triangles with vertical edges",
+        "It resolves the ambiguity when a pixel center lies exactly on a shared edge, preventing both double-rendering and gaps between adjacent triangles",
+        "It defines the winding order convention so that clockwise and counter-clockwise triangles are rasterized identically"
+      ],
+      "correct": 2,
+      "explanation": "When a pixel center falls exactly on a shared edge, two adjacent triangles might both claim it (double-write) or neither might (gap). The top-left rule assigns the pixel to the triangle for which the shared edge is classified as a 'top' edge (horizontal, interior below) or 'left' edge (the triangle's interior is to the left). This guarantees exactly one owner per pixel on shared edges.",
+      "stage": "post"
+    },
+    {
+      "question": "Why are triangles — and not quads or n-gons — the universal rasterization primitive?",
+      "options": [
+        "Triangles are faster to draw because they have fewer vertices",
+        "Any polygon can be triangulated; triangles are always planar and convex with an unambiguous interior; n-gons can be self-intersecting, non-planar, or concave",
+        "GPU hardware only has three vertex attribute slots per primitive",
+        "Triangles require fewer edge function evaluations than quads, making them more efficient per pixel"
+      ],
+      "correct": 1,
+      "explanation": "Three points always define a plane (no non-planar ambiguity). Triangles are always convex (every line between two interior points stays inside). Their interior is unambiguous (no winding or self-intersection issues). Any polygon can be decomposed into triangles, so supporting only triangles is sufficient. Quads can be non-planar; n-gons can be self-intersecting.",
+      "stage": "post"
+    }
+  ]
+}

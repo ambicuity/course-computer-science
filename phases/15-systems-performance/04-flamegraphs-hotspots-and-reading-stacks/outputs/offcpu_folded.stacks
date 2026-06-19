@@ -1,0 +1,7 @@
+main;io;read_block;futex_wait 450
+main;io;read_block;epoll_wait 200
+main;io;write_block;futex_wait 150
+main;compress;lz4;mutex_lock 80
+main;parse;tokenize;cond_wait 60
+main;alloc;malloc_large;mmap_brk 40
+main;gc;mark_sweep;stop_the_world 20

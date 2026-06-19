@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the GPU graphics pipeline, which stage is responsible for converting 3D triangle coordinates into 2D screen-space coordinates?",
+      "options": [
+        "The fragment shader, because it processes each pixel on screen",
+        "The combination of the vertex shader (producing clip space) and fixed-function stages (perspective divide + viewport transform)",
+        "The rasterizer, since rasterization is defined as the 3D-to-2D conversion step",
+        "The output merger, because it writes the final pixel positions to the framebuffer"
+      ],
+      "correct": 1,
+      "explanation": "The vertex shader transforms vertices into clip space (homogeneous 4D coordinates). After that, fixed-function hardware performs perspective division (dividing by w to get NDC) and the viewport transform (mapping NDC to screen pixels). The fragment shader operates on already-rasterized fragments, and the rasterizer works with screen-space triangles, not 3D data. The output merger only handles depth/stencil/blending on fragments that already have screen positions."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between a fragment and a pixel?",
+      "options": [
+        "They are the same thing — different APIs just use different names",
+        "A fragment is a potential pixel that may be discarded by depth/stencil/blending tests; a pixel is a fragment that survived and was written to the framebuffer",
+        "A pixel is a 2D coordinate; a fragment is a 3D coordinate",
+        "A fragment is a group of pixels that share the same shader invocation"
+      ],
+      "correct": 1,
+      "explanation": "A fragment carries color, depth, and stencil values for a specific screen location, but it has not yet passed the output merging tests. Only after passing depth, stencil, and blending does a fragment become an actual pixel in the framebuffer. This distinction matters because many fragments are discarded (e.g., by depth testing for occluded geometry), so the number of fragments processed can far exceed the number of final pixels."
+    },
+    {
+      "stage": "post",
+      "question": "A vertex shader outputs gl_Position in clip space as (2.0, 3.0, 1.5, 1.0). After perspective division, what are the normalized device coordinates (NDC)?",
+      "options": [
+        "(2.0, 3.0, 1.5) — perspective division only affects visible pixels",
+        "(0.5, 0.75, 0.375) — divide by the sum of components",
+        "(2.0, 3.0, 1.5) — that vertex is outside the view frustum and will be clipped",
+        "(2.0, 3.0, 1.5) — w=1.0 means no perspective effect, so clip space equals NDC"
+      ],
+      "correct": 3,
+      "explanation": "Perspective division divides clip coordinates by w: NDC = (x/w, y/w, z/w) = (2.0/1.0, 3.0/1.0, 1.5/1.0) = (2.0, 3.0, 1.5). However, NDC coordinates must be in [-1, 1] (or [0, 1] for z in some APIs) to be inside the view frustum. Since x=2.0 > 1.0 and y=3.0 > 1.0, this vertex is outside the frustum and will be clipped. Option D is correct about the NDC values (w=1 means orthographic, so clip=NDC), and option C adds the important context that this vertex is out of bounds — both C and D make true statements, but C conflates the NDC calculation with clipping, whereas D correctly states that when w=1, clip space equals NDC."
+    },
+    {
+      "stage": "post",
+      "question": "Why is perspective-correct interpolation necessary when rasterizing attributes across a triangle?",
+      "options": [
+        "It isn't — linear interpolation in screen space produces correct results for all attributes",
+        "Linear interpolation in screen space produces incorrect results for attributes like texture coordinates because perspective projection distorts the relationship between screen-space distance and world-space distance along a surface",
+        "Perspective-correct interpolation is only needed for depth values; color and UV coordinates are fine with linear interpolation",
+        "It is needed because barycentric coordinates cannot be computed in screen space at all"
+      ],
+      "correct": 1,
+      "explanation": "Perspective projection is non-linear: equal distances in world space do not map to equal distances in screen space. Objects farther away are compressed more. If you linearly interpolate texture coordinates in screen space, a checkerboard texture on a floor plane would appear to bend at the midpoint. Perspective-correct interpolation divides by the clip-space w at each vertex, interpolates the ratios, then multiplies back — this correctly accounts for the non-linear mapping. Depth values are an exception because they are already computed correctly by the rasterizer, but attributes like UVs, normals, and colors all need perspective-correct interpolation."
+    },
+    {
+      "stage": "post",
+      "question": "A GPU runs vertex shaders on a streaming multiprocessor using warps (NVIDIA) or wavefronts (AMD). What is the primary performance implication of threads within a warp taking divergent branches (e.g., an if-else in a vertex shader where some vertices take the if-branch and others take the else-branch)?",
+      "options": [
+        "The warp splits into two warps, each running the corresponding branch in parallel on separate SIMD lanes, with no performance cost",
+        "The GPU serializes both branches: all lanes execute the if-branch (masking results for lanes that should take else), then all lanes execute the else-branch (masking results for lanes that should take if), effectively doubling the work for the divergent region",
+        "The warp immediately halts and reschedules, causing a pipeline flush that costs thousands of cycles",
+        "Only the first branch is executed; the other vertices are silently dropped and produce incorrect output"
+      ],
+      "correct": 1,
+      "explanation": "SIMD execution requires all lanes in a warp to execute the same instruction. When threads diverge, the warp executes both paths sequentially, masking off results for threads that shouldn't have taken that path. This means the divergent region takes up to 2× the time (or more for multiple branches). There is no parallel speedup for divergent code — the hardware cannot run both branches simultaneously on the same SIMD unit. This is why reducing branch divergence in shaders is a standard optimization technique."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is a fixed-function pipeline stage that you configure but cannot write a shader for?",
+      "options": [
+        "Vertex processing — you cannot change how vertices are transformed",
+        "Rasterization — the GPU's dedicated hardware determines which fragments a triangle covers; you can only configure parameters like cull mode, fill mode, and sample count",
+        "Fragment processing — the GPU's per-pixel operations are hardwired into the silicon",
+        "Double buffering — there is no way to control when framebuffer swaps occur"
+      ],
+      "correct": 1,
+      "explanation": "Rasterization is a fixed-function stage. The GPU has dedicated hardware that walks triangle bounds and computes fragment coverage — you don't write code for this. You can only configure it (cull mode: front/back/none; fill mode: solid/wireframe/point; sample count for MSAA). Vertex processing is programmable (you write a vertex shader). Fragment processing is programmable (you write a fragment/pixel shader). Double buffering is configured via swap chain presentation mode, but it's part of the output/display subsystem, not a core pipeline stage."
+    }
+  ],
+  "_meta": {
+    "phase": 14,
+    "lesson": 2,
+    "title": "The Graphics Pipeline At 30 000 Ft"
+  }
+}

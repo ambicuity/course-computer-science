@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does line coverage directly measure?",
+      "options": ["Correctness", "Executed lines", "Performance", "Thread safety"],
+      "correct": 1,
+      "explanation": "Line coverage reports which lines executed; it does not validate semantic correctness by itself."
+    },
+    {
+      "stage": "pre",
+      "question": "What is branch coverage checking that line coverage is not?",
+      "options": ["That every function is called", "That every conditional true/false path is exercised", "That every file is imported", "That every variable is read"],
+      "correct": 1,
+      "explanation": "Branch coverage tracks whether both outcomes of each decision point were taken, which line coverage can miss entirely."
+    },
+    {
+      "stage": "post",
+      "question": "Why can 100% line coverage still miss defects?",
+      "options": ["Because coverage tools are inaccurate", "Because assertions may be weak and branch semantics under-tested", "Because CI is too slow", "Because unit tests cannot fail"],
+      "correct": 1,
+      "explanation": "Execution without strong claims can miss wrong behavior even when all lines run."
+    },
+    {
+      "stage": "post",
+      "question": "Best use of coverage in practice?",
+      "options": ["Single release gate only", "Map untested regions and combine with deeper checks", "Replace mutation testing", "Ignore for mature repos"],
+      "correct": 1,
+      "explanation": "Coverage is best as a discovery signal, paired with stronger techniques for confidence."
+    },
+    {
+      "stage": "post",
+      "question": "What does mutation testing reveal that coverage cannot?",
+      "options": ["Which lines are unreachable", "Whether tests actually detect injected faults", "The total number of branches", "How fast the test suite runs"],
+      "correct": 1,
+      "explanation": "Mutation testing introduces small code changes and checks whether existing tests fail, measuring test strength rather than mere execution."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 7, "title": "Coverage - What It Tells You and What It Doesn't" }
+}

@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 9,
+    "title": "Build a Software Rasterizer in Rust"
+  },
+  "questions": [
+    {
+      "question": "In the standard graphics pipeline, what is the correct order of transformations applied to a vertex position to get it from model space to screen space?",
+      "options": [
+        "Model → View → Projection → Perspective divide → Viewport",
+        "Projection → View → Model → Perspective divide → Viewport",
+        "Model → Projection → View → Viewport → Perspective divide",
+        "View → Model → Projection → Viewport → Perspective divide"
+      ],
+      "correct": 0,
+      "explanation": "The vertex processing pipeline applies transforms in this order: first the Model matrix places the object in the world, then the View matrix transforms to camera space, then the Projection matrix maps to clip space, then the perspective divide (dividing by w) produces NDC, and finally the viewport transform maps to pixel coordinates. Any other order produces incorrect results — for example, applying projection before the view transform would project in the wrong coordinate system.",
+      "stage": "pre"
+    },
+    {
+      "question": "When rasterizing a triangle with barycentric coordinates (u, v, w), you interpolate a vertex attribute A as: A_screen = (u·A0/w0 + v·A1/w1 + w·A2/w2) / (u/w0 + v/w1 + w/w2). Why is this perspective-correct interpolation necessary, and what goes wrong without it?",
+      "options": [
+        "Without it, attributes like texture coordinates and normals interpolate incorrectly across the triangle in screen space, causing visible distortion especially at wide FOV or oblique angles",
+        "Without it, the Z-buffer test produces incorrect results because depth comparison requires perspective correction",
+        "Without it, barycentric coordinates don't sum to 1.0 and pixels outside the triangle get shaded",
+        "Without it, the perspective divide produces NaN values for vertices behind the camera"
+      ],
+      "correct": 0,
+      "explanation": "Linear interpolation in screen space is only correct for attributes that are already in screen space (like pixel coordinates). After the perspective divide, attributes that were linear in clip space (texture coordinates, normals, colors) become nonlinear in screen space. Interpolating them linearly causes texture swim, incorrect normals, and distorted shading — especially visible when the camera is close to a surface or the FOV is wide. The 1/z weighting corrects this by effectively undoing the perspective divide's nonlinearity.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why does the Z-buffer store 1/z (or equivalently, interpolate depth using 1/w weighting) instead of raw z values?",
+      "options": [
+        "1/z requires less memory because it's always between 0 and 1",
+        "1/z varies linearly in screen space after perspective projection, while raw z does not, so linear interpolation of 1/z across a triangle produces correct depth values",
+        "1/z avoids floating-point precision loss because it's always positive after projection",
+        "1/z makes the depth comparison faster because the Z-buffer test becomes an addition instead of a comparison"
+      ],
+      "correct": 1,
+      "explanation": "After the perspective projection, 1/z (equivalently w or 1/w) varies linearly in screen space. This means you can interpolate 1/z between vertices using barycentric weights computed from screen-space positions, and the result is exact. Raw z does NOT vary linearly in screen space — interpolating it linearly would produce incorrect depth values, causing triangles to appear to bend and intersect incorrectly. This is the same reason all other vertex attributes must also be divided by w for correct interpolation.",
+      "stage": "pre"
+    },
+    {
+      "question": "Your software rasterizer renders 800 triangles at 640×480 in about 2 seconds. A GPU renders 2 million triangles at 4K in 16ms. Which of the following is the PRIMARY reason for this ~10,000× speedup?",
+      "options": [
+        "GPUs have higher clock speeds than CPUs (typically 2-3GHz vs 4-5GHz for CPUs at time of writing)",
+        "GPUs process thousands of fragments simultaneously using data parallelism (SIMD/SIMT), while the CPU processes one fragment at a time sequentially",
+        "GPUs use 64-bit floating point for Z-buffer calculations, which is more precise and avoids the need for per-pixel tests",
+        "GPUs sort triangles front-to-back before rasterization, eliminating all Z-buffer overdraw"
+      ],
+      "correct": 1,
+      "explanation": "The dominant factor is data parallelism. A GPU has thousands of simple cores running the same shader instruction on different data (different pixels/fragments) simultaneously. Where the CPU processes pixels one at a time, the GPU processes hundreds at once. Clock speeds are actually similar or lower on GPUs. The Z-buffer precision (typically 24-bit fixed point on GPUs) doesn't explain the speedup. And while GPUs do use early-Z rejection, they don't globally sort triangles — the Z-buffer's strength is that it works regardless of draw order.",
+      "stage": "post"
+    },
+    {
+      "question": "In which of these scenarios is a SOFTWARE rasterizer the PREFERRED tool over a hardware (GPU) rasterizer?",
+      "options": [
+        "Real-time rendering of a AAA game at 60 FPS with millions of triangles",
+        "Debugging the vertex processing pipeline where you need to inspect every intermediate value (clip coordinates, NDC, barycentric weights) for a specific triangle",
+        "Running a general-purpose compute workload like matrix multiplication on the GPU",
+        "Rendering a 2D user interface for a desktop application"
+      ],
+      "correct": 1,
+      "explanation": "Software rasterizers excel where you need determinism, inspectability, and control. When debugging the graphics pipeline, a software rasterizer lets you set breakpoints, print intermediate values, and step through the rasterization of a single triangle — something impossible on a GPU with thousands of concurrent threads. Software rasterizers are also used for GPU conformance testing, offline rendering where correctness matters more than speed, and embedded systems without GPUs. They are NOT preferred for real-time rendering (too slow), compute workloads (wrong tool entirely), or 2D UIs (existing 2D APIs are sufficient).",
+      "stage": "post"
+    },
+    {
+      "question": "When two triangles overlap at pixel (200, 150), Triangle A has depth 0.8 and Triangle B has depth 0.3 (measured after mapping NDC to [0,1]). The Z-buffer is initialized to positive infinity. Triangle A is drawn first, then Triangle B. What is the final depth stored at this pixel?",
+      "options": [
+        "0.8, because the first triangle drawn always wins in the Z-buffer",
+        "0.3, because the Z-buffer keeps the closer (smaller) depth value, and 0.3 < 0.8",
+        "0.5, the average of the two depth values",
+        "Infinity, because depth values cancel out when two triangles overlap"
+      ],
+      "correct": 1,
+      "explanation": "The Z-buffer algorithm always keeps the minimum depth. When Triangle A is drawn, 0.8 < ∞, so it writes 0.8. When Triangle B is drawn, 0.3 < 0.8, so it overwrites with 0.3. The Z-buffer is order-independent — no matter which triangle is drawn first, the closer one wins. This is the fundamental property that makes Z-buffering the standard visibility algorithm: correctness does not depend on the order triangles are submitted.",
+      "stage": "post"
+    }
+  ]
+}

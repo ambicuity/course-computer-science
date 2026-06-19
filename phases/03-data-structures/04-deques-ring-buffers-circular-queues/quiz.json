@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a ring buffer with head and tail indices, what's the problem that head==tail creates?",
+      "options": [
+        "Memory leaks",
+        "It's ambiguous between empty (just emptied) and full (just wrapped to meet head). Fix: separate len counter, sacrifice one slot, or uncapped indices.",
+        "Race conditions",
+        "Slow operations"
+      ],
+      "correct": 1,
+      "explanation": "head and tail both wrap modulo cap. So head == tail can mean 0 elements (empty) or cap elements (full). Three standard fixes: (1) keep a separate `len`; (2) leave one slot unused, full = (tail+1 == head); (3) use uncapped size_t indices (`tail - head` gives len, with size_t wraparound after 2^64 ops). The lesson's main.c uses (3) — clean and branch-free."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is power-of-2 capacity standard for ring buffers?",
+      "options": [
+        "It looks neat",
+        "Modulo becomes bitwise AND: (i+1) & (cap-1). Single-cycle vs 20-30 cycles for integer divide. Critical when the queue is in a hot inner loop.",
+        "Required by C standard",
+        "Cache alignment"
+      ],
+      "correct": 1,
+      "explanation": "Modern CPUs have integer divide at 20-40 cycles latency; bitwise AND is 1 cycle. For a ring buffer that does an indexing op per push and per pop, that's the difference between a 100M-msg/s queue and a 5M-msg/s queue. Linux, Rust's VecDeque, Java's ArrayDeque, every audio buffer — all power of 2."
+    },
+    {
+      "stage": "post",
+      "question": "In a lock-free SPSC, why is the producer's tail store `Release` and the consumer's tail load `Acquire`?",
+      "options": [
+        "For speed",
+        "Release-store ensures the data write happens BEFORE the tail update is visible. Acquire-load ensures any read AFTER the load sees the writes that happened before the matching release-store. Together: happens-before relationship → safe.",
+        "x86 requires it",
+        "It's optional"
+      ],
+      "correct": 1,
+      "explanation": "On weakly-ordered CPUs (ARM, POWER), the compiler/CPU can reorder a write into the buffer past the tail update. If the consumer sees the new tail but loads the old buffer value, the queue silently corrupts. Release-store + Acquire-load create the happens-before edge that forbids this reordering. On x86 the loads/stores are stronger by default — but the code is portable only with explicit orderings."
+    },
+    {
+      "stage": "post",
+      "question": "An overwriting trace buffer pushes when full by:",
+      "options": [
+        "Blocking",
+        "Dropping the oldest (advance head). Used for tracing/perf/postmortem buffers — losing old data is acceptable; producer must never wait.",
+        "Failing",
+        "Growing"
+      ],
+      "correct": 1,
+      "explanation": "Tracing buffers (Linux perf, ftrace, ETW, packet capture) keep the most recent N samples regardless of how fast the producer is. Producer never blocks, never allocates, never fails — these would distort the very system being traced. The cost: old data is lost if the consumer is slow. For a transmit queue, you'd want the opposite policy (block or drop newest)."
+    },
+    {
+      "stage": "post",
+      "question": "What does the LMAX Disruptor achieve that a naive lock-free ring doesn't?",
+      "options": [
+        "Smaller code",
+        "Multi-producer multi-consumer with batching: producers claim ranges of slots via a shared sequence, then write in parallel. Consumers batch process. Used in low-latency trading at >6M msg/s with deterministic latency.",
+        "Free of cost",
+        "Built-in encryption"
+      ],
+      "correct": 1,
+      "explanation": "Naive SPSC handles only one producer + one consumer. Disruptor's innovations: (1) producers do compare_exchange on a shared sequence to claim slots, then write in parallel; (2) consumers track their own sequences; (3) batching amortizes the atomic costs; (4) padding eliminates false sharing between sequences. Achieves microsecond-scale latency at multi-million msg/s — the standard for HFT systems."
+    },
+    {
+      "stage": "post",
+      "question": "Why does using `size_t` uncapped indices work even when the index overflows?",
+      "options": [
+        "It doesn't",
+        "Unsigned overflow is well-defined to wrap modulo 2^N. `tail - head` is correct even after either wraps, because the SUBTRACTION also wraps modulo 2^N. As long as len < 2^N, you can recover the correct difference.",
+        "size_t is special",
+        "Compilers handle it"
+      ],
+      "correct": 1,
+      "explanation": "Two's-complement and unsigned arithmetic both wrap. If tail = 2^64 - 5 and head = 2^64 - 10, then tail - head = 5 — correct. The CPU's arithmetic does this naturally. The trick works for any cap up to 2^63 (avoiding signed overflow ambiguities in C). At a steady 1 GHz of operations, the indices wrap every ~580 years — effectively never."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 4,
+    "title": "Deques Ring Buffers Circular Queues"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which tool produces the error `fatal error: stdio.h: No such file or directory`?",
+      "options": [
+        "The C compiler (cc1)",
+        "The preprocessor (cpp)",
+        "The assembler (as)",
+        "The linker (ld)"
+      ],
+      "correct": 1,
+      "explanation": "Header inclusion (`#include`) is the preprocessor's job. A missing header is a preprocessor error. Fix: check the include path (`-I`) and that the header is installed."
+    },
+    {
+      "stage": "pre",
+      "question": "Which tool produces the error `undefined reference to 'printf'`?",
+      "options": [
+        "The preprocessor",
+        "The compiler",
+        "The linker",
+        "The runtime loader"
+      ],
+      "correct": 2,
+      "explanation": "'Undefined reference' is the linker's signature error: a symbol was declared and used but no `.o` or library passed to the linker actually defines it. Fix: add the missing `.o` / `-l<libname>` to the link line, or check for a typo in the symbol name."
+    },
+    {
+      "stage": "post",
+      "question": "What's the difference between a static (`.a`) and a shared (`.so` / `.dylib`) library at link time?",
+      "options": [
+        "There's no difference",
+        "The static library's code is copied into the executable; the shared library is referenced and loaded at runtime",
+        "Static libraries can't have multiple files",
+        "Shared libraries are slower at runtime"
+      ],
+      "correct": 1,
+      "explanation": "Static linking copies the needed object code from `libfoo.a` into the executable, producing a self-contained binary. Shared linking records a reference to `libfoo.so`; at process startup the dynamic loader maps the `.so` into the process address space. Same source, different deployment trade-off."
+    },
+    {
+      "stage": "post",
+      "question": "Why does `gcc -shared` require `-fPIC` on the source files?",
+      "options": [
+        "It doesn't — `-fPIC` is purely optional",
+        "Shared libraries can be loaded at any address; PIC (position-independent code) generates references that don't depend on a fixed load address",
+        "`-fPIC` makes the compile faster",
+        "`-fPIC` is a marketing flag for Intel"
+      ],
+      "correct": 1,
+      "explanation": "A shared library may be mapped at a different virtual address in every process that uses it. Position-independent code uses relative addressing for global symbols, so the same library binary works regardless of its load address. Without `-fPIC`, the linker would refuse (or produce text relocations, a deprecated workaround)."
+    },
+    {
+      "stage": "post",
+      "question": "In a Makefile, what's the difference between `$<` and `$^`?",
+      "options": [
+        "`$<` is the target, `$^` is the prerequisites",
+        "`$<` is the first prerequisite, `$^` is all prerequisites",
+        "They're identical",
+        "`$<` is the output file, `$^` is the input file"
+      ],
+      "correct": 1,
+      "explanation": "In a pattern rule like `%.o: %.c headers.h`, `$<` is the first prereq (`%.c`), `$^` is the full list (`%.c headers.h`). Use `$<` when you only want the source file (compile rule); use `$^` when you want everything (link rule)."
+    },
+    {
+      "stage": "post",
+      "question": "You edit `greet.h` and re-run `make`. With a hand-written Makefile (no `-MMD` dependency tracking), what happens?",
+      "options": [
+        "Every `.c` file rebuilds because `make` recompiles on any change",
+        "Nothing rebuilds, because `greet.h` isn't listed in any rule's prerequisites — and stale binaries result",
+        "Only `greet.c` rebuilds",
+        "make errors out"
+      ],
+      "correct": 1,
+      "explanation": "Make only knows about prerequisites you list. If `greet.h` isn't a prereq of `main.o`, editing the header doesn't trigger `main.o`'s rebuild — and you get stale code in the binary. The fix is auto-generated dependency files (`-MMD -MP`) that include every header each `.c` actually included, so make knows the real graph."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 4,
+    "title": "C C Toolchain Gcc Clang Ld Ar Make"
+  }
+}

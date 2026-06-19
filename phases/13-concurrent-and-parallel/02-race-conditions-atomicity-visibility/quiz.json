@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 13,
+    "lesson": 2,
+    "title": "Race Conditions, Atomicity, Visibility"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a data race?",
+      "options": [
+        "Two threads running on different CPU cores simultaneously",
+        "Two or more threads accessing the same memory location concurrently, at least one is a write, with no synchronization",
+        "A thread that runs faster than expected and completes before another thread",
+        "A bug in the operating system's thread scheduler"
+      ],
+      "correct": 1,
+      "explanation": "A data race requires three conditions: concurrent access to the same memory, at least one write, and no synchronization to order the accesses. It is undefined behavior in C and C++."
+    },
+    {
+      "stage": "pre",
+      "question": "What does it mean for an operation to be atomic?",
+      "options": [
+        "It executes very quickly (within a single clock cycle)",
+        "It uses all available CPU cores",
+        "It appears to execute indivisibly from the perspective of other threads",
+        "It can be split into smaller parallel sub-operations"
+      ],
+      "correct": 2,
+      "explanation": "Atomic means indivisible. Other threads either see the entire operation or none of it, never an intermediate state. For example, `counter++` is NOT atomic because it compiles to LOAD, ADD, STORE — three separate instructions."
+    },
+    {
+      "stage": "post",
+      "question": "Thread A writes data=42 then ready=1. Thread B spins on ready then reads data. Even if B sees ready==1, why might B read data==0?",
+      "options": [
+        "Thread B is reading the wrong variable",
+        "CPU caches and compiler/CPU reordering can make the write to ready visible before the write to data, unless proper memory ordering (acquire/release) is used",
+        "The variable 'data' is stored on a slower memory device",
+        "Thread A must use a printf() for the write to be visible"
+      ],
+      "correct": 1,
+      "explanation": "Without synchronization, the CPU can reorder the stores (making ready=1 visible before data=42 on weak architectures like ARM/Power), the compiler can reorder the stores, or the cache coherence protocol can propagate ready before data. Acquire/release semantics establish happens-before and prevent this."
+    },
+    {
+      "stage": "post",
+      "question": "How does Rust prevent data races at compile time when C cannot?",
+      "options": [
+        "Rust runs all threads sequentially",
+        "Rust's ownership system ensures mutable data cannot be shared across threads without explicit synchronization (Mutex, atomics, etc.)",
+        "Rust adds runtime bounds checks that detect races",
+        "Rust uses a garbage collector that synchronizes all memory access"
+      ],
+      "correct": 1,
+      "explanation": "Rust's ownership rules give each value either one mutable reference or multiple immutable references. When combined with Send/Sync traits, this means shared mutable state requires explicit synchronization (Arc<Mutex<>>, atomic types, etc.). The compiler rejects any code that attempts a data race. C has no equivalent safety check."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a data race?",
+      "options": [
+        "Two threads reading the same variable simultaneously",
+        "Two threads accessing the same memory location concurrently, with at least one writing, without synchronization",
+        "A thread finishing before another thread",
+        "A deadlock between two threads"
+      ],
+      "correct": 1,
+      "explanation": "A data race occurs when: (1) two threads access the same memory, (2) at least one access is a write, and (3) no synchronization orders the accesses. This leads to undefined behavior in C/C++ and unpredictable results in any language. Both concurrent reads or synchronized access are safe."
+    }
+  ]
+}

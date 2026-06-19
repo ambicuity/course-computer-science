@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 22,
+    "title": "Computational Geometry I — Convex Hull, Sweep Line"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Given cross(o, a, b) = (a.x - o.x)(b.y - o.y) - (a.y - o.y)(b.x - o.x), what does a positive result indicate?",
+      "options": [
+        "Points o, a, b are collinear",
+        "The turn from o to a to b is counter-clockwise (CCW)",
+        "The turn from o to a to b is clockwise (CW)",
+        "The distance from o to b is greater than from o to a"
+      ],
+      "correct": 1,
+      "explanation": "A positive cross product means the signed area of triangle (o, a, b) is positive, which corresponds to a counter-clockwise orientation. In the plane, this means b lies to the left of the directed line from o to a."
+    },
+    {
+      "stage": "pre",
+      "question": "What invariant does Graham scan maintain on its stack as it processes points in sorted order?",
+      "options": [
+        "Points on the stack are sorted by increasing distance from the origin",
+        "Points on the stack always form a convex chain with only left (CCW) turns",
+        "The stack contains at most log(n) points at any time",
+        "The cross product between every pair of consecutive points is exactly +1"
+      ],
+      "correct": 1,
+      "explanation": "Graham scan pops a point when cross(stack[-2], stack[-1], new) <= 0, meaning the last two points make a right turn (or are collinear). This guarantees the stack always forms a convex chain with only left turns — the invariant that ensures all points remain on the convex hull boundary."
+    },
+    {
+      "stage": "post",
+      "question": "In the closest-pair sweep-line algorithm, how many points in the active set must be checked against the current sweep-line point?",
+      "options": [
+        "All points in the active set — a complete pairwise check is needed",
+        "Exactly 1 — only the most recently added point",
+        "At most 6 — a geometric argument shows that a square of side 2d can contain at most 6 points pairwise separated by at least d",
+        "At most n/2 — half the points at most"
+      ],
+      "correct": 2,
+      "explanation": "A key geometric lemma: inside a square of side length 2d, at most 6 points can exist such that every pair is at least d apart. In the strip of width 2d around the sweep line, after sorting active points by y-coordinate, each point needs to be compared with at most 6 subsequent neighbors. This bounds the inner loop to O(1) per point."
+    },
+    {
+      "stage": "post",
+      "question": "When is Jarvis march (gift wrapping) faster in practice than Graham scan for computing a convex hull?",
+      "options": [
+        "When n is very small (n < 5) — Jarvis march has lower constant factors",
+        "When the number of hull vertices h is O(log n), giving Jarvis march O(n log n) time with simpler code and better cache behavior",
+        "When all points are collinear — both are O(n log n) but Jarvis march uses less memory",
+        "Jarvis march is always slower because its worst case is O(n^2)"
+      ],
+      "correct": 1,
+      "explanation": "Jarvis march runs in O(nh). When h = O(log n) (a small hull relative to the point set), its time becomes O(n log n), matching Graham scan's worst case. But Jarvis march avoids the sort step and has simpler memory access patterns, making it faster in practice for sparse hulls. Graham scan always pays O(n log n) for the sort regardless of h."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the convex hull of a set of points?",
+      "options": [
+        "The smallest circle containing all points",
+        "The smallest convex polygon containing all points",
+        "A triangulation of the point set",
+        "The line connecting the two farthest points"
+      ],
+      "correct": 1,
+      "explanation": "The convex hull is the smallest convex polygon that encloses all points — imagine stretching a rubber band around the outermost points. Algorithms like Graham scan and Andrew's monotone chain compute it in O(n log n)."
+    }
+  ]
+}

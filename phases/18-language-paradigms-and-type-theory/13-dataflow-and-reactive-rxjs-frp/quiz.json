@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a key benefit of reactive stream composition?",
+      "options": ["No asynchronous behavior", "Declarative, composable event transformations", "No need for testing", "Automatic distributed consensus"],
+      "correct": 1,
+      "explanation": "Reactive operators keep event transformations explicit and composable."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between 'hot' and 'cold' observables?",
+      "options": ["Hot runs on GPU, cold on CPU", "Cold creates a new producer per subscription; hot shares one producer", "Hot is synchronous, cold is asynchronous", "There is no difference"],
+      "correct": 1,
+      "explanation": "Cold observables produce values lazily per subscriber; hot observables multicast from a single source regardless of subscribers."
+    },
+    {
+      "stage": "post",
+      "question": "What does `scan` typically represent?",
+      "options": ["Static type check", "Running accumulation over stream values", "Network retry policy", "Subscription cleanup"],
+      "correct": 1,
+      "explanation": "`scan` computes progressive accumulated state for each event in sequence."
+    },
+    {
+      "stage": "post",
+      "question": "Why is subscription lifecycle important?",
+      "options": ["To increase syntax sugar", "To avoid leaks and stale listeners", "To disable operators", "To force polling"],
+      "correct": 1,
+      "explanation": "Unmanaged subscriptions can leak resources and propagate obsolete updates."
+    },
+    {
+      "stage": "post",
+      "question": "What problem does 'backpressure' solve in reactive streams?",
+      "options": ["Network latency", "A fast producer overwhelming a slow consumer", "Type errors", "Memory alignment"],
+      "correct": 1,
+      "explanation": "Backpressure mechanisms let consumers signal producers to slow down, preventing buffer overflow and resource exhaustion."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 13, "title": "Dataflow and Reactive - RxJS, FRP" }
+}

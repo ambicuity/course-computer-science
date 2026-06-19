@@ -1,0 +1,18 @@
+[package]
+name = "tls13"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "tls13"
+path = "main.rs"
+
+[dependencies]
+x25519-dalek = "2"
+sha2 = "0.10"
+hmac = "0.12"
+hkdf = "0.12"
+aes-gcm = "0.10"
+ed25519-dalek = "2"
+rand = "0.8"
+hex = "0.4"

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why combine model checking and implementation tests in a lock-free capstone?",
+      "options": ["To reduce code size", "To connect abstract safety reasoning with concrete runtime behavior", "To avoid documenting assumptions", "To remove invariants"],
+      "correct": 1,
+      "explanation": "Model checks validate abstract transitions while implementation tests enforce practical behavior under concrete execution."
+    },
+    {
+      "stage": "pre",
+      "question": "What makes lock-free algorithms harder to verify than lock-based ones?",
+      "options": ["They use fewer lines of code", "Concurrent interleavings and memory reordering create subtle state spaces", "They always run faster", "They have no invariants"],
+      "correct": 1,
+      "explanation": "Lock-free designs rely on atomic CAS operations whose correctness depends on every possible interleaving and memory model detail."
+    },
+    {
+      "stage": "post",
+      "question": "What does a monotonic counter invariant assert?",
+      "options": ["Counter alternates parity", "Counter never decreases across valid transitions", "Counter always equals thread count", "Counter resets on read"],
+      "correct": 1,
+      "explanation": "Monotonicity requires non-decreasing values through all permitted operations."
+    },
+    {
+      "stage": "post",
+      "question": "What is a key limitation of a simplified TLA+ model for lock-free algorithms?",
+      "options": ["It compiles too slowly", "It may abstract away low-level memory-order details requiring implementation-level checks", "It cannot express invariants", "It cannot model counters"],
+      "correct": 1,
+      "explanation": "Abstract models can miss low-level details, so assumptions must be bridged with implementation checks and documentation."
+    },
+    {
+      "stage": "post",
+      "question": "Why use property-based testing alongside TLA+ model checking?",
+      "options": ["They are redundant", "Property tests catch implementation-level bugs that the abstract model doesn't cover", "TLA+ replaces all testing", "Property tests are faster to write than invariants"],
+      "correct": 1,
+      "explanation": "TLA+ checks the abstract model; property-based testing on the actual implementation catches encoding bugs, memory-order issues, and API misuse."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 18, "title": "Phase Capstone - Specify, Model-Check, and Prove a Lock-Free Algorithm" }
+}

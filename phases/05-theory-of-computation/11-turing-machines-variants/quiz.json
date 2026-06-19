@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 11,
+    "title": "Turing Machines Variants"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does the transition function δ of a deterministic TM map?",
+      "options": [
+        "Q × Γ → Q × Γ × {L, R}",
+        "Q × Σ → Q × Σ",
+        "Q × Γ → 2^(Q × Γ × {L, R})",
+        "Q → Γ × {L, R}"
+      ],
+      "correct": 0,
+      "explanation": "For a deterministic TM, δ takes a state and a tape symbol and returns a new state, a symbol to write, and a head direction."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of the following is TRUE about multitape TMs vs single-tape TMs?",
+      "options": [
+        "Multitape TMs can compute strictly more functions",
+        "Any multitape TM can be simulated by a single-tape TM",
+        "Single-tape TMs are more powerful than multitape TMs",
+        "They recognize different classes of languages"
+      ],
+      "correct": 1,
+      "explanation": "A single-tape TM can simulate k tapes using encoding tricks. The simulation adds at most a quadratic time overhead but recognizes the same languages."
+    },
+    {
+      "stage": "post",
+      "question": "What class of languages do Turing machines recognize?",
+      "options": [
+        "Context-free languages",
+        "Regular languages",
+        "Recursively enumerable languages",
+        "Context-sensitive languages only"
+      ],
+      "correct": 2,
+      "explanation": "TMs recognize exactly the recursively enumerable (Turing-recognizable) languages — a superset of all other Chomsky hierarchy classes."
+    },
+    {
+      "stage": "post",
+      "question": "What is a Universal Turing Machine?",
+      "options": [
+        "A TM that accepts every possible input",
+        "A TM that simulates any other TM given its encoding and input",
+        "A TM with infinitely many states",
+        "A TM that always halts in polynomial time"
+      ],
+      "correct": 1,
+      "explanation": "A UTM takes ⟨M, w⟩ as input and simulates TM M on input w. It is the theoretical basis for programmable computers."
+    },
+    {
+      "stage": "pre",
+      "question": "What makes a Turing machine more powerful than a pushdown automaton?",
+      "options": [
+        "It can read input faster",
+        "It has a read-write tape that can be traversed in both directions with unbounded storage",
+        "It can process multiple inputs simultaneously",
+        "It uses randomization"
+      ],
+      "correct": 1,
+      "explanation": "A Turing machine has an infinite read-write tape that serves as both input and working memory. Unlike a PDA's stack (which only accesses the top), the TM can read and write at any tape position and move in both directions. This enables it to recognize recursively enumerable languages."
+    }
+  ]
+}

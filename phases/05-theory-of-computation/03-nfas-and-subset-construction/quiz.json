@@ -1,0 +1,79 @@
+{
+  "lesson": "03-nfas-and-subset-construction",
+  "title": "NFAs and Subset Construction",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple-choice",
+      "question": "In an NFA, what does the transition function δ(q, a) return?",
+      "options": [
+        "A single state",
+        "A set of states",
+        "A boolean value",
+        "A string"
+      ],
+      "explanation": "Unlike a DFA where δ returns a single state, an NFA's δ(q, a) returns a set of states (an element of the power set P(Q)). This is what allows non-deterministic branching.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "type": "multiple-choice",
+      "question": "What does ε-closure(q) represent?",
+      "options": [
+        "The set of all states reachable from q using exactly one ε-transition",
+        "The set of all states reachable from q using zero or more ε-transitions",
+        "The set of all accepting states in the NFA",
+        "The set of all states that can reach q via any transition"
+      ],
+      "explanation": "ε-closure(q) is the set of all states reachable from q by following zero or more ε-transitions. It always includes q itself (zero ε-transitions). This is fundamental to NFA simulation and subset construction.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "type": "multiple-choice",
+      "question": "If an NFA has n states, what is the maximum number of states in the DFA produced by subset construction?",
+      "options": [
+        "n",
+        "n²",
+        "2n",
+        "2ⁿ"
+      ],
+      "explanation": "Each DFA state corresponds to a subset of NFA states. Since there are 2ⁿ possible subsets of an n-element set, the DFA can have at most 2ⁿ states. This is the exponential blowup — worst case, though rarely achieved in practice.",
+      "stage": "post",
+      "correct": 3
+    },
+    {
+      "id": 4,
+      "type": "multiple-choice",
+      "question": "An NFA has states {q0, q1}, alphabet {a}, transitions: δ(q0, a) = {q0, q1}, δ(q1, a) = ∅, start = q0, accepting = {q1}. After subset construction, how many states does the resulting DFA have?",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "1"
+      ],
+      "explanation": "The reachable subsets are: {q0} (start), {q0, q1} (from {q0} on 'a'), and {q1} would only appear if we could reach it alone — but from {q0, q1} on 'a' we get {q0, q1} again (since δ(q0, a) = {q0, q1} and δ(q1, a) = ∅). Actually: {q0} → 'a' → {q0, q1}, and {q0, q1} → 'a' → {q0, q1}. So the DFA has 2 states: {q0} and {q0, q1}. The accepting DFA state is {q0, q1} since it contains q1.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What does the subset construction (powerset construction) prove?",
+      "options": [
+        "That NFAs are more powerful than DFAs",
+        "That every NFA can be converted to an equivalent DFA",
+        "That DFA minimization is NP-hard",
+        "That regular expressions cannot describe all regular languages"
+      ],
+      "correct": 1,
+      "explanation": "The subset construction converts any NFA to an equivalent DFA by creating states that represent sets of NFA states. The resulting DFA may have exponentially many states (up to 2^n for n NFA states), but it recognizes exactly the same language."
+    }
+  ],
+  "_meta": {
+    "phase": 5,
+    "lesson": 3,
+    "title": "Nfas And Subset Construction"
+  }
+}

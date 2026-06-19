@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 13,
+    "title": "KDFs, PBKDF2, scrypt, Argon2"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why are cryptographic hash functions like SHA-256 unsuitable for password storage on their own?",
+      "options": [
+        "They produce output that is too short for password hashing.",
+        "They are designed to be fast, so an attacker can try billions of password guesses per second.",
+        "They require a key, which passwords cannot provide.",
+        "They leak the original password through their output."
+      ],
+      "correct": 1,
+      "explanation": "SHA-256 and similar hash functions are optimized for speed (gigabytes/second). For password storage, speed is the enemy — it lets attackers brute-force billions of candidates per second. KDFs solve this by adding intentional slowness via iteration count and memory-hardness."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of adding a salt when hashing passwords?",
+      "options": [
+        "To make the hash output longer and more secure.",
+        "To ensure the same password produces different hashes for different users, defeating rainbow table attacks.",
+        "To add a checksum for integrity verification.",
+        "To encrypt the password before hashing."
+      ],
+      "correct": 1,
+      "explanation": "A salt is a random per-user value mixed into the hash computation. Without it, two users with the same password would have identical stored hashes, and an attacker could precompute hashes of common passwords (rainbow tables) to match against all users at once. With a salt, each user's hash is effectively computed with a different function."
+    },
+    {
+      "stage": "post",
+      "question": "What problem does memory-hardness (as in scrypt and Argon2) solve that time-hardness alone (as in PBKDF2) does not?",
+      "options": [
+        "Memory-hardness prevents side-channel attacks by using data-independent access patterns.",
+        "Memory-hardness prevents attackers from using massively parallel hardware like GPUs and ASICs to crack passwords, because each parallel instance requires a large, unpredictable memory buffer that exceeds typical GPU cache sizes.",
+        "Memory-hardness ensures password hashes can be computed in constant time regardless of password length.",
+        "Memory-hardness increases the output length of the derived key beyond what PBKDF2 can produce."
+      ],
+      "correct": 1,
+      "explanation": "PBKDF2 is only time-hard: doubling iterations doubles computation time. But a GPU with thousands of cores can still run thousands of PBKDF2 instances in parallel because each instance needs only a few registers. Memory-hard KDFs like scrypt and Argon2 require each instance to maintain a large memory buffer (e.g., 16-64 MiB) with unpredictable access patterns. GPU memory bandwidth (~1 TB/s) becomes the bottleneck instead of compute throughput (~100 TFLOPS), drastically reducing effective parallelism."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is the correct OWASP-recommended choice for new password hashing applications, and why?",
+      "options": [
+        "PBKDF2 with 10,000 iterations, because it is the most widely supported and tested standard.",
+        "scrypt with N=1024, r=8, p=1, because memory-hardness alone provides sufficient GPU resistance.",
+        "Argon2id with t=3, m=64 MiB, p=4, because it combines memory-hardness with side-channel resistance (data-independent first pass) and is the current state of the art.",
+        "SHA-256 with a salt, because modern salted hashes are sufficient for all practical security needs."
+      ],
+      "correct": 2,
+      "explanation": "Argon2id (RFC 9106) is the state of the art and the OWASP-recommended choice. It uses a hybrid approach: the first pass is data-independent (resisting cache-timing side-channel attacks), and subsequent passes are data-dependent (maximizing memory-hardness). PBKDF2 lacks memory-hardness entirely, making it vulnerable to GPU/ASIC acceleration. scrypt has memory-hardness but is data-dependent throughout, making it weaker against side-channel attacks than Argon2id."
+    },
+    {
+      "stage": "pre",
+      "question": "Why should passwords be hashed with a KDF like Argon2 instead of SHA-256?",
+      "options": [
+        "Argon2 produces shorter hashes",
+        "Argon2 is deliberately slow and memory-hard, making brute-force attacks against stolen hashes impractical",
+        "SHA-256 has been broken",
+        "Argon2 provides encryption as well as hashing"
+      ],
+      "correct": 1,
+      "explanation": "SHA-256 is designed to be fast — a GPU can compute billions per second. KDFs like Argon2 are deliberately slow, memory-hard, and tunable. Even if an attacker steals the hash database, cracking passwords via brute force becomes prohibitively expensive in time and hardware."
+    }
+  ]
+}

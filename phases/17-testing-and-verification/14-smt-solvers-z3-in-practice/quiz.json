@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does an UNSAT result mean?",
+      "options": ["No constraints were loaded", "Constraints cannot all be true simultaneously", "Solver timed out", "Model has multiple answers"],
+      "correct": 1,
+      "explanation": "UNSAT indicates contradiction among constraints."
+    },
+    {
+      "stage": "pre",
+      "question": "What does SMT stand for?",
+      "options": ["Simple Machine Translation", "Satisfiability Modulo Theories", "State Machine Testing", "Symbolic Memory Tracking"],
+      "correct": 1,
+      "explanation": "SMT extends propositional SAT solving with background theories like arithmetic, arrays, and bit-vectors."
+    },
+    {
+      "stage": "post",
+      "question": "Why inspect a SAT model?",
+      "options": ["To benchmark CPU", "To obtain a concrete assignment satisfying constraints", "To compile code", "To remove theories"],
+      "correct": 1,
+      "explanation": "Models provide concrete witness inputs/configurations that satisfy the encoded logic."
+    },
+    {
+      "stage": "post",
+      "question": "Which engineering task fits SMT well?",
+      "options": ["Pixel shader tuning", "Constraint consistency checks for configs and policies", "UI animation design", "Binary packaging"],
+      "correct": 1,
+      "explanation": "SMT solvers are strong at satisfiability over formalized constraints used in configs and policy validation."
+    },
+    {
+      "stage": "post",
+      "question": "What is the purpose of a quantifier (∀, ∃) in SMT formulas?",
+      "options": ["To loop over arrays at runtime", "To express universal or existential statements over infinite domains", "To improve solver speed", "To define new theories"],
+      "correct": 1,
+      "explanation": "Quantifiers let you state 'for all x' or 'there exists x' properties, though they often require careful handling to avoid undecidability."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 14, "title": "SMT Solvers - Z3 in Practice" }
+}

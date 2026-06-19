@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A CRT monitor applies a power-law curve of roughly γ=2.2 to its input voltage. What happens if you send it a linear value of 0.5 (intended as 50% brightness)?",
+      "options": [
+        "It displays exactly 50% of maximum brightness",
+        "It displays roughly 22% of maximum brightness because 0.5^2.2 ≈ 0.22",
+        "It displays roughly 73% of maximum brightness because 0.5^(1/2.2) ≈ 0.73",
+        "It clips to 0 because the input is below the CRT threshold"
+      ],
+      "correct": 1,
+      "explanation": "CRT physics means output = input^γ. With γ=2.2 and input=0.5, the display emits 0.5^2.2 ≈ 0.217, about 22% of max brightness. This is why video signals are pre-distorted with a γ≈1/2.2 encoding curve — to compensate for the CRT's decoding curve and make the net result linear."
+    },
+    {
+      "stage": "pre",
+      "question": "You blend sRGB (0.5, 0.5, 0.5) with sRGB (0, 0, 0) at 50% by averaging channel values in sRGB space. The result is (0.25, 0.25, 0.25). How bright does this appear on screen, approximately?",
+      "options": [
+        "About 50% of maximum brightness",
+        "About 25% of maximum brightness",
+        "About 5% of maximum brightness, because decoding sRGB 0.25 gives linear ≈ 0.050",
+        "About 73% of maximum brightness, because sRGB decoding boosts midtones"
+      ],
+      "correct": 2,
+      "explanation": "sRGB values are encoded with a power-law. Decoding sRGB 0.25: since 0.25 > 0.04045, linear = ((0.25 + 0.055)/1.055)^2.4 ≈ 0.050. So the displayed brightness is only ~5% of maximum, not the 25% you'd expect from averaging (0 → 0.5). The sRGB average of 0.25 looked like it should be 25%, but physically it's only 5%. This is the darkening bug."
+    },
+    {
+      "stage": "post",
+      "question": "The sRGB transfer function uses a linear segment below sRGB 0.04045 (and linear 0.0031308) rather than a pure power law. Why?",
+      "options": [
+        "To make sRGB incompatible with older CRT-based standards",
+        "To avoid an infinite derivative at zero that a pure power law would have, which causes numerical instability and amplifies quantization noise near black",
+        "To save computation time by avoiding power operations for dark values",
+        "To make the sRGB curve match the Adobe RGB gamut"
+      ],
+      "correct": 1,
+      "explanation": "A pure power law γ on [0,1] has derivative that approaches infinity as x→0+ (since d/dx x^(1/γ) = (1/γ)x^(1/γ - 1) and 1/γ - 1 < 0). This causes two problems: numerical instability (tiny input changes cause huge output swings near zero) and amplified quantization error in dark regions. The linear toe gives finite derivative everywhere and is C¹-continuous at the join point."
+    },
+    {
+      "stage": "post",
+      "question": "A semi-transparent red pixel has straight alpha color (1.0, 0.0, 0.0, 0.5). What is its pre-multiplied representation?",
+      "options": [
+        "(1.0, 0.0, 0.0, 0.5) — pre-multiplied alpha doesn't change the color channels",
+        "(0.5, 0.0, 0.0, 0.5) — each color channel is multiplied by alpha",
+        "(1.0, 0.5, 0.5, 0.5) — alpha is added to each color channel",
+        "(0.5, 0.0, 0.0, 1.0) — alpha is set to 1.0 after multiplication"
+      ],
+      "correct": 1,
+      "explanation": "Pre-multiplied alpha means each color channel is multiplied by alpha: R' = R×A, G' = G×A, B' = B×A, A' = A. For (1.0, 0.0, 0.0, 0.5), the pre-multiplied form is (0.5, 0.0, 0.0, 0.5). The key benefit is that compositing becomes: result = src + dst × (1 - src_alpha), which avoids fringe artifacts when filtering or mipmapping because RGB is already weighted by coverage."
+    },
+    {
+      "stage": "post",
+      "question": "You're writing a path tracer. When should you convert from sRGB to linear, and when should you convert back?",
+      "options": [
+        "Convert to linear before storing results, convert back to sRGB for lighting calculations",
+        "Keep everything in sRGB throughout — the display handles it",
+        "Convert loaded textures from sRGB to linear on sampling, do all shading/lighting in linear space, convert the final framebuffer from linear to sRGB before display",
+        "Convert to linear only for alpha blending, keep shading in sRGB"
+      ],
+      "correct": 2,
+      "explanation": "Physics operates on linear light. Shading, lighting, reflection, and blending are all multiplicative operations that are only correct in linear space. The correct pipeline is: load sRGB textures → decode to linear on read → all computation in linear → encode the final output to sRGB for display. The sRGB conversion should happen exactly twice: once at the input boundary (texture sampling) and once at the output boundary (framebuffer write). Never compute lighting or blending in sRGB."
+    },
+    {
+      "stage": "post",
+      "question": "Why does an 8-bit sRGB-encoded image show less visible banding in dark gradients than an 8-bit linear-encoded image would?",
+      "options": [
+        "sRGB's transfer function allocates more code values to dark intensities where human vision is most sensitive, providing finer perceptual steps in shadows",
+        "8-bit sRGB images actually have 16 bits of precision internally",
+        "sRGB uses dithering to hide banding automatically",
+        "Linear encoding provides the same number of steps in shadows; the difference is that monitors can't display linear values below 0.5"
+      ],
+      "correct": 0,
+      "explanation": "sRGB's power-law encoding (roughly x^(1/2.2)) maps more 8-bit codes to dark values. For example, sRGB codes 0–50 cover roughly linear intensities 0.0–0.022, while codes 200–255 cover 0.57–1.0. Since human vision is more sensitive to relative differences in dark regions (Weber's law), having more codes in shadows reduces visible banding. An 8-bit linear encoding would give only about 5–6 perceptually distinct steps below intensity 0.1."
+    }
+  ],
+  "_meta": {
+    "phase": 14,
+    "lesson": 1,
+    "title": "Pixels Colors Gamma"
+  }
+}

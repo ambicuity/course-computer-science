@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why does GFS use 64 MB chunks instead of the small blocks (4–8 KB) typical of local filesystems?",
+      "options": [
+        "64 MB is the maximum amount of data a single disk can store",
+        "Large chunks reduce master metadata overhead and enable sequential read throughput by keeping clients connected to chunk servers for long reads",
+        "Small blocks cause more disk fragmentation, and 64 MB eliminates fragmentation entirely",
+        "The TCP maximum segment size dictates chunk size in distributed systems"
+      ],
+      "correct": 1,
+      "explanation": "64 MB chunks serve two purposes: (1) the master stores metadata (file→chunk mapping, chunk→chunkserver list) entirely in memory. Larger chunks mean fewer entries, so the master fits millions of files in RAM. (2) Clients read sequentially — a single chunk request keeps the connection open for a long, streaming read, amortizing connection setup overhead. Small blocks would require the master on every read request, making it a throughput bottleneck."
+    },
+    {
+      "stage": "pre",
+      "question": "In GFS, what happens when a client wants to read a file?",
+      "options": [
+        "The client reads all data through the master, which proxies the bytes",
+        "The client asks the master for chunk locations, then reads data directly from the nearest chunk server",
+        "The client broadcasts a read request to all chunk servers and takes the majority response",
+        "The client contacts the primary chunk server, which coordinates reads with secondaries"
+      ],
+      "correct": 1,
+      "explanation": "The GFS master is not in the data path for reads. The client asks the master for the chunk locations (which chunk servers hold each chunk), then reads data directly from the nearest chunk server. This design keeps the master lightweight and avoids it becoming a throughput bottleneck."
+    },
+    {
+      "stage": "post",
+      "question": "In GFS's mutation flow, the primary replica determines the serial order of operations. What happens if the primary fails?",
+      "options": [
+        "The client retries the operation on a secondary replica",
+        "The master grants a new lease to another chunk replica, which becomes the new primary",
+        "All secondaries independently decide the serial order until the primary recovers",
+        "The operation is blocked until the original primary comes back online"
+      ],
+      "correct": 1,
+      "explanation": "GFS uses leases: the master grants a lease to one chunk replica, making it the primary. If the primary fails, the master simply grants a new lease to a different replica. Since leases have timeouts, the master can detect a failed primary and promote another replica without manual intervention."
+    },
+    {
+      "stage": "post",
+      "question": "HDFS places block replicas using rack-aware placement: first replica on the local rack, second on a different rack, third on the same rack as the second (different node). Why is the third replica placed on the same rack as the second rather than on yet another rack?",
+      "options": [
+        "It reduces the number of racks needed, simplifying cluster administration",
+        "Writing to a different rack for the third replica would require another cross-rack hop, adding write latency. Same-rack placement still gives fault tolerance (two racks cover two failure domains) while keeping write pipeline bandwidth efficient",
+        "The third replica doesn't need to be fault-tolerant since two replicas are already enough for durability",
+        "HDFS always keeps an even number of replicas per rack for load balancing"
+      ],
+      "correct": 1,
+      "explanation": "The placement strategy maximizes fault tolerance (two racks = two failure domains, so one full rack can fail without data loss) while minimizing write latency: the first replica is local (fast), the second crosses racks (necessary for rack-fault tolerance), and the third stays on that second rack (avoids another cross-rack hop). Read bandwidth also benefits — most reads come from the local or same-rack replica."
+    },
+    {
+      "stage": "post",
+      "question": "GFS's record append operation allows concurrent producers to append to the same file. What consistency guarantee does GFS provide for record append?",
+      "options": [
+        "Strict linearizability — every record appears exactly once in a well-defined order",
+        "At least once — records may appear duplicated, and gaps (padding regions) may exist. Applications must handle idempotency and skip padding",
+        "At most once — records are never duplicated but may be lost if a primary fails mid-append",
+        "Eventual consistency — all replicas will eventually converge to the same sequence"
+      ],
+      "correct": 1,
+      "explanation": "GFS record append provides 'at least once' semantics. If the primary's append succeeds on some secondaries but not others, the master will tell the secondaries that missed it to pad their chunks, and the client will retry. This means: (1) duplicate records are possible (from retries), (2) padding regions (gaps) may exist. Applications using GFS (like MapReduce intermediate output) must be idempotent — they write checkpoints and skip already-processed records."
+    },
+    {
+      "stage": "post",
+      "question": "The HDFS NameNode stores the entire filesystem namespace and block map in memory. What is the primary consequence of this design?",
+      "options": [
+        "Read throughput is limited because the NameNode must process every read byte",
+        "The NameNode is a single point of failure and its memory size limits the total number of blocks (and thus files) the cluster can store",
+        "Block placement decisions become random since the NameNode cannot track rack topology in memory",
+        "DataNodes cannot communicate with each other, forcing all data through the NameNode"
+      ],
+      "correct": 1,
+      "explanation": "The NameNode holds all metadata in RAM for fast lookups. This means: (1) the NameNode is a SPOF — if it crashes, the cluster is unreachable (the original HDFS had no automatic failover; the Secondary NameNode only does checkpointing, not failover). (2) The number of blocks (and thus small files) the cluster can hold is bounded by NameNode memory. Each block's metadata uses roughly 150 bytes of RAM, so billions of blocks would require hundreds of GB of memory."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 15,
+    "title": "Distributed File Systems Gfs Hdfs"
+  }
+}

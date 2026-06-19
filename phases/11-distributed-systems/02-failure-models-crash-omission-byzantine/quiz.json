@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In an asynchronous distributed system, you haven't heard from node X within your timeout window. What can you conclude?",
+      "options": [
+        "Node X has definitely crashed",
+        "Node X is either crashed, slow, or partitioned — you cannot distinguish",
+        "Node X is definitely slow but still alive",
+        "Node X is partitioned but running fine"
+      ],
+      "correct": 1,
+      "explanation": "In an asynchronous system, timeouts only tell you that a message hasn't arrived within a window. The cause could be a crash, slowness (GC pause, load), or a network partition. This is why distributed systems use suspicion-based failure detectors, not certainty."
+    },
+    {
+      "stage": "pre",
+      "question": "Which failure model hierarchy is correct (from weakest to strongest)?",
+      "options": [
+        "Byzantine < Omission < Crash-stop",
+        "Crash-stop < Omission < Byzantine",
+        "Crash-stop < Byzantine < Omission",
+        "Omission < Crash-stop < Byzantine"
+      ],
+      "correct": 1,
+      "explanation": "Crash-stop is the weakest (simplest) model — nodes only fail by stopping. Omission generalizes it — nodes can also drop messages. Byzantine is the strongest (most general) — nodes can behave arbitrarily. Each level strictly generalizes the one below."
+    },
+    {
+      "stage": "post",
+      "question": "Why can't 3 generals reach agreement with 1 traitor (Byzantine fault)?",
+      "options": [
+        "Because 2 honest generals can't communicate fast enough",
+        "Because a traitorous commander sends conflicting orders, and the honest lieutenant's report is indistinguishable from a traitorous lieutenant lying about what it heard",
+        "Because 3 is not a prime number and divisibility breaks the voting",
+        "Because Byzantine faults require exponential message complexity and 3 nodes can't handle it"
+      ],
+      "correct": 1,
+      "explanation": "The impossibility arises because the two cases — 'commander is traitor, sends ATTACK to L1 and RETREAT to L2' and 'commander is honest, sends ATTACK, but L1 is traitor and lies' — produce identical evidence for L2. L2 cannot distinguish an honest message relayed by a traitor from a lie originated by a traitorous commander."
+    },
+    {
+      "stage": "post",
+      "question": "In PBFT's three-phase protocol, what is the purpose of the commit phase (the third round)?",
+      "options": [
+        "To elect a new primary when the current one fails",
+        "To ensure that at least f+1 honest nodes have durably recorded the value, so it survives view changes even if f nodes later fail",
+        "To detect which nodes are Byzantine and exclude them from future rounds",
+        "To encrypt the consensus value for secure transmission to the client"
+      ],
+      "correct": 1,
+      "explanation": "The prepare phase ensures 2f+1 nodes agree on the value, but without commit, a view change could allow a different value to be prepared. The commit phase guarantees that f+1 honest nodes have the value persisted, so at least one honest survivor knows it during recovery. This is why PBFT needs all three rounds."
+    },
+    {
+      "stage": "post",
+      "question": "A crash-recovery failure is strictly harder to tolerate than a crash-stop failure. What additional mechanism is required?",
+      "options": [
+        "Byzantine-resistant digital signatures",
+        "Stable storage (write-ahead log) so a recovering node can replay its committed actions and avoid double-committing or losing commits",
+        "A leader-based protocol with Paxos-style ballot numbers",
+        "Timeout-based failure detection with exponential backoff"
+      ],
+      "correct": 1,
+      "explanation": "Crash-recovery means a node can stop and restart. Without stable storage, the recovering node has no memory of what it committed before crashing — it might double-commit (acknowledge the same request twice) or lose a commit it already acknowledged. Stable storage (write-ahead log) lets the node replay and recover safely."
+    },
+    {
+      "stage": "post",
+      "question": "You have a 5-node cluster using majority quorum (3 of 5). Under which failure model can you safely tolerate 1 faulty node?",
+      "options": [
+        "All models: crash-stop, omission, and Byzantine",
+        "Crash-stop and omission, but not Byzantine (you need 3f+1=4 nodes for f=1 Byzantine faults)",
+        "Only crash-stop (omission and Byzantine both require more nodes)",
+        "Crash-stop only, because omission failures always break majority quorum"
+      ],
+      "correct": 1,
+      "explanation": "With 5 nodes and 1 fault, majority quorum (3 of 5) works for crash-stop because 3 honest nodes form a quorum. It works for omission because honest nodes can retry. But for Byzantine faults, the single traitor can send conflicting messages to different nodes, and majority quorum isn't enough — you need 3f+1=4 nodes minimum, and even then you need PBFT's 3-phase protocol. A 5-node cluster with simple majority quorum cannot safely tolerate 1 Byzantine fault."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 2,
+    "title": "Failure Models Crash Omission Byzantine"
+  }
+}

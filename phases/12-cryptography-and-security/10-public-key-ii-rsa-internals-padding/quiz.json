@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 12,
+    "lesson": 10,
+    "title": "Public Key II — RSA Internals & Padding"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does the acronym RSA stand for?",
+      "options": [
+        "Rivest-Shamir-Adleman",
+        "Rijndael-Simons-Attacks",
+        "RSA-Secure-Asymmetric",
+        "Random-Signature-Algorithm"
+      ],
+      "correct": 0,
+      "explanation": "RSA is named after its inventors: Ron Rivest, Adi Shamir, and Leonard Adleman, who published the algorithm in 1978."
+    },
+    {
+      "stage": "pre",
+      "question": "The security of RSA encryption relies on the computational difficulty of what problem?",
+      "options": [
+        "The discrete logarithm problem",
+        "The integer factorization problem",
+        "The elliptic curve discrete logarithm problem",
+        "The knapsack problem"
+      ],
+      "correct": 1,
+      "explanation": "RSA security depends on the difficulty of factoring the modulus n into its prime factors p and q. If an attacker can factor n, they can compute the private key d from the public key (n, e)."
+    },
+    {
+      "stage": "post",
+      "question": "Why is textbook RSA (without padding) considered insecure?",
+      "options": [
+        "It is too slow for practical use",
+        "It only works with even-length messages",
+        "It is deterministic, malleable, and provides no semantic security",
+        "It requires the sender to know the private key"
+      ],
+      "correct": 2,
+      "explanation": "Textbook RSA is deterministic (same plaintext → same ciphertext), malleable (ciphertexts can be manipulated to produce predictable plaintext changes), and lacks semantic security (an attacker can test guesses). Proper padding like OAEP is essential."
+    },
+    {
+      "stage": "post",
+      "question": "What security property does OAEP (Optimal Asymmetric Encryption Padding) provide that PKCS#1 v1.5 padding lacks?",
+      "options": [
+        "Deterministic encryption for repeatable results",
+        "Protection against chosen-ciphertext attacks and padding oracle attacks",
+        "Smaller ciphertexts for faster transmission",
+        "Backward compatibility with RSA-encrypted email"
+      ],
+      "correct": 1,
+      "explanation": "OAEP is provably secure against chosen-ciphertext attacks in the random oracle model, whereas PKCS#1 v1.5 is vulnerable to Bleichenbacher's padding oracle attack, which can recover plaintext with about 2^20 chosen-ciphertext queries."
+    },
+    {
+      "stage": "pre",
+      "question": "What mathematical problem is RSA's security based on?",
+      "options": [
+        "The discrete logarithm problem",
+        "The difficulty of factoring large semiprimes (products of two large primes)",
+        "The shortest vector problem in lattices",
+        "The difficulty of solving linear equations"
+      ],
+      "correct": 1,
+      "explanation": "RSA security relies on the fact that multiplying two large primes is easy, but factoring their product back into the primes is computationally infeasible for sufficiently large numbers (2048+ bits). The public key contains the product; the private key requires knowing the factors."
+    }
+  ]
+}

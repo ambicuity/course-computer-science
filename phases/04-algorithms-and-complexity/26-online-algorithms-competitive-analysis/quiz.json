@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 26,
+    "title": "Online Algorithms & Competitive Analysis"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "An online algorithm ALG is α-competitive with additive constant β if, for every request sequence σ, cost(ALG(σ)) ≤ α·cost(OPT(σ)) + β. What does α represent?",
+      "options": [
+        "The maximum ratio of the online algorithm's cost to the optimal offline algorithm's cost",
+        "The number of distinct pages the cache can hold",
+        "The probability that the online algorithm matches the offline optimum",
+        "The total number of requests in the input sequence"
+      ],
+      "correct": 0,
+      "explanation": "The competitive ratio α is the worst-case multiplicative factor by which the online algorithm's cost exceeds the optimal offline cost. It measures how much worse the online algorithm can be forced to perform due to its lack of knowledge about future requests."
+    },
+    {
+      "stage": "post",
+      "question": "For the paging problem with cache size k, what is the competitive ratio of LRU (Least Recently Used)?",
+      "options": [
+        "2",
+        "k",
+        "log k",
+        "k²"
+      ],
+      "correct": 1,
+      "explanation": "LRU is k-competitive: in the worst case, it incurs at most k times as many page faults as the optimal offline algorithm (Belady's). This is proved using a potential function Φ = k·(pages in LRU not in OPT), and it is tight — no deterministic online algorithm can achieve a competitive ratio better than k."
+    },
+    {
+      "stage": "post",
+      "question": "In the randomized ski rental problem (buy cost d, rent cost 1 per day), what is the optimal competitive ratio achievable by any randomized online algorithm?",
+      "options": [
+        "2",
+        "3/2",
+        "e/(e−1) ≈ 1.582",
+        "1 + 1/d"
+      ],
+      "correct": 2,
+      "explanation": "The optimal randomized competitive ratio for ski rental is e/(e−1) ≈ 1.582, achieved by buying each day with probability 1/d independently. This beats the best deterministic ratio of 2. The result was proved by Karlin, Manasse, Rudolph, and Sleator (1988)."
+    },
+    {
+      "stage": "post",
+      "question": "In the online bipartite matching problem, what competitive ratio does the ranking algorithm (Karp-Vazirani-Vazirani) achieve?",
+      "options": [
+        "1/2",
+        "2/3",
+        "1 − 1/e ≈ 0.632",
+        "1"
+      ],
+      "correct": 2,
+      "explanation": "The ranking algorithm assigns random priorities to right-side vertices and matches each arriving left vertex to its highest-priority unmatched neighbor. It achieves (1 − 1/e) ≈ 63.2% of the maximum matching in the worst case, and this bound is tight — no randomized algorithm can do better."
+    },
+    {
+      "stage": "pre",
+      "question": "In competitive analysis, what does a 'competitive ratio' of k mean for an online algorithm?",
+      "options": [
+        "The algorithm runs k times faster than the offline version",
+        "The algorithm's cost is at most k times the optimal offline cost, for any input sequence",
+        "The algorithm uses k times less memory",
+        "The algorithm makes at most k mistakes"
+      ],
+      "correct": 1,
+      "explanation": "A competitive ratio of k means that for every possible input sequence, the online algorithm's total cost is at most k times the cost of the optimal offline algorithm (which knows the entire sequence in advance). This is the online-algorithm analog of worst-case approximation."
+    }
+  ]
+}

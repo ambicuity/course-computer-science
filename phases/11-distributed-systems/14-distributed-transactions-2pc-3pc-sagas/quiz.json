@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In Two-Phase Commit (2PC), what happens during Phase 1 (Prepare)?",
+      "options": [
+        "The coordinator commits the transaction on all participants.",
+        "The coordinator asks each participant to vote YES or NO on whether it can commit.",
+        "The coordinator sends the final commit or abort decision to all participants.",
+        "Each participant independently decides whether to commit or abort its local transaction."
+      ],
+      "correct": 1,
+      "explanation": "Phase 1 is the voting phase. The coordinator asks each participant 'can you commit?' and each participant votes YES or NO. No committing happens in Phase 1 — that's Phase 2's job."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is 2PC called a 'blocking' protocol?",
+      "options": [
+        "Participants block while waiting for each other to finish their local transactions.",
+        "If the coordinator crashes after Phase 1 but before Phase 2, participants that voted YES are blocked — they hold locks and cannot commit or abort without the coordinator's decision.",
+        "The network blocks further messages until all participants acknowledge the transaction.",
+        "Participants block each other's reads during the entire transaction."
+      ],
+      "correct": 1,
+      "explanation": "The blocking problem is specific to the coordinator crash scenario between phases. A participant that voted YES has promised to commit but doesn't know the coordinator's decision. It can't unilaterally commit (coordinator might have decided abort) or abort (coordinator might have decided commit). It holds locks and waits indefinitely."
+    },
+    {
+      "stage": "post",
+      "question": "How does Three-Phase Commit (3PC) eliminate the 2PC blocking problem?",
+      "options": [
+        "By adding a timeout so participants automatically abort if they don't hear from the coordinator.",
+        "By adding a Pre-Commit phase so that surviving participants can determine the coordinator's intended decision: if anyone is in Pre-Commit, the decision was commit; if all are Prepared or Aborted, the decision was abort.",
+        "By replicating the coordinator so there is always a backup available.",
+        "By requiring all participants to log their votes before Phase 1 begins."
+      ],
+      "correct": 1,
+      "explanation": "3PC's Pre-Commit phase creates a state that is observable by other participants. If the coordinator crashes, surviving participants can exchange states and reach a safe decision: if at least one participant is in Pre-Commit, the coordinator must have decided commit (since it only sends Pre-Commit after all YES votes). If no one is in Pre-Commit, the coordinator couldn't have decided commit yet, so abort is safe."
+    },
+    {
+      "stage": "post",
+      "question": "In a Saga, what happens when step T3 (book flight) fails after T1 (reserve car) and T2 (book hotel) succeeded?",
+      "options": [
+        "The entire transaction is rolled back atomically using 2PC.",
+        "The system blocks until the flight service recovers.",
+        "Compensating transactions C3 (if any), C2 (cancel hotel), and C1 (cancel car) are executed in reverse order.",
+        "The car and hotel reservations are left in place and the user is notified of partial success."
+      ],
+      "correct": 2,
+      "explanation": "Sagas handle failure by running compensating transactions in reverse order. Since T3 failed, there's nothing to cancel for the flight. Then C2 cancels the hotel booking, and C1 cancels the car reservation. The result is semantic atomicity: either all steps succeed or all completed steps are compensated."
+    },
+    {
+      "stage": "post",
+      "question": "Which property of ACID do Sagas NOT provide?",
+      "options": [
+        "Atomicity",
+        "Consistency",
+        "Durability",
+        "Isolation"
+      ],
+      "correct": 3,
+      "explanation": "Sagas provide ACD (Atomicity via compensation, Consistency via compensating transactions, Durability via persistent logs) but NOT Isolation. While one saga is executing (e.g., car reserved but flight not yet booked), other sagas can observe and act on intermediate states. This is sometimes called 'A.I.D. without the I' or the 'ACD' property."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between saga choreography and saga orchestration?",
+      "options": [
+        "Choreography uses 2PC internally; orchestration does not.",
+        "Choreography has a central coordinator that calls each service; orchestration has no central coordinator.",
+        "Choreography has each service emit events that trigger the next step and compensations with no central coordinator; orchestration has a single orchestrator service that manages the saga's forward and backward paths.",
+        "They are identical patterns with different names."
+      ],
+      "correct": 2,
+      "explanation": "In choreography, services react to events from other services — the flow is implicit in event handlers across services. In orchestration, a single orchestrator service explicitly calls each step and handles compensation in a centralized state machine. Choreography is simpler for 2–3 steps but becomes hard to trace. Orchestration provides visibility and is easier to debug, but the orchestrator is a single point of failure."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 14,
+    "title": "Distributed Transactions 2Pc 3Pc Sagas"
+  }
+}

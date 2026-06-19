@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 10,
+    "title": "Parsing Theory Cyk And Earley"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the time complexity of the CYK algorithm for a string of length n and grammar of size |G|?",
+      "options": [
+        "O(n² |G|)",
+        "O(n³ |G|)",
+        "O(n⁴ |G|)",
+        "O(2ⁿ |G|)"
+      ],
+      "correct": 1,
+      "explanation": "CYK has three nested loops (span, start position, split point) each up to n, giving O(n³), multiplied by grammar size for rule checks."
+    },
+    {
+      "stage": "pre",
+      "question": "Which property must a grammar satisfy before the CYK algorithm can be applied directly?",
+      "options": [
+        "The grammar must be in Greibach Normal Form",
+        "The grammar must be in Chomsky Normal Form",
+        "The grammar must be unambiguous",
+        "The grammar must be regular"
+      ],
+      "correct": 1,
+      "explanation": "CYK requires Chomsky Normal Form where every rule is A → BC or A → a."
+    },
+    {
+      "stage": "post",
+      "question": "What distinguishes the Earley parser from CYK?",
+      "options": [
+        "Earley can only parse regular languages",
+        "Earley requires CNF conversion",
+        "Earley handles any CFG without conversion",
+        "Earley is always O(n³) regardless of grammar"
+      ],
+      "correct": 2,
+      "explanation": "Earley's key advantage is handling arbitrary CFGs — including ambiguous and ε-producing grammars — without any conversion."
+    },
+    {
+      "stage": "post",
+      "question": "In an Earley item (A → α · β, i), what does the origin index i represent?",
+      "options": [
+        "The current position in the input",
+        "The position where the recognition of this item began",
+        "The length of α",
+        "The grammar rule number"
+      ],
+      "correct": 1,
+      "explanation": "The origin i records where in the input the item's left end was predicted or found, enabling completion to link children back to parents."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the time complexity of the CYK parsing algorithm?",
+      "options": [
+        "O(n)",
+        "O(n^2)",
+        "O(n^3)",
+        "O(2^n)"
+      ],
+      "correct": 2,
+      "explanation": "CYK is a dynamic programming algorithm that fills an n×n table. For each substring (O(n^2) substrings) and each possible split point (O(n) splits), it checks grammar rules. This gives O(n^3 * |G|) where |G| is grammar size — cubic in string length."
+    }
+  ]
+}

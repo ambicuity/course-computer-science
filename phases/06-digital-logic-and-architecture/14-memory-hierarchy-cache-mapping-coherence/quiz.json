@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 14,
+    "title": "Memory Hierarchy Cache Mapping Coherence"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A 32 KB, 8-way set-associative cache with 64-byte lines has how many index bits in a 32-bit address?",
+      "options": [
+        "4 bits",
+        "6 bits",
+        "8 bits",
+        "10 bits"
+      ],
+      "correct": 1,
+      "explanation": "Number of sets = 32768 / (8 × 64) = 64. log₂(64) = 6 index bits."
+    },
+    {
+      "stage": "pre",
+      "question": "In a direct-mapped cache, two frequently accessed addresses that map to the same set will cause:",
+      "options": [
+        "Cold misses on every access",
+        "Capacity misses that increase with associativity",
+        "Conflict misses — each access evicts the other",
+        "No penalty because the tag distinguishes them"
+      ],
+      "correct": 2,
+      "explanation": "Conflict misses occur when two blocks compete for the same cache line. Increasing associativity (e.g., 2-way) lets both coexist."
+    },
+    {
+      "stage": "post",
+      "question": "In the MESI protocol, a cache line in the Exclusive (E) state is:",
+      "options": [
+        "Dirty and held by multiple caches",
+        "Clean and the only copy in any cache",
+        "Invalid until a bus transaction upgrades it",
+        "Shared with at least one other cache"
+      ],
+      "correct": 1,
+      "explanation": "E means the line is clean (matches memory) and this cache holds the only copy. A local write can silently upgrade E to M without a bus transaction."
+    },
+    {
+      "stage": "post",
+      "question": "Which write policy updates main memory only when a dirty cache line is evicted?",
+      "options": [
+        "Write-through",
+        "No-write-allocate",
+        "Write-back",
+        "Write-invalidate"
+      ],
+      "correct": 2,
+      "explanation": "Write-back marks the line dirty on writes and defers the memory update until eviction. This reduces bus traffic compared to write-through, which writes to memory on every store."
+    },
+    {
+      "stage": "pre",
+      "question": "Why do modern CPUs use multiple levels of cache (L1, L2, L3)?",
+      "options": [
+        "To reduce the total cost of the system",
+        "To balance speed and capacity: small fast caches close to the CPU, larger slower caches further away",
+        "Because a single large cache would be too fast",
+        "To comply with industry standards"
+      ],
+      "correct": 1,
+      "explanation": "Memory hierarchy exploits locality: L1 is small (~64KB) but extremely fast (1-4 cycles), L2 is larger (~256KB-1MB) but slower, and L3 is largest (~8-64MB) but slowest. This gives the illusion of fast, large memory — most accesses hit in L1, but L2/L3 catch the rest."
+    }
+  ]
+}

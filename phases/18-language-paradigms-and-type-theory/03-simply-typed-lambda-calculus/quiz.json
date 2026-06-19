@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does `Gamma |- t : T` represent?",
+      "options": ["Runtime trace", "Typing judgment under context", "Parser state", "Optimization hint"],
+      "correct": 1,
+      "explanation": "It states term `t` has type `T` given assumptions in context `Gamma`."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is the simply typed lambda calculus called 'simply' typed?",
+      "options": ["Because it is easy to implement", "Because it uses only base types and function types with no polymorphism or recursion", "Because types have no rules", "Because it has no type checking"],
+      "correct": 1,
+      "explanation": "STLC has a simple type structure without quantification, type operators, or recursive types — just arrows and base types."
+    },
+    {
+      "stage": "post",
+      "question": "Why does function application need domain/type matching?",
+      "options": ["To reduce code size", "To ensure argument type aligns with function input type", "To avoid recursion", "To enforce mutability"],
+      "correct": 1,
+      "explanation": "Without matching, application could produce ill-typed terms that violate safety reasoning."
+    },
+    {
+      "stage": "post",
+      "question": "What is the preservation property intuition?",
+      "options": ["Evaluation changes every type", "Evaluation keeps type consistent across steps", "Typing is optional after first step", "Only values are typable"],
+      "correct": 1,
+      "explanation": "If a term has type `T` and steps to another term, the new term should still have type `T`."
+    },
+    {
+      "stage": "post",
+      "question": "What does the progress theorem guarantee?",
+      "options": ["The program terminates", "A well-typed term is either a value or can take a step", "Types are always inferred", "The context is never empty"],
+      "correct": 1,
+      "explanation": "Progress ensures well-typed terms don't get 'stuck' — they are either done (values) or can reduce further."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 3, "title": "Simply Typed Lambda Calculus" }
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does it mean that relational algebra operators satisfy the 'closure property'?",
+      "options": [
+        "Every operator can only be applied once in a query",
+        "Every operator takes one or more relations as input and produces a relation as output",
+        "Every operator closes over the schema and prevents changes to it",
+        "Every operator closes the relation to further modifications"
+      ],
+      "correct": 1,
+      "explanation": "Closure means every RA operator (σ, π, ⋈, etc.) takes relation(s) and returns a relation — so you can compose them arbitrarily into trees. This is what makes query optimization (tree rewriting) possible."
+    },
+    {
+      "stage": "pre",
+      "question": "In the relational model, what is the fundamental difference between a relation and a SQL table?",
+      "options": [
+        "Relations have rows and columns; tables do not",
+        "Relations are sets of tuples (no duplicates); SQL tables are bags (multisets) by default",
+        "Relations can only have one column; tables can have many",
+        "There is no difference — the terms are interchangeable"
+      ],
+      "correct": 1,
+      "explanation": "The relational model defines relations as sets of tuples — duplicates are impossible. SQL tables default to bag semantics, allowing duplicates unless DISTINCT is specified. This gap causes many subtle bugs."
+    },
+    {
+      "stage": "post",
+      "question": "Which relational algebra operator(s) correspond to a SQL query like: SELECT DISTINCT product FROM orders WHERE amount > 100;",
+      "options": [
+        "σ only",
+        "π only",
+        "δ(π(σ(...))) — duplicate elimination, project, then select",
+        "π(σ(...)) — project after select, where π already eliminates duplicates"
+      ],
+      "correct": 3,
+      "explanation": "SQL's DISTINCT makes this set semantics (δ in RA), but π in the relational model already eliminates duplicates. So π(σ(Orders)) is correct in pure RA. In bag SQL, SELECT product (without DISTINCT) is a bag projection that preserves duplicates, so δ or DISTINCT is needed to get set semantics."
+    },
+    {
+      "stage": "post",
+      "question": "What does Codd's Rule 9 (Logical Data Independence) require of a relational DBMS?",
+      "options": [
+        "The database must work the same whether deployed on one server or many",
+        "Applications must be unaffected by changes to the logical structure as long as the information is preserved",
+        "All data must be represented as values in table cells",
+        "NULLs must be handled as missing information, not as actual values"
+      ],
+      "correct": 1,
+      "explanation": "Rule 9 says you can restructure tables (e.g., decompose a table via normalization) and existing applications should still work, because views or queries can reconstruct the original structure. Rule 8 covers physical independence (storage changes); Rule 11 covers distribution."
+    },
+    {
+      "stage": "post",
+      "question": "A query plan shows: HashAggregate on GROUP BY dept_id, then Seq Scan on employees. Which RA operator does HashAggregate implement?",
+      "options": [
+        "σ (select)",
+        "π (project)",
+        "γ (aggregation)",
+        "τ (sort)"
+      ],
+      "correct": 2,
+      "explanation": "HashAggregate is PostgreSQL's implementation of γ (aggregation) — it groups tuples by dept_id and computes aggregate functions (COUNT, SUM, etc.) per group. σ would appear as a Filter node; π appears in the target list; τ appears as Sort."
+    },
+    {
+      "stage": "post",
+      "question": "Which RA operator would you use to find all students who have taken EVERY course offered (i.e., the set of students where there is no course they haven't taken)?",
+      "options": [
+        "θ-join (⋈ₚ)",
+        "Aggregation with COUNT (γ)",
+        "Division (÷) — typically expressed as π_student(Student ⋈ Enrollment) ÷ π_course(Courses)",
+        "Natural join (⋈)"
+      ],
+      "correct": 2,
+      "explanation": "Division (÷) finds tuples in R that match every tuple in S over common attributes. It's the RA operation behind the 'all'/'every' quantifier. SQL implements it via double NOT EXISTS or a COUNT/HAVING pattern: π_student(Enrollment) ÷ π_course(Courses)."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 2,
+    "title": "The Relational Model Relational Algebra"
+  }
+}

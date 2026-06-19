@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 15,
+    "title": "Deadlock Detection Prevention Avoidance"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of the following is NOT one of the four necessary conditions for a deadlock to occur?",
+      "options": [
+        "Mutual exclusion",
+        "Hold and wait",
+        "Round-robin scheduling",
+        "Circular wait"
+      ],
+      "correct": 2,
+      "explanation": "The four necessary conditions for deadlock are: mutual exclusion, hold and wait, no preemption, and circular wait. Round-robin scheduling is a CPU scheduling policy and is unrelated to deadlock conditions."
+    },
+    {
+      "stage": "pre",
+      "question": "In the Banker's algorithm, what does a 'safe state' mean?",
+      "options": [
+        "No process has exceeded its maximum resource claim",
+        "All resources are currently allocated",
+        "There exists at least one sequence in which all processes can finish with the currently available resources",
+        "The system has detected a deadlock and is recovering"
+      ],
+      "correct": 2,
+      "explanation": "A safe state is one where the system can find an ordering (safe sequence) of all processes such that each process can obtain its maximum remaining need from currently available resources plus resources held by earlier processes in the sequence. The Banker's algorithm only grants requests that leave the system in a safe state."
+    },
+    {
+      "stage": "post",
+      "question": "For a Resource Allocation Graph with only single-instance resources, what indicates a deadlock?",
+      "options": [
+        "Any request edge in the graph",
+        "A cycle in the graph",
+        "A process holding more than one resource",
+        "More processes than resources"
+      ],
+      "correct": 1,
+      "explanation": "With single-instance resources, a cycle in the Resource Allocation Graph is both necessary and sufficient for deadlock. Each resource has exactly one instance, so a cycle means each process in the cycle is waiting for a resource held by the next — and none can proceed."
+    },
+    {
+      "stage": "post",
+      "question": "Which deadlock recovery strategy risks starvation if not carefully managed?",
+      "options": [
+        "Resource preemption — repeatedly taking resources from the same process",
+        "Impose a total ordering on all resources",
+        "Request all resources before execution",
+        "Use the Banker's algorithm before granting requests"
+      ],
+      "correct": 0,
+      "explanation": "When recovering via resource preemption, the OS forcibly takes a resource from a process and may roll it back. If the system always picks the same process as the victim, that process starves — it never makes progress. Recovery strategies must include mechanisms (e.g., priority aging) to ensure fairness."
+    },
+    {
+      "stage": "pre",
+      "question": "What are the four necessary conditions for deadlock (Coffman conditions)?",
+      "options": [
+        "Speed, memory, I/O, CPU",
+        "Mutual exclusion, hold-and-wait, no preemption, circular wait",
+        "Race condition, starvation, livelock, priority inversion",
+        "Read, write, execute, allocate"
+      ],
+      "correct": 1,
+      "explanation": "Deadlock requires all four: (1) Mutual exclusion — resources can't be shared. (2) Hold-and-wait — processes hold resources while waiting for more. (3) No preemption — resources can't be forcibly taken. (4) Circular wait — a cycle of processes each waiting for the next. Breaking any one prevents deadlock."
+    }
+  ]
+}

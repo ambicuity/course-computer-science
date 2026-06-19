@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 2,
+    "title": "Lexing I Regex Dfa Lexer"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does Thompson's construction produce from a regular expression?",
+      "options": [
+        "A deterministic finite automaton (DFA)",
+        "A nondeterministic finite automaton (NFA)",
+        "A pushdown automaton",
+        "An abstract syntax tree"
+      ],
+      "correct": 1,
+      "explanation": "Thompson's construction algorithm converts a regular expression into an NFA with ε-transitions. The NFA has at most O(n) states where n is the regex length."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of the 'longest match rule' in a lexer?",
+      "options": [
+        "To skip whitespace efficiently",
+        "To resolve conflicts when multiple token patterns match at the same position by choosing the one that consumes the most characters",
+        "To minimize the number of DFA states",
+        "To convert an NFA to a DFA"
+      ],
+      "correct": 1,
+      "explanation": "When multiple token patterns can match at the current input position, the longest match rule (maximal munch) selects the pattern that consumes the most characters. For example, 'whilex' is lexed as an identifier, not the keyword 'while' plus 'x'."
+    },
+    {
+      "stage": "post",
+      "question": "What algorithm minimizes the number of states in a DFA?",
+      "options": [
+        "Thompson's construction",
+        "Subset construction",
+        "Hopcroft's algorithm",
+        "Dijkstra's algorithm"
+      ],
+      "correct": 2,
+      "explanation": "Hopcroft's algorithm partitions DFA states into equivalence classes and merges indistinguishable states, producing the minimal DFA with the fewest possible states for the given language."
+    },
+    {
+      "stage": "post",
+      "question": "In a practical lexer with multiple token patterns, how are DFAs typically organized?",
+      "options": [
+        "A single DFA that encodes all token types in one automaton",
+        "A collection of DFAs — one per token type — running in parallel, with longest match and priority resolving ties",
+        "A single NFA that is re-evaluated for each token type sequentially",
+        "A pushdown automaton that maintains a stack of token types"
+      ],
+      "correct": 1,
+      "explanation": "A practical lexer runs one DFA per token type in parallel. At each position, all DFAs advance. Among those that accept, the longest match wins. If lengths are equal, priority (rule order) breaks the tie. This is the approach used by tools like lex and flex."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the role of a lexer (tokenizer) in a compiler?",
+      "options": [
+        "To parse the grammar of the language",
+        "To convert a stream of characters into a stream of tokens (keywords, identifiers, operators)",
+        "To optimize the generated machine code",
+        "To perform type checking"
+      ],
+      "correct": 1,
+      "explanation": "The lexer reads raw characters and groups them into tokens — the smallest meaningful units. For example, `x = 42 + y;` becomes tokens [IDENT(x), ASSIGN, NUMBER(42), PLUS, IDENT(y), SEMICOLON]. The parser then works with tokens, not characters."
+    }
+  ]
+}

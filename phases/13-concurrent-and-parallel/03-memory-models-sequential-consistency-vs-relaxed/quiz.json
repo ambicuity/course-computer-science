@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does sequential consistency guarantee about a concurrent program's execution?",
+      "options": [
+        "All threads execute their instructions in lockstep, one at a time",
+        "There exists a global total order of all memory operations consistent with each thread's program order",
+        "The CPU never reorders any memory operations",
+        "All writes are immediately visible to all other threads"
+      ],
+      "correct": 1,
+      "explanation": "Sequential consistency requires a global total order that respects each thread's program order. It does not require lockstep execution (option A), it does not prevent CPU reordering (option C — it just requires the result to be consistent with SC), and it does not guarantee immediate visibility (option D — writes can be buffered as long as the SC invariant holds)."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of the following reorderings is allowed on x86 (TSO) but forbidden under strict sequential consistency?",
+      "options": [
+        "A load followed by another load to a different address",
+        "A store followed by another store to a different address",
+        "A store followed by a load to a different address",
+        "A load followed by a store to the same address"
+      ],
+      "correct": 2,
+      "explanation": "x86 TSO allows a store to be reordered with a later load to a different address (store→load reordering). This is because stores are buffered in the store buffer before becoming visible, and a subsequent load can bypass the buffer. Load→load and store→store reorderings are NOT allowed on x86. Under SC, no reorderings are allowed."
+    },
+    {
+      "stage": "post",
+      "question": "Two threads communicate using a flag variable: Thread A stores data then sets ready=true; Thread B spins on ready then reads data. Which memory ordering guarantees the assertion data == 42 always passes?",
+      "options": [
+        "Both stores and loads use memory_order_relaxed",
+        "Thread A uses release for the ready store; Thread B uses acquire for the ready load",
+        "Thread A uses relaxed for both; Thread B uses seq_cst for the ready load",
+        "Only the ready variable needs to be atomic; ordering does not matter"
+      ],
+      "correct": 1,
+      "explanation": "Acquire/release pairing is the minimal correct ordering: the release store in thread A prevents prior writes (data=42) from being reordered after the ready store, and the acquire load in thread B prevents subsequent reads from being reordered before the ready load. This establishes a happens-before relationship. Option A (relaxed) allows the assertion to fail. Option C is wrong because seq_cst on the load side alone doesn't prevent the producer's reordering. Option D ignores ordering entirely."
+    },
+    {
+      "stage": "post",
+      "question": "Under the ARM/Power relaxed memory model, which of the following statements is true?",
+      "options": [
+        "All memory operations are executed in program order; ARM does not reorder",
+        "Loads can be reordered with loads, stores with stores, and stores with loads, but address dependencies are preserved",
+        "ARM uses the same memory model as x86 (TSO)",
+        "Only the compiler can reorder instructions; the CPU never reorders"
+      ],
+      "correct": 1,
+      "explanation": "ARM/Power have the weakest memory model among common architectures. Almost any reordering is permitted (load→load, load→store, store→load, store→store) with the important exception of address dependencies — if you load a pointer p, then load *p, ARM preserves that ordering. Options A and C are wrong (ARM is weaker than x86, not the same). Option D is wrong because both the compiler and CPU can reorder."
+    },
+    {
+      "stage": "pre",
+      "question": "What is sequential consistency?",
+      "options": [
+        "Executing instructions one at a time on a single CPU",
+        "The guarantee that all threads see the same total order of operations, as if instructions were executed in program order with some interleaving",
+        "The fastest possible memory model",
+        "A requirement that all threads run at the same speed"
+      ],
+      "correct": 1,
+      "explanation": "Sequential consistency (Lamport, 1979) means the result of any execution is the same as if all operations were executed in some sequential order, and the operations of each thread appear in this order in their program order. It's the intuitive model but prevents many hardware optimizations."
+    }
+  ],
+  "_meta": {
+    "phase": 13,
+    "lesson": 3,
+    "title": "Memory Models Sequential Consistency Vs Relaxed"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 9,
+    "title": "Hexagonal / Clean Architecture"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In hexagonal architecture, which direction must dependencies point?",
+      "options": [
+        "From adapters toward the domain core",
+        "From the domain core toward adapters",
+        "In both directions — core depends on adapters and vice versa",
+        "Dependencies should be minimized but direction doesn't matter"
+      ],
+      "correct": 0,
+      "explanation": "The dependency rule in hexagonal architecture is absolute: dependencies point inward. The domain core defines port interfaces; adapters depend on those interfaces. The core never imports anything from an adapter. This inversion is what makes the core testable and technology-independent."
+    },
+    {
+      "stage": "pre",
+      "question": "In a traditional layered architecture (Presentation → Business → Data), what causes the biggest problem?",
+      "options": [
+        "The presentation layer is too thin",
+        "The business layer depends on the data-access layer, coupling domain logic to infrastructure",
+        "Layers cannot communicate with each other",
+        "There are too many layers"
+      ],
+      "correct": 1,
+      "explanation": "In layered architecture, the Business Logic layer directly imports repository concretions from the Data Access layer. This means business rules depend on SQL, ORM entities, and connection management. Testing a business rule requires a database. Changing storage requires changing business code. Hexagonal architecture fixes this by inverting the dependency through port interfaces."
+    },
+    {
+      "stage": "post",
+      "question": "What is the difference between a driving port and a driven port in hexagonal architecture?",
+      "options": [
+        "A driving port is implemented by the core; a driven port is implemented by external services",
+        "A driving port defines what the application CAN do (its API); a driven port defines what the application NEEDS (its SPI)",
+        "A driving port handles HTTP requests; a driven port handles database queries",
+        "Driving ports are synchronous; driven ports are asynchronous"
+      ],
+      "correct": 1,
+      "explanation": "A driving (primary) port is the interface through which outside callers invoke the application — e.g., RegisterUserUseCase. A driven (secondary) port is the interface through which the application invokes external systems — e.g., UserRepository. The key distinction is direction of the call: outside→core (driving) vs. core→outside (driven). Both are defined by the core."
+    },
+    {
+      "stage": "post",
+      "question": "Why can you test a hexagonal core using an InMemoryUserRepository instead of a real database?",
+      "options": [
+        "Because the InMemoryUserRepository is a mock that bypasses business logic",
+        "Because the core depends on the UserRepository port interface, not on PostgreSQL — the adapter is swappable",
+        "Because in-memory repositories are always faster and more correct than real databases",
+        "Because hexagonal architecture eliminates the need for integration tests"
+      ],
+      "correct": 1,
+      "explanation": "The core defines the UserRepository interface. InMemoryUserRepository implements that interface. Because the use case only knows about the interface, you can substitute any implementation — in-memory for fast unit tests, PostgreSQL for integration tests. This isn't mocking that bypasses logic; it's substituting the infrastructure while the same business logic runs unchanged."
+    },
+    {
+      "stage": "post",
+      "question": "How does Clean Architecture's dependency rule relate to hexagonal architecture's port/adapter pattern?",
+      "options": [
+        "They are contradictory — Clean Architecture forbids interfaces at the boundary",
+        "They express the same dependency rule; Clean Architecture adds a four-layer naming convention (entities, use cases, interface adapters, frameworks) on top of the same inward-pointing principle",
+        "Clean Architecture only applies to Java; hexagonal architecture only applies to functional languages",
+        "They are completely unrelated patterns for different problems"
+      ],
+      "correct": 1,
+      "explanation": "Both architectures enforce the same fundamental rule: dependencies point inward. Hexagonal architecture emphasizes ports and adapters as the mechanism. Clean Architecture adds a four-layer structure (Entities, Use Cases, Interface Adapters, Frameworks & Drivers) that maps to the hexagon: Entities = core, Use Cases = application services, Interface Adapters = adapter implementations, Frameworks = infrastructure. The naming differs, the principle is identical."
+    },
+    {
+      "stage": "post",
+      "question": "A team builds a user service where the User entity has JPA @Entity annotations and the use case directly calls EntityManager.persist(). Which architectural rule is violated?",
+      "options": [
+        "Open/Closed Principle — the entity is open for extension",
+        "Dependency Rule — the domain core depends on a framework (JPA), so dependencies point outward",
+        "Single Responsibility — the entity has too many fields",
+        "Interface Segregation — the entity implements too many interfaces"
+      ],
+      "correct": 1,
+      "explanation": "JPA's @Entity annotation and EntityManager are infrastructure concerns (frameworks & drivers layer). When the domain core imports javax.persistence, it violates the dependency rule: the core now depends on an outer circle. The fix: define a UserRepository port interface in the core, implement it with a JpaUserRepository adapter in the outer layer. The core stays framework-free."
+    }
+  ]
+}

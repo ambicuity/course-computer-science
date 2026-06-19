@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does it mean for a build to be 'hermetic'?",
+      "options": [
+        "It uses Docker",
+        "Its output is a function only of declared inputs — not of the developer's machine state",
+        "It runs in a sealed virtual machine",
+        "It's faster than non-hermetic builds"
+      ],
+      "correct": 1,
+      "explanation": "Hermeticity is about *correctness*: same inputs give the same output bytes everywhere. Bazel sandboxes each action so it only sees declared inputs; Make is non-hermetic by default because recipes can read anything in scope."
+    },
+    {
+      "stage": "pre",
+      "question": "What does CMake actually do?",
+      "options": [
+        "Compiles C++ source code",
+        "Generates a real build file (Makefile, Ninja, MSBuild) from CMakeLists.txt, then you invoke that builder to build",
+        "Links object files",
+        "Replaces gcc"
+      ],
+      "correct": 1,
+      "explanation": "CMake is a *generator*: `cmake -S . -B build -G Ninja` reads CMakeLists.txt and writes build.ninja into build/. Then `cmake --build build` or `ninja -C build` actually runs the build. CMake itself doesn't compile anything."
+    },
+    {
+      "stage": "post",
+      "question": "Bazel decides a build action is up to date by checking what?",
+      "options": [
+        "File modification times",
+        "Content hashes of declared inputs + the exact command line + tool version",
+        "Whether the source compiled cleanly last time",
+        "A timestamp written in .bazelrc"
+      ],
+      "correct": 1,
+      "explanation": "Bazel uses a content-addressed cache keyed on input hashes (and the exact command + toolchain). This is what makes the cache shareable across machines: two developers with the same inputs hit the same cache entry. mtime-based systems can't safely share caches because timestamps differ per checkout."
+    },
+    {
+      "stage": "post",
+      "question": "A Make-based project edits a header file. Without `-MMD -MP`, what happens on the next `make`?",
+      "options": [
+        "All .c files rebuild",
+        "Only files that include the header rebuild",
+        "Nothing rebuilds; Make sees no changed mtimes among declared prereqs",
+        "Make errors out"
+      ],
+      "correct": 2,
+      "explanation": "Make only knows about prereqs you list. If a `.h` file isn't a listed prereq of a `.o` rule, editing it changes nothing Make can see. Result: stale binaries. `-MMD -MP` makes the compiler emit dep files listing every header each `.c` actually included; Make includes those `.d` files to learn the real graph."
+    },
+    {
+      "stage": "post",
+      "question": "Your team has a Rust binary, a Go service, and a Python tool, all sharing a protobuf schema and shipping in one container. What's the best build system?",
+      "options": [
+        "Stick with Cargo, treat the others as external",
+        "Bazel (or Buck2) — its strength is polyglot, hermetic, cache-shared builds across an org",
+        "Make at the top level orchestrating the three",
+        "Separate CI jobs per language"
+      ],
+      "correct": 1,
+      "explanation": "Polyglot monorepo with shared schema = Bazel's sweet spot. One BUILD file per language, hermetic actions, shared remote cache, distributed remote execution. Cargo/Make/CI-only approaches all leave the cross-language dependency graph implicit; Bazel makes it explicit and verifiable."
+    },
+    {
+      "stage": "post",
+      "question": "Cargo decides a target is fresh by checking what?",
+      "options": [
+        "Only file mtimes",
+        "A fingerprint over source files + Cargo.lock + features + rustc version + relevant flags",
+        "Whether Cargo.toml changed",
+        "Whether you ran `cargo clean`"
+      ],
+      "correct": 1,
+      "explanation": "Cargo's incremental check is fingerprint-based, not mtime-based: it hashes the inputs (source, lockfile, features, rustc version, flags) and compares to the previous fingerprint stored in `target/`. This is why Cargo handles toolchain upgrades correctly: bump rustc → fingerprint changes → everything rebuilds."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 6,
+    "title": "Build Systems Make Cmake Bazel Cargo"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 25,
+    "title": "Approximation Algorithms — Vertex Cover, TSP, Set Cover"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "An algorithm has an approximation ratio of α = 3 for a minimization problem. If the optimal solution costs 100, what is the worst case cost returned by the algorithm?",
+      "options": [
+        "33",
+        "100",
+        "300",
+        "3"
+      ],
+      "correct": 2,
+      "explanation": "For minimization: cost(ALG) ≤ α · cost(OPT). With α = 3 and OPT = 100, the algorithm guarantees cost ≤ 3 × 100 = 300."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key difference between a PTAS and an FPTAS?",
+      "options": [
+        "PTAS is always faster than FPTAS",
+        "FPTAS running time is polynomial in both n and 1/ε; PTAS running time may depend exponentially on 1/ε",
+        "PTAS can only approximate maximization problems",
+        "There is no difference; they are synonyms"
+      ],
+      "correct": 1,
+      "explanation": "An FPTAS runs in time polynomial in both the input size n and 1/ε. A PTAS is only required to be polynomial in n for each fixed ε, meaning its runtime may grow exponentially as ε shrinks."
+    },
+    {
+      "stage": "post",
+      "question": "In the 2-approximate vertex cover algorithm, why does the maximal matching approach guarantee |cover| ≤ 2|OPT|?",
+      "options": [
+        "Because each vertex can cover at most 2 edges",
+        "Because OPT must pick at least 1 endpoint per matching edge (so |OPT| ≥ |M|), and the algorithm picks both endpoints (|cover| = 2|M|)",
+        "Because the graph is bipartite",
+        "Because maximal matching always equals maximum matching"
+      ],
+      "correct": 1,
+      "explanation": "The proof: (1) Every edge in the maximal matching M must have at least one endpoint in OPT, and since matching edges are disjoint, |OPT| ≥ |M|. (2) The algorithm returns 2|M| vertices. So |cover| = 2|M| ≤ 2|OPT|."
+    },
+    {
+      "stage": "post",
+      "question": "The greedy set cover algorithm achieves an approximation ratio of O(log n). What property of the greedy choice makes this bound tight — why can't it do better in the worst case?",
+      "options": [
+        "Greedy always picks the smallest set first",
+        "Adversarial instances force each greedy step to cover only a small fraction of remaining elements, accumulating log(n) × OPT cost",
+        "Greedy algorithms inherently cannot be optimal",
+        "The universe elements are always uniformly distributed"
+      ],
+      "correct": 1,
+      "explanation": "Adversarial constructions (based on harmonic series) create instances where each greedy step picks a set that barely beats alternatives, covering a diminishing fraction of remaining elements. The total cost accumulates to H(n) ≈ ln(n), making the log(n) bound tight."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the approximation ratio of an algorithm measure?",
+      "options": [
+        "How close the algorithm's running time is to the optimal",
+        "The worst-case ratio between the algorithm's solution value and the optimal solution value",
+        "The probability of finding the exact optimal solution",
+        "The number of iterations the algorithm performs"
+      ],
+      "correct": 1,
+      "explanation": "The approximation ratio (or factor) is the worst-case ratio between the cost of the approximate solution and the cost of the optimal solution. A 2-approximation for vertex cover means the algorithm always finds a cover at most twice the size of the minimum cover."
+    }
+  ]
+}

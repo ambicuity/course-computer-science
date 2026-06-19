@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does a verification result typically guarantee?",
+      "options": ["Absolute bug freedom in all contexts", "Correctness relative to a formal specification and assumptions", "Runtime speedup", "Automatic deployment"],
+      "correct": 1,
+      "explanation": "Formal verification proves properties with respect to a modeled spec and stated assumptions."
+    },
+    {
+      "stage": "pre",
+      "question": "What is seL4?",
+      "options": ["A database engine", "A formally verified microkernel", "A web framework", "A compiler for Haskell"],
+      "correct": 1,
+      "explanation": "seL4 is a microkernel whose functional correctness has been machine-checked against its formal specification."
+    },
+    {
+      "stage": "post",
+      "question": "When is formal verification often most justified?",
+      "options": ["Low-impact UI tweaks", "Safety/security critical stable components", "Any quick experiment", "Temporary migration scripts"],
+      "correct": 1,
+      "explanation": "High-impact stable components provide the best return for expensive proof effort."
+    },
+    {
+      "stage": "post",
+      "question": "Why are boundary assumptions important in verified systems?",
+      "options": ["They are optional metadata", "Verified guarantees depend on interactions with non-verified parts", "They improve color themes", "They replace tests"],
+      "correct": 1,
+      "explanation": "Proof guarantees hold under assumptions; incorrect boundary assumptions can invalidate practical assurance."
+    },
+    {
+      "stage": "post",
+      "question": "What is CompCert and why is it significant?",
+      "options": ["A testing framework", "A formally verified C compiler that eliminates miscompilation bugs", "A package manager", "An operating system scheduler"],
+      "correct": 1,
+      "explanation": "CompCert proved that its compilation phases preserve program semantics, meaning the compiled code faithfully implements the source."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 17, "title": "Verified Software - seL4, CompCert, etc." }
+}

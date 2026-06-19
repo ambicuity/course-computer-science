@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Inorder traversal of a binary search tree produces what order?",
+      "options": [
+        "Random",
+        "Sorted ascending. Inorder visits left subtree (smaller), self, right subtree (larger).",
+        "Reverse insertion",
+        "Insertion order"
+      ],
+      "correct": 1,
+      "explanation": "For a BST, the invariant is left.data < self.data < right.data. Inorder traverses left → self → right, which is exactly the sorted order. This is why inorder is useful for BSTs: it lets you iterate in sorted order in O(n). For general (non-BST) trees, inorder doesn't have special meaning."
+    },
+    {
+      "stage": "pre",
+      "question": "How do you convert a recursive tree traversal to iterative?",
+      "options": [
+        "Use a global counter",
+        "Use an explicit stack: push the 'rest of the work' on the stack instead of recursing. The CPU's call stack becomes a data-structure stack you control.",
+        "Use threads",
+        "Use callbacks"
+      ],
+      "correct": 1,
+      "explanation": "The recursion stack is implicit — the OS allocates it for you. To go iterative, you create your own stack data structure. Each recursive call becomes a push; each return becomes a pop. Why bother? Two reasons: (1) avoid stack overflow on deep trees; (2) be able to pause and resume traversal (iterator pattern). All language stdlibs use this for tree iterators."
+    },
+    {
+      "stage": "post",
+      "question": "Morris traversal achieves O(1) space by:",
+      "options": [
+        "Magic",
+        "Temporarily threading each node's rightmost-leaf to its inorder successor — uses unused right-child pointers as parent links during traversal. Repaired before returning.",
+        "Pre-allocating a stack",
+        "Not visiting all nodes"
+      ],
+      "correct": 1,
+      "explanation": "Idea: for each node N with a left subtree, walk to N's inorder predecessor (rightmost node of left subtree) and set its `right` pointer to N. Now when you finish the left subtree, the predecessor's right naturally leads back to N. After visiting N, you remove the thread to restore the tree. Each edge is traversed at most twice → O(n) time, O(1) space. Used in embedded systems and in-place tree-to-list flattening."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the 'naïve diameter' algorithm cost O(n²) and the 'tuple recursion' fix it?",
+      "options": [
+        "Algorithms are different",
+        "Naïve: at each node, compute height of left and right separately, each O(subtree-size). Total = O(n²). Tuple recursion: return (height, diameter) together — height computed once per node.",
+        "Tuple is faster",
+        "Caching"
+      ],
+      "correct": 1,
+      "explanation": "Diameter = longest path between any two nodes. Naïve: for each node, diameter passing through it = height_left + height_right; max over all nodes. But computing height for every node is O(n) each → O(n²) overall. Tuple recursion: postorder returns (height, diameter) — height is O(1) compose from children's heights, diameter same. Each node visited once → O(n). This pattern recurs everywhere: balance check, sum-subtree-equal, valid-BST."
+    },
+    {
+      "stage": "post",
+      "question": "BFS (level-order traversal) of a binary tree uses what data structure, and what's its space cost?",
+      "options": [
+        "Stack, O(h)",
+        "Queue. Space O(width) — up to ~n/2 for a complete tree (the bottom level holds half the nodes).",
+        "Hash table, O(n)",
+        "None, O(1)"
+      ],
+      "correct": 1,
+      "explanation": "BFS uses a queue: dequeue → visit → enqueue children. At any point the queue holds at most one full level. For a complete binary tree of height h, the bottom level has ~2^h nodes ≈ n/2. So BFS space is O(n) in the worst case — actually MORE than DFS's O(h). Use BFS when you want level-order (shortest path in unweighted graphs); DFS otherwise."
+    },
+    {
+      "stage": "post",
+      "question": "Postorder traversal is the natural order for which operation?",
+      "options": [
+        "Searching",
+        "Freeing the tree: you free a node only after freeing both children. Also: evaluating expression trees (compute operand values before applying operator).",
+        "Inserting",
+        "Counting"
+      ],
+      "correct": 1,
+      "explanation": "Postorder = left, right, self. To free a node, its children must already be freed (otherwise free(parent) leaks them or invalidates pointers). For expression trees: to evaluate `a + b`, you must have evaluated `a` and `b` first. Compilers use postorder evaluation for code generation: each AST node's operands' values are pushed to the stack (or kept in registers) before the operator's instruction is emitted."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 7,
+    "title": "Binary Trees Traversal And Recursion Patterns"
+  }
+}

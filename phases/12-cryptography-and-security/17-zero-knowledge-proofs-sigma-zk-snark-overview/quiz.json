@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of the following is NOT one of the three pillars of zero-knowledge proofs?",
+      "options": [
+        "Completeness — an honest prover can always convince an honest verifier",
+        "Soundness — a dishonest prover cannot convince an honest verifier (except with negligible probability)",
+        "Efficiency — the proof must be smaller than the computation it verifies",
+        "Zero-knowledge — the verifier learns nothing except that the statement is true"
+      ],
+      "correct": 2,
+      "explanation": "The three pillars are completeness, soundness, and zero-knowledge. Efficiency is a desirable property (especially for SNARKs), but it is not a defining pillar of zero-knowledge proofs. A protocol can be zero-knowledge without being efficient."
+    },
+    {
+      "stage": "pre",
+      "question": "In a Sigma protocol for proving knowledge of a discrete log (Schnorr protocol), what are the three messages exchanged?",
+      "options": [
+        "Public key, private key, signature",
+        "Commitment (t = g^r), Challenge (random c), Response (s = r + c*x)",
+        "Encrypted secret, decryption key, plaintext",
+        "Hash, nonce, proof-of-work"
+      ],
+      "correct": 1,
+      "explanation": "The three moves are: (1) Prover sends commitment t = g^r for random r, (2) Verifier sends random challenge c, (3) Prover sends response s = r + c*x. The verifier then checks g^s == t * y^c. This is the canonical Sigma protocol pattern."
+    },
+    {
+      "stage": "post",
+      "question": "The Fiat-Shamir heuristic transforms an interactive proof into a non-interactive one by:",
+      "options": [
+        "Encrypting the witness with the verifier's public key",
+        "Replacing the verifier's random challenge with a hash of the prover's commitment (and public parameters)",
+        "Having the prover send multiple commitments and averaging the responses",
+        "Using a trusted third party to generate challenges for both parties"
+      ],
+      "correct": 1,
+      "explanation": "Fiat-Shamir replaces the verifier's random challenge with c = Hash(public_params || commitment). Since the prover cannot predict the hash output before choosing the commitment, this forces the prover to commit honestly. The resulting proof is publicly verifiable — anyone can recompute c and check the equation. Security holds in the random oracle model (ROM)."
+    },
+    {
+      "stage": "post",
+      "question": "Which statement best distinguishes zk-SNARKs from zk-STARKs?",
+      "options": [
+        "SNARKs have no trusted setup but larger proofs; STARKs require a trusted setup",
+        "SNARKs require a trusted setup and have small proofs but are not post-quantum secure; STARKs have no trusted setup, larger proofs, and are post-quantum secure",
+        "SNARKs use hash functions; STARKs use elliptic curve pairings",
+        "SNARKs are interactive; STARKs are non-interactive"
+      ],
+      "correct": 1,
+      "explanation": "SNARKs (especially Groth16) rely on a per-circuit trusted setup ceremony (toxic waste) and produce very small proofs (~200 bytes) using elliptic curve pairings — this makes them not post-quantum secure. STARKs are transparent (no trusted setup), use hash-based commitments for post-quantum security, but produce larger proofs (~100 KB). Both are non-interactive. The tradeoff is proof size + verification speed vs. trust assumptions + quantum resistance."
+    },
+    {
+      "stage": "pre",
+      "question": "What does a zero-knowledge proof allow a prover to demonstrate?",
+      "options": [
+        "That they know the encryption key",
+        "That a statement is true without revealing any information beyond the truth of the statement",
+        "That they have access to a quantum computer",
+        "That a computation was performed correctly by revealing all intermediate steps"
+      ],
+      "correct": 1,
+      "explanation": "A zero-knowledge proof lets a prover convince a verifier that a statement is true (e.g., 'I know the password') without revealing any additional information (the password itself). It must be complete (true statements are accepted), sound (false statements are rejected), and zero-knowledge (no extra info leaked)."
+    }
+  ],
+  "_meta": {
+    "phase": 12,
+    "lesson": 17,
+    "title": "Zero Knowledge Proofs Sigma Zk Snark Overview"
+  }
+}

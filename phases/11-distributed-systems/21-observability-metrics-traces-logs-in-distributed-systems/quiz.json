@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A distributed system alert fires: p99 latency exceeded 2 seconds. Which observability pillar should you consult first to determine which service is causing the slowdown?",
+      "options": [
+        "Logs — search all service logs for errors around the time of the alert",
+        "Metrics — look at counter rates to find which service has high error counts",
+        "Traces — find a slow trace and identify which span is the bottleneck",
+        "Dashboards — check which service's CPU utilization is highest"
+      ],
+      "correct": 2,
+      "explanation": "Metrics tell you *that* there's a problem (p99 latency is high). To find *where* the problem is, you need traces — they show you the exact path of a single request across service boundaries and reveal which span (and therefore which service) is slow. Logs would be the next step to learn *why* that service is slow."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the USE method prescribe for any system resource?",
+      "options": [
+        "Check uptime, scalability, and efficiency",
+        "Check utilization, saturation, and errors for every resource",
+        "Use structured logging, event tracing, and monitoring endpoints",
+        "Verify unicast, broadcast, and multicast statistics"
+      ],
+      "correct": 1,
+      "explanation": "The USE method (Brendan Gregg) states that for every resource, you should check: Utilization (% time the resource is busy), Saturation (how much work is queued/waiting), and Errors (how many operations failed). This gives a systematic checklist rather than ad-hoc troubleshooting."
+    },
+    {
+      "stage": "post",
+      "question": "What is the primary purpose of OpenTelemetry's Collector in the observability pipeline?",
+      "options": [
+        "It serves as thestorage backend for traces and metrics, replacing Jaeger and Prometheus",
+        "It instruments application code by automatically adding trace spans to every function call",
+        "It sits between services and backends to receive, process (sample, batch), and export telemetry data without changing application code",
+        "It encrypts all telemetry data in transit between services and ensures GDPR compliance"
+      ],
+      "correct": 2,
+      "explanation": "The OpenTelemetry Collector is the pipeline hub. Services emit telemetry (traces, metrics, logs) to the Collector, which can then sample (reduce trace volume), batch (reduce network calls), and route to different backends (Jaeger, Prometheus, Elasticsearch) — all without requiring code changes in the application."
+    },
+    {
+      "stage": "post",
+      "question": "A trace context header `traceparent: 00-abc123-def456-01` is sent from service A to service B. What should service B do with this header?",
+      "options": [
+        "Store it as a log entry and start a new trace with a fresh trace ID",
+        "Extract the trace ID (abc123) and parent span ID (def456), create a new child span with the same trace ID and def456 as its parent_span_id",
+        "Forward the header unchanged and do not create any spans — only the gateway should create spans",
+        "Use def456 as both the trace ID and span ID for all operations within service B"
+      ],
+      "correct": 1,
+      "explanation": "The W3C Trace Context header encodes: version-trace_id-parent_span_id-sampled. Service B reads the trace ID (abc123) and creates a new span with its own span_id, setting parent_span_id to def456. This creates the parent-child span relationship that makes the trace a tree. The trace ID stays the same across all services — that's what ties all spans into one logical request."
+    },
+    {
+      "stage": "post",
+      "question": "Why is structured logging (JSON with trace_id and span_id fields) preferred over unstructured logging (plain text lines) for distributed systems?",
+      "options": [
+        "JSON logs are smaller in size and reduce storage costs",
+        "Structured logs can be indexed, filtered, and correlated — you can query all logs for a specific trace_id and jump from a trace directly to the relevant error lines",
+        "Unstructured logs cannot be written to disk efficiently, while JSON logs can be streamed directly to memory",
+        "Structured logging replaces the need for both metrics and traces entirely"
+      ],
+      "correct": 1,
+      "explanation": "The key advantage of structured logging is that each field (trace_id, span_id, level, message) is individually queryable. You can say 'give me all ERROR-level logs with trace_id=abc123' and instantly find the root-cause log line. Unstructured text requires regex parsing and can't reliably correlate across services. Structured logging does NOT replace metrics and traces — it complements them."
+    },
+    {
+      "stage": "post",
+      "question": "You observe that p99 latency is high but p50 latency is normal. Which observability approach correctly diagnoses this?",
+      "options": [
+        "Increase log verbosity to DEBUG on all services and read through every log line",
+        "Look at average latency instead — p99 is an outlier metric that's not actionable",
+        "Query traces where duration exceeds the p99 threshold, find the slow span on the critical path, then find the error logs correlated by trace_id",
+        "Add more labels to every metric and build a dashboard with all possible permutations"
+      ],
+      "correct": 2,
+      "explanation": "This is the debugging journey: metric alert (p99 high) → find slow traces → find slow span on critical path → find error logs by trace_id. P99 being high while p50 is normal means a small fraction of requests is very slow — traces let you examine those specific slow requests. Averaging hides the problem. Over-logging adds noise. The systematic journey from metric to trace to log is the correct approach."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 21,
+    "title": "Observability Metrics Traces Logs In Distributed Systems"
+  }
+}

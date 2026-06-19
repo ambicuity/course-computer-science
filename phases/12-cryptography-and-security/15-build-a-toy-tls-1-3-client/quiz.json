@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 15,
+    "title": "Build a Toy TLS 1.3 Client"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which extensions are REQUIRED in a TLS 1.3 ClientHello for a full handshake with ECDHE?",
+      "options": [
+        "key_share, supported_versions, session_ticket, and padding",
+        "key_share, supported_versions, signature_algorithms, and supported_groups",
+        "key_share, pre_shared_key, early_data, and cookie",
+        "supported_versions, certificate_authorities, and oid_filters"
+      ],
+      "correct": 1,
+      "explanation": "TLS 1.3 requires key_share (carries the client's ephemeral X25519 public key for ECDHE), supported_versions (advertises TLS 1.3 support), signature_algorithms (tells the server what signing algorithms the client can verify in CertificateVerify), and supported_groups (lists the elliptic curves the client supports for key exchange). Without key_share, the server cannot compute an ECDHE shared secret. Without supported_versions, the server would treat the ClientHello as TLS 1.2."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of the key_share extension in the TLS 1.3 ClientHello?",
+      "options": [
+        "It shares a symmetric key that both sides use for encryption",
+        "It carries the client's ephemeral Diffie-Hellman public key so the server can compute the ECDHE shared secret",
+        "It lists all of the client's previous session keys for potential resumption",
+        "It requests that the server share its private key for the session"
+      ],
+      "correct": 1,
+      "explanation": "The key_share extension carries the client's ephemeral public key for one or more named groups (e.g., X25519). The server selects a compatible group and computes the ECDHE shared secret using its own ephemeral private key and the client's public key. This shared secret feeds into HKDF-Extract to produce the handshake secret. Without key_share, the server would need to negotiate a separate key exchange mechanism, which TLS 1.3 does not support for full handshakes."
+    },
+    {
+      "stage": "post",
+      "question": "Why does ECDHE in TLS 1.3 provide forward secrecy, and why was this impossible with RSA key exchange in TLS 1.2?",
+      "options": [
+        "ECDHE uses larger keys that cannot be factored; RSA keys can be factored given enough time",
+        "ECDHE generates ephemeral keys per session; RSA key exchange encrypts the pre-master secret with the server's long-term RSA key, so compromising the RSA key decrypts all past sessions",
+        "ECDHE uses a different hash function that is post-quantum secure",
+        "ECDHE requires both sides to generate new keys every minute, preventing long-term key compromise"
+      ],
+      "correct": 1,
+      "explanation": "Forward secrecy means compromising the server's long-term key does not reveal past session keys. In TLS 1.2 RSA key exchange, the client generated a pre-master secret, encrypted it with the server's RSA public key, and sent it. Anyone who later obtained the server's RSA private key could decrypt the recorded ciphertext and recover the pre-master secret, then derive the session keys. In TLS 1.3 ECDHE, both sides generate ephemeral keypairs that live only for the duration of the handshake. The shared secret g^{ab} depends on both ephemeral keys, which are discarded immediately after the handshake. Recording the ciphertext is useless — the ephemeral keys no longer exist."
+    },
+    {
+      "stage": "post",
+      "question": "What role does the CertificateVerify message play in a TLS 1.3 handshake, and what would happen if a client accepted a handshake without verifying it?",
+      "options": [
+        "CertificateVerify proves the server knows the cipher suite; without it, the client might negotiate a weaker cipher",
+        "CertificateVerify proves the server controls the private key corresponding to its certificate; without verifying it, the client could be talking to any attacker who completed the ECDHE exchange",
+        "CertificateVerify confirms the client's Finished message is correct; without it, the handshake integrity check is skipped",
+        "CertificateVerify contains the server's OCSP response; without it, the client cannot check certificate revocation"
+      ],
+      "correct": 1,
+      "explanation": "CertificateVerify contains an Ed25519 (or other) signature over the transcript hash. This proves the server controls the private key corresponding to the public key in its certificate — i.e., that it is the legitimate owner of that identity. If the client skipped CertificateVerify verification, a man-in-the-middle who completed the ECDHE exchange (which only requires generating an ephemeral keypair, not knowing any long-term secret) could impersonate the server. The attacker would compute its own ECDHE shared secret with the client, derive keys, and the client would have no way to detect the impersonation. CertificateVerify binds the cryptographic handshake to the server's long-term identity."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of the Certificate message in a TLS handshake?",
+      "options": [
+        "To encrypt the session keys",
+        "To allow the client to verify the server's identity by checking the certificate chain against trusted root CAs",
+        "To compress the transmitted data",
+        "To negotiate the cipher suite"
+      ],
+      "correct": 1,
+      "explanation": "The server sends its X.509 certificate (containing its public key and identity) during the handshake. The client verifies: (1) the certificate is signed by a trusted CA, (2) the domain name matches, (3) it hasn't expired or been revoked. This prevents man-in-the-middle attacks."
+    }
+  ]
+}

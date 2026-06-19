@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which Boolean identity has no analog in integer arithmetic?",
+      "options": [
+        "Commutativity: a + b = b + a",
+        "Distributivity OVER addition: a + (b · c) = (a + b)(a + c)",
+        "Identity: a + 0 = a",
+        "Idempotence: a + a = a (in integers, 5 + 5 ≠ 5)"
+      ],
+      "correct": 1,
+      "explanation": "Both (B) and (D) are unique to Boolean algebra. The most striking is the second distributive law: a + (b · c) = (a + b)(a + c). In integers, 2 + (3 · 5) = 17 ≠ (2 + 3)(2 + 5) = 35. This identity is what enables CNF and SAT solvers."
+    },
+    {
+      "stage": "pre",
+      "question": "Why are K-map cells laid out in Gray-code order (00, 01, 11, 10)?",
+      "options": [
+        "Tradition",
+        "So adjacent cells differ in exactly one variable; adjacency = possibility to merge into a larger implicant",
+        "To save space",
+        "Required for SOP form"
+      ],
+      "correct": 1,
+      "explanation": "Adjacency in a K-map encodes 'differs by exactly one variable.' Two adjacent 1-cells whose differing variable is x can be merged into a single product term that *doesn't* mention x — saving a literal. Gray code makes this possible by walking 00 → 01 → 11 → 10."
+    },
+    {
+      "stage": "post",
+      "question": "How many product terms does the *canonical SOP* of f(a,b,c) = majority(a,b,c) contain?",
+      "options": [
+        "1",
+        "3",
+        "4 (one per 1-row in the 8-row truth table)",
+        "8"
+      ],
+      "correct": 2,
+      "explanation": "Majority(a,b,c) is 1 in 4 rows: 011, 101, 110, 111. Canonical SOP has one minterm per 1-row → 4 terms. Quine-McCluskey then merges them into ab + ac + bc (3 terms, much smaller)."
+    },
+    {
+      "stage": "post",
+      "question": "What does a 2×4 = 8-cell rectangle in a 4-variable K-map simplify to?",
+      "options": [
+        "An 8-literal product term",
+        "A 4-literal product term",
+        "A 1-literal product term (only one variable doesn't vary across the rectangle)",
+        "A 2-literal product term"
+      ],
+      "correct": 2,
+      "explanation": "A 2×4 rectangle on a 4-variable K-map covers 8 minterms — half the table. Across those 8 cells, 3 of the 4 variables take every possible value (so they don't appear in the term); only the fourth variable is constant. Result: 1 literal. Bigger rectangle → fewer literals."
+    },
+    {
+      "stage": "post",
+      "question": "Quine-McCluskey runtime in the worst case is:",
+      "options": [
+        "Polynomial",
+        "Exponential — Boolean minimization is NP-hard in general",
+        "Linear",
+        "Constant"
+      ],
+      "correct": 1,
+      "explanation": "Optimal Boolean minimization (set-cover over prime implicants) is NP-hard. Quine-McCluskey is correct but exponential. Production tools (Espresso, ABC) use heuristics that work well in practice but don't guarantee optimality. For ≤ ~6 variables, exact QM is fine."
+    },
+    {
+      "stage": "post",
+      "question": "How does a compiler exploit Boolean algebra in code like `if (a && b) || (a && c)`?",
+      "options": [
+        "It doesn't",
+        "It factors via the distributive law: `if (a && (b || c))` — saves one comparison and one branch, helping branch prediction.",
+        "It always emits the canonical SOP form",
+        "It evaluates b and c in parallel"
+      ],
+      "correct": 1,
+      "explanation": "Compilers (LLVM, GCC) apply Boolean factoring in mid-level optimization. `(a && b) || (a && c)` becomes `a && (b || c)`, removing a redundant test of `a` and shortening the branch sequence. Same axiom (distributivity); different deployment target. You'll see this in the IR optimization pass of Phase 08."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 16,
+    "title": "Boolean Algebra Karnaugh Maps"
+  }
+}

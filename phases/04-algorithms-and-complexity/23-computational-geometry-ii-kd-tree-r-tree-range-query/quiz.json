@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 23,
+    "title": "Computational Geometry II — kd-Tree, R-Tree, Range Query",
+    "note": "4 MCQs: 2 pre-lesson, 2 post-lesson."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a 2D kd-tree, which dimension is used to split points at depth 0, and how is the split value chosen?",
+      "options": [
+        "y-dimension, split at the mean",
+        "x-dimension, split at the median",
+        "x-dimension, split at the mean",
+        "Alternates randomly between x and y"
+      ],
+      "correct": 1,
+      "explanation": "At depth 0, a kd-tree splits on the x-dimension (depth % 2 == 0 → x). The split value is the median point's x-coordinate, which ensures the tree is balanced with roughly equal points on each side. This alternation (x, y, x, y, ...) continues at each level."
+    },
+    {
+      "stage": "pre",
+      "question": "During nearest-neighbor search on a kd-tree, you visit a node and compute distance d to the query point. The perpendicular distance from the query to the opposite subtree's split plane is p. When can you prune (skip) the opposite subtree?",
+      "options": [
+        "When p < d",
+        "When d < p",
+        "When p == d",
+        "You can never prune in kd-tree search"
+      ],
+      "correct": 1,
+      "explanation": "Pruning is safe when the current best distance d is less than the perpendicular distance p to the opposite split plane. Every point in the opposite subtree has its split-axis coordinate at least p away from the query, so none can be closer than d. If d >= p, the opposite subtree might contain a closer point and must be explored."
+    },
+    {
+      "stage": "post",
+      "question": "In an R-tree, each internal node stores a minimum bounding rectangle (MBR) covering all its children. During insertion, the quadratic split heuristic picks two seed entries by maximizing what quantity?",
+      "options": [
+        "The number of entries in each group",
+        "The area wasted if the two entries are placed in the same group",
+        "The perimeter of the resulting MBRs",
+        "The depth of the subtrees"
+      ],
+      "correct": 1,
+      "explanation": "Quadratic split picks the pair of entries that would waste the most area if grouped together — i.e., the pair whose combined MBR has the largest area minus the sum of their individual areas. These become seeds for the two new groups, and remaining entries are assigned to whichever group needs the least MBR enlargement."
+    },
+    {
+      "stage": "post",
+      "question": "A kd-tree stores n points in 2D. What is the average-case time complexity for a range query reporting r points inside an axis-aligned rectangle?",
+      "options": [
+        "O(log n + r)",
+        "O(n + r)",
+        "O(√n + r)",
+        "O(n log n)"
+      ],
+      "correct": 2,
+      "explanation": "A 2D kd-tree range query visits O(√n) nodes on average because the splitting lines form a grid-like partition — a rectangle crosses roughly √n cells. Each visited node either falls inside the query rectangle (contributing to r) or is a boundary node. The total is O(√n + r), which is better than the O(n + r) brute force but worse than an R-tree's O(log n + r) for non-overlapping data."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of a kd-tree?",
+      "options": [
+        "To sort points by their x-coordinate only",
+        "To partition k-dimensional space for efficient nearest-neighbor and range queries",
+        "To compute convex hulls in O(n) time",
+        "To store a complete graph's adjacency matrix"
+      ],
+      "correct": 1,
+      "explanation": "A kd-tree recursively partitions k-dimensional space by splitting along alternating dimensions. This enables nearest-neighbor queries in O(log n) average time and range queries by pruning entire subtrees that fall outside the query region."
+    }
+  ]
+}

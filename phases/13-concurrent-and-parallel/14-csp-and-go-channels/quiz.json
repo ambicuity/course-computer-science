@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 14,
+    "title": "CSP and Go Channels"
+  },
+  "scaffold_stub": false,
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental difference between CSP-style concurrency and shared-memory concurrency?",
+      "options": [
+        "CSP uses channels for communication; shared memory uses locks to synchronise access to shared variables.",
+        "CSP uses threads; shared memory uses goroutines.",
+        "There is no difference — they are two names for the same model.",
+        "CSP only works on single-core machines; shared memory requires multiple cores."
+      ],
+      "correct": 0,
+      "explanation": "The CSP model (Hoare, 1978) replaces shared state with channel-based communication. Each process owns its data and sends copies over channels. Shared-memory concurrency relies on locks to protect shared variables from races. Go implements CSP with goroutines and channels."
+    },
+    {
+      "stage": "pre",
+      "question": "In Go, what happens when a goroutine sends a value on an unbuffered channel and no other goroutine is ready to receive?",
+      "options": [
+        "The value is buffered and the goroutine continues immediately.",
+        "The send operation blocks until a receiver is ready.",
+        "The program panics with a deadlock error.",
+        "The value is silently discarded."
+      ],
+      "correct": 1,
+      "explanation": "An unbuffered channel (capacity 0) requires a sender and receiver to rendezvous. The send blocks until a matching receive occurs. This synchronous handoff is the core synchronisation primitive in CSP."
+    },
+    {
+      "stage": "post",
+      "question": "A goroutine reads from a channel in an infinite loop using `for v := range ch`. How does it detect that no more values will arrive?",
+      "options": [
+        "The channel returns a sentinel error value.",
+        "The sender must close the channel; range exits when the channel is closed.",
+        "The goroutine checks the channel length with len(ch).",
+        "Range exits automatically when the buffer is empty."
+      ],
+      "correct": 1,
+      "explanation": "Closing a channel with `close(ch)` is the signal that no more values will be sent. The `for v := range ch` loop reads until the channel is closed, then exits. Without a close, the receiver blocks forever — a goroutine leak."
+    },
+    {
+      "stage": "post",
+      "question": "Which statement about the quit channel pattern is correct?",
+      "options": [
+        "You must send a value on the quit channel for the worker to notice it.",
+        "You can signal a goroutine to stop by closing the quit channel, which unblocks all goroutines waiting on it.",
+        "The quit channel must be buffered or the goroutine will deadlock.",
+        "The select statement cannot include both a work channel and a quit channel in the same case list."
+      ],
+      "correct": 1,
+      "explanation": "Closing a channel broadcasts the zero value to all waiting receivers. In the quit channel pattern, the worker `select`s on both the work and quit channels; when quit is closed, the `case <-quit` fires and the worker returns. This prevents goroutine leaks by giving a deterministic shutdown path."
+    },
+    {
+      "stage": "pre",
+      "question": "What does CSP (Communicating Sequential Processes) advocate for concurrent programming?",
+      "options": [
+        "Using shared memory and locks for communication",
+        "Communicating between processes via channels rather than shared state — 'Don't communicate by sharing memory; share memory by communicating'",
+        "Running all code sequentially",
+        "Using global variables for all state"
+      ],
+      "correct": 1,
+      "explanation": "CSP (Hoare, 1978) models concurrent systems as independent processes that communicate through synchronous channels. Go implements this with goroutines and channels. The philosophy is that shared mutable state is the root of concurrency bugs — channels provide a safer coordination mechanism."
+    }
+  ]
+}

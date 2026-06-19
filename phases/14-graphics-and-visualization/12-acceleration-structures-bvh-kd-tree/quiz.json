@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 12,
+    "title": "Acceleration Structures — BVH, kd-Tree"
+  },
+  "questions": [
+    {
+      "question": "A brute-force ray tracer checks every primitive for every ray. How does a BVH reduce the number of intersection tests per ray?",
+      "options": [
+        "It sorts primitives by distance so closer ones are tested first",
+        "It organizes primitives into a tree of bounding boxes; if a ray misses a parent box, it skips testing all primitives in that subtree",
+        "It replaces all primitives with approximations that are faster to intersect",
+        "It uses the GPU to test all primitives in parallel instead of sequentially"
+      ],
+      "correct": 1,
+      "explanation": "The BVH groups primitives into AABBs in a tree. When a ray misses a parent AABB, the entire subtree is pruned — no primitives in that subtree are tested. This reduces tests from O(n) to O(log n) in practice.",
+      "stage": "pre"
+    },
+    {
+      "question": "The SAH (Surface Area Heuristic) estimates the cost of a split as: C = C_trav + P(hit_left) * C_left + P(hit_right) * C_right. What does P(hit_left) represent and how is it computed?",
+      "options": [
+        "The probability a random ray hits any primitive in the left subtree, computed as the number of left primitives divided by total primitives",
+        "The probability a random ray hits the left child's AABB, computed as the ratio of the left child's surface area to the parent's surface area",
+        "The probability a random ray hits the left child's AABB, computed as the left child's volume divided by the parent's volume",
+        "The ratio of the number of left primitives to right primitives, weighted by the distance from the split plane"
+      ],
+      "correct": 1,
+      "explanation": "SAH models P(hit_left) as the ratio SA(left_child) / SA(parent). The intuition: a randomly oriented ray hitting the parent bounding box is more likely to hit a child with larger surface area. Volume is not used because a ray's chance of hitting a box depends on its exposed surface, not its volume.",
+      "stage": "pre"
+    },
+    {
+      "question": "In the slab method for AABB–ray intersection, you compute t_min and t_max for each of the three axes. Under what condition does the ray miss the AABB?",
+      "options": [
+        "When any individual axis has t_min > t_max for that axis",
+        "When the maximum of all enter-t values exceeds the minimum of all exit-t values, or the overall exit is behind the ray",
+        "When any axis has a zero-direction component (ray is parallel to that slab)",
+        "When the ray origin is outside the AABB on at least one axis"
+      ],
+      "correct": 1,
+      "explanation": "The ray hits the AABB only if all three slab intervals overlap. This means max(t_x_enter, t_y_enter, t_z_enter) must be less than min(t_x_exit, t_y_exit, t_z_exit), and the exit must be in front of the ray (t_exit > 0). If the overall enter exceeds the overall exit, at least two slabs don't overlap — the ray misses.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why is a BVH generally preferred over a kd-tree for dynamic scenes (where objects move each frame)?",
+      "options": [
+        "BVH trees are always shallower than kd-trees, so traversal is faster",
+        "BVH uses object partitioning — each primitive lives in exactly one node — so moving objects requires only refitting AABBs rather than rebuilding spatial cells",
+        "kd-trees cannot handle spheres and only work with triangles",
+        "BVH construction is O(n) while kd-tree construction is O(n²), making BVH cheaper to rebuild"
+      ],
+      "correct": 1,
+      "explanation": "In a BVH, each primitive belongs to exactly one leaf node (object partitioning). When objects move, you can refit — just recompute the AABB bounds bottom-up without changing the tree topology. kd-trees use spatial partitioning; a moving object may cross split planes, requiring a full rebuild of the affected subtrees.",
+      "stage": "post"
+    },
+    {
+      "question": "A kd-tree and a BVH both accelerate ray-scene intersection. Which statement correctly describes the key structural difference?",
+      "options": [
+        "A BVH splits space into non-overlapping cells; a kd-tree groups objects into overlapping bounding volumes",
+        "A BVH groups primitives into bounding volumes (object partitioning — siblings may overlap spatially); a kd-tree splits space into non-overlapping cells (spatial partitioning — no overlap but primitives may appear in multiple cells)",
+        "A BVH only works with axis-aligned splits; a kd-tree can split along arbitrary planes",
+        "A BVH always has exactly log₂(n) depth; a kd-tree depth depends on the scene geometry"
+      ],
+      "correct": 1,
+      "explanation": "BVH is object-partitioning: each primitive is in exactly one node, but sibling AABBs can spatially overlap. kd-trees are spatial-partitioning: space is divided into non-overlapping cells, but a large primitive straddling a split plane must be stored in multiple cells. This is the fundamental tradeoff: BVH has lower memory and easier updates; kd-tree has cleaner spatial separation.",
+      "stage": "post"
+    },
+    {
+      "question": "For a scene with only 5 triangles, a student builds a BVH and observes that ray tracing with the BVH is actually slower than brute force. What is the most likely explanation?",
+      "options": [
+        "The BVH was constructed incorrectly — it should always be faster",
+        "The BVH traversal overhead (AABB intersection tests per node) exceeds the cost of directly testing all 5 triangles; acceleration structures only help when n is large enough",
+        "AABB intersection is an O(n²) algorithm, making it slower for small n",
+        "The slab method has a bug that makes it slower for fewer than 10 primitives"
+      ],
+      "correct": 1,
+      "explanation": "Acceleration structures add overhead per node visited (AABB test, branching, stack operations). For very small scenes, testing all 5 primitives directly (5 ray-triangle tests) is cheaper than traversing 3–4 BVH nodes (3–4 AABB tests) plus the leaf tests. BVHs typically become beneficial at 100+ primitives.",
+      "stage": "post"
+    }
+  ]
+}

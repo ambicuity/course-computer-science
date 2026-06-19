@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does mutation testing primarily evaluate?",
+      "options": ["Code formatting", "Test suite sensitivity to behavioral changes", "Runtime performance", "Dependency freshness"],
+      "correct": 1,
+      "explanation": "Mutation testing checks whether tests fail when code is intentionally changed in small ways."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a 'mutant' in mutation testing?",
+      "options": ["A copy of the program with a small syntactic change", "A test that fails randomly", "A thread race condition", "A memory leak"],
+      "correct": 0,
+      "explanation": "A mutant is a copy of the original program with one small change (e.g., replacing + with -, changing > to >=). If your tests still pass on the mutant, either the change is equivalent or your tests are weak."
+    },
+    {
+      "stage": "post",
+      "question": "A high coverage suite has low mutation score. Most likely interpretation?",
+      "options": ["Coverage tool is broken", "Assertions are weak or miss edge semantics", "Tests are too slow", "No mutants were generated"],
+      "correct": 1,
+      "explanation": "Coverage can be high while assertions remain shallow; mutation testing exposes this mismatch."
+    },
+    {
+      "stage": "post",
+      "question": "Why should teams review surviving mutants manually?",
+      "options": ["All survivors are equivalent", "Some survivors reflect missing tests while others may be equivalent", "To improve code style", "To reduce CI duration"],
+      "correct": 1,
+      "explanation": "Survivors are not uniformly actionable; manual triage separates true gaps from equivalent cases."
+    },
+    {
+      "stage": "post",
+      "question": "What is the mutation score, and what does a score of 100% mean?",
+      "options": ["100% means all code is tested", "100% means all mutants were killed by tests — every change to the code caused at least one test to fail", "100% means zero bugs exist", "100% means all branches are covered"],
+      "correct": 1,
+      "explanation": "Mutation score = killed mutants / total mutants. A score of 100% means every mutant (small code change) was detected by at least one test. This is stronger than line or branch coverage — it measures whether tests actually verify behavior, not just execute code."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 6, "title": "Mutation Testing" }
+}

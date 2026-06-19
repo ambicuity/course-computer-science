@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Splay trees achieve O(log n) without an explicit balance invariant. How?",
+      "options": [
+        "Magic",
+        "Every access SPLAYS the accessed node to the root via rotations. Each access does work proportional to its depth; the splay halves the depth contribution at each step. Amortized O(log n) by Sleator-Tarjan's potential argument.",
+        "Random rotations",
+        "Coloring"
+      ],
+      "correct": 1,
+      "explanation": "Splay trees do NO maintenance to keep balance; they reshape the tree on each access. The accessed node bubbles to the root via zig-zig and zig-zag rotations. The potential argument: Φ = Σ log(size). Each splay step's amortized cost is bounded by the change in rank. Total work for n accesses is O(n log n), but ANY individual access can be O(n)."
+    },
+    {
+      "stage": "pre",
+      "question": "A treap is a BST in 'key' and a heap in what?",
+      "options": [
+        "Hash",
+        "A random priority assigned at insert time. Each node carries (key, priority); the tree is BST on key, max-heap on priority. Random priorities → expected log-n height.",
+        "Insertion time",
+        "Memory address"
+      ],
+      "correct": 1,
+      "explanation": "Treaps decouple key (controlled by user) from priority (controlled by RNG). The tree's structure depends only on the multiset of (key, priority) pairs — and is identical to what you'd get by inserting in DECREASING-priority order. Random priorities make this 'as if random insertion order' — expected depth O(log n), regardless of how the adversary picks keys."
+    },
+    {
+      "stage": "post",
+      "question": "Why don't splay trees support thread-safe concurrent reads?",
+      "options": [
+        "C limitations",
+        "Every read MUTATES the tree (splays the accessed node to the root). Multiple readers conflict; you'd need a writer lock for every read. RB and AVL don't mutate on read.",
+        "Race conditions in malloc",
+        "They're new"
+      ],
+      "correct": 1,
+      "explanation": "Splay's 'self-adjusting' nature means find() rewrites pointers. Two threads finding different keys would corrupt the tree without coordination. This eliminates splay from most server-side use cases where you have many readers per writer. AVL/RB allow lock-free reads (with proper atomics) because the tree shape is invariant after a write."
+    },
+    {
+      "stage": "post",
+      "question": "Treaps natively support split(T, k) and join(T1, T2) in O(log n). Why is this powerful?",
+      "options": [
+        "Saves memory",
+        "Enables 'implicit treaps' / order-statistic trees — O(log n) insert-at-index, delete-by-index, reverse-range. The workhorse data structure of competitive programming for sequence-with-fast-rebuild problems.",
+        "Reduces height",
+        "Crypto"
+      ],
+      "correct": 1,
+      "explanation": "Split divides T into (keys ≤ k, keys > k); Join merges two treaps when all keys in T1 < all keys in T2. Both O(log n) via rotations. Together they give: take any subrange of an array, reverse it, in O(log n). Build an order-statistic tree that supports rank/select on the fly. Competitive programmers reach for treaps when standard balanced BSTs can't do these in O(log n)."
+    },
+    {
+      "stage": "post",
+      "question": "Splay's 'working-set bound' says what?",
+      "options": [
+        "Memory is bounded",
+        "Accessing the same k elements repeatedly costs O(k + log n) per access amortized, not O(log n). Hot keys naturally migrate to the root.",
+        "Cache size",
+        "Number of users"
+      ],
+      "correct": 1,
+      "explanation": "Splay trees adapt: frequently-accessed keys stay near the root after splaying. So if your workload is 'mostly 100 hot keys out of 1M total', splay finds them in O(log 100) = ~7 ops instead of O(log 1M) = ~20. This 'cache-aware' property motivated splay's use in OpenBSD malloc and the Win98 file system. AVL/RB can't do this — they don't adapt to access patterns."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the EXPECTED height of a treap O(log n), even when keys are inserted in adversarial order?",
+      "options": [
+        "Randomness in keys",
+        "Tree structure depends only on the priority ORDER (the highest-priority key is at root, then recursively for each subtree). For uniformly random priorities, this is equivalent to inserting keys in a uniformly random ORDER — and the expected height of a random BST is O(log n).",
+        "Rotations equalize",
+        "Memory allocator"
+      ],
+      "correct": 1,
+      "explanation": "Lemma: in a treap, the node with highest priority is the root; the structure of the left and right subtrees is recursively determined. So the treap is identical to the BST built by inserting keys in DECREASING priority order. Random priorities → uniformly random permutation → expected depth O(log n) (a classical result on random BST height). Adversary controls keys but cannot influence the priority assignment, so cannot force a bad tree."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 11,
+    "title": "Splay Trees Treaps"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 1,
+    "title": "What Counts as Computation?"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of the following is the best informal description of the Church-Turing thesis?",
+      "options": [
+        "Turing machines can solve any problem faster than other models",
+        "Any function that is effectively calculable by any mechanical procedure is computable by a Turing machine",
+        "All programming languages are equivalent in syntax",
+        "Every problem that can be stated can be solved by a computer"
+      ],
+      "correct": 1,
+      "explanation": "The Church-Turing thesis says that Turing machines capture every notion of 'effective computation.' It is not about speed (that is complexity theory) and it does not claim every stated problem is solvable — the halting problem is a counterexample. The thesis is a bridge between the informal idea of 'algorithm' and the formal model of a Turing machine."
+    },
+    {
+      "stage": "pre",
+      "question": "A vending machine has a fixed number of states and processes coins one at a time. What computation model is it closest to?",
+      "options": [
+        "Turing machine",
+        "Pushdown automaton",
+        "Deterministic finite automaton (DFA)",
+        "Lambda calculus"
+      ],
+      "correct": 2,
+      "explanation": "A vending machine is a DFA: finite states, no external memory (no stack, no tape), deterministic transitions. Each coin is an input symbol; the machine transitions to a new state based solely on its current state and the coin. This is exactly the DFA model (Q, Σ, δ, q₀, F) applied to a real-world scenario."
+    },
+    {
+      "stage": "post",
+      "question": "Why can't a finite automaton recognize the language L = {0ⁿ1ⁿ | n ≥ 0}?",
+      "options": [
+        "The alphabet is too small",
+        "Checking equal counts of 0s and 1s requires remembering an arbitrary number, which needs unbounded memory — a DFA has only finitely many states",
+        "Finite automata cannot process binary input",
+        "The language is infinite, and finite automata can only recognize finite languages"
+      ],
+      "correct": 1,
+      "explanation": "A DFA has |Q| states. On input 0^k where k > |Q|, the pigeonhole principle guarantees the machine revisits a state — it cannot distinguish between different counts of 0s. To verify #0s = #1s, you need to count to an arbitrary n, which requires unbounded memory. A pushdown automaton (with a stack) can handle this specific language, but a DFA cannot."
+    },
+    {
+      "stage": "post",
+      "question": "In the computation hierarchy DFA ⊂ PDA ⊂ TM, what extra capability does each level add?",
+      "options": [
+        "DFA adds speed, PDA adds memory, TM adds parallelism",
+        "DFA: fixed states only; PDA: adds an unbounded stack; TM: adds an unbounded read/write tape — each strictly more powerful than the last",
+        "They are all equivalent in power",
+        "DFA handles text, PDA handles numbers, TM handles everything"
+      ],
+      "correct": 1,
+      "explanation": "The hierarchy is about memory: DFAs have only finitely many states (no external memory). PDAs add an unbounded stack, enabling them to match/count in one dimension (parentheses, 0ⁿ1ⁿ). TMs add an unbounded read/write tape, enabling them to simulate any algorithm. Each level strictly subsumes the previous — there are languages PDAs recognize that DFAs cannot, and languages TMs recognize that PDAs cannot."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the Church-Turing thesis?",
+      "options": [
+        "A proven mathematical theorem about P vs NP",
+        "The informal claim that any effectively computable function can be computed by a Turing machine",
+        "A statement about the speed of quantum computers",
+        "A definition of what constitutes a programming language"
+      ],
+      "correct": 1,
+      "explanation": "The Church-Turing thesis states that any function that can be effectively computed by any reasonable means can also be computed by a Turing machine. It's not provable (it relates an informal concept to a formal one) but is universally accepted as the foundation of computability theory."
+    }
+  ]
+}

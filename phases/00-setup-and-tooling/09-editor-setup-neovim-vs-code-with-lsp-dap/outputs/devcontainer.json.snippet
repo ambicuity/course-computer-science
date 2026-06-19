@@ -1,0 +1,30 @@
+{
+  "name": "course-computer-science",
+  "image": "mcr.microsoft.com/devcontainers/cpp:ubuntu-22.04",
+
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": { "version": "stable" },
+    "ghcr.io/devcontainers/features/go:1":   { "version": "1.22" },
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.12" },
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" }
+  },
+
+  "postCreateCommand": "bash scripts/install-lsp-servers.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "llvm-vs-code-extensions.vscode-clangd",
+        "rust-lang.rust-analyzer",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "golang.go",
+        "vadimcn.vscode-lldb"
+      ],
+      "settings": {
+        "C_Cpp.intelliSenseEngine": "disabled",
+        "clangd.path": "/usr/bin/clangd"
+      }
+    }
+  }
+}

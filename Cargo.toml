@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = [
+    "phases/11-distributed-systems/07-consensus-i-paxos-single-decree/code",
+    "phases/11-distributed-systems/09-consensus-iii-raft-with-a-working-implementation/code",
+    "phases/11-distributed-systems/10-replication-leader-follower-quorum/code",
+    "phases/11-distributed-systems/12-crdts-counters-sets-sequences/code",
+    "phases/11-distributed-systems/21-observability-metrics-traces-logs-in-distributed-systems/code",
+    "phases/12-cryptography-and-security/03-symmetric-i-stream-ciphers-and-one-time-pad/code",
+    "phases/12-cryptography-and-security/04-symmetric-ii-block-ciphers-aes-internals/code",
+]
+
+[workspace.package]
+edition = "2021"
+authors = ["Ritesh Rana <contact@riteshrana.engineer>"]
+license = "MIT"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+
+[profile.bench]
+inherits = "release"
+debug = true

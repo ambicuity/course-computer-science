@@ -1,0 +1,11 @@
+[workspace]
+
+[package]
+name = "work-stealing-scheduler"
+version = "1.0.0"
+edition = "2021"
+description = "Phase 13 Capstone — Work-Stealing Scheduler + Lock-Free Queue"
+
+[[bin]]
+name = "work-stealing-scheduler"
+path = "main.rs"

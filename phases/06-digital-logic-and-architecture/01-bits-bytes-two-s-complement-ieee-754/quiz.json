@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In two's complement, what is the range of an n-bit signed integer?",
+      "options": [
+        "-(2^(n-1) - 1) to 2^(n-1) - 1",
+        "-2^(n-1) to 2^(n-1) - 1",
+        "-2^n to 2^n - 1",
+        "0 to 2^n - 1"
+      ],
+      "correct": 1,
+      "explanation": "Two's complement uses one bit for sign. The range is -2^(n-1) to 2^(n-1)-1. For 8 bits: -128 to 127. Note the asymmetry: there is one more negative value than positive — negating -2^(n-1) overflows back to itself."
+    },
+    {
+      "stage": "pre",
+      "question": "IEEE 754 single-precision uses 8 bits for the exponent. What is the bias?",
+      "options": [
+        "64",
+        "127",
+        "128",
+        "255"
+      ],
+      "correct": 1,
+      "explanation": "The bias for single precision is 2^(8-1) - 1 = 127. This means stored exponent 0 represents actual exponent -127 (for subnormals), stored exponent 1 represents -126 (smallest normalized), and stored exponent 254 represents +127 (largest normalized). The bias centers the exponent range around zero."
+    },
+    {
+      "stage": "post",
+      "question": "You need to negate -2147483648 (INT32_MIN) in two's complement. What happens?",
+      "options": [
+        "The result is 2147483648, which fits in 32 bits",
+        "Invert + 1 produces the same bit pattern (0x80000000), so the result is still -2147483648 — the one value with no positive counterpart",
+        "The CPU raises an exception",
+        "The result is 0"
+      ],
+      "correct": 1,
+      "explanation": "INT32_MIN = 0x80000000. Inverting gives 0x7FFFFFFF (= 2147483647). Adding 1 gives 0x80000000 (= -2147483648 again). This is the one asymmetry in two's complement: the most negative number cannot be negated within the same width. In C, computing -INT32_MIN is undefined behavior for this reason."
+    },
+    {
+      "stage": "post",
+      "question": "What does the bitwise operation `x & (x - 1)` do?",
+      "options": [
+        "Sets all bits to 1",
+        "Isolates the lowest set bit",
+        "Clears the lowest set bit",
+        "Flips all bits"
+      ],
+      "correct": 2,
+      "explanation": "Subtracting 1 from x flips all bits up to and including the lowest set bit. ANDing with x therefore clears exactly that one bit. This is Kernighan's trick: looping `while (x) { x &= x - 1; count++; }` counts set bits in O(set bits) time, which is faster than checking all 32 positions."
+    },
+    {
+      "stage": "pre",
+      "question": "How many distinct values can be represented with 8 bits?",
+      "options": [
+        "128",
+        "255",
+        "256",
+        "512"
+      ],
+      "correct": 2,
+      "explanation": "8 bits can represent 2^8 = 256 distinct values. In unsigned interpretation, that's 0 through 255. In two's complement, it's -128 through 127 (still 256 values). The number of values is always 2^n for n bits."
+    }
+  ],
+  "_meta": {
+    "phase": 6,
+    "lesson": 1,
+    "title": "Bits Bytes Two S Complement Ieee 754"
+  }
+}

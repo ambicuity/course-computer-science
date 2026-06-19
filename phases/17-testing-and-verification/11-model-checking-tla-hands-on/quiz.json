@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does model checking provide compared with example-based tests?",
+      "options": ["Only faster execution", "Systematic exploration of bounded state transitions", "Automatic code generation", "Guaranteed performance tuning"],
+      "correct": 1,
+      "explanation": "Model checking explores reachable states under the model, finding counterexample traces missed by handpicked tests."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the state space explosion problem in model checking?",
+      "options": ["Memory leaks in the checker", "Exponential growth of reachable states as variables and processes increase", "Syntax errors in the model", "Network timeouts during verification"],
+      "correct": 1,
+      "explanation": "Each additional variable or concurrent process multiplies the number of states, making exhaustive checking infeasible without abstraction or symmetry reduction."
+    },
+    {
+      "stage": "post",
+      "question": "What is a safety property?",
+      "options": ["A property that always improves throughput", "A property stating something bad never happens", "A property requiring eventual success", "A property only for unit tests"],
+      "correct": 1,
+      "explanation": "Safety properties are invariants over reachable states, such as mutual exclusion."
+    },
+    {
+      "stage": "post",
+      "question": "How should engineers treat a counterexample trace?",
+      "options": ["Ignore if rare", "Use it to diagnose model/design flaw and refine spec or implementation", "Convert directly to production patch without analysis", "Only archive it"],
+      "correct": 1,
+      "explanation": "Counterexamples are high-value debugging artifacts that guide design corrections and stronger specs."
+    },
+    {
+      "stage": "post",
+      "question": "What is the difference between a safety and a liveness property?",
+      "options": ["Safety is about speed, liveness about memory", "Safety says bad things never happen; liveness says good things eventually happen", "They are the same thing", "Safety is for hardware, liveness for software"],
+      "correct": 1,
+      "explanation": "Safety constrains what states are reachable; liveness guarantees progress — e.g., a request eventually gets a response."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 11, "title": "Model Checking - TLA+ Hands-On" }
+}

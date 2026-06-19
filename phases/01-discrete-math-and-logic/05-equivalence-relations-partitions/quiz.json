@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of these is NOT an equivalence relation?",
+      "options": [
+        "Equality (`==`) on integers",
+        "'Has the same hash' on strings (assuming a non-trivial hash)",
+        "'Is less than or equal to' (`≤`) on integers",
+        "'Is congruent mod 7' on integers"
+      ],
+      "correct": 2,
+      "explanation": "`≤` is reflexive (a ≤ a) and transitive (a ≤ b ≤ c ⇒ a ≤ c), but NOT symmetric (1 ≤ 2 does NOT give 2 ≤ 1). It's a *partial order*, not an equivalence. The others all satisfy R, S, T."
+    },
+    {
+      "stage": "pre",
+      "question": "An equivalence relation on A induces what?",
+      "options": [
+        "A total order on A",
+        "A partition of A into equivalence classes",
+        "A function from A to itself",
+        "Nothing in particular"
+      ],
+      "correct": 1,
+      "explanation": "The classes of an equivalence relation always form a partition: non-empty, pairwise-disjoint, covering A. This is the bijection between equivalence relations and partitions — same information, two presentations."
+    },
+    {
+      "stage": "post",
+      "question": "You want to compute the equivalence closure of R = {(1,2), (2,3)}. What does that produce?",
+      "options": [
+        "{(1,2), (2,3)} (no change)",
+        "Just adding reflexive pairs",
+        "Reflexive + symmetric + transitive closure — including (1,3), (3,1), (2,1), (3,2), and reflexive (1,1), (2,2), (3,3)",
+        "Nothing — the closure doesn't exist"
+      ],
+      "correct": 2,
+      "explanation": "The equivalence closure is the smallest equivalence relation containing R. You enforce all three axioms: reflexive (add (a,a) for every a), symmetric (add (b,a) for every (a,b)), transitive (add (a,c) whenever (a,b) and (b,c) are present). With R={(1,2),(2,3)} and A={1,2,3}, the result lumps 1, 2, 3 into one class."
+    },
+    {
+      "stage": "post",
+      "question": "Why does union-find with union-by-rank + path compression run in O(α(n)) per operation?",
+      "options": [
+        "Magic",
+        "Path compression flattens the tree on every find; union-by-rank keeps trees shallow. The combined amortized analysis (Tarjan 1975) shows the per-operation cost is inverse Ackermann — essentially constant",
+        "Because of caching",
+        "Because Python sets are O(1)"
+      ],
+      "correct": 1,
+      "explanation": "Each find walks up to the root and points every visited node directly at the root. Each union joins the shallower tree under the deeper, keeping ranks small. Together the trees stay astonishingly flat. Tarjan proved the total work for m operations on n elements is O(m · α(m, n)). For all practical n, α ≤ 4."
+    },
+    {
+      "stage": "post",
+      "question": "Mod 7 on the integers: how many equivalence classes are there?",
+      "options": [
+        "3",
+        "5",
+        "7",
+        "infinitely many"
+      ],
+      "correct": 2,
+      "explanation": "Exactly 7 classes, labelled [0], [1], …, [6] — one per possible remainder. Every integer falls into exactly one. The quotient set ℤ/7ℤ has 7 elements (it's a finite ring under modular arithmetic — Phase 01 Lesson 14)."
+    },
+    {
+      "stage": "post",
+      "question": "Two strings collide in a hash table iff `hash(a) == hash(b)`. Is this an equivalence relation on strings?",
+      "options": [
+        "No",
+        "Yes — reflexive (hash(a)=hash(a)), symmetric (equality is symmetric), transitive (=)",
+        "Only for cryptographic hashes",
+        "Only when the table is full"
+      ],
+      "correct": 1,
+      "explanation": "Equality on hash values is an equivalence (it's induced by the function `hash`). The classes are 'all strings that hash to the same bucket.' Collisions are exactly 'multiple distinct strings in the same class.' A 'perfect hash' is one where the function is injective on your input set — each class has size 1."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 5,
+    "title": "Equivalence Relations Partitions"
+  }
+}

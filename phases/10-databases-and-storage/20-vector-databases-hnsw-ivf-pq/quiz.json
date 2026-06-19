@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In IVF (Inverted File Index), what happens when you increase the `nprobe` parameter during search?",
+      "options": [
+        "Search becomes faster and recall stays the same",
+        "Recall improves but search slows down",
+        "Memory usage decreases proportionally",
+        "The number of centroids (nlist) automatically increases"
+      ],
+      "correct": 1,
+      "explanation": "nprobe controls how many inverted lists (centroid regions) are searched per query. More probes inspect more vectors, catching more true nearest neighbors that may fall in adjacent Voronoi cells, but each additional probe adds O(N/nlist) distance computations."
+    },
+    {
+      "stage": "pre",
+      "question": "Product Quantization (PQ) compresses high-dimensional vectors by:",
+      "options": [
+        "Applying PCA and storing only the top principal components",
+        "Splitting each vector into subvectors and quantizing each subvector independently against its own codebook",
+        "Hashing each dimension into a single 8-bit signature",
+        "Rounding all floats to the nearest integer"
+      ],
+      "correct": 1,
+      "explanation": "PQ splits the vector into M equal-size subvectors, runs k-means on each subvector space to learn a codebook of Ks codewords (e.g., 256 = 8 bits), and stores only the codeword index per subvector. This yields M log2(Ks) bits per vector regardless of original dimensionality."
+    },
+    {
+      "stage": "post",
+      "question": "A 128-dimensional float32 vector is compressed using PQ with M=8 subvectors and Ks=256 centroids per subvector. What is the compressed size per vector in bytes?",
+      "options": [
+        "512 bytes",
+        "128 bytes",
+        "8 bytes",
+        "64 bytes"
+      ],
+      "correct": 2,
+      "explanation": "256 centroids = 8 bits = 1 byte per subvector. With M=8 subvectors, the compressed code is 8 × 1 = 8 bytes. The original vector is 128 × 4 = 512 bytes, giving a 64× compression ratio."
+    },
+    {
+      "stage": "post",
+      "question": "Which HNSW parameter controls the search accuracy-vs-speed tradeoff at query time (not build time)?",
+      "options": [
+        "M (connections per node)",
+        "efConstruction (search width during insert)",
+        "ef (dynamic candidate list size during search)",
+        "mL (level generation factor)"
+      ],
+      "correct": 2,
+      "explanation": "ef controls how many candidates are kept in the dynamic list during the layer-0 search. Higher ef = more candidates explored = higher recall but slower search. M and efConstruction affect index quality during build; mL affects the layer distribution but is not a runtime tuning knob."
+    },
+    {
+      "stage": "post",
+      "question": "What is the primary advantage of combining IVF with PQ (IVF+PQ) over using pure HNSW?",
+      "options": [
+        "IVF+PQ always achieves higher recall than HNSW regardless of parameters",
+        "IVF+PQ stores compressed vectors in the inverted lists, dramatically reducing memory for billion-scale datasets",
+        "IVF+PQ supports real-time vector inserts without rebuilding",
+        "IVF+PQ does not require training data"
+      ],
+      "correct": 1,
+      "explanation": "IVF+PQ stores PQ-compressed codes (a few bytes per vector) instead of full float vectors, making it feasible to index billions of vectors in RAM. HNSW stores full vectors plus adjacency lists, which uses more memory per vector. The tradeoff is that HNSW typically achieves higher recall at the same speed, but IVF+PQ scales to larger datasets with the same memory budget."
+    },
+    {
+      "stage": "post",
+      "question": "Exact k-NN search on N vectors of dimension D costs O(N·D) per query. Which of the following best describes the asymptotic improvement ANN techniques provide?",
+      "options": [
+        "ANN reduces the cost to O(log N) for any D, same as a B-tree",
+        "ANN trades exactness for sub-linear query time by examining only a subset of vectors, with the size controlled by parameters like nprobe or ef",
+        "ANN uses SIMD instructions to make O(N·D) run 1000× faster on the same hardware",
+        "ANN only needs to examine a constant number of vectors regardless of N or D"
+      ],
+      "correct": 1,
+      "explanation": "ANN does not eliminate the O(N·D) worst case; it avoids it in practice by using indexing structures (Voronoi partitions, proximity graphs, quantized codes) that let the search examine only a fraction of vectors. The effective cost per query depends on parameters (nprobe in IVF, ef in HNSW, M in PQ) rather than the full database size."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 20,
+    "title": "Vector Databases Hnsw Ivf Pq"
+  }
+}

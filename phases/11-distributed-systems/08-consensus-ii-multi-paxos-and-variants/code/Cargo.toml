@@ -1,0 +1,10 @@
+[package]
+name = "multi-paxos"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "multi-paxos"
+path = "main.rs"
+
+[workspace]

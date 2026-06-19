@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 16,
+    "title": "PKI, Certs, Transparency"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental purpose of a Certificate Authority (CA) in the Web PKI?",
+      "options": [
+        "To encrypt all traffic between a browser and a web server",
+        "To generate private keys for website owners",
+        "To verify domain/organization identity and sign a binding between that identity and a public key",
+        "To maintain a global directory of every TLS connection"
+      ],
+      "correct": 2,
+      "explanation": "A CA acts as a trusted third party that validates the certificate applicant's control over a domain (or verifies their legal identity for EV certs) and digitally signs an X.509 certificate that binds a public key to that identity. Browsers trust this binding by verifying the CA's signature against pre-installed root certificates."
+    },
+    {
+      "stage": "pre",
+      "question": "How does SSH's trust model differ from the Web PKI?",
+      "options": [
+        "SSH does not use public key cryptography at all",
+        "SSH uses Trust On First Use (TOFU) — the host key is recorded on first connection and checked on subsequent connections",
+        "SSH uses the same CA infrastructure as HTTPS",
+        "SSH requires a third-party certificate for every host"
+      ],
+      "correct": 1,
+      "explanation": "SSH uses TOFU: the first time you connect to a server, its host key is saved to ~/.ssh/known_hosts. If the key changes later, SSH warns you. This avoids the complexity of a global PKI but is vulnerable on the very first connection (no prior trust anchor). In contrast, Web PKI relies on pre-installed root CA certificates as trust anchors."
+    },
+    {
+      "stage": "post",
+      "question": "What problem does Certificate Transparency solve that CRLs and OCSP do not?",
+      "options": [
+        "Certificate Transparency reduces the size of certificates",
+        "Certificate Transparency provides a publicly auditable, append-only log of all issued certificates, making it possible to detect mis-issuance quickly",
+        "Certificate Transparency replaces OCSP for real-time revocation checking",
+        "Certificate Transparency encrypts certificate contents to prevent eavesdropping"
+      ],
+      "correct": 1,
+      "explanation": "CRLs and OCSP only tell you whether a certificate has been revoked after the fact — but if a CA is compromised or mis-issues a certificate, you may never know to check for revocation. CT makes every certificate issuance publicly visible in an append-only Merkle tree. Anyone can monitor CT logs and detect an unauthorized certificate for their domain within hours — as opposed to the months or years it took to discover the DigiNotar breach."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the Subject Alternative Name (SAN) extension critical for modern TLS certificate validation?",
+      "options": [
+        "The SAN provides the certificate's serial number for revocation checks",
+        "The SAN lists the DNS names and IP addresses for which the certificate is valid, and modern browsers exclusively check SANs (ignoring the Common Name field)",
+        "The SAN contains the CA's signature for chain validation",
+        "The SAN specifies which cryptographic algorithms the certificate supports"
+      ],
+      "correct": 1,
+      "explanation": "The SAN extension (OID 2.5.29.17) lists all domains, IP addresses, and other identifiers for which the certificate is authorized. Since RFC 6125 and modern browser policies (Chrome 58+, Safari, Firefox), the Common Name (CN) field is no longer checked for hostname matching — only SANs are evaluated. A certificate without the correct SAN for a domain will trigger a certificate name mismatch error, even if the CN is correct."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does Certificate Transparency (CT) solve?",
+      "options": [
+        "Making certificates cheaper to obtain",
+        "Detecting misissued or fraudulent certificates by requiring all certificates to be logged in public, append-only logs",
+        "Encrypting certificate contents",
+        "Automatically renewing expiring certificates"
+      ],
+      "correct": 1,
+      "explanation": "Before CT, a compromised CA could issue fraudulent certificates silently. CT requires all issued certificates to be logged in public, cryptographically verifiable logs. Browsers can check logs to ensure a certificate was legitimately issued, and domain owners can monitor for unauthorized certificates."
+    }
+  ]
+}

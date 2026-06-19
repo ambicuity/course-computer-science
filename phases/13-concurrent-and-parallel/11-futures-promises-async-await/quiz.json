@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 11,
+    "title": "Futures, Promises, async/await"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between Rust futures and JavaScript Promises regarding when computation starts?",
+      "options": [
+        "Rust futures are lazy (no computation until polled); JavaScript Promises are eager (executor runs on construction)",
+        "JavaScript Promises are lazy; Rust futures are eager",
+        "Both start computation immediately upon construction",
+        "Both delay computation until .then() or .await is called"
+      ],
+      "correct": 0,
+      "explanation": "Rust futures do nothing until polled by an executor — they are lazy state machines. JavaScript Promise executors run synchronously during the constructor call — they are eager. This is the single most important difference between the two systems."
+    },
+    {
+      "stage": "post",
+      "question": "In the Rust Future trait, what is the purpose of the Waker passed via Context to poll()?",
+      "options": [
+        "To wake the CPU from sleep when the future completes",
+        "To notify the executor that the future is ready to be re-polled",
+        "To wake the current thread when a blocking operation finishes",
+        "To cancel the future if it takes too long"
+      ],
+      "correct": 1,
+      "explanation": "The Waker is a handle the future stores. When the asynchronous operation (e.g., I/O) completes, the future calls waker.wake(), which tells the executor to re-poll this future. Without the Waker, the executor would have to busy-loop or guess when to poll."
+    },
+    {
+      "stage": "post",
+      "question": "What does the JavaScript event loop execute between macrotasks?",
+      "options": [
+        "Render updates only",
+        "The complete microtask queue (Promise.then, queueMicrotask, async/await continuations)",
+        "A single microtask, then returns to macrotasks",
+        "Garbage collection"
+      ],
+      "correct": 1,
+      "explanation": "The event loop executes one macrotask, then drains the ENTIRE microtask queue before processing the next macrotask. This is why Promise.then callbacks always run before the next setTimeout callback, even if the promise resolved synchronously."
+    },
+    {
+      "stage": "post",
+      "question": "In Rust, what does `Pin` prevent when working with async state machines?",
+      "options": [
+        "The future from being shared across threads",
+        "The future from being moved in memory after first poll",
+        "The future from being dropped before completion",
+        "The future from returning Pending more than once"
+      ],
+      "correct": 1,
+      "explanation": "Async state machines may contain self-referential structs (e.g., a field that holds a pointer to another field). Moving the struct would invalidate those internal pointers. Pin guarantees the value stays at the same memory address, making self-referential structs safe."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between a Future and a Promise?",
+      "options": [
+        "They are identical concepts",
+        "A Future represents a read-only handle to a result that will be available later; a Promise is the write-side that eventually provides that result",
+        "A Future is for synchronous code; a Promise is for asynchronous code",
+        "A Promise is faster than a Future"
+      ],
+      "correct": 1,
+      "explanation": "A Promise is where a value will be written (the producer side). A Future is a handle to read that value when it becomes available (the consumer side). They're two ends of the same abstraction. async/await syntactic sugar makes working with futures look like synchronous code."
+    }
+  ]
+}

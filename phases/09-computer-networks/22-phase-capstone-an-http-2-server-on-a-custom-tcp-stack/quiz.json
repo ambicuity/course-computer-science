@@ -1,0 +1,95 @@
+{
+  "lesson": 22,
+  "title": "Phase Capstone — An HTTP/2 Server on a Custom TCP Stack",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "How many bytes is the fixed-size HTTP/2 frame header, and what fields does it contain?",
+      "options": [
+        "8 bytes: Length (16 bits), Type (8 bits), Stream ID (32 bits)",
+        "9 bytes: Length (24 bits), Type (8 bits), Flags (8 bits), Stream ID (31 bits)",
+        "12 bytes: Length (32 bits), Type (8 bits), Flags (8 bits), Padding (8 bits), Stream ID (32 bits)",
+        "16 bytes: Length (32 bits), Type (16 bits), Flags (16 bits), Stream ID (32 bits), Reserved (32 bits)"
+      ],
+      "correct": 1,
+      "explanation": "The HTTP/2 frame header is exactly 9 bytes: 3 bytes for Length (24 bits), 1 byte for Type, 1 byte for Flags, 1 reserved bit (R), and a 31-bit Stream Identifier. This compact header enables efficient binary parsing.",
+      "stage": "pre"
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice",
+      "question": "How does HTTP/2 multiplexing differ from HTTP/1.1 pipelining in terms of head-of-line blocking?",
+      "options": [
+        "Both eliminate head-of-line blocking at all layers of the stack",
+        "HTTP/2 eliminates application-layer HOL blocking by interleaving frames from independent streams, while HTTP/1.1 pipelining requires in-order responses",
+        "HTTP/1.1 pipelining is superior because it uses multiple TCP connections",
+        "There is no difference — both use the same mechanism"
+      ],
+      "correct": 1,
+      "explanation": "HTTP/1.1 pipelining sends multiple requests on one connection but requires responses in order — a slow first response blocks all subsequent responses (application-layer HOL blocking). HTTP/2 multiplexes independent streams over a single connection, so frames from different streams can interleave freely. Note: HTTP/2 still has TCP-level HOL blocking (solved by QUIC).",
+      "stage": "pre"
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice",
+      "question": "What is the purpose of the HTTP/2 connection preface (24-byte magic string + initial SETTINGS)?",
+      "options": [
+        "To authenticate the client before any data exchange",
+        "To negotiate TLS version and cipher suites for the connection",
+        "To verify the peer speaks HTTP/2 and to exchange initial connection parameters before any streams are created",
+        "To measure round-trip time between client and server"
+      ],
+      "correct": 2,
+      "explanation": "The connection preface (PRI * HTTP/2.0\\r\\n\\r\\nSM\\r\\n\\r\\n + initial SETTINGS) serves two purposes: (1) protocol identification — the magic bytes confirm the peer implements HTTP/2, (2) parameter negotiation — the initial SETTINGS exchange establishes connection-level parameters (window size, max frame size, max concurrent streams) before any streams are created.",
+      "stage": "pre"
+    },
+    {
+      "id": 4,
+      "type": "multiple_choice",
+      "question": "In HPACK header compression, what is the difference between an indexed header field and a literal with incremental indexing?",
+      "options": [
+        "Indexed fields are faster to decode; literal fields are slower",
+        "Indexed fields reference an existing entry in the static or dynamic table by index (1 byte), while literal fields encode the name and value inline and optionally add the result to the dynamic table for future reference",
+        "Indexed fields can only reference the static table; literal fields can only reference the dynamic table",
+        "They are functionally identical — the encoder chooses randomly for load balancing"
+      ],
+      "correct": 1,
+      "explanation": "An indexed header field (prefix 1xxxxxxx) references a table entry by index — either the static table (e.g., :status: 200 at index 8) or the dynamic table. This encodes common headers in 1-2 bytes. A literal with incremental indexing (prefix 01xxxxxx) encodes the header name and value inline, then adds the entry to the dynamic table. On subsequent requests, that header can be encoded as indexed.",
+      "stage": "post"
+    },
+    {
+      "id": 5,
+      "type": "multiple_choice",
+      "question": "What does a WINDOW_UPDATE frame do in HTTP/2 flow control?",
+      "options": [
+        "It resizes the receiver's buffer for incoming data",
+        "It grants additional flow control credit to the sender, allowing it to send more DATA bytes on the specified stream or connection",
+        "It decreases the sender's window, slowing down data transmission",
+        "It cancels all pending DATA frames on a stream"
+      ],
+      "correct": 1,
+      "explanation": "WINDOW_UPDATE increases the flow control window. Each side maintains a window per stream and per connection. The sender can only transmit up to min(stream_window, connection_window) bytes of DATA. When the receiver processes data, it sends WINDOW_UPDATE to replenish the window. A zero increment is a protocol error (PROTOCOL_ERROR).",
+      "stage": "post"
+    },
+    {
+      "id": 6,
+      "type": "multiple_choice",
+      "question": "According to HTTP/2 stream identification rules, which statement is true about server-initiated streams?",
+      "options": [
+        "Server-initiated streams use odd IDs just like client-initiated streams",
+        "Server-initiated streams use even IDs (e.g., 2, 4, 6) and are created via PUSH_PROMISE frames on an existing client-initiated stream",
+        "Server-initiated streams can only be created before any client-initiated streams",
+        "Server-initiated streams are identified by stream ID 0"
+      ],
+      "correct": 1,
+      "explanation": "Client-initiated streams use odd IDs (1, 3, 5, ...); server-initiated streams use even IDs (2, 4, 6, ...). The server creates a new stream by sending a PUSH_PROMISE frame on an existing client-initiated stream, promising to send a response on the new server-initiated stream. Stream 0 is reserved for connection-level frames (SETTINGS, PING, GOAWAY) and cannot carry headers or data.",
+      "stage": "post"
+    }
+  ],
+  "_meta": {
+    "phase": 9,
+    "lesson": 22,
+    "title": "Phase Capstone An Http 2 Server On A Custom Tcp Stack"
+  }
+}

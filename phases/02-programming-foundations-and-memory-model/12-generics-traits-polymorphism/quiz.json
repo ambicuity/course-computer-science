@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "When you call a generic Rust function with two different concrete types, what happens at compile time?",
+      "options": [
+        "The function is dispatched dynamically",
+        "Monomorphization: the compiler generates a separate, specialized copy of the function for each concrete type combination it sees. Zero runtime cost; some binary-size and compile-time cost.",
+        "Boxing: the value is wrapped in an object",
+        "Nothing — there's one function for all types"
+      ],
+      "correct": 1,
+      "explanation": "Rust generics are monomorphized — every distinct (T, U, ...) used produces a fresh function in the binary. This is the same model as C++ templates. The trade-off: blazing-fast runtime (compiler can inline freely) at the cost of bigger binaries. Java generics, by contrast, use type erasure — one bytecode at runtime."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the Rust equivalent of a Java `interface`?",
+      "options": [
+        "struct",
+        "trait — declares method signatures that types can implement; functions can generically operate over any T that implements the trait",
+        "enum",
+        "impl block"
+      ],
+      "correct": 1,
+      "explanation": "Trait = interface = type class (Haskell) = concept (C++20). They all mean 'a set of methods this type promises to provide.' Rust traits are closer to Haskell type classes — you can implement them for types you don't own, and dispatch is static unless you opt into `dyn`."
+    },
+    {
+      "stage": "post",
+      "question": "When would you choose `Box<dyn Trait>` over a generic `<T: Trait>`?",
+      "options": [
+        "Always — it's faster",
+        "When you need a heterogeneous collection (different types in the same Vec), or a stable ABI that doesn't change with each generic instantiation",
+        "Never — generics are always better",
+        "When the type implements Drop"
+      ],
+      "correct": 1,
+      "explanation": "Generics (static dispatch) win on performance (~free, inlinable) but produce a specialized copy per type — useless for heterogeneous data. Trait objects (dyn dispatch) box up the value behind a vtable; you pay a runtime indirection (~2 cycles per call, no inlining) but get one binary form. Use generics by default; switch to dyn when you genuinely need erasure."
+    },
+    {
+      "stage": "post",
+      "question": "What does the bound `fn max<T: PartialOrd>(a: T, b: T) -> T` ensure?",
+      "options": [
+        "T must be a number",
+        "T must implement the `PartialOrd` trait, so `a < b` and `a > b` are defined in the body; the compiler refuses to compile if T doesn't satisfy the bound.",
+        "T must be Copy",
+        "T must be small enough to fit in a register"
+      ],
+      "correct": 1,
+      "explanation": "Trait bounds are CONTRAINTS the compiler enforces. The body of `max` uses `>`, which is sugar for `PartialOrd::gt`. The bound `T: PartialOrd` tells the compiler this is OK; without it the function wouldn't compile. C++ concepts (C++20) do the same; Haskell uses `=>`."
+    },
+    {
+      "stage": "post",
+      "question": "Why doesn't Rust have inheritance like Java or C++?",
+      "options": [
+        "Oversight",
+        "Composition over inheritance: traits + generics handle every pattern inheritance offers (polymorphism, code reuse, type hierarchies) without the fragility of deep class trees. Rust deliberately encourages a flatter design.",
+        "It's coming in the next version",
+        "Because of safety"
+      ],
+      "correct": 1,
+      "explanation": "The Rust team chose to skip inheritance entirely. Patterns it would have handled (polymorphism → traits; code reuse → trait default methods + composition; covariance → generic bounds) are all expressible. The fragility of multi-level inheritance hierarchies is well-documented (Yo-yo problem, fragile base class) and Rust avoids it by design."
+    },
+    {
+      "stage": "post",
+      "question": "How is Rust's `impl std::ops::Add for Vec2` analogous to Python's `__add__` or C++'s `operator+`?",
+      "options": [
+        "Coincidence",
+        "All three implement operator overloading: defining what `+` means for a custom type. Rust does it via a trait; Python via a dunder method; C++ via a member or free `operator+` function. Same idea, different syntax.",
+        "Only Rust does this",
+        "Only at compile time"
+      ],
+      "correct": 1,
+      "explanation": "Operator overloading is the practical face of ad-hoc polymorphism. Rust implements `+` by impl'ing `std::ops::Add`. C++ defines `operator+` as a member or free function. Python defines `__add__`. The compiler/interpreter rewrites `a + b` to call your code. Used everywhere: matrix math, decimal types, time arithmetic, even string concatenation."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 12,
+    "title": "Generics Traits Polymorphism"
+  }
+}

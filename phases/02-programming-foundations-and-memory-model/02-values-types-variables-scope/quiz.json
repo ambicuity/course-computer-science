@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "On a 64-bit Linux system, what is `sizeof(int)`?",
+      "options": [
+        "2",
+        "4",
+        "8",
+        "Depends on the compiler"
+      ],
+      "correct": 1,
+      "explanation": "On nearly every modern x86_64 Linux/macOS toolchain `sizeof(int) == 4`, despite the platform being 64-bit. `int` is conventionally fixed at 32 bits in the C 'LP64' data model used on Linux/mac; only `long`, pointers, and `size_t` widen to 8 bytes. Windows uses 'LLP64' — same 4-byte `int` and `long`, 8-byte `long long`."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between a *value* and a *variable*?",
+      "options": [
+        "There's no difference",
+        "A value is a bit pattern under a type interpretation; a variable is a name bound to a storage location (C) or a value (default Rust)",
+        "A value is mutable; a variable isn't",
+        "A value is in registers; a variable is in memory"
+      ],
+      "correct": 1,
+      "explanation": "Value = bits + type interpretation. Variable = a name that *refers* to either a storage location (C, mutable Rust) or a specific value (default Rust). Confusing the two leads to bugs like writing through a pointer to a value that has gone out of scope."
+    },
+    {
+      "stage": "post",
+      "question": "In Rust, `let s1 = String::from(\"hi\"); let s2 = s1; println!(\"{}\", s1);` fails to compile. Why?",
+      "options": [
+        "println! is broken for String",
+        "Assignment of a non-Copy type (like String) MOVES the value — s1 is invalidated. The borrow checker catches the subsequent use of moved value.",
+        "It's a type error",
+        "String can't be printed"
+      ],
+      "correct": 1,
+      "explanation": "`String` owns heap memory; copying it would mean two owners of the same buffer (double-free on drop). Rust prevents this by moving — s1 becomes invalid after `let s2 = s1`. Primitive types (`i32`) are `Copy`, so the same pattern with `i32` works fine."
+    },
+    {
+      "stage": "post",
+      "question": "In C, `static int g = 5;` at file scope means what?",
+      "options": [
+        "The variable is constant",
+        "The variable has *internal linkage* — visible only within this translation unit, not seen by the linker as a public symbol",
+        "The variable is on the stack",
+        "It's a compile-time constant"
+      ],
+      "correct": 1,
+      "explanation": "`static` at file scope = internal linkage = file-private global. The symbol doesn't get exported, so other .c files can't reference it. Different from `static` inside a function (which gives a local variable program lifetime + zero-init). Critical for encapsulation in C."
+    },
+    {
+      "stage": "post",
+      "question": "Rust allows `let x = 5; let x = \"five\"; let x = x.len();` — the variable's type changes across the chain. What's going on?",
+      "options": [
+        "Rust has dynamic typing",
+        "Shadowing: each `let x` creates a new binding (possibly to a different type and different storage); the previous x is hidden in scope below.",
+        "Variables are untyped",
+        "It's a compile error"
+      ],
+      "correct": 1,
+      "explanation": "Shadowing in Rust. The compiler tracks each binding independently; each `let x` is fresh. Different from `let mut x = 5; x = \"five\";` — which would fail because `let mut` reuses the same binding, and that binding's type is fixed at declaration."
+    },
+    {
+      "stage": "post",
+      "question": "Why is `int8_t` from `<stdint.h>` preferred over `signed char` in cross-platform code?",
+      "options": [
+        "It's faster",
+        "It's a typedef guaranteed by the C standard to be exactly 8 bits (no padding, no platform variation). `signed char` could in theory be wider on weird platforms.",
+        "It's required for C++",
+        "It's shorter to type"
+      ],
+      "correct": 1,
+      "explanation": "C's standard types (`char`, `short`, `int`, etc.) have minimum widths, not exact ones. `<stdint.h>` (C99) introduced exact-width typedefs: `int8_t` is exactly 8 bits, signed, two's complement. For portability — especially when dealing with binary protocols or hardware registers — always prefer them."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 2,
+    "title": "Values Types Variables Scope"
+  }
+}

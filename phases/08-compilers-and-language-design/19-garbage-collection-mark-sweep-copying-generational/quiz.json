@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 19,
+    "title": "Garbage Collection Mark Sweep Copying Generational"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary problem with reference counting as a garbage collection strategy?",
+      "options": [
+        "It cannot detect unreachable objects",
+        "Cyclic references prevent objects from being freed",
+        "It requires too much memory overhead per object",
+        "It only works with primitive data types"
+      ],
+      "correct": 1,
+      "explanation": "When two or more objects reference each other in a cycle but are not reachable from any root, their reference counts never drop to zero. The cycle detector or a tracing GC is needed to reclaim them."
+    },
+    {
+      "stage": "pre",
+      "question": "In a copying (semi-space) garbage collector, what happens during collection?",
+      "options": [
+        "All objects are marked, then unmarked objects are swept to a free list",
+        "Live objects are copied from from-space to to-space, then the spaces are flipped",
+        "Objects are moved to contiguous addresses using a sliding compaction algorithm",
+        "Each object's reference count is decremented and zero-count objects are freed"
+      ],
+      "correct": 1,
+      "explanation": "A semi-space collector divides the heap into two halves. When from-space fills up, live objects are copied to to-space via BFS traversal, then the roles of the two spaces are swapped."
+    },
+    {
+      "stage": "post",
+      "question": "Why do generational garbage collectors collect the young generation more frequently than the old generation?",
+      "options": [
+        "Young generation objects are smaller and faster to copy",
+        "The weak generational hypothesis states most objects die young, so frequent collection reclaims more memory cheaply",
+        "Young generation uses less memory so collection has lower overhead",
+        "Old generation objects cannot be moved due to pointer aliasing"
+      ],
+      "correct": 1,
+      "explanation": "Empirical observation (the weak generational hypothesis) shows that most newly allocated objects become unreachable quickly. Collecting the young generation frequently catches these dying objects early, while the old generation is collected infrequently because most of its objects survive."
+    },
+    {
+      "stage": "post",
+      "question": "What is the purpose of a write barrier in a generational garbage collector?",
+      "options": [
+        "To prevent new allocations during a GC cycle",
+        "To track cross-generational references so young-gen objects reachable from old-gen are not incorrectly collected",
+        "To synchronize concurrent collector threads with mutator threads",
+        "To record which objects have been modified since the last collection"
+      ],
+      "correct": 1,
+      "explanation": "When an old-generation object stores a reference to a young-generation object, the GC must know about this cross-generational reference during young-gen collection. The write barrier records such references in a card table, ensuring young-gen objects reachable from old-gen roots are not swept."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the 'generational hypothesis' in garbage collection?",
+      "options": [
+        "All objects have the same lifetime",
+        "Most objects die young — recently allocated objects are more likely to be garbage than long-lived ones",
+        "Older objects should be collected more frequently",
+        "Garbage collection should only run when memory is full"
+      ],
+      "correct": 1,
+      "explanation": "The generational hypothesis observes that most objects are short-lived (think loop temporaries). Generational GC divides the heap into young and old generations, collecting the young generation frequently (where most garbage is) and the old generation rarely, dramatically reducing pause times."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary security weakness of ECB (Electronic Codebook) mode?",
+      "options": [
+        "It requires an initialization vector, and reusing the IV reveals the key.",
+        "It encrypts each block independently, so identical plaintext blocks produce identical ciphertext blocks, leaking patterns.",
+        "It is vulnerable to padding oracle attacks because it uses PKCS#7 padding.",
+        "It cannot encrypt messages longer than one block."
+      ],
+      "correct": 1,
+      "explanation": "ECB encrypts each 16-byte block independently with the same key. Two identical plaintext blocks always produce the same ciphertext block. This means structural patterns in the plaintext (like image regions) are preserved in the ciphertext — the classic 'ECB penguin' attack. Options A and C describe CBC issues. Option D is wrong; ECB handles multi-block messages but leaks their structure."
+    },
+    {
+      "stage": "pre",
+      "question": "Why must the IV in CBC mode be unpredictable (not just unique)?",
+      "options": [
+        "A predictable IV causes a padding oracle vulnerability.",
+        "A predictable IV allows the attacker to decrypt ciphertext without the key.",
+        "A predictable IV enables a chosen-plaintext attack: the attacker can test whether a guessed plaintext matches a previously encrypted block.",
+        "A predictable IV slows down decryption because the block cipher must be re-initialized."
+      ],
+      "correct": 2,
+      "explanation": "In CBC, CBC decryption of the first block is P₀ = AES⁻¹(C₀) ⊕ IV. If the attacker can predict the IV before choosing a plaintext, they can submit P = P* ⊕ IV ⊕ C_prev and determine whether P* matches an unknown plaintext block by comparing the resulting ciphertext. This is a chosen-plaintext attack on the first block. Option A describes padding oracles (a different bug). Option B overstates the damage — you can't decrypt without the key from a predictable IV alone."
+    },
+    {
+      "stage": "post",
+      "question": "You encrypt two different messages with AES-CTR using the same key and the same 96-bit nonce. What can an attacker learn?",
+      "options": [
+        "The attacker can recover both plaintexts immediately without any further effort.",
+        "The attacker can compute the XOR of the two plaintexts, enabling crib-dragging to recover both.",
+        "Nothing — CTR mode is secure as long as the key is secret.",
+        "The attacker can recover the AES key by analyzing the two ciphertexts."
+      ],
+      "correct": 1,
+      "explanation": "CTR mode with the same nonce produces an identical keystream K for both messages. C₁ = P₁ ⊕ K and C₂ = P₂ ⊕ K, so C₁ ⊕ C₂ = P₁ ⊕ P₂. The keystream cancels, giving the attacker the XOR of the two plaintexts. From there, crib-dragging (guessing partial plaintext and XORing against C₁ ⊕ C₂) recovers both messages. This is the 'two-time pad' — the same fundamental flaw as reusing a one-time pad."
+    },
+    {
+      "stage": "post",
+      "question": "In GCM mode, what does the authentication tag provide that CTR mode alone does not?",
+      "options": [
+        "Faster encryption through hardware acceleration.",
+        "Confidentiality of the associated data.",
+        "Detection of any modification to the ciphertext or associated data, preventing forgery and bit-flipping attacks.",
+        "Resistance to nonce reuse by making the tag invalid if the nonce repeats."
+      ],
+      "correct": 2,
+      "explanation": "GCM adds a GHASH authentication tag computed over the ciphertext and AAD (associated data) using a hash key H = AES(0^128). Any modification to the ciphertext, the AAD, or the tag itself will cause tag verification to fail, detecting forgery. CTR mode alone provides no integrity — an attacker can flip bits with predictable effect on the plaintext. Option A is wrong (GCM isn't faster than CTR). Option B is wrong (AAD is not encrypted). Option D is wrong (nonce reuse still breaks GCM's confidentiality — the tag doesn't fix the two-time pad)."
+    },
+    {
+      "stage": "post",
+      "question": "In a padding oracle attack against CBC mode, what information does the attacker need to recover the plaintext?",
+      "options": [
+        "The AES encryption key and the IV.",
+        "Access to the encryption oracle that can encrypt arbitrary plaintexts.",
+        "Only the ciphertext and an oracle that reveals whether the padding is valid after decryption — no key required.",
+        "The HMAC key used for message authentication."
+      ],
+      "correct": 2,
+      "explanation": "A padding oracle reveals one bit of information per query: whether the decrypted padding is valid. The attacker sends a modified ciphertext block R || C_i, and the server responds 'valid padding' or 'invalid padding.' By systematically varying the last byte of R, the attacker finds which value produces valid padding (plaintext last byte = 0x01), revealing the intermediate decryption value. Repeating for each byte position recovers the entire block without ever knowing the key. Average cost: ~128 queries per byte, ~2048 per 16-byte block. This is why AEAD modes verify the tag before any decryption."
+    },
+    {
+      "stage": "post",
+      "question": "You are designing a TLS 1.3 implementation. Which mode of operation must you use, and why?",
+      "options": [
+        "CBC, because it is the most widely supported mode and TLS 1.3 maintains backward compatibility.",
+        "CTR, because it is the fastest mode and TLS prioritizes performance.",
+        "GCM (or another AEAD mode such as ChaCha20-Poly1305), because TLS 1.3 mandates authenticated encryption — confidentiality without integrity is not acceptable.",
+        "ECB, because it is simplest to implement and TLS 1.3 eliminates padding oracle attacks through other means."
+      ],
+      "correct": 2,
+      "explanation": "TLS 1.3 (RFC 8446, Section 5.2) requires AEAD ciphers — specifically AES-GCM or ChaCha20-Poly1305. The rationale: decades of attacks (BEAST, Lucky13, POODLE, padding oracle) exploited modes that provide confidentiality without integrity. TLS 1.3 removed all non-AEAD cipher suites. CBC is specifically banned. CTR provides no integrity. ECB was never acceptable. The lesson: authenticated encryption (confidentiality + integrity + authenticity) is the minimum standard."
+    }
+  ],
+  "_meta": {
+    "phase": 12,
+    "lesson": 5,
+    "title": "Modes Of Operation Ecb Cbc Ctr Gcm"
+  }
+}

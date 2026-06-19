@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a container runtime's primary role?",
+      "options": ["Package management", "Create and manage isolated process execution from specs", "Compile kernels", "Index documents"],
+      "correct": 1,
+      "explanation": "A container runtime takes a specification (OCI config.json) and materializes it into an isolated process. It sets up namespaces, cgroups, and filesystem isolation, then executes the container command."
+    },
+    {
+      "stage": "pre",
+      "question": "What kernel feature isolates what a process can see (its own PID space, mount points)?",
+      "options": ["cgroups", "Namespaces", "Seccomp", "SELinux"],
+      "correct": 1,
+      "explanation": "Namespaces give a process its own view of system resources. PID namespace makes the container see PID 1 for its init process. Mount namespace gives it its own filesystem root. Network namespace gives it its own interfaces."
+    },
+    {
+      "stage": "post",
+      "question": "Why model lifecycle states explicitly in a container runtime?",
+      "options": ["To reduce logging output", "To make startup, running, failure, and cleanup behavior auditable and correct", "To avoid config files", "To disable isolation"],
+      "correct": 1,
+      "explanation": "Explicit states (creating, running, stopped, errored) make the runtime's behavior predictable. Each state has defined transitions and cleanup requirements. This prevents resource leaks and makes incident diagnosis tractable."
+    },
+    {
+      "stage": "post",
+      "question": "Why separate high-level spec parsing from low-level OS operations?",
+      "options": ["For extra code duplication", "To isolate policy (what to run) from mechanism (how to isolate) and simplify testing", "To avoid following standards", "To remove error handling"],
+      "correct": 1,
+      "explanation": "Policy (container spec, resource limits, environment) is different from mechanism (clone(), cgroupfs writes, mount). Separating them means you can test spec parsing without root privileges and test isolation without caring about the container's content."
+    },
+    {
+      "stage": "post",
+      "question": "What happens if a container runtime doesn't reap zombie processes?",
+      "options": ["Nothing, zombies are harmless", "Zombies accumulate in the process table, eventually preventing new process creation", "The container restarts automatically", "The kernel kills the container"],
+      "correct": 1,
+      "explanation": "Zombies (exited processes whose parent hasn't called wait()) consume entries in the process table. The process table has a finite size (typically 32K-4M entries). Accumulating zombies eventually causes fork() to fail with EAGAIN."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 9, "title": "Build a Container Runtime" }
+}

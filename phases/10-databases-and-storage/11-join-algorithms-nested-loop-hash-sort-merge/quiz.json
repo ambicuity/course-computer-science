@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 10,
+    "lesson": 11,
+    "title": "Join Algorithms — Nested Loop, Hash, Sort-Merge"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which join algorithm is optimal when one relation is very small and the other has an index on the join key?",
+      "options": [
+        "Grace Hash Join",
+        "Index Nested Loop Join",
+        "Sort-Merge Join",
+        "Block Nested Loop Join"
+      ],
+      "correct": 1,
+      "explanation": "Index NLJ uses the small relation as the outer loop and probes the index on the inner relation for each outer tuple, resulting in O(|R| · log|S|) comparisons rather than O(|R| · |S|)."
+    },
+    {
+      "stage": "pre",
+      "question": "Hash join can only be used for which type of join predicate?",
+      "options": [
+        "Range predicates (R.a < S.b)",
+        "Inequality predicates (R.a != S.b)",
+        "Equality predicates (R.a = S.b)",
+        "Any predicate type"
+      ],
+      "correct": 2,
+      "explanation": "Hash join relies on hashing the join key to the same bucket, which only works with equality predicates. Range and inequality joins require NLJ or Sort-Merge."
+    },
+    {
+      "stage": "post",
+      "question": "Grace Hash Join handles large relations by:",
+      "options": [
+        "Sorting both relations and merging them in lockstep",
+        "Using a B-tree index to look up matching tuples",
+        "Partitioning both relations into N buckets on disk, then joining each partition individually",
+        "Increasing work_mem to fit the entire relation in memory"
+      ],
+      "correct": 2,
+      "explanation": "Grace Hash Join has two phases: (1) partition both relations using a hash function, writing partitions to disk; (2) for each partition, load the build side into memory, build a hash table, and probe with the other side. This handles any-size relations with limited memory."
+    },
+    {
+      "stage": "post",
+      "question": "A Sort-Merge Join has an I/O cost advantage over Hash Join when:",
+      "options": [
+        "The join predicate is an equality",
+        "One or both inputs are already sorted on the join key",
+        "The relations fit entirely in memory",
+        "There is no index available"
+      ],
+      "correct": 1,
+      "explanation": "If an input is already sorted (from an ORDER BY clause or sorted index scan), Sort-Merge skips the sort phase for that input, reducing I/O. Hash Join still requires a full pass to build the hash table regardless of input order."
+    },
+    {
+      "stage": "post",
+      "question": "Hybrid Hash Join improves on Grace Hash Join by:",
+      "options": [
+        "Using a better hash function to reduce collisions",
+        "Keeping the first partition in memory during the partitioning phase, saving 2 page I/Os for that partition",
+        "Sorting the input before hashing to improve cache locality",
+        "Using multiple hash functions in parallel"
+      ],
+      "correct": 1,
+      "explanation": "Hybrid Hash Join keeps partition 0's tuples in memory during partitioning, avoiding the write-to-disk and read-back I/O for the first partition. This reduces total I/O from 3·(P_R + P_S) to approximately 3·(P_R + P_S) - 2·(P_R + P_S)/fanout."
+    },
+    {
+      "stage": "post",
+      "question": "PostgreSQL's join planner will choose Sort-Merge Join over Hash Join when:",
+      "options": [
+        "work_mem is very large",
+        "The join predicate is a non-equi condition (e.g., R.a < S.b)",
+        "The outer relation has fewer tuples than the inner relation",
+        "Both relations have no indexes"
+      ],
+      "correct": 1,
+      "explanation": "Sort-Merge Join handles both equi-joins and non-equi joins (range, inequality). Hash Join only supports equality predicates. When the predicate is non-equi, the planner eliminates Hash Join and chooses between NLJ and SMJ."
+    }
+  ]
+}

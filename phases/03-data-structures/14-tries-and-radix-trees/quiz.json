@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why use a trie instead of a hash table for string keys?",
+      "options": [
+        "Smaller memory",
+        "Prefix queries: 'list all keys starting with X' in O(|X| + |result|). Hash tables can't do this — they'd need to scan every bucket. Used for autocomplete, IP route LPM, JSON path queries.",
+        "Faster lookup",
+        "Better hash"
+      ],
+      "correct": 1,
+      "explanation": "A hash table maps key → value with O(1) lookup but loses all structure. A trie indexes character-by-character along the tree path — so 'list all words with prefix \"car\"' is: walk to the 'car' node, do a subtree traversal. Auto-complete in your editor, search-as-you-type, IP routing all need this. Hash table can't be used because keys are spread over all buckets."
+    },
+    {
+      "stage": "pre",
+      "question": "A radix trie (Patricia trie) differs from a plain trie how?",
+      "options": [
+        "Different alphabet",
+        "Single-child chains are COMPRESSED into a single edge labeled with a string. Same set of keys, far fewer nodes (~½ for typical dictionaries).",
+        "It's encrypted",
+        "Only stores integers"
+      ],
+      "correct": 1,
+      "explanation": "Plain trie storing 'card': root → c → a → r → d → terminal — 4 internal nodes. Radix trie: root → 'card' → terminal — 1 node. The compression saves O(m) memory where m is total characters. Lookup still O(|word|). Linux's IP routing table uses a binary radix trie on 32-bit addresses; without compression it would need 4 billion nodes."
+    },
+    {
+      "stage": "post",
+      "question": "What is 'longest prefix match' (LPM) and why is it important for IP routing?",
+      "options": [
+        "String comparison",
+        "Given a destination IP, find the most-specific route in the routing table that matches some prefix of the IP. Used to pick the correct outgoing interface. Done in radix trees in O(32) for IPv4.",
+        "Hash collision",
+        "Sort order"
+      ],
+      "correct": 1,
+      "explanation": "Internet routing has overlapping prefixes: 10.0.0.0/8 → route A; 10.5.0.0/16 → route B. For destination 10.5.1.1, we want route B (more specific). LPM finds the deepest matching node in the radix trie. Linux does this for every packet's destination IP — 100M+ times per second on a busy router. With 800K BGP routes, an LPC trie keeps lookup to ~30 cycles."
+    },
+    {
+      "stage": "post",
+      "question": "What's the memory cost of a naïve trie for a dictionary of 100K English words?",
+      "options": [
+        "100K nodes",
+        "~1M nodes × 26 pointers each = ~200 MB on 64-bit. Mostly empty slots. Compressed (radix or hash-per-node) brings this to ~10-20 MB.",
+        "10 KB",
+        "Constant"
+      ],
+      "correct": 1,
+      "explanation": "Total characters in 100K English words is ~700K. Plain trie node has 26 pointers × 8 bytes = 208 bytes; ~700K nodes → 145 MB. Most slots are empty (English words use ~10 different starting letters densely). Radix tree compression cuts node count to ~50K → 10 MB. For static dictionaries, a DAWG can compress further by merging equivalent suffixes."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Linux use radix trees so much in its kernel (page cache, NUMA, IRQ descriptors)?",
+      "options": [
+        "Tradition",
+        "Sparse integer-keyed maps. Page cache: file offset → page pointer; many billions of possible offsets, only thousands used per file. Radix tree gives O(log n) lookup with O(used) memory — much better than a hash table for sparse data.",
+        "Encryption",
+        "POSIX requires it"
+      ],
+      "correct": 1,
+      "explanation": "Hash tables size memory by capacity (a 4GB-cap table costs 4GB even if empty); radix trees grow only with the data actually present. For Linux's page cache (sparse mapping from 64-bit file offsets to page pointers), a radix tree uses memory proportional to used pages, not file size. Lookup is O(log n) with very small constants — usually O(6) for typical usage. Linus called the radix tree 'one of the few non-trivial data structures we got right'."
+    },
+    {
+      "stage": "post",
+      "question": "How do tries enable fuzzy search (e.g., 'find words within edit distance 2 of \"banaa\"')?",
+      "options": [
+        "Brute force",
+        "Walk the trie + a DP edit-distance table in parallel. Prune subtrees where the minimum cost in the column exceeds the threshold. Avoids most of the work of naive O(n × |word|²) per-word comparison.",
+        "Hash similarity",
+        "Sort and binary search"
+      ],
+      "correct": 1,
+      "explanation": "Naïve fuzzy search compares the query against every word — O(N × |query| × |word|). Trie + DP: maintain a Levenshtein DP row per trie node; the row is computed incrementally as you descend. If the row's minimum exceeds the threshold k, prune the whole subtree. Used in spell-checkers, search-as-you-type, fuzzy IDE search. Hunspell, Lucene fuzzy queries — all variations on this."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 14,
+    "title": "Tries And Radix Trees"
+  }
+}

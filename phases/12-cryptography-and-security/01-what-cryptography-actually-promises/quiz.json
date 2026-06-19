@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Kerckhoffs' principle states that a cryptosystem should be secure even if what is known?",
+      "options": [
+        "The plaintext of a few messages",
+        "Everything about the system except the key",
+        "The key, as long as the algorithm is secret",
+        "The number of messages encrypted"
+      ],
+      "correct": 1,
+      "explanation": "Kerckhoffs' principle (1883) says the system must remain secure even if everything about it is public except the key. This is why we use published, peer-reviewed algorithms like AES rather than secret ones. If your security depends on the attacker not knowing the algorithm, a single reverse-engineering effort breaks everything."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of the following does cryptography NOT promise to protect against?",
+      "options": [
+        "An eavesdropper reading encrypted traffic without the key",
+        "An attacker tampering with an authenticated message",
+        "A social engineering attack that tricks a user into revealing their password",
+        "Someone forging a digital signature without the private key"
+      ],
+      "correct": 2,
+      "explanation": "Cryptography promises confidentiality (option A is protected), integrity+authenticity (options B and D are protected), but it does NOT promise resistance to social engineering. If a human hands over their password, no amount of math helps. This is a key management failure, not a cryptographic failure."
+    },
+    {
+      "stage": "post",
+      "question": "A hash function provides integrity but NOT authenticity. Which primitive would you add to get both?",
+      "options": [
+        "A symmetric cipher like AES-CBC",
+        "A MAC (HMAC-SHA256)",
+        "A KDF (PBKDF2)",
+        "A block cipher mode like ECB"
+      ],
+      "correct": 1,
+      "explanation": "A MAC (Message Authentication Code) is a keyed hash. SHA-256 alone gives integrity (any change changes the hash), but anyone can recompute it. HMAC-SHA256 requires the key to produce or verify the tag, so it provides both integrity AND authenticity. AES-CBC provides confidentiality but not integrity. KDFs derive keys. ECB is a broken block cipher mode."
+    },
+    {
+      "stage": "post",
+      "question": "Enigma was mathematically reasonable for its era, yet Allied cryptanalysts broke it. Which promise was primarily violated?",
+      "options": [
+        "Authenticity — the Germans couldn't verify message origins",
+        "Confidentiality — the Allies could read the messages",
+        "Non-repudiation — the Germans could deny sending messages",
+        "Integrity — the Allies modified messages in transit"
+      ],
+      "correct": 1,
+      "explanation": "Enigma's confidentiality was broken. The mathematical design was sound for its time, but key management failures (repeated key settings, operator conventions like predictable message headers, key sheets distributed on paper) and operational errors gave the Allies the foothold they needed. This is a key illustration that crypto promises are only as strong as their operational implementation."
+    },
+    {
+      "stage": "post",
+      "question": "DES was broken in 1998 when the EFF's 'Deep Crack' machine brute-forced a 56-bit key in 56 hours. What does this failure illustrate about cryptographic promises?",
+      "options": [
+        "Hash functions can't guarantee integrity",
+        "Cryptographic promises are time-bound — key sizes that are secure today may be trivially breakable tomorrow as compute power grows",
+        "HMAC doesn't provide authenticity",
+        "Security through obscurity is sufficient if the algorithm is complex enough"
+      ],
+      "correct": 1,
+      "explanation": "DES's 56-bit key was considered adequate in 1977 but fell to Moore's law by 1998. This illustrates that cryptographic guarantees are tied to the adversary's computational power, which increases over time. A promise of confidentiality is not eternal — it's a function of key size, algorithm strength, and the state of computing technology. This is why we moved to AES-128/192/256 and why NIST is standardizing post-quantum algorithms."
+    },
+    {
+      "stage": "post",
+      "question": "In the RSA PKCS#1 v1.5 padding oracle attack, the RSA math was never broken. What was broken instead?",
+      "options": [
+        "The integer factorization problem was solved",
+        "The implementation leaked information through error messages (a side channel), allowing plaintext recovery byte by byte",
+        "The private key was stolen through key management failure",
+        "SHA-256 collisions were used to forge signatures"
+      ],
+      "correct": 1,
+      "explanation": "The padding oracle attack works because the server returns different error messages for 'valid padding' vs 'invalid padding.' This side channel lets the attacker narrow down the plaintext one byte at a time. The RSA math itself (factoring large semiprimes) was never broken. This perfectly illustrates the crypto vs. security distinction: the math was sound, but the engineering (the protocol's error handling) created a vulnerability."
+    }
+  ],
+  "_meta": {
+    "phase": 12,
+    "lesson": 1,
+    "title": "What Cryptography Actually Promises"
+  }
+}

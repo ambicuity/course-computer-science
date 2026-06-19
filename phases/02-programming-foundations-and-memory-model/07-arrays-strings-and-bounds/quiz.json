@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Inside `void foo(int arr[10])`, what is `sizeof(arr)`?",
+      "options": [
+        "40 (10 * sizeof(int))",
+        "sizeof(void *) — typically 8 on 64-bit — because the array decayed to a pointer at the function boundary",
+        "10",
+        "It's a compile error"
+      ],
+      "correct": 1,
+      "explanation": "Array decay: in a function parameter, `int arr[10]` and `int *arr` are identical. The size info is dropped. `sizeof(arr)` returns the pointer size (8 on 64-bit). Modern compilers warn (`-Wsizeof-array-argument` on clang) — this lesson's demo triggers it."
+    },
+    {
+      "stage": "pre",
+      "question": "A C string \"hello\" occupies how many bytes?",
+      "options": [
+        "5",
+        "6 — 5 chars + the null terminator '\\0'",
+        "11",
+        "Depends on locale"
+      ],
+      "correct": 1,
+      "explanation": "C strings are null-terminated: 'h', 'e', 'l', 'l', 'o', '\\0' → 6 bytes. `strlen` returns 5 (chars before null); `sizeof(\"hello\")` returns 6. Confusing these two is a top-10 C bug."
+    },
+    {
+      "stage": "post",
+      "question": "Why is `strcpy` considered unsafe?",
+      "options": [
+        "It's slow",
+        "It copies until a '\\0' is reached — no length parameter, no bounds check. If src is longer than dst's buffer, it overflows; this is the classic buffer-overflow vulnerability.",
+        "It only works on small strings",
+        "It's deprecated for performance reasons"
+      ],
+      "correct": 1,
+      "explanation": "strcpy(dst, src) is in CWE-120 (buffer overflow) territory. The fix: pass dst's size and bounded-copy (`strlcpy`, `snprintf`). Even `strncpy` is dangerous — if src ≥ n bytes, the result may not be null-terminated. Production C uses `strlcpy` (BSD), `snprintf`, or hand-rolled bounded copies."
+    },
+    {
+      "stage": "post",
+      "question": "Rust's slice `&[T]` carries what extra information that C arrays-as-pointers don't?",
+      "options": [
+        "Type",
+        "Length — `&[T]` is a (pointer, length) pair (a 'fat pointer'). Indexing is bounds-checked; out-of-bounds panics at runtime instead of silently corrupting memory.",
+        "Ownership",
+        "Lifetime"
+      ],
+      "correct": 1,
+      "explanation": "Slices are fat pointers: 16 bytes on 64-bit (8 ptr + 8 len). The length lets Rust enforce bounds checks. Same idea for `&str` (string slice over UTF-8 bytes). C made the historical choice to drop length at the function boundary; Rust paid the syntax cost to keep it."
+    },
+    {
+      "stage": "post",
+      "question": "snprintf(buf, sizeof(buf), \"%s\", src) returns 18 but buf is 8 bytes. What does that mean?",
+      "options": [
+        "Bug in snprintf",
+        "The return value is the WOULD-BE length (what would have been written if buf were large enough). Since 18 > sizeof(buf), the output was truncated to 7 characters + null.",
+        "The buffer is full",
+        "Always read return ≥ sizeof(buf) as success"
+      ],
+      "correct": 1,
+      "explanation": "snprintf is safe — it never writes past `sizeof(buf)`. The return is informational: it tells you the length the *full* output would have been. Treat `return >= sizeof(buf)` as 'truncation occurred'; the caller can decide what to do (error, retry with a bigger buffer, etc.)."
+    },
+    {
+      "stage": "post",
+      "question": "Why are bounds-related security bugs so common in C/C++?",
+      "options": [
+        "Programmers are careless",
+        "C/C++ don't carry array length at the language level: a function receives a bare pointer. Any time the contract 'caller passes correct length' is broken, the result is silent memory corruption — and an attack vector.",
+        "Compilers are buggy",
+        "It's an OS limitation"
+      ],
+      "correct": 1,
+      "explanation": "Microsoft, Chromium, and Linux kernel teams have all reported that ~70% of high-severity security bugs are memory-safety issues — buffer overflows, use-after-free, etc. The root cause is C/C++'s 'trust the programmer to pass length' design. Modern systems languages (Rust, Swift, Go) carry length in the type system and bounds-check at runtime; this lesson is the 'why.'"
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 7,
+    "title": "Arrays Strings And Bounds"
+  }
+}

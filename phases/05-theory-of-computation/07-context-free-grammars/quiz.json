@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 7,
+    "title": "Context-Free Grammars"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which language CANNOT be described by a regular grammar but CAN be described by a context-free grammar?",
+      "options": [
+        "{ aⁿbⁿ | n ≥ 0 }",
+        "{ w | w contains an even number of a's }",
+        "{ w | w ends with 'ab' }",
+        "{ a* b* }"
+      ],
+      "correct": 0,
+      "explanation": "{ aⁿbⁿ } requires counting/matching which exceeds finite memory. The pumping lemma proves it is not regular, but the grammar S → aSb | ε shows it is context-free."
+    },
+    {
+      "stage": "post",
+      "question": "In a CFG defined as G = (V, Σ, R, S), what does the production rule notation A → α mean?",
+      "options": [
+        "α must be a single terminal symbol",
+        "A is replaced by α in one derivation step, regardless of surrounding context",
+        "α can only contain variables from V",
+        "A and α must both be terminal symbols"
+      ],
+      "correct": 1,
+      "explanation": "A → α means A is replaced by α in one step. α can be any string of terminals and variables (or ε). The grammar is 'context-free' because the replacement of A does not depend on what symbols surround it."
+    },
+    {
+      "stage": "post",
+      "question": "A grammar is ambiguous when:",
+      "options": [
+        "It has more variables than terminals",
+        "Some terminal string has two or more distinct parse trees",
+        "It contains epsilon productions",
+        "It cannot generate all strings in its language"
+      ],
+      "correct": 1,
+      "explanation": "Ambiguity means there exist multiple parse trees (or equivalently, multiple leftmost derivations) for the same terminal string. This matters for programming languages because different parse trees imply different meanings."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the grammar S → E, E → E + T | T, T → T * F | F, F → (E) | id ambiguous?",
+      "options": [
+        "It uses both variables and terminals",
+        "The string 'id + id * id' has two parse trees depending on operator precedence",
+        "It contains unit productions",
+        "It cannot derive the string 'id'"
+      ],
+      "correct": 1,
+      "explanation": "The string 'id + id * id' has two parse trees: one where + groups first ((id+id)*id) and one where * groups first (id+(id*id)). The grammar does not encode precedence, so both structures are valid parse trees."
+    },
+    {
+      "stage": "pre",
+      "question": "What makes a grammar 'context-free'?",
+      "options": [
+        "It can only generate finite languages",
+        "Every production rule has a single nonterminal on the left-hand side",
+        "It has no epsilon productions",
+        "It can only produce strings of even length"
+      ],
+      "correct": 1,
+      "explanation": "In a context-free grammar (CFG), each production rule has exactly one nonterminal on the left side (e.g., A → α). This means the replacement of A doesn't depend on surrounding context. Context-sensitive grammars allow multiple symbols on the left side."
+    }
+  ]
+}

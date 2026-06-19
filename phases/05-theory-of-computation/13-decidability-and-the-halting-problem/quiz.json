@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 13,
+    "title": "Decidability and the Halting Problem"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A language L is decidable if and only if:",
+      "options": [
+        "Some TM accepts every string in L and may loop on strings outside L",
+        "Some TM halts on every input and accepts exactly the strings in L",
+        "No TM can accept any string in L",
+        "Every TM halts on every input"
+      ],
+      "correct": 1,
+      "explanation": "Decidable (recursive) means there exists a TM that always halts and correctly accepts or rejects every input."
+    },
+    {
+      "stage": "pre",
+      "question": "Which property makes the Halting Problem undecidable?",
+      "options": [
+        "Turing machines have infinite memory",
+        "Any candidate decider can be used to construct a contradictory input via diagonalization",
+        "Python is too slow to simulate all TMs",
+        "There are uncountably many Turing machines"
+      ],
+      "correct": 1,
+      "explanation": "The proof builds machine D that uses the hypothetical decider H's own output to produce a contradiction, showing H cannot exist."
+    },
+    {
+      "stage": "post",
+      "question": "HALT is semi-decidable but not decidable. This means:",
+      "options": [
+        "We can prove halting instances but cannot detect non-halting instances in general",
+        "We can detect both halting and non-halting in finite time",
+        "We can never detect any halting instance",
+        "HALT is neither recognizable nor co-recognizable"
+      ],
+      "correct": 0,
+      "explanation": "A semi-decider for HALT simulates M on w and accepts if M halts. It loops on non-halting pairs, so it can confirm halting but not non-halting."
+    },
+    {
+      "stage": "post",
+      "question": "If both L and its complement L̄ are semi-decidable, then L is:",
+      "options": [
+        "Undecidable",
+        "Decidable",
+        "Not even semi-decidable",
+        "Context-free"
+      ],
+      "correct": 1,
+      "explanation": "Run the recognizer for L and the recognizer for L̄ in parallel. Exactly one will accept, giving a total decider that always halts."
+    },
+    {
+      "stage": "pre",
+      "question": "What does it mean for a language to be decidable?",
+      "options": [
+        "It can be described by a regular expression",
+        "There exists a Turing machine that always halts and correctly accepts/rejects every input string",
+        "It has a finite number of strings",
+        "It can be parsed by a pushdown automaton"
+      ],
+      "correct": 1,
+      "explanation": "A decidable (recursive) language has a Turing machine that always halts on every input: accepting strings in the language and rejecting strings not in it. This is stronger than recognizable (recursively enumerable), where the TM may loop forever on non-members."
+    }
+  ]
+}

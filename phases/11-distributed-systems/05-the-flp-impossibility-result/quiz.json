@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What are the three properties that a correct consensus protocol must guarantee?",
+      "options": [
+        "Consistency, Availability, Partition tolerance (CAP)",
+        "Agreement, Validity, Termination",
+        "Safety, Liveness, Fairness",
+        "Atomicity, Consistency, Durability (ACID)"
+      ],
+      "correct": 1,
+      "explanation": "Consensus requires Agreement (all non-faulty nodes decide the same value), Validity (the decided value was proposed by some node), and Termination (every non-faulty node eventually decides). CAP and ACID are different properties for different problems."
+    },
+    {
+      "stage": "pre",
+      "question": "In the FLP impossibility result, what does 'fully asynchronous' mean?",
+      "options": [
+        "Nodes can crash and lie to each other",
+        "Messages may be lost or duplicated",
+        "There are no bounds on message delivery time or processing speed",
+        "The network uses async I/O instead of sync I/O"
+      ],
+      "correct": 2,
+      "explanation": "Fully asynchronous means there are no known bounds on message delivery time or process step time. You cannot use timeouts to detect crashes because a slow process is indistinguishable from a crashed one. It does not mean Byzantine (lying) behavior — that's a different failure model."
+    },
+    {
+      "stage": "post",
+      "question": "The FLP proof relies on the existence of a 'bivalent configuration.' What is a bivalent configuration?",
+      "options": [
+        "A configuration where exactly half the nodes have crashed",
+        "A configuration from which both decision values (0 and 1) are reachable",
+        "A configuration where all nodes have decided on different values",
+        "A configuration where the network has partitioned into two halves"
+      ],
+      "correct": 1,
+      "explanation": "A bivalent configuration is one from which both outcomes — deciding 0 or deciding 1 — are still possible depending on what messages are delivered next. The adversary exploits this by always delivering messages that keep the system bivalent, preventing any decision forever."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is NOT a way to circumvent FLP impossibility in practice?",
+      "options": [
+        "Using randomization (e.g., Ben-Or's algorithm) to make decisions probabilistic",
+        "Assuming partial synchrony — that the system eventually becomes synchronous",
+        "Increasing the number of replicas to infinity",
+        "Using failure detectors (timeouts) to suspect crashed processes"
+      ],
+      "correct": 2,
+      "explanation": "FLP holds regardless of how many processes there are — adding more replicas doesn't help. The real escape hatches are: randomization (FLP only blocks deterministic algorithms), partial synchrony (consensus during synchronous periods), and failure detectors (suspecting crashes via timeouts)."
+    },
+    {
+      "stage": "post",
+      "question": "Ben-Or's randomized consensus algorithm breaks FLP by using coin flips. What is the expected number of rounds to reach consensus with f < n/5?",
+      "options": [
+        "O(n) rounds — linear in the number of nodes",
+        "O(1) rounds — constant expected rounds with few faults",
+        "O(log n) rounds — logarithmic in the number of nodes",
+        "O(2^n) rounds — exponential in the number of faults"
+      ],
+      "correct": 1,
+      "explanation": "Ben-Or's algorithm achieves O(1) expected rounds when f < n/5. The probability of agreement in each round is constant, so the expected number of rounds is constant. However, the constant factor grows exponentially with f, making it impractical for large numbers of faults."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Raft (used in etcd, Consul) not violate FLP impossibility?",
+      "options": [
+        "Raft uses special hardware that guarantees message delivery",
+        "Raft guarantees safety under asynchrony but only guarantees liveness under partial synchrony via randomized election timeouts",
+        "Raft requires all nodes to be correct — it doesn't tolerate any failures",
+        "FLP only applies to theoretical models, not to real protocols like Raft"
+      ],
+      "correct": 1,
+      "explanation": "Raft is safe under full asynchrony (it never decides wrong), but it only makes progress (liveness) when the system is partially synchronous. The randomized election timeouts are exactly Ben-Or's insight applied: randomness breaks the adversary's ability to keep the system bivalent. FLP says deterministic algorithms can't always decide, and Raft doesn't claim to — it claims to never decide wrong."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 5,
+    "title": "The Flp Impossibility Result"
+  }
+}

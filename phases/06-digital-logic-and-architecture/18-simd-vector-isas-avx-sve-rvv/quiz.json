@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 18,
+    "title": "SIMD & Vector ISAs — AVX, SVE, RVV"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "SIMD stands for:",
+      "options": [
+        "Sequential Instruction, Multiple Data",
+        "Single Instruction, Multiple Data",
+        "Synchronous Instruction, Memory-Dependent",
+        "Structured Instruction, Modular Design"
+      ],
+      "correct": 1,
+      "explanation": "SIMD means a single instruction operates on multiple data elements in parallel using wide vector registers."
+    },
+    {
+      "stage": "pre",
+      "question": "An AVX2 YMM register is 256 bits wide. How many single-precision (32-bit) floats can it hold?",
+      "options": [
+        "2",
+        "4",
+        "8",
+        "16"
+      ],
+      "correct": 2,
+      "explanation": "256 bits / 32 bits per float = 8 floats. Each _mm256_add_ps adds 8 pairs of floats in one instruction."
+    },
+    {
+      "stage": "post",
+      "question": "ARM SVE differs from x86 AVX primarily because:",
+      "options": [
+        "SVE uses 64-bit registers while AVX uses 256-bit",
+        "SVE vector length is determined at runtime by the hardware, not fixed at compile time",
+        "SVE only supports integer operations, not floating point",
+        "SVE requires all data to be 64-byte aligned"
+      ],
+      "correct": 1,
+      "explanation": "SVE is vector-length agnostic (VLA): the hardware chooses the vector register width (128-2048 bits). The same binary runs optimally on any SVE implementation."
+    },
+    {
+      "stage": "post",
+      "question": "Why must data be aligned to the SIMD register width for best performance?",
+      "options": [
+        "Unaligned access causes a segmentation fault",
+        "Aligned loads can fetch the entire vector in one memory transaction; unaligned loads may span two cache lines and cost extra cycles",
+        "The compiler refuses to vectorize unaligned data",
+        "Aligned data is stored in the TLB for faster lookup"
+      ],
+      "correct": 1,
+      "explanation": "When data is aligned to the vector width, a single cache-line fetch provides the entire vector. Unaligned data may straddle two cache lines, requiring two loads and a merge — extra latency and potential cache pollution."
+    },
+    {
+      "stage": "pre",
+      "question": "What does SIMD stand for, and how does it improve performance?",
+      "options": [
+        "Single Instruction Multiple Data — one instruction operates on multiple data elements simultaneously",
+        "Sequential Instruction Memory Design — instructions are reordered for efficiency",
+        "Static Instruction Mapping Database — a compiler optimization technique",
+        "Shared Instruction Multiplexing Device — a hardware virtualization feature"
+      ],
+      "correct": 0,
+      "explanation": "SIMD (Single Instruction, Multiple Data) applies one operation to a vector of data elements in parallel. For example, AVX-512 can add 16 floats simultaneously. This is ideal for data-parallel workloads like image processing, matrix multiplication, and scientific computing."
+    }
+  ]
+}

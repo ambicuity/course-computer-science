@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 15: Loop Optimization & Vectorization",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the primary benefit of loop unrolling?",
+      "options": [
+        "It reduces the total number of instructions in the program",
+        "It reduces branch overhead and exposes instruction-level parallelism by duplicating the loop body",
+        "It converts loops into recursive function calls",
+        "It guarantees the loop will be vectorized"
+      ],
+      "explanation": "Loop unrolling duplicates the body N times so the branch instruction executes N times less frequently. It also creates more independent instructions that the CPU can execute in parallel via superscalar execution. Trade-off: larger code size.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "A loop has a[i] = a[i-1] + 1. Why can't this be vectorized?",
+      "options": [
+        "The addition operation is too expensive",
+        "There is a loop-carried flow dependence — iteration i depends on the result from iteration i-1",
+        "The array is too small to benefit from vectorization",
+        "The compiler doesn't support vectorizing addition"
+      ],
+      "explanation": "This is a flow (RAW) dependence: iteration i reads the value written by iteration i-1. SIMD requires all iterations to execute simultaneously, but here each iteration must wait for the previous result. This is a serial recurrence that cannot be parallelized.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "Loop interchange improves performance primarily by improving what?",
+      "options": [
+        "Instruction count",
+        "Register allocation",
+        "Cache locality — ensuring the inner loop traverses contiguous memory",
+        "Branch prediction accuracy"
+      ],
+      "explanation": "When a 2D array is stored in row-major order, iterating row-by-row in the inner loop accesses contiguous memory (stride-1), hitting cache lines efficiently. Interchanging the loops so the contiguous dimension is the inner loop improves cache utilization dramatically (2-5x speedup is typical).",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "id": 4,
+      "question": "What width of SIMD does AVX2 operate on for single-precision floats?",
+      "options": [
+        "2 floats (64-bit)",
+        "4 floats (128-bit)",
+        "8 floats (256-bit)",
+        "16 floats (512-bit)"
+      ],
+      "explanation": "AVX2 provides 256-bit registers (YMM) that hold 8 single-precision (32-bit) floats or 4 double-precision (64-bit) floats. SSE operates on 128-bit (4 floats), and AVX-512 on 512-bit (16 floats).",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "stage": "pre",
+      "question": "What is loop vectorization?",
+      "options": [
+        "Converting loops into recursive functions",
+        "Transforming scalar loop iterations into SIMD operations that process multiple elements per instruction",
+        "Unrolling loops to reduce branch overhead",
+        "Moving loop-invariant code outside the loop"
+      ],
+      "correct": 1,
+      "explanation": "Vectorization transforms a loop like `for(i) C[i] = A[i] + B[i]` into SIMD instructions that add 4/8/16 elements at once. The compiler must prove that iterations are independent (no data dependencies between iterations) and that memory accesses are aligned."
+    }
+  ],
+  "_meta": {
+    "phase": 8,
+    "lesson": 15,
+    "title": "Loop Optimization Vectorization"
+  }
+}

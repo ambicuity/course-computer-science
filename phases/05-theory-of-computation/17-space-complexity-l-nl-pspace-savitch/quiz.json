@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which statement about space complexity is correct?",
+      "options": [
+        "Space is measured on the input tape",
+        "Space is measured on the work tape (excluding input)",
+        "L = P always",
+        "NL is a subset of L"
+      ],
+      "correct": 1,
+      "explanation": "Space complexity counts work-tape cells used beyond the input. The input tape is read-only and not counted. L ⊆ NL ⊆ P ⊆ PSPACE — but whether L = NL or NL = L is unknown."
+    },
+    {
+      "stage": "pre",
+      "question": "What does Savitch's theorem state?",
+      "options": [
+        "P = PSPACE",
+        "NSPACE(f(n)) ⊆ SPACE(f(n)²)",
+        "NL = L",
+        "Reachability is in P"
+      ],
+      "correct": 1,
+      "explanation": "Savitch's theorem (1970): any problem solvable in nondeterministic space f(n) can be solved in deterministic space f(n)². The proof uses divide-and-conquer reachability. For f(n) = log n, this gives NL ⊆ SPACE((log n)²)."
+    },
+    {
+      "stage": "post",
+      "question": "Savitch's reachability algorithm uses O(log² n) space. What contributes to this?",
+      "options": [
+        "Storing the entire adjacency matrix",
+        "Recursion depth O(log n) × O(log n) bits per frame for the midpoint node ID",
+        "A BFS queue of O(n) nodes",
+        "Dynamic programming table of O(n²) entries"
+      ],
+      "correct": 1,
+      "explanation": "Each recursive call guesses a midpoint m, which takes O(log n) bits to store. The recursion depth is O(log n) because we halve the path length each time. Total: O(log n) frames × O(log n) bits = O(log² n) space."
+    },
+    {
+      "stage": "post",
+      "question": "Why is TQBF (True Quantified Boolean Formula) PSPACE-complete?",
+      "options": [
+        "It requires exponential time",
+        "The quantifier alternation (∀∃∀...) forces branching that uses polynomial space but exponential time",
+        "It is reducible to the halting problem",
+        "It can only be solved by nondeterministic machines"
+      ],
+      "correct": 1,
+      "explanation": "TQBF has alternating quantifiers. Evaluating ∀x∃y∀z...φ requires exploring exponentially many branches (depth proportional to number of quantifiers) but only needs polynomial space for the current branch path. This makes it the canonical PSPACE-complete problem — the natural class for game solving and model checking."
+    },
+    {
+      "stage": "post",
+      "question": "You need to solve a graph reachability problem in a memory-constrained embedded system. Which approach uses the least space?",
+      "options": [
+        "Store the full adjacency list and do BFS — O(n) space",
+        "Use Savitch's algorithm — O(log² n) space",
+        "Enumerate all paths — O(n!) space",
+        "Store distance matrix — O(n²) space"
+      ],
+      "correct": 1,
+      "explanation": "Savitch's algorithm uses O(log² n) space — exponentially less than BFS's O(n). The trade-off is time: Savitch is O(2^(log n) × poly(n)) = O(n^(log n)), which is slower than BFS's O(n + m). But when memory is the bottleneck, Savitch wins."
+    }
+  ],
+  "_meta": {
+    "phase": 5,
+    "lesson": 17,
+    "title": "Space Complexity L Nl Pspace Savitch"
+  }
+}

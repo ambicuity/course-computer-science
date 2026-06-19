@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the 'Markov property' of a stochastic process?",
+      "options": [
+        "Each transition has equal probability",
+        "The next state depends only on the current state, not on the history",
+        "The process is reversible",
+        "It always terminates"
+      ],
+      "correct": 1,
+      "explanation": "Markov property: `P(X_{t+1} | X_t, X_{t-1}, ..., X_0) = P(X_{t+1} | X_t)`. Past is irrelevant once you know the present. This 'memorylessness' is what makes the transition matrix capture everything you need to analyze the chain."
+    },
+    {
+      "stage": "pre",
+      "question": "How do you compute the n-step transition probabilities of a Markov chain with matrix P?",
+      "options": [
+        "P^n (the matrix raised to the nth power)",
+        "n · P",
+        "P · n",
+        "P / n"
+      ],
+      "correct": 0,
+      "explanation": "(P^n)_{ij} is the probability of being in state j after n steps given start at i. Use binary exponentiation (Phase 01 Lesson 14) to compute P^n in O(d³ log n) for a d-state chain."
+    },
+    {
+      "stage": "post",
+      "question": "A stationary distribution π satisfies which equation?",
+      "options": [
+        "π = P · π",
+        "π · P = π (π is a left eigenvector of P with eigenvalue 1)",
+        "π = P^T · π",
+        "π · P^T = π"
+      ],
+      "correct": 1,
+      "explanation": "π · P = π — a row vector π satisfies the equation as a left-multiplied eigenvector. For ergodic (irreducible + aperiodic) finite chains, π is unique and any initial distribution converges to it geometrically fast."
+    },
+    {
+      "stage": "post",
+      "question": "What's the stationary distribution of a simple random walk on an undirected graph G = (V, E)?",
+      "options": [
+        "Uniform: 1/|V| everywhere",
+        "π_v = deg(v) / (2|E|) — proportional to degree",
+        "π_v = 1 / deg(v)",
+        "Depends on the start vertex"
+      ],
+      "correct": 1,
+      "explanation": "π_v = deg(v) / (2|E|). High-degree vertices are visited more often. For regular graphs (all degrees equal), this reduces to uniform. This is the foundation of PageRank: high in-degree pages get higher stationary mass."
+    },
+    {
+      "stage": "post",
+      "question": "Why does PageRank add a damping factor (1 - α) / n?",
+      "options": [
+        "To make the algorithm faster",
+        "It ensures the chain is irreducible and aperiodic (the 'teleport' guarantees every page can reach every other) — needed for the chain to have a unique stationary distribution.",
+        "To match historical norms",
+        "It's optional"
+      ],
+      "correct": 1,
+      "explanation": "Without damping, dangling pages (no outlinks) or disconnected webs would break ergodicity — power iteration wouldn't converge to a unique limit. Damping = 'teleport to a random page with probability 1 - α' makes the matrix strictly positive, guaranteeing ergodicity. α = 0.85 is empirical."
+    },
+    {
+      "stage": "post",
+      "question": "Mixing time of a random walk is controlled by:",
+      "options": [
+        "The number of edges",
+        "The spectral gap (1 - λ₂) of P — larger gap means faster mixing; expander graphs have constant gap → O(log n) mixing",
+        "The diameter only",
+        "The number of vertices"
+      ],
+      "correct": 1,
+      "explanation": "Mixing time ~ (1 / spectral_gap) · log(1/ε). Expanders (random regular graphs, Ramanujan graphs) have spectral gap bounded below by a constant → O(log n) mixing. Cycles have gap O(1/n²) → slow O(n² log) mixing. This drives the entire theory of MCMC sampling."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 20,
+    "title": "Markov Chains Random Walks Discrete"
+  }
+}

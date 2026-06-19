@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a precondition?",
+      "options": ["A guarantee after function returns", "A caller obligation before execution", "A logging strategy", "A test fixture"],
+      "correct": 1,
+      "explanation": "Preconditions define what must be true before calling a function."
+    },
+    {
+      "stage": "pre",
+      "question": "Who is responsible for satisfying a postcondition?",
+      "options": ["The caller", "The callee (the function being called)", "The compiler", "The operating system"],
+      "correct": 1,
+      "explanation": "The callee guarantees the postcondition holds on return, provided the caller met all preconditions."
+    },
+    {
+      "stage": "post",
+      "question": "Why are invariants valuable in stateful systems?",
+      "options": ["They improve formatting", "They enforce always-true safety properties across operations", "They remove need for tests", "They replace type systems"],
+      "correct": 1,
+      "explanation": "Invariants constrain legal states and catch corruption close to its source."
+    },
+    {
+      "stage": "post",
+      "question": "Best placement for expensive runtime contracts?",
+      "options": ["Inside every tight loop", "At boundary/domain transitions where trust changes", "Nowhere", "Only in comments"],
+      "correct": 1,
+      "explanation": "Boundary-focused contracts maximize clarity and safety with manageable performance cost."
+    },
+    {
+      "stage": "post",
+      "question": "How do contracts differ from unit tests in catching bugs?",
+      "options": ["They are identical", "Contracts catch violations at runtime during normal execution, tests only in test harness", "Contracts only work in static languages", "Unit tests are always stronger"],
+      "correct": 1,
+      "explanation": "Contracts are embedded in production code paths and fire on any violation during actual use, while unit tests only check pre-scripted scenarios."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 8, "title": "Contracts and Design by Contract" }
+}

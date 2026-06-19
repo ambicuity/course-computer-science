@@ -1,0 +1,79 @@
+{
+  "lesson": 15,
+  "title": "WebSockets, SSE, gRPC",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "Which HTTP header is used to initiate a WebSocket upgrade request?",
+      "options": [
+        "Connection: keep-alive",
+        "Upgrade: websocket",
+        "Content-Type: application/websocket",
+        "Transfer-Encoding: upgrade"
+      ],
+      "correct": 1,
+      "explanation": "The client sends 'Upgrade: websocket' and 'Connection: Upgrade' headers in the initial HTTP GET request. The server responds with 101 Switching Protocols to complete the handshake.",
+      "stage": "pre"
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice",
+      "question": "What is the primary advantage of SSE over WebSockets for server-to-client streaming?",
+      "options": [
+        "SSE supports binary data",
+        "SSE has lower latency",
+        "SSE automatically reconnects on connection loss and uses standard HTTP",
+        "SSE supports bidirectional communication"
+      ],
+      "correct": 2,
+      "explanation": "SSE uses the standard HTTP protocol with automatic reconnection built into the browser's EventSource API. It sends Last-Event-ID on reconnect, making it simpler for one-way server-to-client streaming.",
+      "stage": "pre"
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice",
+      "question": "How many streaming modes does gRPC support?",
+      "options": [
+        "1 (unary only)",
+        "2 (unary and server streaming)",
+        "3",
+        "4"
+      ],
+      "correct": 3,
+      "explanation": "gRPC supports four modes: (1) unary request-response, (2) server streaming, (3) client streaming, and (4) bidirectional streaming. These leverage HTTP/2's native multiplexing and streaming capabilities.",
+      "stage": "post"
+    },
+    {
+      "id": 4,
+      "type": "multiple_choice",
+      "question": "In a WebSocket frame, why must client-to-server frames be masked?",
+      "options": [
+        "To encrypt the payload for security",
+        "To prevent caching proxies from misinterpreting WebSocket data as HTTP",
+        "To compress the payload",
+        "To enable fragmentation"
+      ],
+      "correct": 1,
+      "explanation": "Masking prevents intermediary caching proxies from misinterpreting WebSocket frames as HTTP requests. The masking key is XOR'd with the payload, and the server reverses it. This is mandatory for client-to-server frames but not for server-to-client frames.",
+      "stage": "post"
+    },
+    {
+      "stage": "pre",
+      "question": "What is the advantage of WebSocket over HTTP polling?",
+      "options": [
+        "WebSocket uses less bandwidth because it compresses all data",
+        "WebSocket provides a persistent full-duplex connection, eliminating the overhead of repeated HTTP requests",
+        "WebSocket is more secure than HTTPS",
+        "WebSocket only works on local networks"
+      ],
+      "correct": 1,
+      "explanation": "HTTP polling wastes resources: each poll is a full HTTP request/response even when there's no new data. WebSocket upgrades an HTTP connection to a persistent, bidirectional channel. Either side can send messages at any time with minimal framing overhead — ideal for chat, gaming, and live feeds."
+    }
+  ],
+  "_meta": {
+    "phase": 9,
+    "lesson": 15,
+    "title": "Websockets Sse Grpc"
+  }
+}

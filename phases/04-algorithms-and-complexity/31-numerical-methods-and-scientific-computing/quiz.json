@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why does 0.1 + 0.2 ≠ 0.3 in most programming languages?",
+      "options": [
+        "The language has a bug",
+        "0.1 cannot be represented exactly in binary floating-point; the sum accumulates rounding error",
+        "The compiler optimizes incorrectly",
+        "Only integers can be compared exactly"
+      ],
+      "correct": 1,
+      "explanation": "0.1 in binary is 0.0001100110011... (repeating forever). IEEE 754 double precision truncates this to 52 bits, introducing a tiny error. When you add the similarly-truncated 0.2, the errors compound. The result 0.30000000000000004 is the closest representable double to the true sum. This is why financial systems use decimal types, not floats."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key advantage of Newton's method over bisection for root finding?",
+      "options": [
+        "Newton's method always converges",
+        "Newton's method has quadratic convergence — it roughly doubles correct digits each step — but requires the derivative",
+        "Bisection is slower for all functions",
+        "Newton's method doesn't need an initial guess"
+      ],
+      "correct": 1,
+      "explanation": "Newton's method uses the tangent line to jump toward the root, achieving quadratic convergence (error ~ error² each step). Bisection only achieves linear convergence (1 bit per step). But Newton's requires f'(x) and can diverge if the initial guess is poor or f'(x) ≈ 0. Bisection always converges if you have a valid bracket."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the RK4 method preferred over Euler's method for ODE integration?",
+      "options": [
+        "RK4 is simpler to implement",
+        "RK4 achieves 4th-order accuracy (error ~ h⁴) vs Euler's 1st-order (error ~ h), giving much better accuracy for the same step size",
+        "Euler's method is unstable",
+        "RK4 uses less memory"
+      ],
+      "correct": 1,
+      "explanation": "Euler's method has error O(h) per step — halving h halves the error. RK4 has error O(h⁴) — halving h reduces error by 16×. For the same accuracy, RK4 can use much larger steps, making it faster overall. A physics simulation with h=0.1 using RK4 is more accurate than h=0.001 using Euler."
+    },
+    {
+      "stage": "post",
+      "question": "What is catastrophic cancellation and how do you avoid it?",
+      "options": [
+        "Overflow when multiplying large numbers",
+        "Subtracting nearly-equal numbers loses significant digits; rewrite the formula algebraically to avoid the subtraction",
+        "Rounding errors in addition",
+        "Division by a very small number"
+      ],
+      "correct": 1,
+      "explanation": "When you compute √(10¹⁵+1) - √(10¹⁵), both terms are ≈ 31622776.6... and agree in the first 7 digits. Subtracting cancels those digits, leaving only garbage. The fix: rewrite as 1/(√(x+1)+√(x)), which involves only addition and division — no cancellation. Always look for algebraic rearrangements that avoid subtracting nearly-equal quantities."
+    },
+    {
+      "stage": "post",
+      "question": "What is a symplectic integrator and when would you use one?",
+      "options": [
+        "A method that runs in parallel",
+        "An ODE solver that preserves the Hamiltonian (energy) structure; essential for long-running physics simulations where energy drift is unacceptable",
+        "A method with adaptive step size",
+        "A method for stiff equations"
+      ],
+      "correct": 1,
+      "explanation": "Standard methods (Euler, RK4) have small energy drift — over millions of steps, a planetary orbit slowly spirals inward or outward. Symplectic methods (Verlet, Leapfrog) exactly preserve a nearby Hamiltonian, so energy oscillates around the true value without drifting. Game engines and N-body simulators use them for this reason."
+    }
+  ],
+  "_meta": {
+    "phase": 4,
+    "lesson": 31,
+    "title": "Numerical Methods And Scientific Computing"
+  }
+}

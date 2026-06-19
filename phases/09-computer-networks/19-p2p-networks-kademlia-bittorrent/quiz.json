@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 19,
+    "title": "P2P Networks — Kademlia, BitTorrent",
+    "total_questions": 4
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What property makes XOR a good distance metric for Kademlia's routing?",
+      "options": [
+        "XOR distance is always zero for any two different nodes",
+        "XOR distance is symmetric, satisfies the triangle inequality, and makes routing converge in O(log N) steps",
+        "XOR distance requires sorting all node IDs by their integer value",
+        "XOR distance can only be computed with a central coordinator"
+      ],
+      "correct": 1,
+      "explanation": "XOR distance (dist(A,B) = A xor B) is symmetric, satisfies the triangle inequality, and has the property that for any node A and distance d, there is exactly one node B with dist(A,B) = d, making Kademlia routing deterministic and convergent in O(log N) steps."
+    },
+    {
+      "stage": "pre",
+      "question": "In BitTorrent's tit-for-tat choking algorithm, what determines which peers a node uploads to?",
+      "options": [
+        "Peers are chosen randomly from the swarm",
+        "Peers are chosen based on who has the most pieces",
+        "A node uploads to the N peers that upload fastest to it, plus one optimistically unchoked peer",
+        "A node uploads to every peer equally in round-robin order"
+      ],
+      "correct": 2,
+      "explanation": "BitTorrent's tit-for-tat algorithm allocates upload slots to the N peers (typically 4) that provide the highest download rate to the local node. An additional optimistic unchoke slot periodically rotates through remaining peers to discover better partners. This incentivizes peers to contribute upload bandwidth."
+    },
+    {
+      "stage": "post",
+      "question": "During a Kademlia iterative node lookup with alpha = 3, what happens when a queried peer returns nodes that are farther from the target than the current best known candidate?",
+      "options": [
+        "The lookup immediately terminates and returns the current candidates",
+        "The lookup queries the returned nodes anyway to confirm they are farther",
+        "The lookup continues until all alpha*2 closest candidates have been queried or no closer nodes are found",
+        "The lookup falls back to a recursive search through all 160 k-buckets"
+      ],
+      "correct": 2,
+      "explanation": "Kademlia iterative lookup maintains a set of alpha*2 closest candidates. It queries the alpha best unqueried candidates in parallel. If any response contains a node closer than the current best, that node becomes the new best and the process repeats. If no closer nodes are found after querying all top candidates, the lookup terminates. This ensures convergence to the true closest nodes."
+    },
+    {
+      "stage": "post",
+      "question": "In the rarest-first piece selection strategy, what problem does selecting the rarest available piece first solve?",
+      "options": [
+        "It minimizes download time by always picking the smallest piece",
+        "It ensures that pieces held by few peers are replicated before they disappear from the swarm",
+        "It maximizes upload speed by selecting pieces with the most seeders",
+        "It reduces tracker load by requesting fewer pieces overall"
+      ],
+      "correct": 1,
+      "explanation": "Rarest-first prioritizes downloading pieces that the fewest peers have. This is critical for swarm health: if a rare peer with unique pieces leaves the swarm, those pieces become unavailable, making the file impossible to complete. By replicating rare pieces early, rarest-first ensures all pieces stay available even as peers come and go."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key innovation of Kademlia in P2P networks?",
+      "options": [
+        "Using a central server to track all peers",
+        "Using XOR-based distance metric for efficient key lookup in O(log n) hops in a decentralized DHT",
+        "Requiring all peers to be on the same network",
+        "Using a blockchain for peer discovery"
+      ],
+      "correct": 1,
+      "explanation": "Kademlia is a Distributed Hash Table (DHT) that uses XOR as a distance metric between node IDs and keys. Each node maintains k-buckets for nodes at different distances. Lookup proceeds by querying the closest known nodes, achieving O(log n) hops without any central coordinator."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of a proof assistant?",
+      "options": [
+        "To automatically prove all theorems without human input",
+        "To let humans provide proof steps while the machine checks each inference for correctness",
+        "To generate random test cases for programs",
+        "To optimize compiler output"
+      ],
+      "correct": 1,
+      "explanation": "A proof assistant is interactive: humans provide the proof strategy and steps, the software mechanically checks that each inference follows the rules. This catches errors that informal proofs miss. Lean, Coq, and Isabelle all follow this model."
+    },
+    {
+      "stage": "pre",
+      "question": "The pumping lemma for regular languages says that for any regular language L, there exists a pumping length p such that...",
+      "options": [
+        "All strings in L have length less than p",
+        "Every string w in L with |w| ≥ p can be split as w = xyz with |xy| ≤ p, |y| ≥ 1, and xyⁱz ∈ L for all i ≥ 0",
+        "L can be recognized by a DFA with p states",
+        "L contains at most p distinct strings"
+      ],
+      "correct": 1,
+      "explanation": "The pumping lemma is a structural guarantee: regular languages contain strings with repeating subpatterns. The split conditions (|xy| ≤ p, |y| ≥ 1) are crucial — they limit where the pumpable region can be, making the lemma useful for proofs by contradiction."
+    },
+    {
+      "stage": "post",
+      "question": "In a uniform model representation for a proof assistant, what distinguishes an NFA spec from a DFA spec?",
+      "options": [
+        "NFA specs use sets of target states per transition; DFA specs use single states",
+        "NFA specs have more states",
+        "NFA specs cannot accept any strings",
+        "There is no difference in representation"
+      ],
+      "correct": 0,
+      "explanation": "The key structural difference: DFA transitions map (state, symbol) → state (single). NFA transitions map (state, symbol) → {set of states}. This lets NFAs branch into multiple configurations simultaneously. The proof assistant dispatches to the correct simulator based on the 'type' field."
+    },
+    {
+      "stage": "post",
+      "question": "When verifying a reduction A ≤_p B in the proof assistant, what must hold for every test instance x?",
+      "options": [
+        "x must be in A",
+        "f(x) must be in B",
+        "x ∈ A if and only if f(x) ∈ B",
+        "f(x) must be computed in exponential time"
+      ],
+      "correct": 2,
+      "explanation": "The reduction correctness condition: membership is preserved in both directions. x ∈ A ⟺ f(x) ∈ B. If x is in A, its image must be in B. If x is not in A, its image must not be in B. The assistant checks this equivalence on test instances to catch buggy reductions."
+    },
+    {
+      "stage": "post",
+      "question": "How does the pumping lemma verifier check that a language is not regular?",
+      "options": [
+        "It builds a DFA and checks if it has too many states",
+        "It enumerates all valid (x, y, z) splits of a witness and checks that some pumping power breaks membership for each split",
+        "It counts the number of strings in the language",
+        "It runs the language on random inputs and checks for errors"
+      ],
+      "correct": 1,
+      "explanation": "The pumping lemma proof by contradiction works like this: assume L is regular, pick witness w, then show that for EVERY valid split, pumping breaks membership — contradicting the lemma. The assistant automates this by enumerating all splits and checking each one."
+    }
+  ],
+  "_meta": {
+    "phase": 5,
+    "lesson": 18,
+    "title": "Phase Capstone A Toy Proof Assistant For Reductions"
+  }
+}

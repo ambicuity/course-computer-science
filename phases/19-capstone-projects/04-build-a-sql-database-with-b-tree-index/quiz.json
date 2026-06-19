@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why start a DB capstone with a thin end-to-end slice?",
+      "options": ["To skip storage design", "To validate interfaces and invariants incrementally", "To avoid SQL entirely", "To remove indexing from the design"],
+      "correct": 1,
+      "explanation": "A narrow vertical slice (schema + insert/select + indexed lookup) confirms architecture assumptions early. You catch integration bugs between parser, executor, and storage before investing months in each layer."
+    },
+    {
+      "stage": "pre",
+      "question": "In a B+-tree, where does the actual data live?",
+      "options": ["In the root node only", "In leaf nodes only, with internal nodes holding separator keys", "Distributed evenly across all nodes", "In a separate heap file"],
+      "correct": 1,
+      "explanation": "B+-trees store all data in leaf nodes. Internal nodes contain only separator keys and child pointers. This design enables efficient range scans: once you reach a leaf, you walk the linked list to adjacent leaves."
+    },
+    {
+      "stage": "post",
+      "question": "What is a key B+-tree benefit for query execution?",
+      "options": ["Unordered writes only", "Efficient point lookups and ordered range scans", "No balancing required", "Zero memory usage"],
+      "correct": 1,
+      "explanation": "B+-trees support O(log n) point lookups and efficient range scans via the leaf-level linked list. Range queries like 'WHERE age BETWEEN 20 AND 30' walk the linked list instead of traversing the tree for each key."
+    },
+    {
+      "stage": "post",
+      "question": "Why must the B+-tree maintain balance across all leaves?",
+      "options": ["To look pretty in diagrams", "To guarantee O(log n) worst-case lookup time regardless of insertion order", "To reduce code complexity", "To enable parallel writes"],
+      "correct": 1,
+      "explanation": "Balanced trees guarantee that every lookup traverses the same number of levels, giving O(log n) worst-case performance. An unbalanced tree (like a BST with sorted input) degrades to O(n) in the worst case."
+    },
+    {
+      "stage": "post",
+      "question": "What is the purpose of the leaf linked list in a B+-tree?",
+      "options": ["To store parent pointers", "To enable efficient range scans by walking adjacent leaves", "To implement deletion", "To track free space"],
+      "correct": 1,
+      "explanation": "Without the linked list, a range scan would need to traverse back up to the internal nodes between each leaf. The linked list lets you walk from one leaf to the next in O(1) per step, making range scans as fast as sequential reads."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 4, "title": "Build a SQL Database with B+-Tree Index" }
+}

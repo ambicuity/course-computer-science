@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a programming paradigm best understood as?",
+      "options": ["A compiler", "A style of decomposition and reasoning", "A package manager", "A syntax linter"],
+      "correct": 1,
+      "explanation": "Paradigms are conceptual approaches for structuring programs and reasoning about behavior."
+    },
+    {
+      "stage": "pre",
+      "question": "Which statement about multi-paradigm languages is most accurate?",
+      "options": ["They enforce one dominant paradigm", "They allow mixing styles but each paradigm still has tradeoffs", "They eliminate the need to choose", "They are always slower"],
+      "correct": 1,
+      "explanation": "Languages like Scala or Rust support multiple paradigms, but the engineer still must reason about which style fits each problem."
+    },
+    {
+      "stage": "post",
+      "question": "Why is paradigm choice usually contextual?",
+      "options": ["Because languages enforce one style only", "Because problem constraints and team/tooling tradeoffs differ by subsystem", "Because paradigms are equivalent always", "Because architecture reviews are optional"],
+      "correct": 1,
+      "explanation": "Different modules benefit from different styles based on mutation patterns, domain structure, and operational constraints."
+    },
+    {
+      "stage": "post",
+      "question": "What is a common anti-pattern in paradigm discussions?",
+      "options": ["Using small experiments", "Treating paradigm labels as identity instead of tradeoff tools", "Comparing module constraints", "Documenting assumptions"],
+      "correct": 1,
+      "explanation": "Dogmatic paradigm choices often obscure the real engineering question: which model reduces risk for this task."
+    },
+    {
+      "stage": "post",
+      "question": "How do paradigms influence error handling strategies?",
+      "options": ["They have no effect", "Functional paradigms favor algebraic types; imperative ones favor exceptions or error codes", "All paradigms use try-catch", "Error handling is paradigm-independent"],
+      "correct": 1,
+      "explanation": "Each paradigm shapes how errors propagate and are composed — e.g., Result types in FP vs exceptions in OOP vs error codes in C."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 1, "title": "What 'Paradigm' Means (and Doesn't)" }
+}

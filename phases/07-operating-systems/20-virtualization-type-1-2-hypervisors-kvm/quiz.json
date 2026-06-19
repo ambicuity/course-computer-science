@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 20: Virtualization — Type 1/2 Hypervisors, KVM",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the key difference between a Type 1 and Type 2 hypervisor?",
+      "options": [
+        "Type 1 supports more VMs than Type 2",
+        "Type 1 runs directly on hardware (bare-metal), while Type 2 runs on top of a host OS",
+        "Type 1 can only run Linux guests",
+        "Type 2 uses hardware virtualization, Type 1 does not"
+      ],
+      "explanation": "A Type 1 hypervisor (Xen, ESXi, Hyper-V) runs directly on the hardware with no host OS underneath. A Type 2 hypervisor (VirtualBox, VMware Workstation) runs as a process on a host OS. This distinction affects performance, security, and management complexity.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "What is VMCS (Virtual Machine Control Structure) and what is its role?",
+      "options": [
+        "A file format for storing VM disk images",
+        "A hardware data structure that stores the complete state of a guest CPU, including registers, execution controls, and exit information",
+        "A network protocol for VM migration",
+        "A Linux kernel module for VM scheduling"
+      ],
+      "explanation": "VMCS (Intel) or VMCB (AMD) is the hardware data structure that holds the entire guest state: general registers, control registers, segment registers, instruction pointer, plus execution control bits and VM exit reason. The CPU reads/writes VMCS automatically on VM entry and VM exit.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "What is paravirtualization and how does it differ from full virtualization?",
+      "options": [
+        "Running multiple VMs on different physical machines",
+        "The guest OS is modified to use hypercalls instead of trapped privileged instructions, reducing overhead",
+        "Using a faster disk driver in the guest",
+        "Running the hypervisor in user space"
+      ],
+      "explanation": "In paravirtualization, the guest kernel is modified to make explicit hypercalls to the hypervisor instead of executing privileged instructions that would trap. This avoids the overhead of VM exits. Xen pioneered this approach. The trade-off is that the guest OS must be modified — you can't run unmodified Windows. VirtIO is a modern paravirtualization framework for I/O devices.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "In the KVM ioctl() API, what does KVM_RUN do?",
+      "options": [
+        "Creates a new virtual CPU",
+        "Allocates memory for the guest",
+        "Resumes guest execution on the vCPU until a VM exit occurs, then returns to userspace",
+        "Loads the guest kernel into memory"
+      ],
+      "explanation": "KVM_RUN is the ioctl that actually runs the guest. It enters non-root mode (VM entry), executes guest instructions until a VM exit occurs (I/O, HLT, page fault, etc.), then returns to userspace. The caller inspects the kvm_run structure's exit_reason to determine why the VM exited and handles it before calling KVM_RUN again.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between Type 1 and Type 2 hypervisors?",
+      "options": [
+        "Type 1 runs on bare metal; Type 2 runs on top of a host operating system",
+        "Type 1 is slower than Type 2",
+        "Type 2 can only run one VM at a time",
+        "There is no practical difference"
+      ],
+      "correct": 0,
+      "explanation": "Type 1 hypervisors (ESXi, Hyper-V, Xen) run directly on hardware with no host OS, offering better performance and security. Type 2 hypervisors (VirtualBox, VMware Workstation) run as applications on a host OS. KVM is interesting — it turns the Linux kernel itself into a Type 1 hypervisor."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 20,
+    "title": "Virtualization Type 1 2 Hypervisors Kvm"
+  }
+}

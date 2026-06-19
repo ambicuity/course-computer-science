@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is DNS-based service discovery problematic in dynamic distributed systems?",
+      "options": [
+        "DNS cannot resolve domain names to IP addresses",
+        "DNS records have a TTL that causes stale data — crashed instances remain reachable until TTL expires",
+        "DNS only works on port 80 and cannot be used for microservices",
+        "DNS requires a dedicated load balancer to distribute traffic"
+      ],
+      "correct": 1,
+      "explanation": "DNS caches results for the duration of the TTL (typically 60–300 seconds). When an instance crashes, clients continue resolving the old IP until the TTL expires. DNS also has no health checking — it returns addresses regardless of whether the service is alive."
+    },
+    {
+      "stage": "pre",
+      "question": "In client-side service discovery, who is responsible for choosing which service instance to call?",
+      "options": [
+        "The service registry selects and forwards the request",
+        "A central load balancer routes the request to an instance",
+        "The client queries the registry and selects an instance itself using a load-balancing policy",
+        "DNS returns exactly one IP address, so no selection is needed"
+      ],
+      "correct": 2,
+      "explanation": "In client-side discovery, the client queries the registry for a list of healthy instances, caches the result, and applies a load-balancing policy (round-robin, random, weighted) to choose which instance to call. This eliminates a single point of failure but requires a client library in every language."
+    },
+    {
+      "stage": "post",
+      "question": "In TTL-based health checking, a service sends heartbeats every 3 seconds with a TTL of 10 seconds. The network between the service and registry partitions for 15 seconds. What happens?",
+      "options": [
+        "The registry immediately marks the service as unhealthy when the first heartbeat is missed",
+        "The service continues to be listed as healthy during the entire partition because it sends heartbeats on its side",
+        "The registry deregisters the service after the 10-second TTL expires, since no heartbeat was received — even though the service is actually alive on its side of the partition",
+        "The registry retries heartbeats with exponential backoff until the partition heals"
+      ],
+      "correct": 2,
+      "explanation": "TTL-based checking deregisters when no heartbeat arrives within the TTL window. After 10 seconds without a heartbeat, the registry removes the service. This is a false positive — the service is alive but unreachable. When the partition heals, the service must re-register. This trade-off between false positives and stale entries is inherent to TTL-based approaches."
+    },
+    {
+      "stage": "post",
+      "question": "In the Bully algorithm with nodes {1, 2, 3, 4, 5} and Node 5 as leader, what happens when Node 5 crashes and Node 3 detects the failure?",
+      "options": [
+        "Node 3 immediately becomes the new leader because it detected the failure first",
+        "Node 3 sends ELECTION messages to nodes 4 and 5, receives an OK from node 4, and waits — node 4 (highest alive ID) becomes leader",
+        "All nodes simultaneously broadcast COORDINATOR messages and the node with the most votes wins",
+        "Node 3 restarts node 5 automatically using a backup process"
+      ],
+      "correct": 1,
+      "explanation": "In the Bully algorithm, when Node 3 detects the leader has failed, it sends ELECTION messages to all higher-ID nodes (4 and 5). Node 5 is dead and doesn't respond, but node 4 responds with OK, indicating a higher-priority node exists. Node 4 then sends ELECTION to node 5 (no response), gets no higher OKs, and becomes leader by broadcasting COORDINATOR(4). The highest alive node always wins."
+    },
+    {
+      "stage": "post",
+      "question": "In ZooKeeper-style leader election, why does each non-leader candidate watch only the node immediately before it in the sequence, rather than watching the leader node directly?",
+      "options": [
+        "Because ZooKeeper only allows one watch per client",
+        "To avoid the herd effect — if all nodes watched the leader, all N-1 nodes would wake up simultaneously when the leader fails, creating a thundering herd",
+        "Because watching the leader directly would cause split-brain in ZooKeeper's Zab protocol",
+        "Because sequential nodes are ordered and ZooKeeper only supports watching the immediately prior node"
+      ],
+      "correct": 1,
+      "explanation": "If all N-1 candidates watched the leader node, the leader's crash would trigger all of them simultaneously, causing a thundering herd of requests to ZooKeeper. By watching only the previous node in the sequence, exactly one candidate is notified per transition, creating an orderly chain of leadership succession and minimizing ZooKeeper load."
+    },
+    {
+      "stage": "post",
+      "question": "An etcd-based leader election uses a key /leader with a lease of 10 seconds. Node A creates the key and is leader. What guarantees that Node A's leadership is revoked if it crashes?",
+      "options": [
+        "Node A sends a DELETE request to etcd before crashing",
+        "The other nodes periodically check if Node A is alive and delete the key if it's not",
+        "The lease attached to the key expires automatically 10 seconds after Node A stops renewing it, causing etcd to delete the key",
+        "etcd uses the Bully algorithm to detect when the leader crashes and reassigns the key"
+      ],
+      "correct": 2,
+      "explanation": "In etcd lease-based leader election, the leader key has an associated lease with a TTL. The leader keeps the lease alive by periodically sending keep-alive requests. If the leader crashes, it stops sending keep-alives, and etcd automatically deletes the key when the lease expires. Other nodes watching the key are then notified and can attempt to create the key with their own lease. No manual cleanup or external health checking is needed."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 17,
+    "title": "Service Discovery Membership Leader Election"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is staged compiler architecture important for capstones?",
+      "options": ["To avoid tests", "To isolate complexity and ship incremental milestones", "To remove parsing", "To eliminate IR"],
+      "correct": 1,
+      "explanation": "Clear stage boundaries allow iterative progress and easier debugging. Each phase can be developed and tested independently before composing them into a full pipeline."
+    },
+    {
+      "stage": "pre",
+      "question": "What does a lexer produce from source text?",
+      "options": ["An AST", "A token stream", "Machine code", "A symbol table"],
+      "correct": 1,
+      "explanation": "The lexer (scanner) converts raw source characters into a sequence of tokens, each tagged with its kind (keyword, identifier, literal, operator) and source location. The parser consumes this stream to build an AST."
+    },
+    {
+      "stage": "post",
+      "question": "What is the role of lowering in a compiler pipeline?",
+      "options": ["Tokenizing source", "Converting high-level AST constructs into simpler intermediate representation", "Formatting output only", "Handling IO runtime"],
+      "correct": 1,
+      "explanation": "Lowering simplifies constructs for backend code generation. For example, a for-loop might be lowered into a while-loop, which is then lowered into conditional jumps. Each lowering step moves the IR closer to the target."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the code generator need a variable map (like STORE/LOAD with names)?",
+      "options": ["To parse the source text", "To track where variable values live so expressions can reference them", "To generate tokens", "To optimize the AST"],
+      "correct": 1,
+      "explanation": "When the code generator encounters a variable reference (Expr::Var), it needs to emit a LOAD instruction that retrieves the value from where it was stored. The variable map tracks which names have been assigned and maps them to storage locations."
+    },
+    {
+      "stage": "post",
+      "question": "Which early vertical slice is most effective for validating a compiler architecture?",
+      "options": ["Full language grammar immediately", "Small end-to-end path from source to emitted instructions", "Backend only", "Optimization before parser"],
+      "correct": 1,
+      "explanation": "A thin end-to-end slice (like lex -> parse -> codegen for 'print 1 + 2') validates the entire pipeline architecture and the interfaces between phases. You catch integration bugs early instead of after months of work on individual phases."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 1, "title": "Build a Compiler for a Pascal-like Language" }
+}

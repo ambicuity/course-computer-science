@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the strongest conclusion from a passing test?",
+      "options": [
+        "The code is correct in all environments",
+        "The checked claim was not falsified under tested assumptions",
+        "The feature is production-safe",
+        "All edge cases are covered"
+      ],
+      "correct": 1,
+      "explanation": "A passing test only tells you no counterexample was found in the exercised space and assumptions. It is scoped evidence, not universal correctness."
+    },
+    {
+      "stage": "pre",
+      "question": "Why can a green CI still hide critical defects?",
+      "options": [
+        "CI machines are slower than production",
+        "Green CI only means executed checks did not detect failures",
+        "CI tools ignore network-related bugs by design",
+        "Unit tests are always unreliable"
+      ],
+      "correct": 1,
+      "explanation": "CI status reflects only what was checked. If claims, environments, or interleavings were not represented, serious defects can remain undetected."
+    },
+    {
+      "stage": "post",
+      "question": "A team wants confidence against duplicate payment captures under retries. Which strategy is best aligned with this lesson?",
+      "options": [
+        "Add one happy-path E2E test",
+        "Increase line coverage target from 80% to 95%",
+        "Define an idempotency invariant and combine property tests with concurrency integration tests",
+        "Rely on manual QA in staging"
+      ],
+      "correct": 2,
+      "explanation": "The lesson emphasizes claim-first testing with complementary evidence. An explicit invariant plus multiple test modalities directly targets the failure mode."
+    },
+    {
+      "stage": "post",
+      "question": "What is the primary value of recording testing assumptions?",
+      "options": [
+        "To make docs longer",
+        "To justify skipped tests",
+        "To expose conditions required for claim validity and reduce hidden risk",
+        "To avoid writing integration tests"
+      ],
+      "correct": 2,
+      "explanation": "Assumptions define the boundaries of your evidence. Making them explicit allows review, monitoring, and future hardening when conditions change."
+    },
+    {
+      "stage": "post",
+      "question": "Which statement best distinguishes falsification from proof in routine software testing?",
+      "options": [
+        "Falsification and proof are equivalent if coverage is high",
+        "Falsification finds concrete counterexamples, while passing tests usually do not prove universal correctness",
+        "Proof is what integration tests provide",
+        "Falsification only applies to security testing"
+      ],
+      "correct": 1,
+      "explanation": "Most practical testing is falsification-oriented: failures are decisive, passes are provisional. Universal proof generally requires stronger formal methods and precise specifications."
+    }
+  ],
+  "_meta": {
+    "phase": 17,
+    "lesson": 1,
+    "title": "Why We Test (and what tests don't prove)"
+  }
+}

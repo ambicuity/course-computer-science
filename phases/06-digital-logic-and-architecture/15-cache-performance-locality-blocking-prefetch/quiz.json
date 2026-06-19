@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 15,
+    "title": "Cache Performance — Locality, Blocking, Prefetch"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which type of locality is most responsible for the performance benefit of sequential array traversal over random access?",
+      "options": [
+        "Temporal locality — recently accessed values are reused",
+        "Spatial locality — nearby memory locations are accessed together",
+        "Branch locality — control flow stays in a small region",
+        "Instruction locality — code executes in order"
+      ],
+      "correct": 1,
+      "explanation": "Sequential traversal (stride-1) exhibits strong spatial locality: each fetch of a 64-byte cache line brings in 16 consecutive integers, so almost every access hits in cache. Temporal locality matters for reused values (loop counters, stack), but the sequential-vs-random difference is spatial."
+    },
+    {
+      "stage": "pre",
+      "question": "In blocked matrix multiplication, what determines the optimal block size?",
+      "options": [
+        "The number of CPU cores available",
+        "The page size of the virtual memory system",
+        "The capacity of L1 or L2 cache relative to the working set (three blocks × element size)",
+        "The width of the CPU's SIMD execution units"
+      ],
+      "correct": 2,
+      "explanation": "The block must be small enough that three blocks (one each from A, B, C) fit in cache simultaneously. The formula is block_size ≈ sqrt(cache_size / (3 × element_size)). For a 32 KB L1 with 8-byte doubles: sqrt(32768 / 24) ≈ 37, so block size 32 is typical."
+    },
+    {
+      "stage": "post",
+      "question": "Two threads on separate cores each increment their own counter variable. The counters are adjacent in memory (same struct). Performance is 5× worse than when the counters are padded to separate cache lines. What is the cause?",
+      "options": [
+        "TLB thrashing from page-level conflicts",
+        "False sharing — writes to different variables in the same cache line cause unnecessary coherence invalidations",
+        "Contention on the memory bus from simultaneous DRAM accesses",
+        "Branch misprediction from the atomic increment instructions"
+      ],
+      "correct": 1,
+      "explanation": "False sharing occurs when two cores write to different variables that reside in the same cache line. Each core's write invalidates the other core's cached copy, causing a ping-pong of MESI coherence messages (invalidate → fetch → invalidate → …) even though the data is independent. The fix is padding each variable to occupy its own 64-byte cache line."
+    },
+    {
+      "stage": "post",
+      "question": "Software prefetch hints (`__builtin_prefetch`) are most effective when:",
+      "options": [
+        "Access is sequential and the hardware prefetcher already handles it",
+        "The access pattern is irregular (linked list, tree traversal) but predictable enough to compute future addresses",
+        "The data fits entirely in L1 cache",
+        "The program is single-threaded and compute-bound"
+      ],
+      "correct": 1,
+      "explanation": "Hardware prefetchers detect sequential and constant-stride patterns. Software prefetch is valuable when the pattern is irregular (pointer chasing in linked lists, sparse graph traversal) but the programmer can compute the next address ahead of time. It hides DRAM latency by issuing the load early, before the CPU actually needs the data."
+    },
+    {
+      "stage": "pre",
+      "question": "What is spatial locality, and how do caches exploit it?",
+      "options": [
+        "Data that was recently accessed will be accessed again soon",
+        "Data near a recently accessed address is likely to be accessed soon, so caches fetch entire cache lines",
+        "Data in the stack is always accessed before data in the heap",
+        "Data in lower memory addresses is accessed more frequently"
+      ],
+      "correct": 1,
+      "explanation": "Spatial locality means nearby memory addresses tend to be accessed together (e.g., iterating through an array). Caches exploit this by transferring data in cache lines (typically 64 bytes), not individual bytes. Accessing one byte brings its neighbors into cache for free."
+    }
+  ]
+}

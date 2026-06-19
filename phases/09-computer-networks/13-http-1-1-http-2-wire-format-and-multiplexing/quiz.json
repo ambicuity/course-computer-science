@@ -1,0 +1,79 @@
+{
+  "lesson": 13,
+  "title": "HTTP/1.1, HTTP/2 — Wire Format and Multiplexing",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "How many bytes is the fixed-size HTTP/2 frame header?",
+      "options": [
+        "4",
+        "8",
+        "9",
+        "12"
+      ],
+      "correct": 2,
+      "explanation": "The HTTP/2 frame header is exactly 9 bytes: 3 bytes for length, 1 byte for type, 1 byte for flags, and 4 bytes for the stream ID.",
+      "stage": "pre"
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice",
+      "question": "What problem does HTTP/2 multiplexing solve that HTTP/1.1 pipelining could not?",
+      "options": [
+        "TCP connection overhead",
+        "Head-of-line blocking at the application layer",
+        "Lack of header compression",
+        "No support for chunked transfer encoding"
+      ],
+      "correct": 1,
+      "explanation": "HTTP/1.1 pipelining requires responses to be returned in order, causing head-of-line blocking. HTTP/2 multiplexes independent streams on a single TCP connection, so responses can arrive in any order.",
+      "stage": "pre"
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice",
+      "question": "What does HPACK provide in HTTP/2?",
+      "options": [
+        "Binary frame encoding",
+        "Header compression using static and dynamic tables",
+        "Connection-level flow control",
+        "Server push capability"
+      ],
+      "correct": 1,
+      "explanation": "HPACK is a compression format specifically designed for HTTP/2 header fields. It uses a combination of static and dynamic tables to reduce header size.",
+      "stage": "post"
+    },
+    {
+      "id": 4,
+      "type": "multiple_choice",
+      "question": "In HTTP/1.1, what header signals that the body length is determined by chunk boundaries rather than Content-Length?",
+      "options": [
+        "Connection: keep-alive",
+        "Content-Type: multipart",
+        "Transfer-Encoding: chunked",
+        "X-Body-Length: dynamic"
+      ],
+      "correct": 2,
+      "explanation": "Transfer-Encoding: chunked indicates the body is sent in chunks, each prefixed with its size in hexadecimal. The final chunk has size 0.",
+      "stage": "post"
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does HTTP/2's multiplexing solve?",
+      "options": [
+        "It encrypts traffic more strongly",
+        "It allows multiple requests/responses over a single TCP connection simultaneously, eliminating head-of-line blocking at the HTTP layer",
+        "It compresses images automatically",
+        "It reduces the number of TCP connections to zero"
+      ],
+      "correct": 1,
+      "explanation": "HTTP/1.1 is text-based and requires requests to be serialized on a connection (or opening many connections). HTTP/2 uses binary framing and multiplexes multiple streams on one TCP connection. A slow response doesn't block others — but TCP-level packet loss still blocks all streams."
+    }
+  ],
+  "_meta": {
+    "phase": 9,
+    "lesson": 13,
+    "title": "Http 1 1 Http 2 Wire Format And Multiplexing"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 14,
+    "title": "TLS 1.3 — Handshake, Records, 0-RTT"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why did TLS 1.3 remove RSA key exchange and CBC-mode cipher suites?",
+      "options": [
+        "They were too slow for modern hardware",
+        "RSA key exchange lacks forward secrecy, and CBC mode is vulnerable to padding oracle attacks",
+        "The patent on RSA key exchange expired, forcing removal",
+        "They required too much memory on embedded devices"
+      ],
+      "correct": 1,
+      "explanation": "TLS 1.3 removed RSA key exchange because it provides no forward secrecy: if the server's private key is later compromised, all past sessions can be decrypted. CBC-mode ciphers were removed because they proved vulnerable to padding oracle attacks (POODLE, Lucky13) that exploit the MAC-then-encrypt construction. TLS 1.3 mandates only AEAD ciphers (like AES-128-GCM) that provide authenticated encryption in a single pass, eliminating these attack classes entirely."
+    },
+    {
+      "stage": "pre",
+      "question": "What does '0-RTT' mean in the context of TLS 1.3?",
+      "options": [
+        "The handshake always completes in zero round trips on every connection",
+        "The client can send encrypted application data on its first flight when resuming a session with a PSK",
+        "The server sends its certificate before the client's first message",
+        "The connection uses UDP instead of TCP, eliminating the TCP handshake"
+      ],
+      "correct": 1,
+      "explanation": "0-RTT (Zero Round Trip Time Resumption) allows a client that has previously established a session with a server to send encrypted data immediately in its first flight of messages. The client uses a pre-shared key (PSK) from the previous session to encrypt data before the server has even responded. The tradeoff is that 0-RTT data lacks forward secrecy (it is encrypted with keys derived from the PSK, not from an ECDHE exchange) and is vulnerable to replay attacks if the server does not implement anti-replay mechanisms (freshness checks and a replay cache)."
+    },
+    {
+      "stage": "post",
+      "question": "How does TLS 1.3 derive the handshake traffic keys that encrypt the Certificate and CertificateVerify messages?",
+      "options": [
+        "They are derived directly from the server's long-term RSA private key and the client's random nonce",
+        "They are derived by applying HKDF-Extract to the ECDHE shared secret, then HKDF-Expand-Label with the 'c hs traffic' / 's hs traffic' labels bound to the transcript hash",
+        "They are derived by hashing the server's certificate together with the client's session ID",
+        "They are derived by encrypting a random nonce with the pre-master secret using AES-128-GCM"
+      ],
+      "correct": 1,
+      "explanation": "After the ECDHE key exchange, both client and server share an ECDHE secret. The key schedule applies HKDF-Extract(early_secret, ecdhe_shared_secret) to produce the handshake secret. From this, derive_secret(handshake_secret, 'c hs traffic', transcript_hash) and derive_secret(handshake_secret, 's hs traffic', transcript_hash) produce the client and server handshake traffic secrets. These are then expanded with HKDF-Expand-Label using the labels 'key' and 'iv' to produce the 16-byte AES key and 12-byte IV. Because the transcript hash covers ClientHello + ServerHello, an attacker who modifies either message will cause the derived keys to diverge, and the handshake will fail."
+    },
+    {
+      "stage": "post",
+      "question": "What security tradeoff does 0-RTT data in TLS 1.3 introduce?",
+      "options": [
+        "0-RTT data is slower than 1-RTT data because it uses weaker encryption",
+        "0-RTT data has no forward secrecy and is vulnerable to replay attacks",
+        "0-RTT data can only be 64 KB long, limiting its usefulness",
+        "0-RTT data requires the server to store the client's entire certificate chain"
+      ],
+      "correct": 1,
+      "explanation": "0-RTT data is encrypted with keys derived from the PSK (pre-shared key), not from an ephemeral ECDHE exchange. This means there is no forward secrecy for 0-RTT data: if the PSK is later compromised (e.g., extracted from the server's session ticket key), the 0-RTT data can be decrypted. Additionally, an attacker who intercepts a 0-RTT flight can replay it to the server, causing the server to process the same request multiple times. Servers must implement anti-replay defenses: freshness checks (reject 0-RTT data outside a time window) and a server-side replay cache. For these reasons, TLS 1.3 recommends that 0-RTT data only carry idempotent operations (e.g., HTTP GET, not POST)."
+    },
+    {
+      "stage": "pre",
+      "question": "How many round trips does a TLS 1.3 handshake require compared to TLS 1.2?",
+      "options": [
+        "TLS 1.3 requires 3 round trips; TLS 1.2 requires 1",
+        "TLS 1.3 requires 1 round trip; TLS 1.2 requires 2",
+        "Both require 2 round trips",
+        "TLS 1.3 requires 0 round trips in all cases"
+      ],
+      "correct": 1,
+      "explanation": "TLS 1.3 reduced the handshake from 2 RTT (TLS 1.2) to 1 RTT by combining the key exchange into the initial flight. It also supports 0-RTT resumption for returning clients, where application data can be sent with the very first message — at the cost of replay vulnerability."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+[package]
+name = "observability-metrics-traces-logs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[[bin]]
+name = "observability"
+path = "main.rs"

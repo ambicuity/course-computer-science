@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary goal of a cost-based query optimizer?",
+      "options": [
+        "To rewrite SQL into relational algebra",
+        "To find the cheapest execution plan among many equivalent alternatives",
+        "To sort query results in ascending order",
+        "To enforce database schema constraints"
+      ],
+      "correct": 1,
+      "explanation": "The optimizer's job is to enumerate a subset of the exponentially large plan space and pick the plan with the lowest estimated cost, without changing the query result."
+    },
+    {
+      "stage": "pre",
+      "question": "In the System R dynamic programming approach to join ordering, what restriction does a 'left-deep tree' impose?",
+      "options": [
+        "All joins must use nested-loop join",
+        "The right child of every join must be a base table (not another join)",
+        "The tree must join tables in FROM-clause order",
+        "Only inner joins are allowed"
+      ],
+      "correct": 1,
+      "explanation": "Left-deep trees restrict the right child to a base table, reducing the search space from O(3^N) to O(N × 2^N). This was a key design choice in System R to make optimization tractable."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of the following is a correct relational algebra equivalence used in query optimization?",
+      "options": [
+        "Selection distribution: σₚ∧q(R) = σₚ(R) ∪ σ_q(R)",
+        "Selection pushdown: σₚ(R ⨝ S) = σₚ(R) ⨝ S when p references only R",
+        "Projection pushdown: πₐ(R ⨝ S) = πₐ(πₐ(R) ⨝ πₐ(S))",
+        "Join is anti-commutative: R ⨝ S ≠ S ⨝ R"
+      ],
+      "correct": 1,
+      "explanation": "Selection pushdown moves filters closer to the data source, reducing the cardinality of input to subsequent operators. Options A (∪), C (incomplete projection), and D (joins are commutative) are wrong."
+    },
+    {
+      "stage": "post",
+      "question": "An equi-depth histogram stores bucket boundaries such that each bucket contains approximately the same number of rows. For a column 'price' with values in [0, 1000] and an equi-depth histogram with 5 buckets, which statement is true?",
+      "options": [
+        "Each bucket spans an equal value width (e.g., 0–200, 200–400, ...)",
+        "Each bucket contains approximately 20% of the rows",
+        "The histogram stores the exact value of every row",
+        "Equi-depth histograms cannot handle NULL values"
+      ],
+      "correct": 1,
+      "explanation": "Equi-depth histograms divide rows evenly, not value ranges evenly. If 20% of price values are in [800, 1000], one bucket covers that narrow range while another covers [0, 100]. This makes them much better than equi-width histograms for skewed data."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the independence assumption a problem in query optimization?",
+      "options": [
+        "It assumes all joins are foreign-key joins, which is not always true",
+        "It assumes predicates on different columns are uncorrelated, leading to wildly inaccurate selectivity estimates when columns are correlated",
+        "It assumes the database has no indexes, making scan costs too high",
+        "It assumes all queries are SELECT * FROM single-table, which is too restrictive"
+      ],
+      "correct": 1,
+      "explanation": "The independence assumption multiplies selectivities: s(A AND B) = s(A) × s(B). For correlated columns like make=Toyota AND model=Camry, this can underestimate selectivity by several orders of magnitude, causing the optimizer to pick terrible plans."
+    },
+    {
+      "stage": "post",
+      "question": "A query joins two tables with 1,000,000 rows each. The join column has NDV = 1,000 on table A and NDV = 100 on table B. Under the uniform distribution assumption, what is the estimated join cardinality?",
+      "options": [
+        "1,000,000 × 1,000,000 × 1/1,000,000 = 1,000,000",
+        "1,000,000 × 1,000,000 × 1/1,000 = 1,000,000,000",
+        "1,000,000 × 1,000,000 × 1/100 = 10,000,000,000",
+        "1,000,000"
+      ],
+      "correct": 1,
+      "explanation": "Join selectivity for a foreign-key join is 1/max(NDV). Here max(NDV(A), NDV(B)) = max(1000, 100) = 1000. Estimated cardinality = 1,000,000 × 1,000,000 × (1/1000) = 1,000,000,000 (option B). Understanding this formula is critical: a small NDV means many rows share each key value, blowing up the join result."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 12,
+    "title": "Query Optimization Plans Cost Cardinality"
+  }
+}

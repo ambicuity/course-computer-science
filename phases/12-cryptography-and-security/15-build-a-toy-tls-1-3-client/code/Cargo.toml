@@ -1,0 +1,13 @@
+[package]
+name = "toy-tls13-client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+x25519-dalek = "2"
+sha2 = "0.10"
+hmac = "0.12"
+aes-gcm = "0.10"
+rand = "0.8"
+hex = "0.4"
+ed25519-dalek = "2"

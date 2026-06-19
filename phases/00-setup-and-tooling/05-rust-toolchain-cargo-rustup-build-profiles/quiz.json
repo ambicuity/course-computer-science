@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Where does `rustup` install Rust toolchains by default?",
+      "options": [
+        "/usr/local/rust",
+        "~/.rustup/toolchains/<channel>-<host>/",
+        "/etc/rust/",
+        "/opt/rust/"
+      ],
+      "correct": 1,
+      "explanation": "rustup is per-user; it puts toolchains under `~/.rustup/toolchains/`. That's why no `sudo` is needed and why multiple users on the same machine each have their own Rust installs."
+    },
+    {
+      "stage": "pre",
+      "question": "Two teammates have different Rust versions and your build behaves differently on their laptops. What's the recommended fix?",
+      "options": [
+        "Email everyone and ask them to install a specific version",
+        "Add a `rust-toolchain.toml` to the repo that pins the channel/version; rustup installs and selects it automatically when they `cd` in",
+        "Vendor the compiler binary in the repo",
+        "Use `cargo +1.78.0` everywhere"
+      ],
+      "correct": 1,
+      "explanation": "`rust-toolchain.toml` is the per-project pin. As soon as a teammate `cd`s into the project, rustup auto-installs and selects the listed channel. CI picks it up too. This is the same pattern as `.nvmrc` for Node or `.python-version` for pyenv."
+    },
+    {
+      "stage": "post",
+      "question": "Which build profile is selected by `cargo run` with no flags?",
+      "options": [
+        "release",
+        "dev",
+        "test",
+        "bench"
+      ],
+      "correct": 1,
+      "explanation": "`cargo run` uses the `dev` profile by default: `opt-level = 0`, debug info on, overflow checks on. Use `cargo run --release` for the optimized profile. The dev profile compiles fast and prints actionable stack traces; release is for shipped binaries."
+    },
+    {
+      "stage": "post",
+      "question": "You set `[profile.release] panic = \"abort\"`. What changes?",
+      "options": [
+        "Nothing — `panic` is ignored in release",
+        "When a panic occurs, the process aborts immediately instead of unwinding the stack and running destructors. Smaller binary, slightly different semantics for catch_unwind",
+        "Panics become non-fatal warnings",
+        "Compilation fails if any code path can panic"
+      ],
+      "correct": 1,
+      "explanation": "Default behavior is unwind: panics propagate up the stack running destructors. `abort` skips that and calls `abort()` directly. Saves binary size (the unwinding metadata is large) and a bit of perf, but `std::panic::catch_unwind` no longer catches anything — your panic kills the process."
+    },
+    {
+      "stage": "post",
+      "question": "Why is `cargo` considered safer than running `rustc` directly?",
+      "options": [
+        "cargo sandboxes the build",
+        "cargo manages dependency resolution, version-locking via Cargo.lock, integrates testing/benching/formatting/linting, and applies profile flags consistently — all of which you'd otherwise wire up by hand",
+        "rustc requires root",
+        "rustc skips type checking"
+      ],
+      "correct": 1,
+      "explanation": "There's nothing unsafe about `rustc` — but in any real project you want reproducible dependency resolution (`Cargo.lock`), test discovery, profile flags, doc generation, and a single command for `clippy`/`rustfmt`. Cargo orchestrates all of that; calling `rustc` by hand means writing the equivalent of a Makefile."
+    },
+    {
+      "stage": "post",
+      "question": "When does `Cargo.lock` get used?",
+      "options": [
+        "Only by library crates that publish to crates.io",
+        "Cargo uses Cargo.lock when present to pin exact dep versions; for binary crates you commit it (reproducible builds), for library crates you typically gitignore it (let downstream resolve)",
+        "Cargo.lock is auto-generated and should never be committed",
+        "Cargo.lock is only for nightly builds"
+      ],
+      "correct": 1,
+      "explanation": "Lockfile policy: commit it for binary applications (you want the exact build everyone else got), don't commit it for libraries (you want downstream consumers to resolve the latest compatible versions of your deps in the context of their other deps). This is now official guidance in The Cargo Book."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 5,
+    "title": "Rust Toolchain Cargo Rustup Build Profiles"
+  }
+}

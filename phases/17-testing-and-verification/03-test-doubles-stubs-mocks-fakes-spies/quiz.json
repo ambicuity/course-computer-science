@@ -1,0 +1,44 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which test double is best described as a simplified working implementation?",
+      "options": ["Stub", "Fake", "Mock", "Spy"],
+      "correct": 1,
+      "explanation": "A fake preserves meaningful behavior in a lightweight form, such as an in-memory repository with real semantics."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the main risk of excessive mock-based testing?",
+      "options": ["Low code coverage", "Over-coupling tests to internal implementation", "Insufficient assertions", "Slow test runtime only"],
+      "correct": 1,
+      "explanation": "Strict interaction assertions can make tests fail on harmless refactors because they encode call choreography instead of external behavior."
+    },
+    {
+      "stage": "post",
+      "question": "When is a strict mock generally justified?",
+      "options": ["Always for every collaborator", "Only when interaction protocol itself is a requirement", "Never", "Only in E2E tests"],
+      "correct": 1,
+      "explanation": "Strict mocks are most valuable when the exact interaction is part of the contract, such as mandatory correlation IDs or handshake order."
+    },
+    {
+      "stage": "post",
+      "question": "A service test needs to assert exactly one outbound email was attempted while keeping behavior-focused checks. Which double fits best?",
+      "options": ["Stub", "Fake", "Spy", "Strict mock everywhere"],
+      "correct": 2,
+      "explanation": "A spy records calls without forcing full protocol expectations, making it a good fit for side-effect count and payload assertions."
+    },
+    {
+      "stage": "post",
+      "question": "If a single class requires many mocks to unit test, what is the most useful interpretation?",
+      "options": ["Testing framework bug", "Likely design smell and excess responsibilities", "Need more E2E tests only", "Ignore and keep adding mocks"],
+      "correct": 1,
+      "explanation": "Heavy mocking pressure often indicates the object has too many dependencies or responsibilities, suggesting refactoring opportunities."
+    }
+  ],
+  "_meta": {
+    "phase": 17,
+    "lesson": 3,
+    "title": "Test Doubles - Stubs, Mocks, Fakes, Spies"
+  }
+}

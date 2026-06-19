@@ -1,0 +1,24 @@
+process1 1234 [000] 100.001: 100000 cpu-clock:
+	7f0001 main [process1]
+	7f0002 parse [process1]
+	7f0003 tokenize [process1]
+
+process1 1234 [000] 100.002: 100000 cpu-clock:
+	7f0001 main [process1]
+	7f0002 parse [process1]
+	7f0003 tokenize [process1]
+
+process1 1234 [000] 100.003: 100000 cpu-clock:
+	7f0001 main [process1]
+	7f0002 parse [process1]
+	7f0004 validate [process1]
+
+process1 1234 [000] 100.004: 100000 cpu-clock:
+	7f0001 main [process1]
+	7f0002 compress [process1]
+	7f0005 lz4 [process1]
+
+process1 1234 [000] 100.005: 100000 cpu-clock:
+	7f0001 main [process1]
+	7f0002 compress [process1]
+	7f0005 lz4 [process1]

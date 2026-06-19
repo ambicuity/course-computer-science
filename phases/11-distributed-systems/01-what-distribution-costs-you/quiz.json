@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You deploy a service to 100 nodes, each with a 1% independent failure rate. What is the approximate probability that at least one node is down at any given time?",
+      "options": [
+        "~1%",
+        "~37%",
+        "~63%",
+        "~99%"
+      ],
+      "correct": 2,
+      "explanation": "P(at least 1 fail) = 1 - (0.99)^100 ≈ 1 - 0.366 ≈ 0.634, so about 63%. With 100 nodes, failure somewhere is more likely than not — this is why distributed systems must be designed to tolerate individual failures."
+    },
+    {
+      "stage": "pre",
+      "question": "A same-datacenter network round trip costs roughly how much time?",
+      "options": [
+        "~1 μs (0.001 ms)",
+        "~500 μs (0.5 ms)",
+        "~10 ms",
+        "~100 ms"
+      ],
+      "correct": 1,
+      "explanation": "A same-DC round trip is ~500 μs. This is roughly 200× slower than an SSD read and ~5,000× slower than a RAM access. Many developers underestimate this gap."
+    },
+    {
+      "stage": "post",
+      "question": "You send a payment request to another node and don't receive a response. Which of the following is true?",
+      "options": [
+        "The request definitely failed and no work was done.",
+        "The request definitely succeeded and work was done.",
+        "You cannot determine whether the work was done — this is partial failure.",
+        "The request will be retried automatically by TCP, so you don't need to worry."
+      ],
+      "correct": 2,
+      "explanation": "Partial failure is the fundamental dilemma of distributed computing. The remote node may have never received the message, may have processed it successfully, or may have crashed midway. You cannot distinguish these cases from the outside. This is why idempotent operations are essential."
+    },
+    {
+      "stage": "post",
+      "question": "According to the CAP theorem, during a network partition, which of the following is true?",
+      "options": [
+        "You can maintain both consistency and availability.",
+        "You must sacrifice at least one of consistency or availability.",
+        "You can skip partition tolerance and keep both C and A.",
+        "The CAP theorem only applies to databases with more than 3 nodes."
+      ],
+      "correct": 1,
+      "explanation": "Network partitions are inevitable (Fallacy #1: the network is reliable), so you can't opt out of partition tolerance. During a partition, you must choose: CP (reject writes to maintain consistency) or AP (accept writes but risk stale reads). You cannot have all three simultaneously during a partition."
+    },
+    {
+      "stage": "post",
+      "question": "Why must distributed operations be idempotent?",
+      "options": [
+        "Because idempotent operations are faster to execute.",
+        "Because retries are inevitable when you can't distinguish request failure from response loss.",
+        "Because the network always delivers messages at least once.",
+        "Because idempotence is required by the CAP theorem."
+      ],
+      "correct": 1,
+      "explanation": "When you don't receive a response, you must retry — but the original request might have succeeded. If the operation isn't idempotent (e.g., 'add $10'), a retry causes a double execution. Idempotent operations (e.g., 'set balance to $110') make retries safe because executing once or many times produces the same result."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is one of the 8 Fallacies of Distributed Computing?",
+      "options": [
+        "The network is fast enough for most workloads.",
+        "There is one administrator.",
+        "Distributed systems are harder to debug than local systems.",
+        "Encryption is unnecessary on private networks."
+      ],
+      "correct": 1,
+      "explanation": "Fallacy #5 is 'There is one administrator.' In reality, your distributed system spans networks managed by different teams, companies, and policies. Firewalls, maintenance windows, and configuration changes happen independently — your system must handle these differences."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 1,
+    "title": "What Distribution Costs You"
+  }
+}

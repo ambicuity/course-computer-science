@@ -1,0 +1,13 @@
+[package]
+name = "macs-and-hmac"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "macs_and_hmac"
+path = "main.rs"
+
+[dependencies]
+sha2 = "0.10"
+aes = "0.8"
+hex = "0.4"

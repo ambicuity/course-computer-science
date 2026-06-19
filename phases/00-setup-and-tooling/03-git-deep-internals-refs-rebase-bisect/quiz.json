@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Physically, what is a git branch on disk?",
+      "options": [
+        "A directory under .git/branches/ containing all of the branch's commits",
+        "A text file under .git/refs/heads/ whose contents is the SHA of one commit",
+        "A pointer in the working tree's metadata",
+        "An entry in the git config file"
+      ],
+      "correct": 1,
+      "explanation": "A branch is just a file like `.git/refs/heads/main` whose entire contents is the SHA of one commit. Moving a branch means rewriting that one SHA. This is why `git push --force` is dangerous — it tells the remote to overwrite the file with your SHA."
+    },
+    {
+      "stage": "pre",
+      "question": "You run `git reset --soft HEAD~3`. What happens to your working tree?",
+      "options": [
+        "It's reset to HEAD~3's state — three commits' worth of changes are deleted",
+        "It's unchanged; only HEAD moves back three commits, and the index is unchanged",
+        "It's unchanged, but the index is reset",
+        "It's deleted entirely"
+      ],
+      "correct": 1,
+      "explanation": "`--soft` only moves HEAD. The index and working tree are left exactly as they were, so all the changes from those three commits remain staged and ready to recommit. Use this to squash recent commits into one."
+    },
+    {
+      "stage": "post",
+      "question": "Why does `git rebase` produce different commit hashes than the originals, even when there are no conflicts?",
+      "options": [
+        "It uses a different hash function",
+        "Each new commit has a different parent (the new base), so its commit object's bytes differ and its SHA differs",
+        "Git adds a 'rebase' timestamp",
+        "It actually keeps the same hashes"
+      ],
+      "correct": 1,
+      "explanation": "A commit hash is the SHA of the commit object, which includes the parent SHA(s), author/committer, message, and timestamp. Replaying onto a different base changes the parent pointer, which changes the commit object's bytes, which changes the SHA — even if the tree contents and message are identical."
+    },
+    {
+      "stage": "post",
+      "question": "You ran `git reset --hard HEAD~5` and lost five days of work. What's the first command to run to try to recover?",
+      "options": [
+        "git fsck --full",
+        "git reflog",
+        "git pull",
+        "Recover from a backup"
+      ],
+      "correct": 1,
+      "explanation": "`git reflog` records every move of HEAD for ~90 days, including the SHA HEAD pointed at *before* your `--hard reset`. Find that SHA in the reflog, then `git reset --hard <sha>` puts you back where you were. This works even when no branch points at those commits."
+    },
+    {
+      "stage": "post",
+      "question": "`git bisect run` exits with what code for each candidate commit to signal 'good' vs 'bad' vs 'skip'?",
+      "options": [
+        "0=good, 1=bad, 2=skip",
+        "0=good, anything 1-124 or 126-127=bad, 125=skip",
+        "0=bad, 1=good, 2=skip",
+        "1=good, 0=bad, 125=skip"
+      ],
+      "correct": 1,
+      "explanation": "Bisect convention: exit 0 = good, any non-zero in 1-124 or 126-127 = bad, exit 125 = 'cannot test this commit' (skip, used when the commit doesn't compile). 128+ are reserved for signals. This lets you reuse standard test runners' exit codes directly."
+    },
+    {
+      "stage": "post",
+      "question": "When is it safe to rewrite history (rebase, amend, force-push)?",
+      "options": [
+        "Always — git is forgiving",
+        "Only on commits that have never been pushed and shared with anyone else",
+        "Only with `--force-with-lease`",
+        "Only on the main branch"
+      ],
+      "correct": 1,
+      "explanation": "Rewriting history changes commit SHAs. Anyone who has those old SHAs in their local repo will see merge conflicts, broken bisects, or duplicate commits when they pull. The general rule: rebase freely on your own unpushed branches, never on shared ones (release branches, main, branches under PR review)."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 3,
+    "title": "Git Deep Internals Refs Rebase Bisect"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is beta-reduction?",
+      "options": ["Renaming free variables", "Applying a lambda by substitution", "Compiling bytecode", "Type inference"],
+      "correct": 1,
+      "explanation": "Beta-reduction performs function application by substituting argument term into lambda body."
+    },
+    {
+      "stage": "pre",
+      "question": "How are Church numerals used in untyped lambda calculus?",
+      "options": ["As literal integers", "As higher-order functions representing natural numbers", "As string encodings", "As boolean flags"],
+      "correct": 1,
+      "explanation": "Church numerals encode n as a function that applies another function n times, showing that numbers are not primitive but can be represented purely as functions."
+    },
+    {
+      "stage": "post",
+      "question": "Why is capture-avoiding substitution important?",
+      "options": ["To reduce runtime", "To preserve variable binding meaning", "To remove lambdas", "To enforce strict typing"],
+      "correct": 1,
+      "explanation": "Naive substitution can accidentally bind free variables and change program meaning."
+    },
+    {
+      "stage": "post",
+      "question": "What does a normal form represent?",
+      "options": ["A typed term only", "A term with no more beta reductions possible", "A parse error", "A variable list"],
+      "correct": 1,
+      "explanation": "Normal form indicates no reducible beta-redex remains under the chosen reduction semantics."
+    },
+    {
+      "stage": "post",
+      "question": "What is the difference between call-by-name and call-by-value reduction?",
+      "options": ["They are identical", "CBV evaluates arguments before substitution; CBN substitutes unevaluated arguments", "CBN is always faster", "CBV cannot terminate"],
+      "correct": 1,
+      "explanation": "CBV requires the argument to reach a value first; CBN substitutes the raw term, which may avoid unnecessary evaluation."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 2, "title": "Lambda Calculus - Reduction, Encodings" }
+}

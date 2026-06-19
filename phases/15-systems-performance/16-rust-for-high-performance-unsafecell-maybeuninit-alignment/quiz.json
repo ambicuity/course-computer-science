@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 16,
+    "title": "Rust for High Performance — UnsafeCell, MaybeUninit, alignment"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between UnsafeCell<T> and RefCell<T> at runtime?",
+      "options": [
+        "UnsafeCell adds a borrow counter; RefCell does not",
+        "RefCell adds runtime borrow-checking overhead; UnsafeCell has zero runtime overhead",
+        "UnsafeCell is thread-safe; RefCell is not",
+        "They are identical — UnsafeCell is just the unsafe version of RefCell"
+      ],
+      "correct": 1,
+      "explanation": "RefCell maintains a borrow state counter and performs runtime checks on every borrow()/borrow_mut() call, causing a branch + atomic overhead. UnsafeCell has zero runtime overhead — it's just a raw pointer dereference — but requires you to manually guarantee no aliasing violations."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does MaybeUninit<T> exist instead of just using mem::uninitialized()?",
+      "options": [
+        "MaybeUninit is faster because it uses SIMD instructions",
+        "mem::uninitialized() was removed because reading uninitialized memory is always instant UB; MaybeUninit prevents accidental reads by requiring .write() before .assume_init()",
+        "MaybeUninit allows the compiler to optimize the zero-initialization away",
+        "They do the same thing; MaybeUninit is just a renamed version"
+      ],
+      "correct": 1,
+      "explanation": "mem::uninitialized() allowed creating a T value that might not be valid, and reading it was instant UB. The compiler could also miscompile code based on the assumption that the value was valid. MaybeUninit<T> is a wrapper that makes it a type-level error to read the inner value without first calling .write() to initialize it, then .assume_init() with an explicit safety proof."
+    },
+    {
+      "stage": "post",
+      "question": "What happens when you take a reference (&T) to a field in a #[repr(C, packed)] struct?",
+      "options": [
+        "It works fine — packed structs just remove padding",
+        "The reference may be misaligned, which is undefined behavior in Rust",
+        "The compiler automatically copies the field to an aligned temporary",
+        "It causes a compilation error in all cases"
+      ],
+      "correct": 1,
+      "explanation": "Packed structs can place fields at misaligned addresses. In Rust, creating a reference (&T) to a misaligned value is UB because references must always be properly aligned. The correct approach is to use ptr::read_unaligned and ptr::write_unaligned to access packed fields without creating references."
+    },
+    {
+      "stage": "post",
+      "question": "When is using unsafe (e.g., get_unchecked) actually worth the risk in performance-critical code?",
+      "options": [
+        "Always — unsafe is always faster than safe Rust",
+        "Never — safe Rust can always match unsafe performance with the right abstractions",
+        "When profiling shows the safe version is a bottleneck, the unsafe version is measurably faster, and you can wrap it in a small auditable safe API with SAFETY comments",
+        "Only when the optimizer fails to remove bounds checks, which is rare"
+      ],
+      "correct": 2,
+      "explanation": "The correct approach is: (1) Profile to confirm the safe version is actually a bottleneck. (2) Benchmark the unsafe version with black_box to confirm it's measurably faster. (3) Wrap the unsafe in a minimal, well-documented safe API with SAFETY comments. Using unsafe without measurement just adds risk without benefit."
+    },
+    {
+      "stage": "post",
+      "question": "What does Pin<P> guarantee and why does it matter for self-referential structs?",
+      "options": [
+        "Pin prevents any mutation of the pinned value, making it immutable",
+        "Pin guarantees the pointed-to value will not be moved in memory, which is critical when a struct holds pointers into its own fields",
+        "Pin is a reference-counting smart pointer like Rc but with move protection",
+        "Pin automatically frees memory when the value goes out of scope, preventing leaks"
+      ],
+      "correct": 1,
+      "explanation": "Pin<P> wraps a pointer and guarantees that the pointed-to value will never be moved (its memory address stays stable). This is essential for self-referential structs — if a struct contains a pointer into its own data and the struct is moved, that pointer becomes dangling. Pin prevents this by making moves impossible through the type system."
+    },
+    {
+      "stage": "post",
+      "question": "What is std::hint::black_box used for and what happens without it in benchmarks?",
+      "options": [
+        "It adds a delay to simulate real-world latency in microbenchmarks",
+        "It tells the optimizer the value may be used in any way, preventing constant-folding and dead-code elimination that would make benchmarks measure nothing",
+        "It forces the compiler to generate black-box assembly output for debugging",
+        "It marks a function as a performance boundary for the profiler"
+      ],
+      "correct": 1,
+      "explanation": "black_box is an identity function at runtime but tells the optimizer to assume the value could be used in any way. Without it, the compiler can constant-fold inputs (turning add(5, 7) into 12) or eliminate dead code (removing a computation whose result is never used), making your benchmark measure zero work. black_box prevents these optimizations in microbenchmarks."
+    }
+  ]
+}

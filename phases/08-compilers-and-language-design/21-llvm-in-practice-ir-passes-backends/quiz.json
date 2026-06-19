@@ -1,0 +1,70 @@
+{
+  "title": "Lesson 21: LLVM in Practice — IR, Passes, Backends",
+  "questions": [
+    {
+      "question": "What does SSA (Static Single Assignment) mean in LLVM IR?",
+      "options": [
+        "Each instruction can only be executed once",
+        "Each virtual register is assigned exactly once",
+        "Each function has a single return statement",
+        "Each basic block has a single predecessor"
+      ],
+      "explanation": "In SSA form, every value (virtual register) is defined by exactly one instruction. When control flow merges and a variable has different values from different paths, a phi node is used to select the correct value.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "question": "What does the `mem2reg` optimization pass do?",
+      "options": [
+        "Moves stack allocations to heap memory",
+        "Promotes alloca/load/store operations to SSA phi-based registers",
+        "Merges multiple memory allocations into one",
+        "Converts pointer arithmetic to register arithmetic"
+      ],
+      "explanation": "mem2reg promotes stack-allocated variables (alloca/load/store patterns) to SSA register form using phi nodes. This is typically the first pass run after Clang emits IR at -O0, since -O0 IR is full of explicit memory operations.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "question": "Which LLVM tool is responsible for instruction selection, register allocation, and producing machine code?",
+      "options": [
+        "opt",
+        "clang",
+        "llc",
+        "llvm-link"
+      ],
+      "explanation": "llc is the LLVM static compiler that takes LLVM IR and compiles it to assembly or object code for a specific target. It handles instruction selection (via TableGen), scheduling, register allocation, and code emission.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "question": "In the LLVM pass pipeline, what is the scope of a function pass?",
+      "options": [
+        "It processes the entire LLVM module at once",
+        "It operates on individual loops within functions",
+        "It processes one function at a time, without seeing other functions",
+        "It only processes global variables"
+      ],
+      "explanation": "Function passes operate on a single function at a time. They cannot see or modify other functions in the module. This restriction enables parallel execution of function passes and simplifies the pass framework.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "stage": "pre",
+      "question": "What is LLVM's role in the compilation ecosystem?",
+      "options": [
+        "It is a specific programming language",
+        "It is a modular compiler infrastructure providing a target-independent IR, optimization passes, and code generation backends for multiple architectures",
+        "It is an operating system kernel",
+        "It is a debugger for C programs"
+      ],
+      "correct": 1,
+      "explanation": "LLVM provides a common IR (LLVM IR) that frontends (Clang, Rust, Swift) target. Optimization passes transform the IR. Backends generate machine code for x86, ARM, RISC-V, etc. This modularity lets any language benefit from LLVM's world-class optimizations."
+    }
+  ],
+  "_meta": {
+    "phase": 8,
+    "lesson": 21,
+    "title": "Llvm In Practice Ir Passes Backends"
+  }
+}

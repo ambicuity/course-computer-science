@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You encrypt a message with AES-CTR and separately compute an HMAC-SHA256 over the plaintext, then send both. Which composition is this, and is it secure?",
+      "options": [
+        "Encrypt-then-MAC — provably secure for all constructions",
+        "MAC-then-Encrypt — vulnerable to padding oracle attacks",
+        "Encrypt-and-MAC — the MAC is over plaintext and may leak information about it",
+        "None of the above — combining encryption and a MAC is always secure regardless of order"
+      ],
+      "correct": 2,
+      "explanation": "This is Encrypt-and-MAC (E&M): the MAC is computed over the unencrypted plaintext. The tag can leak information about the plaintext because an adversary sees the MAC directly. Only Encrypt-then-MAC (MAC the ciphertext, verify before decrypt) is provably secure for all underlying constructions. MAC-then-Encrypt is vulnerable to padding oracles."
+    },
+    {
+      "stage": "pre",
+      "question": "What is Associated Data (AAD) in an AEAD scheme?",
+      "options": [
+        "Data that is both encrypted and authenticated, providing confidentiality and integrity",
+        "Data that is encrypted but not authenticated, like a separate ciphertext stream",
+        "Data that is authenticated but not encrypted, such as packet headers or sequence numbers",
+        "The authentication tag appended to the ciphertext"
+      ],
+      "correct": 2,
+      "explanation": "AAD (Associated Data) is authenticated (integrity-protected) but NOT encrypted — it remains in plaintext. This is useful for data like IP headers, sequence numbers, or protocol metadata that intermediaries need to read but must not be tampered with. The AEAD tag covers both the AAD and the ciphertext."
+    },
+    {
+      "stage": "post",
+      "question": "SSL/TLS 1.0 used MAC-then-Encrypt. Which attack exploited this composition, and why?",
+      "options": [
+        "BEAST — exploited CBC mode without random IVs, unrelated to composition order",
+        "Lucky13 — a padding oracle attack where the decryptor reveals valid vs. invalid padding before MAC verification, enabling plaintext recovery via timing",
+        "Heartbleed — a buffer over-read in OpenSSL, unrelated to MAC-then-Encrypt",
+        "POODLE — exploited protocol downgrade, unrelated to composition order"
+      ],
+      "correct": 1,
+      "explanation": "Lucky13 (Al Fardan and Paterson, 2013) exploited MAC-then-Encrypt in TLS CBC cipher suites. Because the decryptor must first decrypt (to access the MAC), and padding validation happens before MAC verification, an attacker can distinguish 'bad padding' from 'bad MAC' via timing differences. This creates a padding oracle that enables byte-by-byte plaintext recovery. BEAST is a separate CBC IV issue. Heartbleed is a buffer over-read. POODLE is a downgrade attack."
+    },
+    {
+      "stage": "post",
+      "question": "You use AES-GCM with the same 96-bit nonce twice under the same key. What is the worst consequence?",
+      "options": [
+        "The second message cannot be decrypted — the nonce clash causes decryption failure",
+        "The authentication tag is different but the ciphertext is identical for both messages",
+        "An attacker can recover the GHASH authentication key H, enabling arbitrary tag forgery, and XOR the two ciphertexts to recover the XOR of the two plaintexts",
+        "The ciphertext is identical for both messages, but integrity is preserved"
+      ],
+      "correct": 2,
+      "explanation": "AES-GCM nonce reuse is catastrophic. Because GCM uses CTR mode, the same nonce produces the same keystream — so C1 XOR C2 = P1 XOR P2, leaking plaintext relationships. Worse, the GHASH key H is recoverable from two tag equations with the same H but different ciphertexts, enabling arbitrary tag forgery. This is why nonce management is critical for GCM, and why AES-GCM-SIV (which derives the nonce from the plaintext) exists for misuse resistance."
+    },
+    {
+      "stage": "post",
+      "question": "Why is ChaCha20-Poly1305 preferred over AES-GCM on mobile and ARM devices?",
+      "options": [
+        "ChaCha20-Poly1305 has a larger tag size (256 bits vs. 128 bits), providing stronger authentication",
+        "ChaCha20-Poly1305 is nonce-misuse resistant, while AES-GCM is not",
+        "ChaCha20-Poly1305 uses only arithmetic operations (add, rotate, XOR) with no lookup tables, making it constant-time and immune to cache-timing attacks without requiring AES-NI hardware",
+        "ChaCha20-Poly1305 uses a 256-bit nonce, making random nonce generation always safe"
+      ],
+      "correct": 2,
+      "explanation": "ChaCha20 uses only add-rotate-XOR operations — no S-box lookups, no table-based implementations, no data-dependent memory access. This means it runs in constant time regardless of the key or plaintext, eliminating cache-timing attacks that plague software GCM implementations. On devices without AES-NI (most ARM phones, IoT devices), ChaCha20-Poly1305 is both faster and safer. Standard ChaCha20-Poly1305 uses a 96-bit nonce (same as GCM); XChaCha20-Poly1305 extends it to 192 bits. Neither is nonce-misuse resistant — that's what AES-GCM-SIV is for."
+    },
+    {
+      "stage": "post",
+      "question": "In the AEAD API, decrypt(key, nonce, aad, ciphertext, tag) → Result<plaintext, Error>. Why does the API return a Result type instead of always producing plaintext?",
+      "options": [
+        "Because decryption can fail if the ciphertext is too short, and the API needs to signal that case",
+        "Because AEAD decryption verifies the tag first; if authentication fails, no plaintext is released — returning an error prevents the caller from ever seeing unverified data",
+        "Because the nonce might not match the one used during encryption, causing a key mismatch",
+        "For performance — some implementations skip decryption entirely if the tag is short"
+      ],
+      "correct": 1,
+      "explanation": "The fundamental insight of AEAD is that authentication gates decryption. The API enforces this at the type level: you cannot access plaintext without a valid tag. If the tag doesn't verify (corrupted ciphertext, tampered AAD, wrong key, wrong nonce), the function returns an Error and never releases the decrypted plaintext. This eliminates entire classes of attacks (padding oracles, forgery) that arise when a decryptor processes unverified data."
+    }
+  ],
+  "_meta": {
+    "phase": 12,
+    "lesson": 8,
+    "title": "Authenticated Encryption Aead"
+  }
+}

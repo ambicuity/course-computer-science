@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 15,
+    "title": "Time Complexity Classes — P, NP, EXP"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A language L is in NP if and only if:",
+      "options": [
+        "Some TM decides L in exponential time",
+        "Some polynomial-time verifier V accepts (x, c) for some certificate c iff x ∈ L",
+        "Every TM that recognizes L halts in polynomial time",
+        "L can be decided by a nondeterministic TM in exponential time"
+      ],
+      "correct": 1,
+      "explanation": "NP is the class of languages with a polynomial-time verifier: x ∈ L iff there exists a polynomial-length certificate c such that V(x, c) accepts."
+    },
+    {
+      "stage": "pre",
+      "question": "Which relationship is known to be true?",
+      "options": [
+        "P = NP",
+        "NP = EXP",
+        "P ⊆ NP ⊆ EXP",
+        "EXP ⊆ NP"
+      ],
+      "correct": 2,
+      "explanation": "P ⊆ NP (solving is a special case of verifying), and NP ⊆ EXP (brute-force search over poly-length certificates is exponential). Whether these inclusions are strict is open."
+    },
+    {
+      "stage": "post",
+      "question": "For the SAT problem, which statement is correct?",
+      "options": [
+        "Verification of a satisfying assignment is exponential, but solving is polynomial",
+        "Verification is polynomial (evaluate the formula under the assignment), but solving is believed exponential",
+        "Both verification and solving are polynomial",
+        "Both verification and solving are undecidable"
+      ],
+      "correct": 1,
+      "explanation": "Given a truth assignment, evaluating a CNF formula is O(n). Finding a satisfying assignment requires brute-force search over 2^n assignments in the worst case."
+    },
+    {
+      "stage": "post",
+      "question": "If P = NP, which consequence follows?",
+      "options": [
+        "The halting problem becomes decidable",
+        "Every NP-complete problem has a polynomial-time algorithm",
+        "EXP collapses to P",
+        "Rice's theorem is falsified"
+      ],
+      "correct": 1,
+      "explanation": "If P = NP, then every problem in NP (including all NP-complete problems) can be decided in polynomial time. This would break most cryptography but does not affect undecidability results."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the class P in complexity theory?",
+      "options": [
+        "Problems solvable by a Turing machine using polynomial space",
+        "Problems solvable by a deterministic Turing machine in polynomial time",
+        "Problems that can be verified in polynomial time",
+        "Problems solvable by a nondeterministic Turing machine in polynomial time"
+      ],
+      "correct": 1,
+      "explanation": "P is the class of decision problems solvable by a deterministic Turing machine in polynomial time. NP (nondeterministic polynomial) includes problems whose solutions can be verified in polynomial time. Whether P = NP is the most important open question in computer science."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a Feistel network (like DES), which property allows decryption to work even if the round function F is not invertible?",
+      "options": [
+        "F must be a bijection for the cipher to be reversible",
+        "Feistel XORs the output of F with the unchanged half, so reversing just applies F again and XORs",
+        "Feistel networks always use SPN rounds internally",
+        "The key schedule makes F effectively invertible"
+      ],
+      "correct": 1,
+      "explanation": "In a Feistel network, each round splits the block into L and R. The new L is the old R, and the new R is old L XOR F(old R, key). To reverse: you already have the new L (which was old R), so you recompute F(old R, key) and XOR with new R to recover old L. F never needs to be inverted."
+    },
+    {
+      "stage": "pre",
+      "question": "AES operates on a 128-bit block organized as a 4×4 byte matrix called the 'state.' How are the input bytes arranged into this matrix?",
+      "options": [
+        "Row-major: byte 0 goes to row 0 col 0, byte 1 to row 0 col 1, etc.",
+        "Column-major: byte 0 goes to row 0 col 0, byte 1 to row 1 col 0, byte 4 to row 0 col 1, etc.",
+        "Diagonal: bytes fill diagonals of the matrix",
+        "Interleaved: even bytes fill columns 0,1 and odd bytes fill columns 2,3"
+      ],
+      "correct": 1,
+      "explanation": "AES fills the state column-by-column: bytes 0-3 fill column 0 (top to bottom), bytes 4-7 fill column 1, etc. This column-major layout matters for ShiftRows (which operates on rows) and MixColumns (which operates on columns)."
+    },
+    {
+      "stage": "post",
+      "question": "The AES S-box is constructed in two steps: inversion in GF(2^8) followed by an affine transformation. Why is the affine transformation necessary — why not use pure GF(2^8) inversion as the S-box?",
+      "options": [
+        "Pure inversion is too slow — the affine transform speeds up table lookups",
+        "Pure inversion has a simple algebraic structure (a⁻¹) that is vulnerable to interpolation and algebraic attacks",
+        "Pure inversion is not bijective — 0x00 has no inverse — and the affine transform fixes that",
+        "The affine transform implements the MixColumns step within SubBytes for efficiency"
+      ],
+      "correct": 1,
+      "explanation": "GF(2^8) inversion alone (with 0→0) is bijective, but its algebraic simplicity (it's a rational function) makes it vulnerable to interpolation attacks. The affine transform breaks this algebraic structure, making the S-box resistant to both linear and differential cryptanalysis. The 0→0 mapping is handled separately — it's not the reason for the affine transform."
+    },
+    {
+      "stage": "post",
+      "question": "In AES, ShiftRows provides inter-column diffusion and MixColumns provides intra-column diffusion. What would happen if you removed ShiftRows (keeping SubBytes, MixColumns, AddRoundKey)?",
+      "options": [
+        "Security would be slightly reduced but the cipher would still be secure",
+        "Each column would be encrypted independently — the 128-bit block cipher would become four independent 32-bit ciphers",
+        "Decryption would no longer be possible because SubBytes is no longer invertible",
+        "MixColumns would compensate — it already mixes all 16 bytes together"
+      ],
+      "correct": 1,
+      "explanation": "Without ShiftRows, no byte ever moves between columns. MixColumns only mixes bytes within a single column. So columns 0-3 are each encrypted with their own 32-bit permutation. A 32-bit block is trivially breakable by brute force, making this a catastrophic weakness."
+    },
+    {
+      "stage": "post",
+      "question": "MixColumns multiplies each column by a fixed 4×4 matrix in GF(2^8). Why are the specific coefficients {1, 2, 3} (and their rotated positions) chosen rather than arbitrary values?",
+      "options": [
+        "They are the only coefficients that make the matrix invertible over GF(2^8)",
+        "They satisfy the Wide Trail Strategy — maximizing branch number (5) so that changing 1 input byte affects at least 4 output bytes, and the matrix has an efficient inverse with coefficients {9, 11, 13, 14}",
+        "They are the coefficients used in DES and were reused for compatibility",
+        "They minimize the number of GF(2^8) multiplications per column (only 2 per byte)"
+      ],
+      "correct": 1,
+      "explanation": "The matrix [[2,3,1,1],[1,2,3,1],[1,1,2,3],[3,1,1,2]] has branch number 5 (maximum for 4×4), meaning any change to s input bytes affects at least 5-s output bytes. This maximizes diffusion per round. The coefficients also have efficient representations: multiply by 2 uses xtime, multiply by 3 is xtime ⊕ identity, and the inverse matrix {0x0e, 0x0b, 0x0d, 0x09} is equally structured."
+    },
+    {
+      "stage": "post",
+      "question": "AES-128 uses 10 rounds, AES-192 uses 12, and AES-256 uses 14. Why does the last round of AES omit MixColumns?",
+      "options": [
+        "MixColumns is expensive — removing it saves 1/10th of the computation",
+        "Omitting MixColumns from the last round makes the encryption and decryption structures more parallel (decryption uses InvMixColumns on round keys 1-9 rather than on every state), and since MixColumns is linear, removing it doesn't weaken security",
+        "The last round only needs confusion (SubBytes) — diffusion is unnecessary at the end",
+        "MixColumns would make the ciphertext longer than 128 bits in the final round"
+      ],
+      "correct": 1,
+      "explanation": "Removing MixColumns from the last round simplifies the equivalent inverse cipher. Without this omission, decryption would need to apply InvMixColumns to the state after every InvAddRoundKey. With the omission, decryption applies InvMixColumns to the round keys beforehand (equivalent inverse), making the decryption circuit structure match encryption's. MixColumns is a linear operation — it doesn't add key material or confusion — so omitting it from the last round doesn't reduce security."
+    }
+  ],
+  "_meta": {
+    "phase": 12,
+    "lesson": 4,
+    "title": "Symmetric Ii Block Ciphers Aes Internals"
+  }
+}

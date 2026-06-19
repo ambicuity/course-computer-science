@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 11: File Systems I — VFS, inodes, journaling",
+  "questions": [
+    {
+      "id": 1,
+      "question": "An inode does NOT store which of the following?",
+      "options": [
+        "File size",
+        "Owner UID/GID",
+        "The filename",
+        "Block pointers to data"
+      ],
+      "explanation": "Inodes store metadata (size, permissions, timestamps, block pointers) but not the filename. The filename-to-inode mapping lives in the directory's data, which is a table of (name, inode_num) pairs.",
+      "stage": "pre",
+      "correct": 2
+    },
+    {
+      "id": 2,
+      "question": "What is the role of the VFS (Virtual File System) layer in the kernel?",
+      "options": [
+        "It compresses file data before writing to disk",
+        "It provides a unified interface so user-space syscalls work identically across ext4, xfs, btrfs, etc.",
+        "It manages physical disk scheduling",
+        "It encrypts file contents at rest"
+      ],
+      "explanation": "VFS defines a common set of operations (open, read, write, close, stat) as function pointer tables. Each file system (ext4, xfs, btrfs) implements these functions. User space calls the same syscalls regardless of the underlying file system.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "In ext4's default 'ordered' journaling mode, what gets journaled?",
+      "options": [
+        "Both file data and metadata",
+        "Only file data blocks",
+        "Only metadata (inodes, directory entries, bitmaps)",
+        "Nothing — ordered mode disables journaling"
+      ],
+      "explanation": "Ordered mode journals metadata changes only. File data is written to disk before the metadata commit is recorded. This ensures the file system structure is always consistent after a crash, while avoiding the performance cost of journaling data blocks.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "id": 4,
+      "question": "How does a file descriptor relate to an inode?",
+      "options": [
+        "A file descriptor IS an inode number",
+        "A file descriptor is a per-process table index pointing to an open-file structure that references an inode",
+        "File descriptors are only used for network sockets, not files",
+        "Each file descriptor creates a new inode"
+      ],
+      "explanation": "A file descriptor is a small integer (0, 1, 2, 3, ...) indexing the process's file descriptor table. Each entry tracks the current offset, access flags, and a pointer to the underlying inode. Multiple file descriptors can point to the same inode (dup, fork).",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of the VFS (Virtual File System) layer?",
+      "options": [
+        "To encrypt files transparently",
+        "To provide a unified interface so different file systems (ext4, NTFS, tmpfs) appear the same to applications",
+        "To compress files on disk",
+        "To defragment file systems automatically"
+      ],
+      "correct": 1,
+      "explanation": "VFS is an abstraction layer in the kernel that defines a common interface (open, read, write, close) for file operations. Each concrete file system (ext4, btrfs, NFS) implements these operations. Applications call VFS without knowing which file system backs the file."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 11,
+    "title": "File Systems I Vfs Inodes Journaling"
+  }
+}

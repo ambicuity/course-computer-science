@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 15,
+    "title": "Compute Shaders for Non-Graphics Work"
+  },
+  "questions": [
+    {
+      "question": "In GPU compute, what is the relationship between a grid, a workgroup, and a thread?",
+      "options": [
+        "A grid contains workgroups, each workgroup contains threads that share memory and can synchronize",
+        "A workgroup contains grids, and threads run independently across all grids",
+        "Threads are grouped into grids, and multiple grids form a workgroup",
+        "Grids, workgroups, and threads are three independent dispatch dimensions with no hierarchy"
+      ],
+      "correct": 0,
+      "explanation": "The GPU thread hierarchy is grid → workgroup → thread. A dispatch creates a grid of workgroups; each workgroup contains threads that share fast on-chip memory and can coordinate via barriers. Threads in different workgroups cannot communicate during a single dispatch.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why is shared/workgroup memory (CUDA __shared__, WGSL var<workgroup>) faster than global/device memory?",
+      "options": [
+        "It uses a different addressing scheme that the compiler optimizes better",
+        "It resides on-chip close to the ALUs, while global memory is off-chip with ~100x higher latency",
+        "It is compressed by the GPU hardware before storage",
+        "It is automatically cached by the L1 cache, whereas global memory bypasses all caches"
+      ],
+      "correct": 1,
+      "explanation": "Shared/workgroup memory is physically located on the GPU chip close to the streaming multiprocessor (SM), giving ~5 cycle access vs ~400-800 cycles for global (off-chip) memory. This is not caching — it's a separate, programmer-managed memory space. It is not compressed, and it is distinct from the L1 cache.",
+      "stage": "pre"
+    },
+    {
+      "question": "What happens if you remove the barrier (CUDA __syncthreads / WGSL workgroupBarrier) from a reduction kernel that uses shared memory?",
+      "options": [
+        "The kernel will crash with a runtime error",
+        "The GPU will automatically reorder threads to maintain correctness",
+        "Some threads may read stale values from shared memory because writes from other threads are not yet visible",
+        "Performance will improve but results will be identical because GPU threads execute in lockstep"
+      ],
+      "correct": 2,
+      "explanation": "Without a barrier, there is no guarantee that one thread's write to shared memory is visible to other threads before they read it. This is a data race. The GPU does NOT execute all threads in lockstep (warps are lockstep within a warp, but not across warps). The kernel won't crash — it will silently produce wrong results.",
+      "stage": "pre"
+    },
+    {
+      "question": "A tree reduction of n elements has O(log n) depth. How many total operations does it perform?",
+      "options": [
+        "O(log n) — each step does one operation",
+        "O(n log n) — each of log n steps processes all n elements",
+        "O(n) — the sum n/2 + n/4 + ... + 1 = n-1",
+        "O(n²) — every thread compares against every other thread"
+      ],
+      "correct": 2,
+      "explanation": "The tree reduction performs n/2 additions in the first step, n/4 in the second, and so on down to 1. This geometric series sums to n-1 total operations, which is O(n). The key advantage over sequential is not fewer total operations, but that the operations are parallelized across O(log n) sequential steps (depth).",
+      "stage": "post"
+    },
+    {
+      "question": "Which pair correctly maps CUDA compute shader concepts to their WebGPU/WGSL equivalents?",
+      "options": [
+        "blockIdx → @global_id, threadIdx → @local_invocation_id, __shared__ → var<workgroup>",
+        "blockIdx → @local_invocation_id, threadIdx → @global_id, __shared__ → var<storage>",
+        "blockIdx → @workgroup_id, threadIdx → @local_invocation_id, __shared__ → var<workgroup>",
+        "gridDim → @workgroup_size, blockIdx → @local_invocation_id, __constant__ → var<workgroup>"
+      ],
+      "correct": 2,
+      "explanation": "blockIdx identifies which workgroup (block) you're in — that's @workgroup_id. threadIdx identifies which thread within the block — that's @local_invocation_id. __shared__ memory is shared within a block/workgroup — that's var<workgroup>. @global_id combines both (like blockIdx*blockDim+threadIdx). var<storage> maps to global/device memory, not shared.",
+      "stage": "post"
+    },
+    {
+      "question": "When does using a GPU compute shader typically NOT outperform a CPU implementation?",
+      "options": [
+        "When processing arrays with millions of elements that are already on the GPU",
+        "When running a parallel reduction on data that must first be transferred from CPU memory to GPU memory and the result transferred back, for a small array",
+        "When performing a tree reduction where each step does the same operation on half of the previous step's data",
+        "When using shared memory to reduce global memory traffic within a workgroup"
+      ],
+      "correct": 1,
+      "explanation": "GPU compute shines when data is already on the GPU or when the parallel workload is large enough to amortize transfer latency. For small datasets that require CPU→GPU→CPU transfer, the PCIe transfer overhead dominates and the CPU wins. The other scenarios (large data, tree reduction, shared memory optimization) are all cases where GPUs excel.",
+      "stage": "post"
+    }
+  ]
+}

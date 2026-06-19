@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key advantage of dependent types?",
+      "options": ["Faster runtime by default", "Encoding value-level invariants in types", "No need for modules", "Automatic IO effects"],
+      "correct": 1,
+      "explanation": "Dependent types can prevent invalid states by expressing constraints directly in type signatures."
+    },
+    {
+      "stage": "pre",
+      "question": "What does 'type-level computation' mean in the context of dependent types?",
+      "options": ["Running types on the GPU", "Types that depend on and can be computed from runtime values", "Compiling types to bytecode", "Types that have no meaning"],
+      "correct": 1,
+      "explanation": "In dependent type systems, types can incorporate values (e.g., `Vector n a`), making type checking involve evaluating expressions."
+    },
+    {
+      "stage": "post",
+      "question": "Why does `headV : Vect (S n) a -> a` improve safety?",
+      "options": ["It allows empty vectors", "It statically forbids empty-vector head calls", "It avoids pattern matching", "It infers all proofs automatically"],
+      "correct": 1,
+      "explanation": "The type requires non-empty vectors, making empty head impossible by construction."
+    },
+    {
+      "stage": "post",
+      "question": "What is a common tradeoff with dependent typing?",
+      "options": ["No abstractions available", "Higher proof and annotation burden", "No compile-time checking", "No parametric polymorphism"],
+      "correct": 1,
+      "explanation": "Stronger guarantees often require more explicit proofs or richer type-level programming."
+    },
+    {
+      "stage": "post",
+      "question": "What is the 'elimination' of a dependent type like `Fin n`?",
+      "options": ["Deleting the type from code", "Pattern matching on the type to produce a value while preserving type information", "Converting it to Int", "Ignoring the index"],
+      "correct": 1,
+      "explanation": "Eliminating a dependent type (e.g., pattern matching on `Fin n`) refines the index in each branch, allowing type-safe operations like indexing."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 7, "title": "Dependent Types - A Tour" }
+}

@@ -1,0 +1,14 @@
+[workspace]
+
+[package]
+name = "mvcc-sql"
+version = "0.1.0"
+edition = "2021"
+description = "Phase Capstone — MVCC KV Store with SQL Frontend (Phase 10.22)"
+autobins = false
+
+[[bin]]
+name = "mvcc-sql"
+path = "main.rs"
+
+[dependencies]

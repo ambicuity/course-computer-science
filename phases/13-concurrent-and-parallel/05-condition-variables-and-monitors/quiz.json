@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 5,
+    "title": "Condition Variables and Monitors"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What fundamental problem does a condition variable solve that a mutex alone cannot?",
+      "options": [
+        "A mutex alone cannot express 'wait until a condition is true' without busy-waiting.",
+        "A mutex alone cannot protect shared data from concurrent access.",
+        "A mutex alone cannot prevent deadlock.",
+        "A mutex alone cannot wake up a sleeping thread."
+      ],
+      "correct": 0,
+      "explanation": "A mutex guarantees mutual exclusion, but it provides no mechanism for a thread to sleep until a condition holds. Without a condition variable, the only option is to spin (busy-wait), which wastes CPU."
+    },
+    {
+      "stage": "pre",
+      "question": "In Mesa semantics (used by pthreads, Rust, and Java), after a thread is woken by a signal, it must re-check the condition in a while loop. Why?",
+      "options": [
+        "Because the condition is guaranteed to be false — the while loop is just defensive programming.",
+        "Because the signaler keeps the lock; another thread may have changed the condition before the waker re-acquires the lock.",
+        "Because condition variables only work with while loops, not if statements.",
+        "Because the waker immediately takes the lock from the signaler, so the condition is always true — the while loop is unnecessary overhead."
+      ],
+      "correct": 1,
+      "explanation": "Under Mesa semantics, the signaler continues to hold the lock after calling signal(). By the time the waker re-acquires the lock, another thread may have swooped in and changed the condition. The while loop is mandatory for correctness, not optional."
+    },
+    {
+      "stage": "post",
+      "question": "A student writes: pthread_mutex_lock(&m); if (queue_empty) { pthread_cond_wait(&cv, &m); } int item = dequeue(); pthread_mutex_unlock(&m); What bugs are present?",
+      "options": [
+        "No bugs — this is the standard pattern.",
+        "Using 'if' instead of 'while' — spurious wakeups or Mesa semantics can cause dequeue() on an empty queue.",
+        "Missing pthread_cond_signal after the critical section.",
+        "The mutex should be unlocked before calling pthread_cond_wait."
+      ],
+      "correct": 1,
+      "explanation": "The `if` is the bug. Spurious wakeups (permitted by POSIX) and Mesa semantics (the signaler keeps the lock) both mean the condition may be false when wait() returns. The correct pattern is `while (queue_empty) { pthread_cond_wait(...); }`."
+    },
+    {
+      "stage": "post",
+      "question": "What is the lost-wakeup bug in the context of condition variables?",
+      "options": [
+        "When a thread calls pthread_cond_signal while holding the lock, the signal is silently dropped.",
+        "When a thread calls pthread_cond_signal before any thread is waiting on that CV, the signal has no effect and the waiting thread will sleep forever.",
+        "When multiple threads call pthread_cond_broadcast, some wakeups are lost.",
+        "When a thread is woken but finds the mutex already locked, it goes back to sleep and the wakeup is lost."
+      ],
+      "correct": 1,
+      "explanation": "A signal is only queued if at least one thread is currently waiting on the CV. If the producer signals before the consumer has called pthread_cond_wait, the signal disappears into the void. The consumer will wait forever. This is why the timing of signal() vs wait() is critical."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem do condition variables solve that mutexes alone cannot?",
+      "options": [
+        "Protecting data from concurrent access",
+        "Allowing threads to wait efficiently for a specific condition to become true, avoiding busy-waiting",
+        "Preventing deadlocks",
+        "Providing atomic operations on integers"
+      ],
+      "correct": 1,
+      "explanation": "A mutex only provides mutual exclusion. If a thread needs to wait for a condition (e.g., a queue becoming non-empty), it would have to repeatedly lock, check, unlock, and sleep — a busy-wait. Condition variables atomically release the mutex and put the thread to sleep until signaled."
+    }
+  ]
+}

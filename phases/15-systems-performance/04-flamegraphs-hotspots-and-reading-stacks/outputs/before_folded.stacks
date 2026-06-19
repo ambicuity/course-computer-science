@@ -1,0 +1,14 @@
+main;parse;tokenize;scan_char 300
+main;parse;tokenize;scan_string 180
+main;parse;validate;check_type 120
+main;parse;validate;check_range 80
+main;compress;lz4;hash_match 250
+main;compress;lz4;literal_copy 150
+main;compress;zstd;find_match 60
+main;compress;zstd;encode_sequence 40
+main;io;read_block;kernel_read 120
+main;io;write_block;kernel_write 90
+main;alloc;malloc_large 60
+main;alloc;malloc_small 40
+main;gc;mark_sweep;trace_refs 50
+main;gc;mark_sweep;compact 30

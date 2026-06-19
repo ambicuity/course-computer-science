@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 17,
+    "title": "Code Generation Instruction Selection Scheduling"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary goal of instruction scheduling in a compiler backend?",
+      "options": [
+        "To minimize the total number of instructions emitted",
+        "To minimize pipeline stalls by reordering independent instructions",
+        "To select the cheapest machine instruction for each IR node",
+        "To reduce register pressure by spreading definitions across time"
+      ],
+      "correct": 1,
+      "explanation": "Instruction scheduling reorders instructions within basic blocks to minimize pipeline stalls caused by data hazards (read-after-write dependencies), while preserving data-flow correctness."
+    },
+    {
+      "stage": "pre",
+      "question": "In tree-pattern matching for instruction selection, 'optimal tiling' uses dynamic programming to:",
+      "options": [
+        "Find the shortest path through the control flow graph",
+        "Find the minimum-cost covering of the IR tree with machine instruction patterns",
+        "Determine the best register allocation for each variable",
+        "Schedule instructions in topological order"
+      ],
+      "correct": 1,
+      "explanation": "Optimal tiling assigns a cost to each machine instruction pattern and uses dynamic programming to find the minimum-cost set of patterns that covers every node in the IR tree."
+    },
+    {
+      "stage": "post",
+      "question": "In the RISC-V calling convention, the first 8 function arguments are passed in which registers?",
+      "options": [
+        "t0–t6 and s0",
+        "a0–a7",
+        "x1–x8",
+        "ra, sp, gp, tp, t0–t3"
+      ],
+      "correct": 1,
+      "explanation": "RISC-V passes the first 8 integer/pointer arguments in registers a0 through a7. Additional arguments are passed on the stack."
+    },
+    {
+      "stage": "post",
+      "question": "In list scheduling, when multiple instructions are 'ready' (all dependencies satisfied), the scheduler typically picks:",
+      "options": [
+        "The instruction with the fewest operands",
+        "The instruction with the lowest latency",
+        "The instruction on the critical path (longest dependency chain to the end)",
+        "The instruction that was written first in the original IR"
+      ],
+      "correct": 2,
+      "explanation": "List scheduling prioritizes instructions on the critical path — the longest chain of dependent instructions from the current point to the end of the block. Scheduling these first minimizes total execution time."
+    },
+    {
+      "stage": "pre",
+      "question": "What is instruction scheduling, and why does it matter?",
+      "options": [
+        "Ordering instructions alphabetically for readability",
+        "Reordering instructions to avoid pipeline stalls by keeping execution units busy",
+        "Selecting which CPU to run instructions on",
+        "Compressing instruction encodings"
+      ],
+      "correct": 1,
+      "explanation": "Instruction scheduling reorders independent instructions to fill pipeline delays. If an instruction has a 3-cycle latency (e.g., load), the scheduler inserts useful work from later in the program between the load and its use, rather than leaving the pipeline idle."
+    }
+  ]
+}

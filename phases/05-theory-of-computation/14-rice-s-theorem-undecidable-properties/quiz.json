@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 14,
+    "title": "Rice's Theorem & Undecidable Properties"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A property P of TMs is 'semantic' if:",
+      "options": [
+        "It depends on the number of states in M",
+        "It depends only on the language L(M) recognized, not on M's internal structure",
+        "It can be checked by reading M's transition table",
+        "It is always true for some class of machines"
+      ],
+      "correct": 1,
+      "explanation": "Semantic properties depend solely on the language L(M), not on the specific encoding or structure of the TM."
+    },
+    {
+      "stage": "pre",
+      "question": "Rice's theorem applies to a property P if P is:",
+      "options": [
+        "Any property of Turing machines whatsoever",
+        "Syntactic and non-trivial",
+        "Non-trivial and semantic",
+        "Decidable and semantic"
+      ],
+      "correct": 2,
+      "explanation": "Rice's theorem covers non-trivial semantic properties — properties that are true for some TM languages and false for others, depending only on the language."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is undecidable by Rice's theorem?",
+      "options": [
+        "Does TM M have fewer than 10 states?",
+        "Does TM M's transition table use the symbol '1'?",
+        "Does L(M) contain the empty string?",
+        "Does TM M's start state have an outgoing transition labeled '0'?"
+      ],
+      "correct": 2,
+      "explanation": "Whether L(M) contains ε is a non-trivial semantic property (depends on the language, true for some TMs, false for others), so Rice's theorem applies."
+    },
+    {
+      "stage": "post",
+      "question": "The standard proof of Rice's theorem reduces HALT to L_P by constructing a machine M' that:",
+      "options": [
+        "Simulates M on w, then behaves like a TM that has property P if M halts, or lacks P if M loops",
+        "Directly solves the halting problem using P",
+        "Ignores the input and always accepts",
+        "Runs M for a fixed number of steps"
+      ],
+      "correct": 0,
+      "explanation": "M' first simulates M on w. If M halts, M' behaves like a machine whose language has P. If M loops, M' never halts (language = ∅, which lacks P under the WLOG assumption). A decider for L_P would therefore decide HALT."
+    },
+    {
+      "stage": "pre",
+      "question": "What does Rice's theorem tell us about properties of Turing machines?",
+      "options": [
+        "All properties of Turing machines are decidable",
+        "Any non-trivial semantic property of the language recognized by a TM is undecidable",
+        "Only syntactic properties are undecidable",
+        "Rice's theorem only applies to finite automata"
+      ],
+      "correct": 1,
+      "explanation": "Rice's theorem states that any non-trivial property of the language recognized by a Turing machine (a semantic property that some TMs have and others don't) is undecidable. For example, 'does this TM accept the string abc?' or 'does this TM accept a finite language?' are both undecidable."
+    }
+  ]
+}

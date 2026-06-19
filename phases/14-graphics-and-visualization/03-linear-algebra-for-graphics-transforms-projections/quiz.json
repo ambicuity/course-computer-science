@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "question": "Why do homogeneous coordinates use w=1 for points and w=0 for vectors?",
+      "options": [
+        "w=1 makes translation affect the point (the 4th column of the matrix adds tx,ty,tz); w=0 zeroes out that column, so vectors are untouched by translation",
+        "w=0 is for points so they get divided by zero and become infinite; w=1 keeps vectors finite",
+        "The w component stores color alpha; points need alpha=1 and vectors need alpha=0 for blending",
+        "It is an arbitrary convention — swapping w=0 and w=1 produces identical results"
+      ],
+      "correct": 0,
+      "explanation": "In a 4×4 translation matrix, the (0,3), (1,3), (2,3) entries hold tx, ty, tz. When multiplied by a column vector with w=1, the fourth row picks up the translation. With w=0, those terms vanish, correctly preserving direction vectors under translation.",
+      "stage": "pre"
+    },
+    {
+      "question": "You compose transforms as T * R * S * v (column-vector convention). In what order are the transforms applied to the vertex v?",
+      "options": [
+        "Scale, then Rotate, then Translate",
+        "Translate, then Rotate, then Scale",
+        "They are applied simultaneously — order does not matter",
+        "Only the last matrix (T) is applied because matrix multiplication overwrites previous transforms"
+      ],
+      "correct": 0,
+      "explanation": "With column vectors, multiplication is right-to-left: v is first scaled by S, then the result is rotated by R, then translated by T. This is why the 'last' matrix in the expression acts 'first' on the vertex.",
+      "stage": "pre"
+    },
+    {
+      "question": "A point at (1, 0, 0) is first translated by (5, 0, 0) then rotated 90° around Z. What is the result? What changes if you reverse the order?",
+      "options": [
+        "TR gives (5, 1, 0); RT gives (0, 6, 0) — different results because rotation around the origin followed by translation moves the whole rotated shape, whereas translation followed by rotation orbits the point around the origin at the translated distance",
+        "TR and RT always give the same result because matrix multiplication is associative",
+        "TR gives (0, 6, 0); RT gives (5, 1, 0) — the results are simply swapped",
+        "Both give (5, 1, 0) because translation is commutative with rotation"
+      ],
+      "correct": 0,
+      "explanation": "TR means: first Rotate (the point at (1,0,0) rotates to (0,1,0)), then Translate (+5 in x → (5,1,0)). RT means: first Translate (point moves to (6,0,0)), then Rotate (orbit (6,0,0) around origin by 90° → (0,6,0)). The order fundamentally changes the outcome.",
+      "stage": "pre"
+    },
+    {
+      "question": "What does the perspective divide do, and why is it necessary?",
+      "options": [
+        "It divides clip-space (x,y,z) by w to produce NDC, making objects farther from the camera appear smaller because w is proportional to eye-space depth",
+        "It divides by the frame rate to produce a smooth animation; without it objects jump between frames",
+        "It converts integers to floating point so the GPU can process them; it has nothing to do with depth",
+        "It normalizes the color channels by dividing RGB by w to fit in [0, 255]"
+      ],
+      "correct": 0,
+      "explanation": "The projection matrix sets w_clip = -z_eye. After the matrix multiply, dividing x_clip/w_clip and y_clip/w_clip produces the foreshortening effect: as z increases (farther away), w increases, and x/w and y/w shrink. This is the algebraic heart of perspective projection.",
+      "stage": "post"
+    },
+    {
+      "question": "What is Gimbal lock and how do quaternions address it?",
+      "options": [
+        "Gimbal lock occurs when two rotation axes align (e.g., pitch = ±90°), causing a loss of one degree of freedom; quaternions represent rotations in 4D and interpolate along the shortest arc, avoiding the axis-alignment problem entirely",
+        "Gimbal lock is a GPU rendering bug where triangles with the same normal disappear; quaternions fix it by doubling the vertex count",
+        "Gimbal lock happens when the w component reaches 0, making the perspective divide fail; quaternions prevent this by ensuring w is always 1",
+        "Gimbal lock is when the camera clips through a wall; quaternions solve this by adding collision detection"
+      ],
+      "correct": 0,
+      "explanation": "Euler angles represent orientation as three sequential rotations. When the middle angle hits ±90°, two of the three axes collapse into one, and you lose a degree of freedom. Quaternions (4D unit vectors) parameterize the space of rotations without any singularities, allowing smooth interpolation (SLERP) and composition without ever encountering axis alignment.",
+      "stage": "post"
+    },
+    {
+      "question": "Which coordinate system convention does OpenGL use by default, and what practical issue arises if you import a model authored in a different convention?",
+      "options": [
+        "OpenGL uses a right-handed, Y-up coordinate system with Z pointing toward the viewer; importing a left-handed Z-into-screen model (DirectX/Unity convention) without conversion flips normals and inverts the depth test",
+        "OpenGL uses a left-handed Z-up system; all models are automatically converted by the driver so no issue arises",
+        "OpenGL uses a right-handed Z-up system; importing a Y-up model just changes the lighting brightness without affecting geometry",
+        "Coordinate system conventions have no effect on rendering — they only matter for physics engines"
+      ],
+      "correct": 0,
+      "explanation": "A right-handed Y-up system (OpenGL default) has +Z toward the viewer. A left-handed system (DirectX default) has +Z into the screen. If you feed a left-handed model into a right-handed pipeline without flipping Z, the winding order of triangles reverses, normals point inward, and the depth buffer comparison is inverted. Always check and convert conventions at import time.",
+      "stage": "post"
+    }
+  ],
+  "_meta": {
+    "phase": 14,
+    "lesson": 3,
+    "title": "Linear Algebra For Graphics Transforms Projections"
+  }
+}

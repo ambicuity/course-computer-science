@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 21: Microkernels and Unikernels",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the main advantage of a microkernel over a monolithic kernel?",
+      "options": [
+        "Microkernels are always faster than monolithic kernels",
+        "Microkernels have a smaller Trusted Computing Base — only IPC, scheduling, and basic VM run in privileged mode, so bugs in drivers don't crash the kernel",
+        "Microkernels require less RAM to run",
+        "Microkernels support more hardware devices"
+      ],
+      "explanation": "The primary advantage of a microkernel is a small TCB (Trusted Computing Base). Since drivers, file systems, and network stacks run as unprivileged user-space servers, a bug in any of them cannot crash or compromise the kernel. A faulty driver simply crashes and can be restarted. This is why seL4 (a microkernel) can be formally verified — it's small enough (~9,000 lines) to mathematically prove correctness.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "What is the fundamental performance cost of a microkernel architecture?",
+      "options": [
+        "Microkernels use more memory per process",
+        "IPC overhead — every interaction between user-space servers requires message passing and context switches, unlike direct function calls in a monolithic kernel",
+        "Microkernels cannot use hardware virtualization",
+        "Microkernels don't support multi-threading"
+      ],
+      "explanation": "In a monolithic kernel, a file read is a direct function call from VFS to the file system driver to the block driver — all in kernel space, no context switches. In a microkernel, each step requires IPC (message send → kernel → message receive), adding context switch overhead. L4 microkernels minimized this to ~100 CPU cycles per IPC, but it's still a cost that hybrid and monolithic kernels avoid.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "What is a unikernel?",
+      "options": [
+        "A kernel that only supports one CPU core",
+        "A single-purpose OS image that compiles the application and minimal OS libraries into one binary, with no process isolation or user/kernel boundary",
+        "A microkernel with only one server process",
+        "A Linux kernel compiled with only essential modules"
+      ],
+      "explanation": "A unikernel links the application with only the OS libraries it actually needs (TCP/IP, memory allocator, etc.) into a single bootable binary. There is no user/kernel split, no shell, no multi-user — just one program. This produces tiny images (1–5 MB) that boot in microseconds and have a minimal attack surface. MirageOS (OCaml) and Unikraft (C) are prominent examples.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "Which operating system uses a hybrid kernel design combining Mach microkernel IPC with BSD subsystems?",
+      "options": [
+        "Linux",
+        "Windows NT",
+        "macOS XNU",
+        "QNX Neutrino"
+      ],
+      "explanation": "macOS's XNU kernel combines the Mach microkernel (providing IPC, task/thread management, virtual memory) with BSD subsystems (providing the POSIX API, file systems, networking). In practice, it's more monolithic than a pure microkernel — IOKit device drivers run in kernel space for performance — but the layered Mach+BSD structure gives it hybrid characteristics.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "stage": "pre",
+      "question": "What is the main design principle of a microkernel?",
+      "options": [
+        "Put everything in the kernel for maximum performance",
+        "Minimize the kernel to only essential services (IPC, scheduling, memory management) and run everything else in user space",
+        "Use only assembly language in the kernel",
+        "Eliminate the need for an operating system"
+      ],
+      "correct": 1,
+      "explanation": "Microkernels (seL4, MINIX, QNX) run only the bare minimum in kernel space: IPC, scheduling, and basic memory management. Device drivers, file systems, and networking run as user-space servers. This improves security (a driver crash doesn't crash the kernel) and verifiability, at the cost of IPC overhead."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 21,
+    "title": "Microkernels And Unikernels"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 6,
+    "lesson": 8,
+    "title": "Control Unit — Microcoded vs Hardwired",
+    "note": "4 MCQs on hardwired vs microcoded trade-offs, control signal timing, microcode advantages."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A RISC-V control unit receives opcode 0000011 (Load). Which of the following control signal combinations is correct?",
+      "options": [
+        "RegWrite=1, ALUSrc=1, MemRead=1, MemToReg=1",
+        "RegWrite=1, ALUSrc=0, MemRead=1, MemToReg=0",
+        "RegWrite=0, ALUSrc=1, MemRead=0, MemWrite=1",
+        "RegWrite=1, ALUSrc=1, MemWrite=1, Branch=1"
+      ],
+      "correct": 0,
+      "explanation": "A Load instruction (LW, LB, etc.) writes the fetched memory value into a register: RegWrite=1. It uses an immediate offset for the address: ALUSrc=1. It reads data memory: MemRead=1. The write-back mux selects memory output: MemToReg=1. MemWrite and Branch are both 0."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary advantage of hardwired control over microcoded control?",
+      "options": [
+        "It can implement any ISA without modification.",
+        "It has lower propagation delay because signals are generated directly by combinational logic.",
+        "It uses less memory but more gates.",
+        "It allows runtime patches to the instruction set."
+      ],
+      "correct": 1,
+      "explanation": "Hardwired control produces control signals through a combinational case statement — the opcode passes through a single level of logic gates to produce outputs. This gives the lowest possible propagation delay. Microcoded control adds ROM access time and potential sequencer overhead, making it slower."
+    },
+    {
+      "stage": "post",
+      "question": "Intel x86 processors use a hybrid decode approach. When a complex instruction like `REP MOVSB` enters the pipeline, what happens?",
+      "options": [
+        "The hardwired decoder generates the control signals directly.",
+        "The instruction is rejected and must be rewritten in RISC form.",
+        "The microcode sequencer breaks it into a series of simple micro-ops (load, store, decrement, branch).",
+        "The ALU executes the entire instruction in a single cycle using a special functional unit."
+      ],
+      "correct": 2,
+      "explanation": "Complex x86 instructions are cracked by the microcode sequencer into multiple micro-ops. `REP MOVSB` becomes a loop of micro-load, micro-store, pointer increment, counter decrement, and conditional branch micro-ops. Each micro-op behaves like a simple RISC instruction that the out-of-order engine can schedule independently."
+    },
+    {
+      "stage": "post",
+      "question": "You are designing a new ISA with 200 instruction types, many of which are multi-cycle. Which control unit approach is more area-efficient, and why?",
+      "options": [
+        "Hardwired — because case statements scale linearly with instruction count.",
+        "Microcoded — because a ROM grows as O(n) bits while hardwired combinational logic grows as O(n × m) gates (n instructions × m signals × complex decode).",
+        "Hardwired — because ROMs are always larger than equivalent combinational logic.",
+        "They are exactly equal in area for any instruction count."
+      ],
+      "correct": 1,
+      "explanation": "For small ISAs (5-20 instructions), hardwired control is smaller because a case statement maps directly to a compact gate network. But as instruction count grows to hundreds, the combinational decode logic for each signal becomes a wide OR-tree across all opcodes, and area grows roughly as O(n × m). A microcode ROM grows as O(n × control_word_bits), which is a simple linear storage. At around 50-100+ instructions, microcode typically wins on area."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the advantage of a hardwired control unit over a microcoded one?",
+      "options": [
+        "It is easier to modify and extend",
+        "It is faster because control signals are generated directly by combinational logic",
+        "It uses less chip area",
+        "It can execute microcode instructions"
+      ],
+      "correct": 1,
+      "explanation": "A hardwired control unit uses dedicated combinational logic to generate control signals from the opcode, making it faster (no microcode memory lookup). Microcoded control is more flexible — new instructions can be added by changing microcode — but adds a memory access delay."
+    }
+  ]
+}

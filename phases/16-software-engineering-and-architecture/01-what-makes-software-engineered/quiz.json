@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 1,
+    "title": "What Makes Software 'Engineered'"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What primarily distinguishes software engineering from programming?",
+      "options": [
+        "Years of professional experience in the industry",
+        "The practices applied — ensuring software remains correct, usable, and maintainable over time and across people",
+        "The size of the codebase being worked on",
+        "The programming language and tooling used"
+      ],
+      "correct": 1,
+      "explanation": "Engineering is defined by practices, not tenure or scale. A junior who writes specs, tests edge cases, and documents assumptions is engineering. A senior who pushes untested code without review is not. The key distinction is whether the code is designed to survive the absence of its creator."
+    },
+    {
+      "stage": "pre",
+      "question": "The 1968 NATO conference at Garmisch-Partenkirchen identified what problem?",
+      "options": [
+        "Hardware was too expensive for most organizations to afford",
+        "Software projects were consistently over budget, over schedule, and under specification",
+        "Programming languages lacked object-oriented features",
+        "Developers refused to adopt version control systems"
+      ],
+      "correct": 1,
+      "explanation": "The 'software crisis' described in 1968 was that software projects systematically failed to meet budget, schedule, and specification targets. The root cause was not hardware cost or language features but the absence of engineering discipline — no standards for specification, no methods for predicting cost, no reliable approaches to managing complexity at scale."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is 'it works on my machine' a sign of insufficient engineering?",
+      "options": [
+        "Because it means the developer is not using the latest version of their IDE",
+        "Because it means the result depends on an environment only the developer controls, violating reproducibility",
+        "Because it implies the code has not been optimized for performance",
+        "Because it suggests the feature was not approved by product management"
+      ],
+      "correct": 1,
+      "explanation": "The phrase signals that the result is contingent on an uncontrolled environment. Engineering demands reproducibility: same code + same inputs + same environment = same output, everywhere. 'Works on my machine' means the conditions of success have not been specified, versioned, or managed — they are accidental, not engineered."
+    },
+    {
+      "stage": "post",
+      "question": "A codebase can be changed correctly by a new contributor within a day. Which property of engineered software does this best demonstrate?",
+      "options": [
+        "Reliability",
+        "Scalability",
+        "Maintainability",
+        "Testability"
+      ],
+      "correct": 2,
+      "explanation": "Maintainability is measured by how quickly a competent newcomer can make a correct change. It's the inverse: Maintainability ≈ 1 / (time for a newcomer to make a correct change). If a new person can modify the code correctly in under a day, the codebase has high maintainability — names are clear, interfaces are well-defined, tests exist to verify changes."
+    },
+    {
+      "stage": "post",
+      "question": "The exponential cost-of-change curve shows that fixing a requirements error in production costs ~100× what it would cost at the requirements phase. What engineering practice directly addresses this problem?",
+      "options": [
+        "Using a faster programming language to reduce compilation time",
+        "Writing more comments in source code to explain design intent",
+        "Shifting error discovery leftward through specifications, design reviews, and automated testing",
+        "Adding more developers to the team to catch errors faster"
+      ],
+      "correct": 2,
+      "explanation": "The cost curve compounding is caused by errors discovered late forcing rework of everything built on top of the error. Practices like specs, design reviews, and automated testing are 'cost-shifting mechanisms' — they move error discovery earlier (leftward on the timeline), where fixing is cheap. Brooks's Law (adding people to a late project makes it later) directly contradicts option D."
+    },
+    {
+      "stage": "post",
+      "question": "Which statement best captures the relationship between craft and engineering in software?",
+      "options": [
+        "Craft and engineering are opposites — you must choose one or the other",
+        "Craft produces artifacts that only the creator can maintain; engineering produces systems that others can maintain",
+        "Engineering is just craft performed by people with university degrees",
+        "Craft is for small projects and engineering is for large projects — the practices are otherwise identical"
+      ],
+      "correct": 1,
+      "explanation": "The hallmark of engineering is sustainability: the system outlives any individual. Craft values individual mastery ('I made this and I can fix it'). Engineering values system resilience ('someone else can understand, change, and deploy this'). Both are necessary, but engineering makes a specific claim — that the system has been designed to survive the absence of its creator. This is independent of project size."
+    }
+  ]
+}

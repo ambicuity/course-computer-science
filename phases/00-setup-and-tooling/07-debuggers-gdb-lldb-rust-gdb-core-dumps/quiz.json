@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does `gcc -g` do that's necessary for useful debugging?",
+      "options": [
+        "It enables warnings",
+        "It embeds DWARF debug information mapping addresses back to source lines, variables, and types",
+        "It disables optimization",
+        "It strips symbol tables"
+      ],
+      "correct": 1,
+      "explanation": "Without -g, the debugger only sees raw addresses and register values. With -g, the binary carries DWARF metadata that maps every address to a source line, every register slot to a variable, and every type back to its declaration. Use -g for every dev build."
+    },
+    {
+      "stage": "pre",
+      "question": "What's physically happening when you set a breakpoint in gdb?",
+      "options": [
+        "gdb pauses the CPU clock",
+        "gdb replaces the byte at the target address with an INT 3 (x86) / BRK (ARM) trap instruction; when the CPU hits it, the OS kicks gdb",
+        "gdb intercepts every instruction in software",
+        "The compiler reserves a slot in the binary for breakpoints"
+      ],
+      "correct": 1,
+      "explanation": "Breakpoints are an INT 3 (1-byte trap on x86) patched into the instruction stream. The CPU traps, the OS delivers SIGTRAP to the debugger, the debugger pauses the target, and (on continue) it restores the original byte, single-steps once, then puts INT 3 back."
+    },
+    {
+      "stage": "post",
+      "question": "You want to break only when a function is called with a specific argument value. Which is the right gdb command?",
+      "options": [
+        "b func && p arg",
+        "b func if arg == 42",
+        "watch arg",
+        "step until arg == 42"
+      ],
+      "correct": 1,
+      "explanation": "`b func if <condition>` sets a conditional breakpoint. gdb evaluates the condition at each hit; only stops you if it's true. Essential when a function is called thousands of times and only one specific call matters."
+    },
+    {
+      "stage": "post",
+      "question": "A core dump exists on disk. The binary was rebuilt yesterday. You load `gdb ./binary core` and see ??? in every stack frame. What's most likely wrong?",
+      "options": [
+        "Corrupt core file",
+        "The current binary's build-id doesn't match the one the core was taken from — the symbol tables don't line up with the saved instruction addresses",
+        "gdb needs an upgrade",
+        "Cores can't be read after the process exits"
+      ],
+      "correct": 1,
+      "explanation": "Cores are address-and-instruction snapshots; to map them back to source you need the *exact same binary* that crashed (and its DWARF). The build-id in the core must match the binary on disk. Either save your release binaries (+ symbol files) per build, or use a centralized symbol server (debuginfod, dsymutil)."
+    },
+    {
+      "stage": "post",
+      "question": "Why use `rust-gdb` instead of plain `gdb` for a Rust binary?",
+      "options": [
+        "rust-gdb is faster",
+        "rust-gdb is a wrapper that loads Rust-aware pretty-printers, so types like `String`, `Vec<T>`, `Option<T>` display readably instead of as raw structs",
+        "Plain gdb can't read Rust DWARF",
+        "rust-gdb runs Rust unit tests for you"
+      ],
+      "correct": 1,
+      "explanation": "Plain gdb can debug Rust just fine — but a Rust `String` is internally `{ ptr, len, cap }` and a `HashMap` is a maze of internal nodes. rust-gdb loads Python pretty-printers that present them in their natural form. Same applies to rust-lldb on macOS."
+    },
+    {
+      "stage": "post",
+      "question": "What's the difference between `step` and `next` in gdb?",
+      "options": [
+        "There's no difference",
+        "`step` enters function calls; `next` treats them as atomic (executes the call but stays in the current frame)",
+        "`step` is for C, `next` is for C++",
+        "`next` is faster"
+      ],
+      "correct": 1,
+      "explanation": "`step` (s) descends into a called function; `next` (n) steps over the call as if it were a single statement. Use `next` for code you trust and `step` when you suspect the bug is inside the call. Many sessions use `n` mostly and `s` only when needed."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 7,
+    "title": "Debuggers Gdb Lldb Rust Gdb Core Dumps"
+  }
+}

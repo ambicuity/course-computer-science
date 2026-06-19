@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which property distinguishes Strict 2PL from vanilla 2PL?",
+      "options": [
+        "Strict 2PL acquires S locks before X locks",
+        "Strict 2PL holds all write locks until commit or abort",
+        "Strict 2PL allows lock escalation from row to page level",
+        "Strict 2PL never uses shared locks"
+      ],
+      "correct": 1,
+      "explanation": "Vanilla 2PL releases locks during the shrinking phase, which can cause cascading aborts if a transaction reads uncommitted data that later aborts. Strict 2PL holds all locks (especially write locks) until commit, eliminating cascading aborts."
+    },
+    {
+      "stage": "pre",
+      "question": "In OCC, what happens during the validation phase?",
+      "options": [
+        "All locks acquired in the growing phase are released",
+        "The transaction checks whether its read-set conflicts with concurrent transactions' write-sets",
+        "The database creates a new version of every modified row",
+        "The transaction acquires exclusive locks on its write-set"
+      ],
+      "correct": 1,
+      "explanation": "OCC validation checks for conflicts between the transaction's read-set and concurrent transactions' write-sets (forward validation) or between the read-set and already-committed transactions' write-sets (backward validation). If a conflict exists, the transaction aborts and retries."
+    },
+    {
+      "stage": "pre",
+      "question": "When does OCC typically outperform 2PL?",
+      "options": [
+        "Under very high contention where transactions frequently access the same rows",
+        "When transactions hold long-duration locks",
+        "Under low contention where conflicts are rare",
+        "When the database is read-only"
+      ],
+      "correct": 2,
+      "explanation": "OCC shines under low contention because transactions rarely abort — they avoid the overhead of lock acquisition and release entirely. Under high contention, OCC suffers from cascading aborts and wasted work, while 2PL blocks early and wastes less."
+    },
+    {
+      "stage": "post",
+      "question": "In PostgreSQL's MVCC, what information do the xmin and xmax system columns encode?",
+      "options": [
+        "xmin = lock start time, xmax = lock end time",
+        "xmin = transaction that created this row version, xmax = transaction that deleted/updated it",
+        "xmin = minimum isolation level, xmax = maximum isolation level",
+        "xmin = index scan start, xmax = index scan end"
+      ],
+      "correct": 1,
+      "explanation": "xmin records the transaction ID (xid) that created this row version. xmax records the xid that deleted or updated it (0 if still visible). Visibility is determined by comparing these xids against the reading transaction's snapshot (which captures which xids were active at snapshot time)."
+    },
+    {
+      "stage": "post",
+      "question": "Which deadlock resolution strategy aborts the transaction that has done the least work?",
+      "options": [
+        "Wait-die (younger waits, older dies)",
+        "Wound-wait (older wounds younger, younger restarts)",
+        "Timeout-based (abort after N seconds)",
+        "Abort the youngest transaction in the detected cycle"
+      ],
+      "correct": 3,
+      "explanation": "Aborting the youngest transaction in a detected deadlock cycle minimizes wasted work because the youngest transaction has presumably executed fewer operations. This is a common approach in databases with deadlock detection (as opposed to prevention like wound-wait or wait-die)."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key tradeoff between MVCC and Strict 2PL?",
+      "options": [
+        "MVCC uses less memory than 2PL",
+        "MVCC allows readers and writers to proceed without blocking each other, at the cost of version storage and vacuuming",
+        "2PL never needs to abort transactions while MVCC frequently does",
+        "MVCC only works for read-committed isolation"
+      ],
+      "correct": 1,
+      "explanation": "MVCC's key advantage is that readers never block writers and writers never block readers — each sees a consistent snapshot. The tradeoff is storage overhead (multiple row versions, undo logs, commit log) and the need for background vacuum/purge to reclaim space from old versions. Strict 2PL blocks readers behind writers (or vice versa) but avoids version storage entirely."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 15,
+    "title": "Concurrency Control 2Pl Occ Mvcc"
+  }
+}

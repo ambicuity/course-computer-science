@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A sparse table's complexity profile is what?",
+      "options": [
+        "Build O(n), query O(log n)",
+        "Build O(n log n), query O(1). Trades preprocessing time for O(1) queries — better than segment tree when no updates needed.",
+        "Both O(n)",
+        "Both O(log n)"
+      ],
+      "correct": 1,
+      "explanation": "Sparse table precomputes range mins for all power-of-2 lengths starting at every index. The table is n × log n in size, so build is O(n log n) time and space. Then any range can be answered as min(table[k][l], table[k][r-2^k+1]) where k = floor(log2(r-l+1)). Two array lookups + one min → O(1) per query."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does sparse table work for min/max/gcd but NOT for sum?",
+      "options": [
+        "Sum is too big",
+        "Sum isn't idempotent — overlapping two ranges would double-count elements in the overlap. Min/max/gcd ARE idempotent (f(x,x)=x), so overlap is harmless.",
+        "Sum needs more memory",
+        "Sum is slower"
+      ],
+      "correct": 1,
+      "explanation": "Sparse table covers a range [l, r] with two POSSIBLY-OVERLAPPING power-of-2 ranges. For min: min(min[l..a], min[b..r]) where the ranges may share elements — fine because min(x, x) = x. For sum: sum[l..a] + sum[b..r] would double-count the overlap → wrong. So for sum you must use segment tree or Fenwick, which split into disjoint ranges."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the sparse-table query use floor(log2(r - l + 1))?",
+      "options": [
+        "It's arbitrary",
+        "k = floor(log2(len)) gives the largest power of 2 ≤ len. The two ranges [l, l+2^k) and [r-2^k+1, r] each have length 2^k, and together cover [l, r] (with overlap). Both lookups are valid sparse-table entries.",
+        "log base 2 is faster",
+        "Symmetry"
+      ],
+      "correct": 1,
+      "explanation": "We need a power of 2 that fits in the range; the largest such is 2^floor(log2(len)). Two ranges of size 2^k starting at l and ending at r together cover the full range — they overlap in the middle if 2·2^k > len. For idempotent operations the overlap doesn't matter. Precomputing log2[i] in O(n) makes the query branchless."
+    },
+    {
+      "stage": "post",
+      "question": "What's the memory overhead of a sparse table?",
+      "options": [
+        "O(1)",
+        "O(n log n) — n entries × log2(n) levels. For n=10^6, ~20 levels × 4 bytes per int = 80 MB. This is the cost of the O(1) query.",
+        "O(n)",
+        "O(n²)"
+      ],
+      "correct": 1,
+      "explanation": "Memory is the cost. For n=1M, ~20 levels × 4-8 bytes per cell = 80-160 MB. Segment tree is O(n) = 8 MB. So sparse table is best when (1) n is small to medium, (2) queries vastly outnumber memory cost, (3) data is static. For huge arrays, Bender-Farach gives O(n) preprocessing + O(1) query but with very large constants."
+    },
+    {
+      "stage": "post",
+      "question": "Sparse table can answer LCA queries because:",
+      "options": [
+        "It can't",
+        "LCA reduces to RMQ on the Euler tour (a DFS sequence with depth annotations). Sparse table on this O(n) array → O(1) LCA after O(n log n) preprocessing.",
+        "LCA is unrelated",
+        "Random matching"
+      ],
+      "correct": 1,
+      "explanation": "Bender-Farach 2000: LCA(a, b) in a tree T = the node with minimum depth in the Euler-tour subsequence from the first occurrence of a to the first occurrence of b. The Euler tour has 2n-1 entries with depths differing by ±1. Sparse table on depths → O(1) LCA. For tree problems (compilers, type systems, network routing), this is the canonical LCA technique."
+    },
+    {
+      "stage": "post",
+      "question": "When would you choose a segment tree over a sparse table for range-min queries?",
+      "options": [
+        "Always",
+        "When you need updates. Sparse table is static — modifying A[i] would require rebuilding the whole table O(n log n). Segment tree handles point/range updates in O(log n).",
+        "When n is small",
+        "Never"
+      ],
+      "correct": 1,
+      "explanation": "Sparse table wins for static data: O(1) query vs O(log n). Segment tree wins for dynamic data: it supports updates in O(log n), sparse table does not. The decision tree: 'Will the array change after construction?' If no → sparse table (or Fischer-Heun O(n)/O(1) for huge n). If yes → segment tree (or wavelet tree for special queries)."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 18,
+    "title": "Sparse Tables Rmq"
+  }
+}

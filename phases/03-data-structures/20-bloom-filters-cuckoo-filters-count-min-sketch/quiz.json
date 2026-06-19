@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why use a Bloom filter instead of a hash set for membership tests?",
+      "options": [
+        "Faster lookup",
+        "Tiny memory: ~10 bits per element for 1% false-positive rate, vs 32+ bytes for a hash set. Massive win when n is huge and a small FP rate is acceptable.",
+        "Better cache locality",
+        "Cryptographic"
+      ],
+      "correct": 1,
+      "explanation": "A hash set with 1M elements costs ~32 MB. A Bloom filter at 1% FPR uses ~10M bits ≈ 1.2 MB — 25× smaller. Tradeoff: 1% of negative queries return TRUE wrongly (false positives). Used for: 'is this URL probably in the cache?' or 'is this key probably in this SSTable file?' — cases where a wrong YES costs you a real lookup, but a wrong NO is forbidden."
+    },
+    {
+      "stage": "pre",
+      "question": "Can a Bloom filter have false negatives?",
+      "options": [
+        "Sometimes",
+        "Never. Once x is inserted, all k of its bits are set. Lookup checks the same k bits → all 1. No way for a true positive to flip to false negative. Only false POSITIVES exist.",
+        "Often",
+        "Only if k is small"
+      ],
+      "correct": 1,
+      "explanation": "Bloom filter has a one-sided error: 0 false negatives, ε false positives. This asymmetry is what makes Bloom useful — if it says NO, the item is definitely not there (skip the expensive check); if YES, you must verify. Cassandra uses Bloom per SSTable to short-circuit reads on 99% of files."
+    },
+    {
+      "stage": "post",
+      "question": "Optimal Bloom filter: given n items and target FPR ε, what are m (bits) and k (hashes)?",
+      "options": [
+        "m = n, k = 1",
+        "m / n = -log₂(ε) / ln(2) ≈ 1.44 × log₂(1/ε) bits per item. k = (m/n) × ln(2). For ε = 1%: m/n ≈ 9.6 bits, k = 7.",
+        "Always m=1MB",
+        "k = log n"
+      ],
+      "correct": 1,
+      "explanation": "Both formulas come from minimizing FPR = (1 - e^(-kn/m))^k. For each m/n ratio, there's an optimal k. The derivations are classic Bloom 1970. Cheat sheet: for 1% FPR, ~10 bits per item; for 0.1%, ~15 bits; for 0.01%, ~20 bits. Cuckoo filter is ~10% better for the same FPR + supports delete."
+    },
+    {
+      "stage": "post",
+      "question": "What's the key advantage of Cuckoo filter over Bloom filter?",
+      "options": [
+        "Speed",
+        "DELETE support. Bloom can't delete (multiple inserts share bits). Cuckoo stores fingerprints in 2 candidate buckets; delete clears a fingerprint. Same FPR with ~5-10% less memory.",
+        "Cryptographic",
+        "Better hash"
+      ],
+      "correct": 1,
+      "explanation": "Bloom filter's bits are SHARED across items — deleting one would also delete the others sharing that bit. Cuckoo filter stores fingerprints (8-12 bit hashes) in 2 specific buckets per item; delete removes the fingerprint from one bucket. Cost: insertion can fail (recursive eviction loops), so cap at 95% load. Used by: Membase, FoundationDB, Beats (Elastic)."
+    },
+    {
+      "stage": "post",
+      "question": "Count-Min sketch's `estimate(x)` returns what, and what's the error guarantee?",
+      "options": [
+        "Random number",
+        "Min over rows of the hashed counts. Always ≥ true count (never under). With width w = e/ε, depth d = ln(1/δ): error ≤ ε × ||all counts||₁ with probability 1-δ.",
+        "Sum of counts",
+        "Median"
+      ],
+      "correct": 1,
+      "explanation": "Each row adds collision noise to the count of x. Taking the min picks the row least polluted by collisions — likely close to true. Always overestimates. For ε=0.01, δ=0.001: w=272, d=7 → ~2K total counters. Used for: top-K trending hashtags, network telemetry, distributed analytics. Apache DataSketches has production implementations."
+    },
+    {
+      "stage": "post",
+      "question": "What's the practical use case for Bloom filters in databases (Cassandra, BigTable, RocksDB)?",
+      "options": [
+        "Replication",
+        "Per-file Bloom filter answers 'might this key be in this file?' before opening it. 99% of negative queries skip the disk read entirely. Reduces I/O by 100× on lookup-heavy workloads.",
+        "Compression",
+        "Indexing"
+      ],
+      "correct": 1,
+      "explanation": "LSM-tree databases (Cassandra, RocksDB, LevelDB) store data in many SSTable files. A point lookup might check 5-20 files. Without Bloom: 5-20 disk seeks per query. With per-file Bloom at 1% FPR: 99% of files are excluded; 1-2 seeks per query. The Bloom filter at 10 bits per key + ~10M keys ≈ 13 MB per million keys — fits in RAM easily."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 20,
+    "title": "Bloom Filters Cuckoo Filters Count Min Sketch"
+  }
+}

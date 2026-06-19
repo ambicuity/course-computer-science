@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the cache-aside (lazy loading) strategy, when does the cache get populated?",
+      "options": [
+        "On every write to the database",
+        "On a cache miss, after reading from the database",
+        "On a cache hit, before returning to the client",
+        "Periodically by a background refresh process"
+      ],
+      "correct": 1,
+      "explanation": "Cache-aside populates the cache lazily: only on a miss. The application reads from the database, then writes the result to the cache before returning it. This means the cache only contains data that has been requested, avoiding wasted memory on unused entries — but the first request for any key always incurs a database hit."
+    },
+    {
+      "stage": "pre",
+      "question": "With consistent hashing on a ring, what happens to key assignments when you add a new node?",
+      "options": [
+        "All keys are rehashed and redistributed evenly across all nodes",
+        "Only the keys whose hash falls between the new node and its predecessor on the ring remap to the new node",
+        "No keys remap because the ring structure is immutable",
+        "Keys are redistributed in round-robin order starting from the new node"
+      ],
+      "correct": 1,
+      "explanation": "This is the key property of consistent hashing: adding a node only affects the ring segment between the new node and its clockwise predecessor. With K nodes, roughly 1/K of keys remap — contrasted with naive modulo hashing (hash % N) where adding one node remaps nearly 100% of keys."
+    },
+    {
+      "stage": "post",
+      "question": "Why do consistent hashing implementations use virtual nodes (e.g., 150 vnodes per physical node)?",
+      "options": [
+        "To increase the total storage capacity of the cache cluster",
+        "To improve load balance by smoothing the distribution of keys across physical nodes via the law of large numbers",
+        "To enable replication by storing copies of data on each virtual node",
+        "To reduce the number of hash computations needed when looking up a key"
+      ],
+      "correct": 1,
+      "explanation": "Without vnodes, a few physical nodes on the ring can cause uneven ownership (e.g., one node might own 50% of the ring). Vnodes give each physical node many positions on the ring, and the law of large numbers ensures each physical node owns a roughly equal share. They don't add capacity, enable replication, or reduce lookup cost — they solely improve balance."
+    },
+    {
+      "stage": "post",
+      "question": "A cache stampede (thundering herd) occurs when many concurrent requests miss the cache for the same popular key. Which mitigation ensures that only one database query is made?",
+      "options": [
+        "Setting a longer TTL so the key is less likely to expire",
+        "Acquiring a per-key lock: the first request fetches from DB and populates the cache; others wait on the lock then read the cached value",
+        "Using write-through caching so the cache is always populated",
+        "Increasing the number of cache nodes so the key is less likely to be on a single node"
+      ],
+      "correct": 1,
+      "explanation": "Lock-per-key (also called request coalescing or singleflight) ensures only one goroutine/thread fetches from the DB. Others block on the lock and then read the freshly cached value. A longer TTL only delays the stampede. Write-through ensures consistency but doesn't help on a cold miss. More nodes doesn't prevent the same popular key from being accessed concurrently."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is a key difference between Redis Cluster's hash slot approach and consistent hashing with virtual nodes?",
+      "options": [
+        "Hash slots use CRC16 modulo 16384 for deterministic slot assignment, while consistent hashing uses SHA-256 on a 2^32 ring; both require O(N) lookup time",
+        "Redis Cluster maps keys to one of 16,384 fixed slots, and slots are assigned to nodes as units; consistent hashing maps keys directly to positions on a ring with virtual nodes, allowing arbitrary fractional ownership",
+        "Consistent hashing guarantees perfect balance across nodes, while hash slots always produce skewed distributions",
+        "Hash slots allow unlimited nodes but consistent hashing is capped at 16,384 virtual nodes"
+      ],
+      "correct": 1,
+      "explanation": "Redis Cluster uses fixed 16,384 slots assigned to nodes as contiguous ranges. When reshuffling, entire slots move between nodes, which is efficient for bulk data transfer. Consistent hashing with vnodes allows each physical node to own arbitrary fractions of the ring. Both approximate balance, but their mechanisms differ: slot assignment is administrative, ring ownership is emergent from hash positions."
+    },
+    {
+      "stage": "post",
+      "question": "Rendezvous hashing (Highest Random Weight) computes hash(key, node_i) for every node and assigns the key to the node with the highest hash. What is its primary trade-off compared to consistent hashing with virtual nodes?",
+      "options": [
+        "Rendezvous hashing produces worse balance than consistent hashing with vnodes",
+        "Rendezvous hashing requires O(N) computation per key lookup (one hash per node), while consistent hashing with vnodes achieves O(log(K·V)) via binary search on a sorted ring",
+        "Rendezvous hashing cannot handle node failures because the highest-hash node is irreplaceable",
+        "Rendezvous hashing remaps more keys than consistent hashing when a node is added"
+      ],
+      "correct": 1,
+      "explanation": "HRW's disadvantage is its O(N) per-key lookup: you must compute a hash for every node to find the maximum. Consistent hashing with vnodes uses binary search on a sorted ring of K·V entries, giving O(log(K·V)) lookup. HRW's advantage is perfect balance without needing vnodes. In practice, the ring approach wins for large clusters because logarithmic lookup scales better."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 18,
+    "title": "Distributed Caches Memcached Redis Consistent Hashing"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What's the fundamental difference between a sampling profiler (`perf record`) and an instrumentation profiler (`valgrind --tool=callgrind`)?",
+      "options": [
+        "Sampling profilers are GUI-only",
+        "Sampling profilers interrupt the CPU at a fixed rate and record the call stack; instrumentation profilers insert measurement code at every function/basic-block boundary",
+        "Instrumentation profilers only work on Linux",
+        "Sampling profilers are less accurate at scale"
+      ],
+      "correct": 1,
+      "explanation": "Sampling = statistical, low overhead (1-5%), good for wall-clock attribution. Instrumentation = exact counts, high overhead (5×-50× slowdown), good for per-call cost. Start with sampling; drop to instrumentation only when sampling can't answer your question."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does a flamegraph read 'wide = slow'?",
+      "options": [
+        "Width represents file size",
+        "Width is proportional to the fraction of total samples in which that frame appears anywhere in the stack — so a wide frame is on the CPU often",
+        "Wider bars are drawn for older code",
+        "Width is arbitrary"
+      ],
+      "correct": 1,
+      "explanation": "The flamegraph aggregates sampled stacks. Each frame's width = (samples where that frame is on the stack) / (total samples). A frame near the top, wide, is *the* hot function. Vertical position is just stack depth, not time order."
+    },
+    {
+      "stage": "post",
+      "question": "Your sampling profile shows your program spends 70% of time inside `clock_gettime` and `epoll_wait`. What does that mean?",
+      "options": [
+        "Those functions are slow; rewrite them",
+        "The program is mostly *off-CPU* — waiting on syscalls / IO. A CPU-only sampler is the wrong tool; use off-CPU / wait-event profiling",
+        "The program is CPU-bound",
+        "perf is broken"
+      ],
+      "correct": 1,
+      "explanation": "A CPU sampler only fires when the CPU is running your process. If sampled stacks are dominated by syscalls, you're waiting on the kernel — `perf sched`, `bpftrace` off-CPU profiles, or `strace -c` are the right tools to see *what's blocking and for how long*."
+    },
+    {
+      "stage": "post",
+      "question": "You profile an `-O0` debug build, get a beautiful flamegraph, optimize the hottest function, and ship. Why is this risky?",
+      "options": [
+        "Optimized builds always have different hotspots than -O0 builds (inlining, dead code, vectorization redistribute time); your optimization may have improved a path that doesn't even exist in production",
+        "Profilers don't work on -O0 builds",
+        "-O0 builds always crash",
+        "It's not risky"
+      ],
+      "correct": 0,
+      "explanation": "Always profile a release-flag build (`-O2`/`-O3` + `-g` for symbols). The compiler's inliner and dead-code eliminator can completely change where time goes. A hot function in -O0 may have been inlined away or eliminated in -O2."
+    },
+    {
+      "stage": "post",
+      "question": "valgrind reports a leak originating in `main → load_config → strdup`. What does the top-of-stack tell you to fix?",
+      "options": [
+        "Rewrite main",
+        "Look at `load_config`'s code: the `strdup` allocation it makes needs a matching `free()` somewhere; track where the returned pointer goes and ensure it's released",
+        "Don't use strdup",
+        "Increase the heap size"
+      ],
+      "correct": 1,
+      "explanation": "The valgrind report's top frame is the allocation site that wasn't freed. Trace ownership: who receives the strdup'd pointer? Who's supposed to free it on shutdown? Either pair the `free`, or transfer ownership via a clear contract."
+    },
+    {
+      "stage": "post",
+      "question": "Why is `-fno-omit-frame-pointer` often recommended for production builds you intend to profile?",
+      "options": [
+        "It improves runtime perf",
+        "It makes the binary smaller",
+        "It keeps the frame-pointer chain intact so sampling stack-walkers can unwind cheaply without DWARF; DWARF unwinding works but is slower and more error-prone at high sample rates",
+        "It's required by perf"
+      ],
+      "correct": 2,
+      "explanation": "Modern compilers omit frame pointers by default for a small perf gain (~1%). But stack walkers depend on either frame pointers (fast, simple) or DWARF unwind info (slow, may fail under heavy load). Production-grade profiling prefers frame pointers — the 1% perf cost buys reliable, low-overhead stack traces."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 8,
+    "title": "Profilers Perf Valgrind Instruments Flamegraphs"
+  }
+}

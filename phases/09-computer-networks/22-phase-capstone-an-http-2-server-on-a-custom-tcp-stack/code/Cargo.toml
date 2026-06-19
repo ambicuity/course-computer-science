@@ -1,0 +1,7 @@
+[package]
+name = "h2-from-scratch"
+version = "0.1.0"
+edition = "2021"
+description = "Phase 9 Capstone — HTTP/2 Server on a Custom TCP Stack"
+
+[dependencies]

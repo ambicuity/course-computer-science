@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What's the defining property of a 'persistent' data structure?",
+      "options": [
+        "Stored on disk",
+        "Updates produce a new version while the old version remains valid and unchanged. Both versions can be accessed; structural sharing keeps memory bounded.",
+        "Cryptographically signed",
+        "Slower"
+      ],
+      "correct": 1,
+      "explanation": "In CS, 'persistent' has a specific meaning (different from 'durable' / 'on disk'): every operation that modifies the structure returns a new version, and the old version is preserved. Used in functional languages, version control, editors. Confusingly, 'persistent storage' means 'disk' — distinct from 'persistent data structure'."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is a linked list naturally persistent?",
+      "options": [
+        "It's slow",
+        "cons(x, list) returns a new pair (x, tail=list) without modifying anything. The old list still exists; the new list shares all of it except the new head.",
+        "Lists are sorted",
+        "It uses pointers"
+      ],
+      "correct": 1,
+      "explanation": "A cons cell is immutable by construction: head + tail. Pushing onto the front doesn't change the tail; it creates a new cell pointing to the old list. Old list and new list coexist with maximal sharing. This is why Lisp and ML use lists everywhere — they fit functional ideals perfectly. Constants-time prepend, structural sharing for free."
+    },
+    {
+      "stage": "post",
+      "question": "Path-copying in a persistent BST allocates how many new nodes per insert?",
+      "options": [
+        "All nodes",
+        "O(log n) — only nodes on the path from root to the insertion point. The rest of the tree is shared with the previous version.",
+        "1",
+        "O(n)"
+      ],
+      "correct": 1,
+      "explanation": "Insert at depth d requires d+1 new nodes (the entire path, including the new leaf). For a balanced BST, d = O(log n). So persistent BST insert is O(log n) time AND O(log n) extra memory per version. After k inserts: O(k log n) total memory across all versions. Compare with full-copy persistent: O(n) per version → O(nk) total. Sharing wins."
+    },
+    {
+      "stage": "post",
+      "question": "What's HAMT and why is it the standard persistent map?",
+      "options": [
+        "Hash table",
+        "Hash Array-Mapped Trie (Bagwell 2000): 32-way trie over hash bits. Depth ~log₃₂ n ≈ 5 for n=1M. Path-copying gives ~5 new nodes per update. Used by Clojure, Scala, Haskell unordered-containers.",
+        "Cryptographic hash",
+        "Linked list"
+      ],
+      "correct": 1,
+      "explanation": "HAMT branches on 5 bits of hash at each level → 32 children possible per node, stored as a bitmap + dense array. For n=1M keys, depth is ⌈log₃₂(1M)⌉ = 4. Path-copy 4-5 nodes per update — much better than path-copying a balanced BST's ~20 nodes. Sparse internal nodes (bitmap-indexed) save memory. Clojure's `PersistentHashMap`, Scala `HashMap`, Haskell `Data.HashMap.Strict` — all HAMT."
+    },
+    {
+      "stage": "post",
+      "question": "What's the killer app for persistent data structures?",
+      "options": [
+        "Speed",
+        "Cheap snapshots and concurrent reads. Hold the root → you have a snapshot. Readers see immutable data → no locks needed. Used in editors (undo), version control (Git), CRDTs, MVCC databases.",
+        "Compression",
+        "Cryptographic security"
+      ],
+      "correct": 1,
+      "explanation": "Mutable structures need O(n) to snapshot. Persistent: O(1) — just hold the root. Editors keep an undo tree of document versions. Git's commit tree is path-copied (sub-trees shared between commits). Datomic stores all history. Concurrent reads: lock-free because data is immutable. The cost: writes are ~5× slower than mutable. Right trade-off for read-mostly workloads."
+    },
+    {
+      "stage": "post",
+      "question": "When does ephemeral (mutable) win over persistent?",
+      "options": [
+        "Always",
+        "Hot loops of in-place updates: persistent allocates per write, has indirection, GC pressure. For tight inner-loops with no need for old versions, mutable Vec/HashMap is 3-10× faster.",
+        "Never",
+        "Only large data"
+      ],
+      "correct": 1,
+      "explanation": "Persistent's per-update cost: heap allocation, cache miss on the new node, eventually GC reclamation. Mutable: just write the slot. For mutation-heavy hot loops, mutable wins by 3-10×. The right pattern: use mutable inside a transaction, then 'commit' by snapshotting / freezing for downstream consumers. Clojure's transient/persistent dance encodes exactly this."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 22,
+    "title": "Persistent Immutable Data Structures"
+  }
+}

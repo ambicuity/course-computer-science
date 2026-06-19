@@ -1,0 +1,8 @@
+[package]
+name = "aes-internals"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "aes-internals"
+path = "main.rs"

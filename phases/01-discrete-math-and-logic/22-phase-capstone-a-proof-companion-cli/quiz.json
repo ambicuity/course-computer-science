@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is a CLI capstone better than just leaving the libraries in place?",
+      "options": [
+        "It looks more impressive",
+        "It forces integration — you must know *which* technique to apply for each kind of claim, and the CLI's dispatch table makes that mapping explicit",
+        "CLIs are required",
+        "It's faster"
+      ],
+      "correct": 1,
+      "explanation": "The libraries are tools; the CLI is the *judgment* of which tool to reach for. The dispatch table — 'truth table for tautologies, Miller-Rabin for primes, Huffman for compression bounds' — is the integration test that proves you've internalized when each technique applies."
+    },
+    {
+      "stage": "pre",
+      "question": "The capstone's `verify all` subcommand serves what role?",
+      "options": [
+        "Decoration",
+        "An integration test: every demo asserts the expected mathematical outcome, so a regression anywhere in the libraries surfaces immediately",
+        "Documentation",
+        "Help text"
+      ],
+      "correct": 1,
+      "explanation": "`verify all` runs Fermat, birthday, coupon collector, master theorem, and Hamming demos — each with assertions. If the Phase 01 library code regresses (anyone editing it later), this command catches it. The same pattern repeats in every later phase capstone."
+    },
+    {
+      "stage": "post",
+      "question": "Which subcommand would you use to confirm that `(P → Q) ∧ (Q → R) ⟹ (P → R)` is a tautology?",
+      "options": [
+        "`prime`",
+        "`truth \"((P -> Q) & (Q -> R)) -> (P -> R)\"`",
+        "`gcd`",
+        "`pagerank`"
+      ],
+      "correct": 1,
+      "explanation": "Tautology questions are propositional logic. `cs01 truth \"((P -> Q) & (Q -> R)) -> (P -> R)\"` evaluates over all 8 assignments and reports tautology / contradiction / contingency. Hypothetical syllogism is a tautology — the CLI confirms it."
+    },
+    {
+      "stage": "post",
+      "question": "You suspect `7^200 mod 13` can be computed quickly via Fermat. Which capstone subcommand confirms the result?",
+      "options": [
+        "`count combo`",
+        "`mod-pow 7 200 13` (uses repeated squaring) — and you can cross-check by running `mod-pow 7 8 13`, since 200 mod 12 = 8 by Fermat",
+        "`pagerank`",
+        "`topo`"
+      ],
+      "correct": 1,
+      "explanation": "`mod-pow 7 200 13` returns 3, the same as `mod-pow 7 8 13`. This is Fermat's reduction at work: a^e mod p = a^(e mod (p-1)) mod p when gcd(a, p) = 1. The CLI lets you sanity-check both forms in one command."
+    },
+    {
+      "stage": "post",
+      "question": "After Huffman-coding the distribution (0.5, 0.3, 0.15, 0.05), the CLI prints H ≈ 1.65 and L ≈ 1.70. Why is L > H?",
+      "options": [
+        "Bug in Huffman",
+        "Theory: H ≤ L < H + 1 (Shannon's source coding theorem); Huffman achieves L = H exactly only when all probabilities are powers of 1/2",
+        "Rounding error",
+        "Wrong probabilities"
+      ],
+      "correct": 1,
+      "explanation": "Huffman is optimal among integer-length prefix codes. Entropy is the *theoretical* lower bound, achievable in the limit by arithmetic coding (and exactly by Huffman only when every probability is a power of 1/2). For this distribution, L = 1.70 is the best a prefix code can do; H = 1.65 is the theoretical floor."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 22,
+    "title": "Phase Capstone A Proof Companion Cli"
+  }
+}

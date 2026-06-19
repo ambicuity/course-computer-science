@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What happens to a write (put) in an LSM-Tree?",
+      "options": [
+        "It is written directly to a sorted file on disk",
+        "It is inserted into an in-memory sorted structure (memtable); when the memtable is full, it is frozen and flushed to disk as a sorted run",
+        "It is written to a random disk page and the page is added to the buffer pool",
+        "It is appended to an unsorted log file and indexed later"
+      ],
+      "correct": 1,
+      "explanation": "LSM-Trees batch writes into a memtable (an in-memory sorted structure like a BTreeMap or skiplist). When the memtable reaches its size threshold, it's frozen (immutable) and a background thread flushes it to disk as a contiguous sorted SSTable. This converts random writes into sequential I/O."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of a bloom filter in an LSM-Tree storage engine?",
+      "options": [
+        "To compress SSTable data blocks so they use less disk space",
+        "To probabilistically determine whether a key definitely does NOT exist in an SSTable, avoiding unnecessary disk reads",
+        "To sort the keys in an SSTable during compaction",
+        "To track which SSTables have been modified since the last checkpoint"
+      ],
+      "correct": 1,
+      "explanation": "A bloom filter provides a 'definitely not present' guarantee. When looking up a key, the engine first checks the bloom filter. If it says the key is absent, the engine skips that entire SSTable without reading its index or data blocks. This saves a disk read for every key that doesn't exist in a given SSTable. Bloom filters have a configurable false-positive rate (typically ~1%) but no false negatives."
+    },
+    {
+      "stage": "pre",
+      "question": "In the SSTable binary format described in this lesson, what information does the footer contain?",
+      "options": [
+        "The last key and value of the SSTable",
+        "The checksums of all data blocks",
+        "The byte offsets of the bloom filter block and index block, plus a magic number",
+        "The total number of entries and the creation timestamp"
+      ],
+      "correct": 2,
+      "explanation": "The footer is a fixed-size trailer (24 bytes) at the end of every SSTable. It stores the offset to the bloom filter block (8 bytes), the offset to the index block (8 bytes), and a magic number (4 bytes, e.g., 0xDEADBEEF) for format validation. The reader starts by reading the footer, then seeks to the bloom filter and index to begin the query."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between size-tiered compaction and leveled compaction in terms of read amplification?",
+      "options": [
+        "Size-tiered compaction has lower read amplification because it merges more aggressively",
+        "Leveled compaction has lower read amplification because each level is mostly non-overlapping, so at most one SSTable per level needs to be checked during a read",
+        "Both strategies have identical read amplification",
+        "Leveled compaction has higher read amplification because it creates more levels"
+      ],
+      "correct": 1,
+      "explanation": "In leveled compaction (RocksDB default), each level (L1, L2, ...) is size-bounded and non-overlapping — each key appears in at most one SSTable per level. So a point lookup checks the bloom filter of exactly one file per level. In size-tiered compaction, overlapping files within a level may force the reader to check multiple files in the same level. Leveled compaction trades higher write amplification (data may be rewritten many times as it cascades down levels) for lower read amplification."
+    },
+    {
+      "stage": "post",
+      "question": "A tombstone is inserted when a key is deleted in an LSM-Tree. Why can't the engine simply remove the key from the memtable and ignore it during compaction?",
+      "options": [
+        "Because memtables are read-only once frozen, and the key may still exist in older SSTables on disk — without a tombstone the old value would reappear after compaction",
+        "Because the key is encrypted and the engine needs the tombstone to mark it as deleted in the write-ahead log",
+        "Because tombstones are required by the filesystem for crash recovery",
+        "Because tombstones reduce write amplification by skipping compaction for deleted keys"
+      ],
+      "correct": 0,
+      "explanation": "An LSM-Tree never overwrites in place — all data is append-only. A delete just inserts a tombstone (a special marker) into the memtable. When the memtable is flushed and later compacted, the tombstone shadows the old key-value pair. Without the tombstone, compaction might produce an output that excludes the key, but an older, un-compacted SSTable could still contain it — causing the deleted key to reappear on a subsequent read. Tombstones are dropped during compaction only when the key doesn't exist in any lower level."
+    },
+    {
+      "stage": "post",
+      "question": "What distinguishes RocksDB's column families feature from LevelDB's single-key-space design?",
+      "options": [
+        "Column families allow different compaction strategies per key range, with separate memtables and SSTables but a shared write-ahead log",
+        "Column families are just logical partitions within a single memtable that LevelDB also supports",
+        "Column families encrypt data differently based on the column family name",
+        "Column families enable cross-node replication that LevelDB cannot do"
+      ],
+      "correct": 0,
+      "explanation": "RocksDB column families let you partition data within one DB instance. Each column family has its own memtable and its own set of SSTables, but they share a single write-ahead log for crash consistency. This enables workloads like 'hot data in CF1 on fast storage, cold data in CF2 on slow storage' within the same process, with different compaction strategies per column family."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 9,
+    "title": "Lsm Tree Storage Engines Leveldb Rocksdb Style"
+  }
+}

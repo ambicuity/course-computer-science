@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 21,
+    "title": "Network Programming in Rust (async + tokio)"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary reason thread-per-connection servers (like the one in Lesson 10) fail to scale beyond ~10,000 concurrent connections?",
+      "options": [
+        "TCP's maximum concurrent connection limit is 10,000",
+        "Each OS thread allocates a large fixed stack (~2 MB), consuming terabytes of memory at scale",
+        "The kernel limits the total number of file descriptors to 10,024 per process",
+        "Threads cannot share the same listening socket"
+      ],
+      "correct": 1,
+      "explanation": "The C10K problem: each OS thread reserves a fixed stack (~2 MB on Linux). At 1 million connections, that's 2 TB of virtual memory just for stacks, most of it unused. The kernel scheduler also degrades badly with that many threads. Async I/O solves this by driving many connections from a small pool of threads, where per-connection state is a few hundred bytes (not 2 MB)."
+    },
+    {
+      "stage": "pre",
+      "question": "What kernel mechanism do production servers (nginx, Redis) use to monitor thousands of sockets from a single thread?",
+      "options": [
+        "select() with a large fd_set",
+        "poll() with a large pollfd array",
+        "epoll on Linux / kqueue on macOS",
+        "SIGIO signal-driven I/O"
+      ],
+      "correct": 2,
+      "explanation": "epoll (Linux) and kqueue (macOS/BSD) scale to thousands of file descriptors with O(1) registration and event collection. select() and poll() scan all descriptors linearly on every call (O(n)), making them unusable beyond a few hundred connections. epoll/kqueue notify the application only when a socket becomes ready, without scanning."
+    },
+    {
+      "stage": "post",
+      "question": "What happens at the OS level when a Tokio task calls socket.read(&mut buf).await and no data has arrived yet?",
+      "options": [
+        "The OS blocks the thread until data arrives, then resumes the task",
+        "The runtime registers the socket with epoll for EPOLLIN, returns Poll::Pending, and the thread goes on to poll other tasks",
+        "The runtime busy-loops polling the socket until data arrives",
+        "The task is immediately cancelled and must be re-spawned when data arrives"
+      ],
+      "correct": 1,
+      "explanation": "When a future returns Poll::Pending, the runtime deschedules the task and polls another one. The I/O driver has registered the socket fd with epoll. When the kernel detects data on the socket, it generates an epoll event. The I/O driver receives this event, calls the associated Waker, which tells the scheduler to re-queue the task. Then the runtime polls the read future again, and this time data is available so it returns Poll::Ready(n). No thread was blocked during this entire flow."
+    },
+    {
+      "stage": "post",
+      "question": "What is the role of the Waker in Rust's async cooperative scheduling model?",
+      "options": [
+        "It prevents other tasks from running while a future is being polled",
+        "It tells the executor which thread should poll a given future",
+        "It is a callback that signals to the executor that a future should be polled again because it can now make progress",
+        "It measures how long a future takes to complete for performance monitoring"
+      ],
+      "correct": 2,
+      "explanation": "The Waker is created by the executor and passed to every Future via Context. When a future returns Poll::Pending (e.g., waiting for data on a socket), it stores a clone of the Waker. When the I/O event arrives (the socket becomes readable), the I/O driver calls waker.wake(), which tells the executor: 'this task is ready, poll it again.' This is the core of cooperative scheduling — futures tell the executor when they're ready to make progress, rather than being polled in a busy loop."
+    },
+    {
+      "stage": "post",
+      "question": "Why must CPU-bound computation inside a Tokio async function be wrapped in tokio::task::spawn_blocking?",
+      "options": [
+        "Because the Rust compiler refuses to compile CPU-bound code inside async functions",
+        "Because async functions cannot call regular function calls",
+        "Because long-running CPU work blocks the worker thread, preventing it from polling other tasks and causing starvation",
+        "Because CPU-bound work always panics when run inside a tokio runtime"
+      ],
+      "correct": 2,
+      "explanation": "Tokio uses cooperative scheduling — tasks only yield at .await points. If you run a CPU-intensive loop without any .await calls inside an async fn, the worker thread servicing that task cannot poll any other tasks. This starves all other tasks on that thread. spawn_blocking moves the work to a separate thread pool dedicated to blocking/CPU work, keeping the async worker threads free to poll I/O-bound tasks."
+    }
+  ]
+}

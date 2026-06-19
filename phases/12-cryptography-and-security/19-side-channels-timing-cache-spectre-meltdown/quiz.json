@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 19,
+    "title": "Side-Channels — Timing, Cache, Spectre/Meltdown"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Consider a naive memcmp(a, b, n) that returns as soon as it finds a mismatching byte. If an attacker can measure execution time and tries guessing each byte of a 16-byte secret, which guess for the first byte will take the longest average time?",
+      "options": [
+        "The guess that causes a mismatch at byte 0 (fastest failure)",
+        "The guess that causes a mismatch at byte 15 (latest failure)",
+        "The correct guess (matches byte 0, so comparison continues to byte 1 or beyond)",
+        "All guesses take the same time because of CPU branch prediction"
+      ],
+      "correct": 2,
+      "explanation": "The correct guess for byte 0 matches the secret at position 0, so the naive memcmp does NOT return early — it continues to byte 1 (and possibly beyond) before finding a mismatch. This takes longer than a wrong guess (which fails at byte 0). The attacker measures timing for all 256 candidates and picks the one with the longest time as the correct byte. This is the fundamental timing attack on variable-time comparison functions."
+    },
+    {
+      "stage": "pre",
+      "question": "In the context of side-channel attacks, what is a Flush+Reload attack?",
+      "options": [
+        "An attacker flushes the CPU pipeline and reloads the register file to detect branch mispredictions",
+        "An attacker flushes a shared memory cache line, waits for the victim to potentially access it, then measures reload time to determine if the victim touched it",
+        "An attacker flushes the TLB and reloads page table entries to discover kernel memory layout",
+        "An attacker causes a segmentation fault and inspects the reloaded handler state"
+      ],
+      "correct": 1,
+      "explanation": "Flush+Reload is a cache side-channel attack: the attacker uses the x86 CLFLUSH instruction to evict a shared cache line, lets the victim execute (potentially bringing the line back into cache), then measures how long it takes to reload that line. A fast reload (~50-100 cycles) means the victim accessed it (cache hit); a slow reload (~200-400 cycles) means it did not (cache miss). This reveals which memory address the victim touched, leaking information about secret-dependent memory accesses."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between Spectre v1 (Bounds Check Bypass) and Meltdown?",
+      "options": [
+        "Spectre affects only Intel CPUs; Meltdown affects only AMD CPUs",
+        "Spectre exploits branch prediction to speculatively access out-of-bounds data; Meltdown exploits out-of-order execution to read privileged kernel memory before the fault is raised",
+        "Spectre leaks data through power analysis; Meltdown leaks data through electromagnetic emissions",
+        "Both attacks use the same mechanism but on different CPU architectures"
+      ],
+      "correct": 1,
+      "explanation": "Spectre v1 tricks the branch predictor into speculatively executing a bounds-checked access with an out-of-bounds index. The body of the if-statement runs speculatively (before the bounds check resolves) and leaves a trace in the cache that the attacker probes via Flush+Reload. Meltdown is different: it exploits out-of-order execution by accessing a kernel address directly — the CPU continues executing subsequent instructions (like probing a cache line) before the page fault from the privileged access is delivered. Both leave observable cache state, but the root cause differs: Spectre abuses branch prediction, Meltdown abuses out-of-order execution and fault handling."
+    },
+    {
+      "stage": "post",
+      "question": "A developer writes the following AES decryption: for each of 16 key bytes, a lookup table indexed by (ciphertext[i] XOR key_byte[i]) is accessed. An attacker who knows the ciphertext and can co-locate code on the same CPU core can determine the key. What is the most practical side-channel attack, and what is the corresponding mitigation?",
+      "options": [
+        "Timing attack; mitigation is to add random delays",
+        "Flush+Reload cache attack; mitigation is constant-time lookups that access all possible table entries and select the result with bitwise operations",
+        "Power analysis; mitigation is to add decoupling capacitors",
+        "Spectre v2; mitigation is retpolines"
+      ],
+      "correct": 1,
+      "explanation": "The attack is a cache side-channel (specifically Flush+Reload or Prime+Probe): each T-table lookup brings a specific cache line into L1 depending on (ciphertext[i] XOR key_byte[i]). The attacker flushes the table, lets the victim decrypt, then probes which lines are cached — this reveals the key byte. Adding random delays does NOT fix timing or cache attacks; the correct mitigation is constant-time implementation: either read all 16 S-box table entries and use bitwise operations to select the correct one, or use bit-slicing. This is why modern AES implementations use hardware AES-NI instructions or constant-time table lookups."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a timing side-channel attack?",
+      "options": [
+        "An attack that manipulates the system clock",
+        "An attack that infers secret information by measuring how long cryptographic operations take",
+        "An attack that sends data at specific times",
+        "An attack that exploits timezone differences"
+      ],
+      "correct": 1,
+      "explanation": "Timing attacks measure how long operations take to infer secrets. For example, string comparison for HMAC verification may return early on the first mismatch byte. An attacker can guess one byte at a time by measuring response times. Constant-time comparison is the standard defense."
+    }
+  ]
+}

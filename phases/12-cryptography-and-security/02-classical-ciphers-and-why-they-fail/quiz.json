@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "How many distinct keys does the Caesar cipher have (i.e., how many possible shifts)?",
+      "options": [
+        "26 (one for each letter)",
+        "25 (shift by 0 is the identity, so it doesn't count)",
+        "26! (a permutation of the alphabet)",
+        "It depends on the message length"
+      ],
+      "correct": 1,
+      "explanation": "The Caesar cipher has 25 useful keys (shifts 1-25). Shift by 0 leaves the text unchanged, so it is excluded. This tiny key space means an attacker can try all possibilities in seconds."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is the substitution cipher broken by frequency analysis even though it has 26! possible keys?",
+      "options": [
+        "26! is actually a small number that modern computers can enumerate",
+        "Each plaintext letter always maps to the same ciphertext letter, so English letter frequency patterns survive encryption unchanged",
+        "The substitution cipher uses a repeating key, which creates periodic patterns",
+        "Frequency analysis works by trying all 26! keys and checking which produces readable text"
+      ],
+      "correct": 1,
+      "explanation": "Although 26! is enormous, the substitution cipher is a monalphabetic cipher: each plaintext letter always maps to the same ciphertext letter. This means the frequency distribution of the plaintext is preserved in the ciphertext — just relabeled. An attacker matches the ciphertext's frequency peaks (most common letter → E, etc.) and recovers most of the key."
+    },
+    {
+      "stage": "post",
+      "question": "What does the Kasiski examination determine about a Vigenère ciphertext?",
+      "options": [
+        "The exact keyword used for encryption",
+        "The length of the keyword",
+        "The frequency distribution of the plaintext",
+        "The number of substitution alphabets in a monoalphabetic cipher"
+      ],
+      "correct": 1,
+      "explanation": "Kasiski examination finds repeated substrings in the ciphertext and computes the distances between them. The GCD of these distances reveals the keyword length. Once the key length is known, the cipher reduces to multiple Caesar ciphers (one per column) that are individually solvable via frequency analysis."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the one-time pad provably unbreakable (Shannon 1949), and why is it impractical for most real use?",
+      "options": [
+        "It uses AES internally, which is unbreakable; it's impractical because AES is slow",
+        "Every ciphertext is equally likely under every key, so ciphertext leaks zero information about plaintext; impractical because the key must be as long as the message and pre-shared over a secure channel",
+        "It has a 256-bit key space, which is too large to brute-force; impractical because key generation is slow",
+        "It uses quantum randomness, which cannot be predicted; impractical because quantum computers are not yet available"
+      ],
+      "correct": 1,
+      "explanation": "Shannon proved that for any ciphertext and any plaintext of the same length, there exists a key that produces exactly that ciphertext from that plaintext. Therefore the ciphertext gives no information about which plaintext is correct. But the key must be truly random, as long as the message, never reused, and pre-shared — making it impractical for internet-scale communication."
+    },
+    {
+      "stage": "post",
+      "question": "In Shannon's terminology, what is 'diffusion' and which classical ciphers lack it?",
+      "options": [
+        "Diffusion means the key is hard to guess; Caesar lacks it but Vigenère has it",
+        "Diffusion means changing one plaintext bit changes many ciphertext bits; all classical ciphers (Caesar, substitution, Vigenère) lack it because changing one plaintext letter changes only one ciphertext letter (or one position within a key period)",
+        "Diffusion means encrypting with multiple keys sequentially; only the one-time pad lacks it",
+        "Diffusion means using a different algorithm for each message; Enigma has it but simpler ciphers don't"
+      ],
+      "correct": 1,
+      "explanation": "Diffusion spreads the influence of each plaintext bit across many ciphertext bits. In Caesar, substitution, and Vigenère ciphers, changing one plaintext letter changes exactly one ciphertext letter (or one position in the key period). This locality means statistical patterns in the plaintext appear locally in the ciphertext, enabling frequency analysis. AES achieves diffusion via ShiftRows and MixColumns, which spread each input byte across the entire 128-bit block."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following was a key reason the Enigma machine was broken, despite its large key space?",
+      "options": [
+        "The key space was only 26, making brute force trivial",
+        "The machine had no plugboard, so its encryption was equivalent to a simple Caesar cipher",
+        "Protocol and operator failures — predictable key schedules, operators encrypting message keys twice, and stereotyped message headers created known-plaintext structures that reduced the effective key space",
+        "The one-time pad was used as the underlying cipher, which was impossible to implement correctly on mechanical hardware"
+      ],
+      "correct": 2,
+      "explanation": "Enigma's theoretical key space was enormous, but the actual breaks exploited system-level weaknesses: operators enciphered the three-letter message key twice (creating a known-plaintext pattern), used stereotyped headers like 'WEATHER' or 'HEILHITLER', chose predictable keys (girlfriend initials, keyboard patterns), and the physical key sheets had to be distributed and were sometimes captured. The Bletchley attacks exploited protocol and human failures, not brute force against the cipher math."
+    }
+  ],
+  "_meta": {
+    "phase": 12,
+    "lesson": 2,
+    "title": "Classical Ciphers And Why They Fail"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 4,
+    "lesson": 29,
+    "title": "Amortized Analysis Deep — Aggregate, Accounting, Potential"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the potential method of amortized analysis, the amortized cost of operation i is defined as:",
+      "options": [
+        "cᵢ × Φ(Dᵢ)",
+        "cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁)",
+        "max(cᵢ, Φ(Dᵢ))",
+        "cᵢ − Φ(Dᵢ₋₁)"
+      ],
+      "correct": 1,
+      "explanation": "The potential method defines amortized cost as actual cost plus the change in potential: ĉᵢ = cᵢ + Φ(Dᵢ) − Φ(Dᵢ₋₁). The sum telescopes to Σ cᵢ + Φ(Dₙ) − Φ(D₀), bounding total cost when Φ ≥ 0."
+    },
+    {
+      "stage": "pre",
+      "question": "In the accounting (banker's) method, what happens when an operation's amortized cost exceeds its actual cost?",
+      "options": [
+        "The excess is discarded and the analysis fails",
+        "The excess accumulates as credit on data structure objects, used to pay for future expensive operations",
+        "The operation is deferred until the budget recovers",
+        "The potential function is recalculated"
+      ],
+      "correct": 1,
+      "explanation": "The accounting method charges some operations more than their actual cost. The surplus is stored as credit on the data structure. Later, expensive operations draw from this credit rather than paying their full actual cost. The invariant is that credit never goes negative."
+    },
+    {
+      "stage": "post",
+      "question": "What is the amortized cost per operation for a splay tree, and what potential function proves it?",
+      "options": [
+        "O(1) with Φ = number of nodes",
+        "O(log n) with Φ = Σ log(size(v)) over all nodes v",
+        "O(n) with Φ = height of the tree",
+        "O(log n) with Φ = number of leaves"
+      ],
+      "correct": 1,
+      "explanation": "The access lemma states that splaying a node at depth d costs O(log n) amortized when using Φ = Σ log(size(v)) as the potential function, where size(v) is the number of nodes in v's subtree. Each zig-zig and zig-zag step decreases the potential by at least 1, paying for the rotations."
+    },
+    {
+      "stage": "post",
+      "question": "What is the amortized time complexity per operation for union-find with both union-by-rank and path compression?",
+      "options": [
+        "O(log n)",
+        "O(log* n)",
+        "O(α(n)), where α is the inverse Ackermann function",
+        "O(1)"
+      ],
+      "correct": 2,
+      "explanation": "Tarjan (1975) proved that m operations on n elements take O(m · α(n)) total time, where α(n) is the inverse Ackermann function. Since α(n) ≤ 5 for any practical n, this is effectively constant per operation, but the precise bound is O(α(n))."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between average-case and amortized analysis?",
+      "options": [
+        "They are the same thing",
+        "Average-case assumes a probability distribution on inputs; amortized gives a worst-case bound over any sequence of operations",
+        "Amortized analysis only applies to sorting algorithms",
+        "Average-case is always tighter than amortized"
+      ],
+      "correct": 1,
+      "explanation": "Average-case analysis assumes inputs follow some probability distribution and computes expected cost. Amortized analysis guarantees that the average cost per operation over ANY worst-case sequence is bounded — no probability assumptions needed. Dynamic array resizing has O(1) amortized cost per push."
+    }
+  ]
+}

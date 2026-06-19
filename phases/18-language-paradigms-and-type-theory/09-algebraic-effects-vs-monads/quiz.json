@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a practical strength of monads?",
+      "options": ["No sequencing needed", "Well-understood composition and laws", "No type signatures", "Automatic parallelism"],
+      "correct": 1,
+      "explanation": "Monads provide a mature, principled model for sequencing effectful computations."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the 'monad transformer' problem?",
+      "options": ["Monads are too fast", "Combining multiple monads via transformers creates awkward nesting and ordering issues", "Monads cannot handle IO", "Monads have no laws"],
+      "correct": 1,
+      "explanation": "Stacking monad transformers (e.g., StateT over ReaderT over IO) leads to boilerplate and order-dependent behavior that algebraic effects aim to solve."
+    },
+    {
+      "stage": "post",
+      "question": "What is a common motivation for algebraic effects?",
+      "options": ["Removing type systems", "Separating effect declaration from interpretation via handlers", "Disabling modularity", "Eliminating all runtime errors"],
+      "correct": 1,
+      "explanation": "Effect handlers can improve modularity by allowing multiple interpretations of the same effect interface."
+    },
+    {
+      "stage": "post",
+      "question": "When choosing between monads and effects, what matters most?",
+      "options": ["Logo preference", "Team/tooling maturity and architectural extensibility needs", "CPU clock speed", "File count"],
+      "correct": 1,
+      "explanation": "Engineering context and maintainability concerns determine which abstraction is the better fit."
+    },
+    {
+      "stage": "post",
+      "question": "How do algebraic effects handle resumption differently from exceptions?",
+      "options": ["They don't resume at all", "Effect handlers can resume the computation after handling, exceptions cannot", "They use the same mechanism", "They resume in a separate thread"],
+      "correct": 1,
+      "explanation": "Unlike exceptions which abort the current continuation, algebraic effect handlers can resume the suspended computation with a result."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 9, "title": "Algebraic Effects vs Monads" }
+}

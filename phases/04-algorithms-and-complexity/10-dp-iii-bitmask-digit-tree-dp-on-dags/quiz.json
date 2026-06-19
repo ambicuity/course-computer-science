@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 10,
+    "title": "DP III — Bitmask, Digit, Tree, DP on DAGs"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In bitmask DP for TSP, what does dp[S][i] represent?",
+      "options": [
+        "The shortest tour visiting all cities, starting at i",
+        "The shortest path visiting exactly the cities in subset S, ending at city i",
+        "The number of paths visiting subset S starting at i",
+        "The minimum edge weight in subset S connected to i"
+      ],
+      "correct": 1,
+      "explanation": "dp[S][i] stores the shortest path that visits every city whose bit is set in S exactly once, with the last visited city being i. The transition adds one new city v at a time."
+    },
+    {
+      "stage": "pre",
+      "question": "In digit DP, what does the 'tight' flag control?",
+      "options": [
+        "Whether the current prefix is non-decreasing",
+        "Whether the number is odd or even",
+        "Whether the current prefix still equals N's prefix, limiting the next digit",
+        "Whether a non-zero digit has been placed yet"
+      ],
+      "correct": 2,
+      "explanation": "When tight=1, the current prefix matches N exactly so far, so the next digit is bounded by N's digit at that position. Once a smaller digit is placed, tight becomes 0 and all digits 0-9 are allowed."
+    },
+    {
+      "stage": "post",
+      "question": "You need the maximum independent set for every node as root of a tree. Which technique gives O(n) total time?",
+      "options": [
+        "Run tree DP rooted at each node — O(n^2)",
+        "Rerooting: one post-order DFS for 'down' values, one pre-order DFS for 'up' values",
+        "Bitmask DP over all 2^n subsets of vertices",
+        "Apply Dijkstra from each node"
+      ],
+      "correct": 1,
+      "explanation": "Rerooting computes dp-down in a post-order pass, then propagates dp-up in a pre-order pass. Each edge is crossed exactly twice, yielding O(n) total. Running tree DP at every root would be O(n^2)."
+    },
+    {
+      "stage": "post",
+      "question": "What guarantees that a DP over vertices processes each vertex after all its predecessors?",
+      "options": [
+        "BFS order from an arbitrary start vertex",
+        "Topological order of the DAG",
+        "Sorting vertices by degree",
+        "Post-order traversal of the DFS tree"
+      ],
+      "correct": 1,
+      "explanation": "A topological order is a linear ordering where every directed edge u->v places u before v. Processing vertices in this order ensures that when we reach v, all predecessors u have already been computed, so the DP transition is valid."
+    },
+    {
+      "stage": "pre",
+      "question": "Bitmask DP is often used for problems involving subsets. What is the typical time complexity for the travelling salesman problem using bitmask DP?",
+      "options": [
+        "O(n!)",
+        "O(2^n * n^2)",
+        "O(n^2 log n)",
+        "O(2^n * n)"
+      ],
+      "correct": 1,
+      "explanation": "Bitmask DP for TSP uses a bitmask of visited cities and the current city as state. There are 2^n subsets and n possible current cities, giving 2^n * n states. Each state transitions to up to n unvisited cities, yielding O(2^n * n^2) total."
+    }
+  ]
+}

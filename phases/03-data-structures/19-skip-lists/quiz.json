@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "How does a skip list achieve expected O(log n) without rotations?",
+      "options": [
+        "Sorting",
+        "Layered linked lists where each higher layer is a random ~half-subset of the layer below. A search walks down levels, skipping ~half the remaining nodes at each.",
+        "Hashing",
+        "Brute force"
+      ],
+      "correct": 1,
+      "explanation": "Level 0 contains all n elements; level k contains each element independently with probability 1/2^k. Expected ~log n levels; expected ~1 step per level → expected O(log n) per op. No balance invariant to maintain — just randomized heights at insert time. Code is ~50 lines (vs ~300 for RB tree)."
+    },
+    {
+      "stage": "pre",
+      "question": "Where does Redis use a skip list in production?",
+      "options": [
+        "Strings",
+        "SortedSet (ZADD, ZRANGE). Maintains keys ordered by score; skip list provides O(log n) rank queries, range iteration, score updates. Paired with a hash table for O(1) member existence.",
+        "Pub/Sub",
+        "Cluster routing"
+      ],
+      "correct": 1,
+      "explanation": "Redis ZADD foo 10 alice / ZADD foo 20 bob / ZRANGE foo 0 -1 needs ordered iteration + O(log n) insert at scored position. antirez chose skip list for: simpler code than RB tree, comparable performance, easier to extend with rank queries. The 'span' field per pointer counts how many bottom-level nodes a link covers — enables O(log n) rank/select. See `src/t_zset.c`."
+    },
+    {
+      "stage": "post",
+      "question": "What's the probability that a skip list has max level k+1 for n elements?",
+      "options": [
+        "1/k",
+        "Each element flips coins until tails. Pr[node level ≥ k] = 1/2^(k-1). Max over n: expected log₂ n, sharply concentrated.",
+        "1/n",
+        "Constant"
+      ],
+      "correct": 1,
+      "explanation": "Level distribution is geometric: Pr[height = k] = 1/2^k. For n elements, the expected number with height ≥ k is n/2^k. Set n/2^k = 1 → k ≈ log₂ n. Concentration: probability max level > 2 log n is exponentially small. In practice cap at ~16 for n ≤ 65K, 32 for huge."
+    },
+    {
+      "stage": "post",
+      "question": "Why are skip lists easier than balanced trees to make concurrent (lock-free)?",
+      "options": [
+        "They're not",
+        "Insert/delete are local pointer-rewires at each level. No rotations cascade up the tree. Lock-free skip list (Herlihy-Shavit) replaces each pointer update with a CAS — much simpler than lock-free RB.",
+        "They use less memory",
+        "Random key choice"
+      ],
+      "correct": 1,
+      "explanation": "RB/AVL trees do rotations that move pointers across many nodes simultaneously — lock-free rotations are an open research problem (most concurrent BSTs use locks). Skip lists only update O(log n) pointers locally; CAS each one. Java's ConcurrentSkipListMap and Doug Lea's design are the textbook examples. The cost: skip lists have worse cache behavior than B-trees on modern hardware."
+    },
+    {
+      "stage": "post",
+      "question": "How does the skip list 'span' field enable O(log n) rank?",
+      "options": [
+        "Magic",
+        "Each level-k forward pointer carries `span` = number of level-0 nodes it covers. Sum spans while walking forward to compute the rank of a given key.",
+        "Cache prefetch",
+        "Compression"
+      ],
+      "correct": 1,
+      "explanation": "rank(key) returns 'how many keys are ≤ key'. Naïvely O(n). With span field per pointer: when walking forward at level k, you 'skip' span[k] bottom-level nodes. Maintain a running rank counter; total work O(log n). Redis uses this for ZRANK ZREVRANK queries. The span must be updated on insert/delete — about 3x extra arithmetic but worth it."
+    },
+    {
+      "stage": "post",
+      "question": "If the random number generator returned all heads, what would happen to a skip list?",
+      "options": [
+        "Infinite loop",
+        "Every element gets max level → linked list with full towers. O(n) per op. The bad case exists but is exponentially rare under fair randomness. Production cap max level to ~32 to guard against extreme luck.",
+        "Skip list breaks",
+        "Faster searches"
+      ],
+      "correct": 1,
+      "explanation": "Skip list is randomized; the worst case (every node has max height) makes search O(n × max_level). Probability of this happening: 2^(-n × max_level) — basically zero for n > 30. Still, MAX_LEVEL is capped (16-32) to bound memory and guarantee no infinite tower. This is the same 'randomized analysis' as treaps and randomized BSTs — expected guarantees, exponentially rare worst case."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 19,
+    "title": "Skip Lists"
+  }
+}

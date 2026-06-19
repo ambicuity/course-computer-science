@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 2,
+    "title": "Finite Automata — DFAs"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A DFA has 4 states and processes a 10-symbol input string. How many state transitions occur?",
+      "options": [
+        "4",
+        "10 — one transition per input symbol, regardless of how many states exist",
+        "40",
+        "It depends on the number of accepting states"
+      ],
+      "correct": 1,
+      "explanation": "A DFA reads one symbol per step and performs exactly one transition per symbol. A string of length n causes exactly n transitions, starting from q₀. The number of states in the DFA does not affect how many transitions occur — it affects which states are reachable."
+    },
+    {
+      "stage": "pre",
+      "question": "What does L(M) mean for a DFA M = (Q, Σ, δ, q₀, F)?",
+      "options": [
+        "The set of all states in M",
+        "The set of all strings w ∈ Σ* such that δ*(q₀, w) ∈ F — i.e., strings that drive M to an accepting state",
+        "The set of all transitions in M",
+        "The number of accepting states"
+      ],
+      "correct": 1,
+      "explanation": "L(M) is the language accepted by M: the set of all strings that, when processed symbol-by-symbol from the start state, leave the machine in one of the accepting states F. The extended transition function δ* applies δ repeatedly to consume the entire string."
+    },
+    {
+      "stage": "post",
+      "question": "Given two DFAs M₁ (5 states) and M₂ (3 states) over the same alphabet, how many states does their product DFA (for intersection) have?",
+      "options": [
+        "8",
+        "15 — the product states are pairs (q₁, q₂) ∈ Q₁ × Q₂, so |Q₁| × |Q₂| = 5 × 3 = 15",
+        "5",
+        "It depends on the number of accepting states"
+      ],
+      "correct": 1,
+      "explanation": "The product construction creates a new state for every pair (q₁, q₂) where q₁ ∈ Q₁ and q₂ ∈ Q₂. The total is |Q₁| × |Q₂|. For intersection, (q₁, q₂) is accepting iff q₁ ∈ F₁ AND q₂ ∈ F₂. For union, it is accepting iff q₁ ∈ F₁ OR q₂ ∈ F₂. The transition is δ((q₁,q₂), a) = (δ₁(q₁,a), δ₂(q₂,a))."
+    },
+    {
+      "stage": "post",
+      "question": "How do you build the complement of a DFA M = (Q, Σ, δ, q₀, F)?",
+      "options": [
+        "Reverse all transitions",
+        "Keep Q, Σ, δ, and q₀ the same; set the new accepting states to Q \\ F (swap accept and reject)",
+        "Add a new state that loops on all inputs",
+        "Remove all accepting states"
+      ],
+      "correct": 1,
+      "explanation": "Complementing a DFA is trivially easy because the machine is deterministic and total (every state has a transition for every symbol). You simply flip which states are accepting: the new F' = Q \\ F. Every string that was accepted is now rejected and vice versa. Note: this does NOT work for NFAs without first converting to a DFA, because NFAs may have no transition for some (state, symbol) pairs."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key difference between a DFA and a general computer?",
+      "options": [
+        "A DFA can process any input a computer can",
+        "A DFA has finite memory (no auxiliary storage beyond its current state)",
+        "A DFA is always faster than a general computer",
+        "A DFA can only process binary inputs"
+      ],
+      "correct": 1,
+      "explanation": "A DFA has a fixed, finite number of states and no external memory. It reads input one symbol at a time and transitions based on current state and input. This limits it to recognizing regular languages — it cannot, for example, check if parentheses are balanced."
+    }
+  ]
+}

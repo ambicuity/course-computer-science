@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Given `int arr[10]; int *p = arr;`, what does `p + 1` advance the address by?",
+      "options": [
+        "1 byte",
+        "sizeof(int) bytes (typically 4)",
+        "10 bytes",
+        "sizeof(arr) bytes (40)"
+      ],
+      "correct": 1,
+      "explanation": "Pointer arithmetic is *typed*: `p + 1` advances by `sizeof(*p)` bytes. For `int *`, that's typically 4. This is exactly why `arr[i]` (which is `*(arr + i)`) works for any element type — the size scaling is baked in."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does `arr[i]` produce the same value as `i[arr]` in C?",
+      "options": [
+        "C compilers normalize the syntax",
+        "By definition, `a[b]` is `*(a + b)`. Addition is commutative, so `*(arr + i)` = `*(i + arr)` = `i[arr]`.",
+        "It's a typo that the compiler ignores",
+        "It only works for `int` arrays"
+      ],
+      "correct": 1,
+      "explanation": "Subscript is syntactic sugar for pointer addition. Since `+` is commutative, `arr[i]` and `i[arr]` denote the same address dereference. Don't use `i[arr]` in real code (readers will flinch) — but knowing why it works tells you what subscript really means."
+    },
+    {
+      "stage": "post",
+      "question": "Casting `(uint32_t *)&someFloat` and dereferencing is:",
+      "options": [
+        "Perfectly fine; that's type punning",
+        "Undefined behavior per the strict-aliasing rule (except via char* or explicit unions). Use memcpy to convert bit representations portably.",
+        "Only legal in C++",
+        "It works on Intel CPUs"
+      ],
+      "correct": 1,
+      "explanation": "The C standard requires you to access an object only through its declared type's pointer (with a few exceptions: `char *`, signed/unsigned variants, struct-as-first-member). Violations are UB; modern compilers optimize aggressively under that assumption and produce surprising code. The portable bit-cast is `memcpy(&dst, &src, sizeof src);` which optimizers turn into a register move."
+    },
+    {
+      "stage": "post",
+      "question": "After `int *p = malloc(40); free(p);`, what is `*p` (reading)?",
+      "options": [
+        "Zero (libc clears freed memory)",
+        "Undefined behavior — the storage is no longer your program's; the allocator may have reused it. ASan flags this as use-after-free.",
+        "The last value written before free",
+        "A null value"
+      ],
+      "correct": 1,
+      "explanation": "Use-after-free is UB. The allocator may have already reused the bytes for another allocation; reads return whatever's there, writes corrupt unrelated state. Best practice: `SAFE_FREE(p)` macro that sets p = NULL after free. Rust's borrow checker prevents this at compile time."
+    },
+    {
+      "stage": "post",
+      "question": "Function pointers' type carries the function's:",
+      "options": [
+        "Source code",
+        "Signature (return type + argument types) — so the compiler knows how to compile a call through the pointer",
+        "Memory location only",
+        "Name"
+      ],
+      "correct": 1,
+      "explanation": "`int (*fn)(int, int)` declares a pointer to a function taking two ints and returning int. The signature drives ABI placement (which args in which registers) and validates that the assignment `fn = some_func` is type-compatible. Calling through a mismatched function pointer is UB."
+    },
+    {
+      "stage": "post",
+      "question": "Why is `void *` used as the universal pointer in `malloc`?",
+      "options": [
+        "It's the largest type",
+        "`void *` carries an address but no type, so the caller can cast it to any object-pointer type they need. C requires no explicit cast (unlike C++).",
+        "It's faster",
+        "It's required for ANSI compatibility"
+      ],
+      "correct": 1,
+      "explanation": "`malloc` doesn't know what type you're allocating, so it returns `void *`. The caller declares the type at use: `int *p = malloc(n * sizeof(int));`. C performs the implicit cast; C++ requires explicit. You cannot dereference or do arithmetic on `void *` until you cast — it's a 'type-eraser.'"
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 5,
+    "title": "Pointers Addresses And Indirection In C"
+  }
+}

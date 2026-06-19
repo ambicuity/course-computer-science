@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 14,
+    "title": "Modern APIs — Vulkan, Metal, WebGPU compared"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why does a Vulkan hello-triangle require roughly 1000 lines while a WebGPU one needs only about 150?",
+      "options": [
+        "Vulkan is an older API and has accumulated backward-compatible cruft",
+        "Vulkan requires you to specify nearly all GPU state explicitly, while WebGPU provides sensible defaults and managed resources",
+        "WebGPU compiles to native code that is inherently more efficient",
+        "Vulkan targets more hardware platforms so it needs more boilerplate per platform"
+      ],
+      "correct": 1,
+      "explanation": "The verbosity comes from Vulkan's design philosophy: you must explicitly specify pipeline state, manage memory allocation, create descriptor pools, and set up synchronization. WebGPU provides sensible defaults (automatic pipeline layouts, managed memory, implicit synchronization at render pass boundaries), reducing the code you write but also reducing the control you have over low-level details."
+    },
+    {
+      "stage": "pre",
+      "question": "In OpenGL, calling glEnable(GL_BLEND) before every draw call causes the driver to re-validate pipeline state each time. How do modern APIs (Vulkan, Metal, WebGPU) avoid this cost?",
+      "options": [
+        "They cache the driver's validation results across frames automatically",
+        "They require you to bundle all state into an immutable pipeline object created once, then bind it cheaply at draw time",
+        "They skip validation entirely and trust the application to provide correct state",
+        "They batch all glEnable calls into a single operation at frame start"
+      ],
+      "correct": 1,
+      "explanation": "Modern APIs make pipeline state immutable. You create a pipeline object (VkPipeline, MTLRenderPipelineState, GPURenderPipeline) that captures blend mode, depth test, shaders, and vertex format all at once. The driver validates and compiles this once at creation time. At draw time, you bind the whole pipeline — a cheap pointer swap — rather than re-validating scattered state changes."
+    },
+    {
+      "stage": "post",
+      "question": "What is a descriptor set (Vulkan) / bind group (WebGPU) and why is it more efficient than OpenGL's per-draw glUniform/glBindTexture calls?",
+      "options": [
+        "It's a special GPU register that holds texture data directly",
+        "It's a compiled shader variant that includes uniform values baked in",
+        "It's an immutable, pre-validated bundle of resource bindings (buffers, textures, samplers) that you bind as a unit rather than setting one at a time",
+        "It's a memory pool that automatically garbage-collects unused textures"
+      ],
+      "correct": 2,
+      "explanation": "A descriptor set (Vulkan) or bind group (WebGPU) groups multiple resource bindings — uniform buffers, textures, samplers, storage buffers — into a single immutable object. You create it once, validate it once, and then bind it as a unit with one call (vkCmdBindDescriptorSets or pass.setBindGroup). This is more efficient than the OpenGL approach of making many individual glUniform* and glBindTexture calls because (1) the driver doesn't need to track per-resource state changes, and (2) the binding is pre-validated — no checking at draw time."
+    },
+    {
+      "stage": "post",
+      "question": "Vulkan requires manual memory allocation (VkDeviceMemory, vkAllocateMemory, vkBindBufferMemory), while Metal and WebGPU handle it automatically. What is the fundamental trade-off?",
+      "options": [
+        "Vulkan's approach is slower because the GPU has to wait for CPU allocation calls",
+        "Manual memory management lets you control placement (VRAM vs system RAM), alignment, and sub-allocation from large heaps; automatic management is simpler but you cannot optimize for heterogeneous memory architectures",
+        "Automatic management is only possible on integrated GPUs; discrete GPUs require manual allocation",
+        "There is no real trade-off — Vulkan should adopt automatic management"
+      ],
+      "correct": 1,
+      "explanation": "Vulkan's manual memory management exists because high-performance applications need to control where memory lives (dedicated VRAM vs host-visible system RAM), how it's sub-allocated (binding many buffers to one large VkDeviceMemory to reduce allocation overhead), and when it's mapped. A game engine might sub-allocate 100 buffers from one 256MB heap. Metal gives partial control (Private, Shared, Managed storage modes) while simplifying the allocation itself. WebGPU abstracts it entirely — you specify size and usage, the browser decides placement. The trade-off is control vs. simplicity."
+    },
+    {
+      "stage": "post",
+      "question": "When is WebGPU the right choice over Vulkan or Metal?",
+      "options": [
+        "When you need maximum GPU throughput on desktop",
+        "When you need to write graphics code that runs in a browser, or want a single API that compiles to Vulkan/Metal/DX12 via libraries like wgpu",
+        "When you are building a AAA game engine targeting all platforms",
+        "When you need direct access to GPU memory for compute-heavy scientific simulations"
+      ],
+      "correct": 1,
+      "explanation": "WebGPU is the right choice when (a) your application runs in a browser — it's the only option, or (b) you want write-once-run-anywhere through libraries like wgpu that map WebGPU to native backends. It is NOT the right choice when you need maximum control (Vulkan) or are targeting Apple platforms specifically (Metal). WebGPU prioritizes safety and portability over raw control — it cannot allocate GPU memory manually, cannot do fine-grained synchronization, and runs through a browser sandbox."
+    },
+    {
+      "stage": "post",
+      "question": "What is a render pass and why does it matter for tile-based GPU architectures?",
+      "options": [
+        "A render pass is the shader code that runs for each pixel on screen",
+        "A render pass defines load/store behavior for frame attachments, telling the GPU exactly when data must flow between fast on-chip tile memory and main memory, enabling bandwidth savings",
+        "A render pass is a way to group draw calls for multithreaded command recording",
+        "A render pass is Vulkan-specific; Metal and WebGPU don't have this concept"
+      ],
+      "correct": 1,
+      "explanation": "A render pass explicitly declares what happens to each attachment at the start (load: clear, load previous, or don't care) and end (store: save result or discard) of rendering. On tile-based GPUs (most mobile GPUs, Apple Silicon), this is critical because the GPU renders in small tiles using fast on-chip memory. If you declare that you'll clear the color attachment at the start and don't need to store the depth at the end, the GPU can skip loading/saving those attachments from main memory entirely — a huge bandwidth win. Metal and WebGPU absolutely have render passes (MTLRenderPassDescriptor, GPURenderPassDescriptor)."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the recurrence T(n) = aT(n/b) + f(n), what does 'a' represent?",
+      "options": [
+        "The total running time",
+        "The number of subproblems created at each recursive step",
+        "The size reduction factor",
+        "The cost of the non-recursive work"
+      ],
+      "correct": 1,
+      "explanation": "'a' is the number of subproblems. For merge sort, a=2 because each call splits the problem into 2 halves. This directly affects how the recursion tree branches at each level."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of these recurrence relations describes binary search?",
+      "options": [
+        "T(n) = 2T(n/2) + 1",
+        "T(n) = T(n/2) + n",
+        "T(n) = T(n/2) + 1",
+        "T(n) = 2T(n/4) + 1"
+      ],
+      "correct": 2,
+      "explanation": "Binary search discards half the input each step (a=1, b=2) and does constant comparison work (f(n)=1). This gives T(n) = T(n/2) + 1, which the Master Theorem resolves to Theta(log n)."
+    },
+    {
+      "stage": "post",
+      "question": "For T(n) = 4T(n/2) + n, compute n^(log_b(a)). Which Master Theorem case applies?",
+      "options": [
+        "Case 1: n^(log_b(a)) = n, f(n) = n, so T(n) = Theta(n log n)",
+        "Case 1: n^(log_b(a)) = n^2, f(n) = n grows slower, so T(n) = Theta(n^2)",
+        "Case 2: n^(log_b(a)) = n, f(n) = n, so T(n) = Theta(n log n)",
+        "Case 3: f(n) = n grows faster, so T(n) = Theta(n)"
+      ],
+      "correct": 1,
+      "explanation": "Here a=4, b=2, so n^(log_2 4) = n^2. Since f(n) = n = O(n^(2-1)), this is Case 1: the root dominates. The answer is Theta(n^2), not Theta(n log n)."
+    },
+    {
+      "stage": "post",
+      "question": "The Master Theorem fails when f(n) = n sin(n). Why?",
+      "options": [
+        "Because sin(n) makes the recurrence non-recursive",
+        "Because n sin(n) oscillates and doesn't fit the polynomial comparison n^(log_b(a)) vs f(n)",
+        "Because the recurrence has too many subproblems",
+        "Because sin(n) is not a valid function for recurrences"
+      ],
+      "correct": 1,
+      "explanation": "The Master Theorem requires comparing f(n) to n^(log_b(a)) in terms of polynomial growth rates. n sin(n) oscillates between -n and n, so it isn't consistently Omega(n^k) or O(n^k) for any k. You'd need to fall back to the recursion tree or substitution method."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the time complexity of merge sort, expressed as a recurrence relation?",
+      "options": [
+        "T(n) = T(n/2) + n",
+        "T(n) = 2T(n/2) + 1",
+        "T(n) = 2T(n/2) + n",
+        "T(n) = T(n-1) + n"
+      ],
+      "correct": 2,
+      "explanation": "Merge sort divides the array into two halves (2T(n/2)), then merges them in linear time (+n). This gives T(n) = 2T(n/2) + n, which the Master Theorem resolves to Theta(n log n)."
+    }
+  ],
+  "_meta": {
+    "phase": 4,
+    "lesson": 1,
+    "title": "Analyzing Algorithms Recurrences Master Theorem In Action"
+  }
+}

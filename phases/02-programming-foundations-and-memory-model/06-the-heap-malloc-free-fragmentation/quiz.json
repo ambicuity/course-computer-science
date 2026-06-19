@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Where does `malloc` get memory from?",
+      "options": [
+        "Directly from RAM",
+        "From the kernel via `brk`/`sbrk` (for small allocations) or `mmap` (for large ones, typically ≥ 128 KB on glibc)",
+        "From the stack",
+        "From shared memory only"
+      ],
+      "correct": 1,
+      "explanation": "`malloc` is a userspace library on top of two syscalls. `brk`/`sbrk` extends a contiguous heap region — fast for small allocations but can only release at the top. `mmap` maps fresh anonymous pages — independent regions, used for large allocations because `munmap` can release them in any order."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is `malloc(1)` not 1 byte of overhead?",
+      "options": [
+        "It is exactly 1 byte",
+        "Real allocators store metadata (size, free-list pointers, alignment padding) per allocation — typically 16-32 bytes of overhead PLUS alignment to the next chunk boundary.",
+        "Bug in glibc",
+        "Operating system limitation"
+      ],
+      "correct": 1,
+      "explanation": "A `malloc(1)` allocates ~32 bytes on glibc: header (size + flags) + alignment padding + minimum-chunk-size enforcement. This is why allocating a million 1-byte objects via individual malloc is enormously wasteful — total memory often 32× the data size."
+    },
+    {
+      "stage": "post",
+      "question": "What's the difference between *internal* and *external* fragmentation?",
+      "options": [
+        "There's no difference",
+        "Internal: wasted bytes INSIDE allocated chunks (alignment, size-class rounding). External: free chunks exist but none big enough for the next request.",
+        "Internal is on disk; external in memory",
+        "Internal is during malloc; external during free"
+      ],
+      "correct": 1,
+      "explanation": "Internal: you asked for 33 bytes; allocator gave you a 64-byte chunk → 31 bytes wasted inside. External: you have 100 small free chunks totalling 4 KB, but the next request is for 1 KB and no single contiguous free block fits. Coalescing adjacent free chunks fights external; size classes reduce internal."
+    },
+    {
+      "stage": "post",
+      "question": "What does *coalescing* do in a free-list allocator?",
+      "options": [
+        "Speeds up allocation",
+        "When two adjacent chunks both become free, merge them into one bigger free chunk — keeps the free-list shorter and reduces external fragmentation.",
+        "Encrypts the heap",
+        "Restarts the allocator"
+      ],
+      "correct": 1,
+      "explanation": "Without coalescing, repeated alloc/free cycles fragment the heap into many small free chunks, even though they're physically adjacent in memory. Coalescing rejoins them whenever `free` produces a neighbor-pair of free chunks. The lesson's allocator demonstrates this — after all three blocks are freed, the heap returns to a single 1 MB free block."
+    },
+    {
+      "stage": "post",
+      "question": "Why is an arena allocator a popular pattern for short-lived workloads?",
+      "options": [
+        "It's required by C",
+        "Arena: allocate from a contiguous buffer; reset everything in one shot (instead of freeing each item individually). Allocation is ~1 instruction; 'free' is `offset = 0`. Used for per-request handlers, per-frame in games, per-pass in compilers.",
+        "It's slow but simple",
+        "It avoids fragmentation by chance"
+      ],
+      "correct": 1,
+      "explanation": "When the lifetime of every allocation in a phase matches the phase itself, you don't need individual free. The arena pattern collapses thousands of `free` calls into one `offset = 0`. Used by Apache (per-request arena), LLVM (per-pass arena), most game engines (per-frame). Memory layout is also cache-friendly because allocations are contiguous."
+    },
+    {
+      "stage": "post",
+      "question": "You can swap in a different malloc implementation (e.g., jemalloc) without recompiling your program. How?",
+      "options": [
+        "Edit /etc/malloc.conf",
+        "LD_PRELOAD=/path/to/libjemalloc.so ./yourapp — the dynamic loader resolves malloc/free symbols from jemalloc instead of libc.",
+        "Reboot",
+        "It's not possible"
+      ],
+      "correct": 1,
+      "explanation": "`malloc`/`free` are dynamically linked symbols on most systems. `LD_PRELOAD` (Linux) or `DYLD_INSERT_LIBRARIES` (macOS) puts a chosen `.so` first in the resolution order, so its `malloc` shadows libc's. jemalloc and tcmalloc are used this way at large companies for multi-threaded server workloads — often 2-5× throughput vs glibc's ptmalloc2."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 6,
+    "title": "The Heap Malloc Free Fragmentation"
+  }
+}

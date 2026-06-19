@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 04: Privilege Modes, Traps, and System Calls",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which RISC-V privilege mode does a typical user application run in?",
+      "options": [
+        "M-mode (Machine)",
+        "S-mode (Supervisor)",
+        "U-mode (User)",
+        "H-mode (Hypervisor)"
+      ],
+      "explanation": "User applications run in U-mode (User mode), which has restricted access to memory and hardware. The kernel runs in S-mode, and firmware runs in M-mode.",
+      "stage": "pre",
+      "correct": 2
+    },
+    {
+      "id": 2,
+      "question": "A page fault (accessing unmapped memory) is an example of which type of trap?",
+      "options": [
+        "Asynchronous interrupt",
+        "Synchronous exception",
+        "Intentional system call",
+        "Hardware reset"
+      ],
+      "explanation": "A page fault is a synchronous exception — it's caused by the executing instruction itself (accessing invalid memory), not by an external hardware signal.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "In the RISC-V syscall convention, which register holds the syscall number when `ecall` is executed?",
+      "options": [
+        "a0",
+        "a1",
+        "a7",
+        "t0"
+      ],
+      "explanation": "The syscall number goes in register a7. Arguments are passed in a0–a6, and the return value comes back in a0.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "id": 4,
+      "question": "What is the correct sequence when a trap occurs?",
+      "options": [
+        "Execute → Save context → Dispatch → Restore context",
+        "Save context → Dispatch → Execute → Restore context",
+        "Dispatch → Save context → Execute → Restore context",
+        "Restore context → Save context → Dispatch → Execute"
+      ],
+      "explanation": "The trap handler first saves the current register state (context), dispatches to the correct handler based on the cause, executes the operation, then restores context and returns to user mode.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between a trap and an interrupt?",
+      "options": [
+        "They are the same thing",
+        "A trap is synchronous (caused by an instruction, like a syscall); an interrupt is asynchronous (caused by external hardware)",
+        "Traps are always errors; interrupts are always intentional",
+        "Interrupts happen in user mode; traps happen in kernel mode"
+      ],
+      "correct": 1,
+      "explanation": "Traps are synchronous: they're caused by the current instruction (e.g., syscall, division by zero, page fault). Interrupts are asynchronous: they're triggered by external hardware (e.g., timer, disk completion, network packet). Both transfer control to the kernel via the same mechanism."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 4,
+    "title": "Privilege Modes Traps And System Calls"
+  }
+}

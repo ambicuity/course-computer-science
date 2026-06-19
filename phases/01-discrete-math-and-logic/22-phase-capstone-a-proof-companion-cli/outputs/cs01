@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# cs01 — wrapper to run the Phase 01 capstone CLI from anywhere.
+# Drop this directory into PATH and run `cs01 prime 17`, etc.
+HERE="$(cd "$(dirname "$0")" && pwd)"
+exec python3 "$HERE/../code/main.py" "$@"

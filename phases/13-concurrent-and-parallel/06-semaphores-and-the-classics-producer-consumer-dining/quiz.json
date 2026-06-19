@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 6,
+    "title": "Semaphores and the Classics (Producer/Consumer, Dining)"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental difference between a mutex and a binary semaphore?",
+      "options": [
+        "A mutex can only be used in a single process; a semaphore works across processes.",
+        "A mutex has ownership — the thread that locked it must unlock it — while a binary semaphore can be signaled by any thread.",
+        "A binary semaphore can only be 0 or 1, but a mutex can hold any non-negative integer.",
+        "A mutex blocks the caller; a semaphore spins until the resource is available."
+      ],
+      "correct": 1,
+      "explanation": "Ownership is the key distinction. A mutex tracks which thread locked it and requires that same thread to unlock it. A binary semaphore has no ownership — any thread can perform the V (signal) operation. This makes mutexes appropriate for mutual exclusion and semaphores appropriate for signaling between threads."
+    },
+    {
+      "stage": "pre",
+      "question": "In the dining philosophers problem, which condition is necessary for deadlock to occur?",
+      "options": [
+        "A philosopher picks up the left chopstick before the right chopstick.",
+        "All five philosophers pick up their left chopstick simultaneously.",
+        "There are fewer chopsticks than philosophers.",
+        "A philosopher puts down a chopstick while eating."
+      ],
+      "correct": 1,
+      "explanation": "If all five philosophers pick up their left chopstick at the same time, each holds one chopstick and waits for the right chopstick held by their neighbor — creating a circular wait, which is one of the four necessary conditions for deadlock (mutual exclusion, hold-and-wait, no preemption, circular wait). Resource ordering prevents this by ensuring that not all philosophers can hold one resource and wait for another in a cycle."
+    },
+    {
+      "stage": "post",
+      "question": "In the producer–consumer bounded buffer problem with semaphores, why is a mutex (or binary semaphore) needed in addition to the counting semaphores empty and full?",
+      "options": [
+        "The mutex ensures that producers and consumers run on the same CPU core.",
+        "The mutex protects the buffer's head/tail pointers and the data structure invariant from concurrent modification.",
+        "The mutex prevents the empty semaphore from being signaled twice.",
+        "The mutex is not needed if the buffer size is a power of two."
+      ],
+      "correct": 1,
+      "explanation": "The counting semaphores empty and full coordinate the count of available slots and items, but they do not protect the buffer's internal state (head pointer, tail pointer, array indices). Two producers trying to add items concurrently could both decrement empty, then both write to the same tail slot. The mutex serializes access to the buffer data structure, ensuring one thread at a time modifies head/tail."
+    },
+    {
+      "stage": "post",
+      "question": "What does Dijkstra's V (verhoog) operation do on a counting semaphore initialized to 3 when three threads are blocked waiting on P?",
+      "options": [
+        "It sets the semaphore value to 4.",
+        "It wakes one waiting thread and the value remains at 0.",
+        "It wakes all three waiting threads.",
+        "It blocks until at least one thread is ready to receive the signal."
+      ],
+      "correct": 1,
+      "explanation": "When threads are blocked on a semaphore, the semaphore value is typically 0 or negative (implementation-dependent, but conceptually zero). A V operation increments the count if no threads are waiting, OR wakes one waiting thread if the wait queue is non-empty. Since three threads are waiting, V wakes one thread and the value stays at 0 (or conceptually moves from -3 to -2). The next two V calls would wake the remaining two threads."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a semaphore, and how does it differ from a mutex?",
+      "options": [
+        "A semaphore is a binary lock, identical to a mutex",
+        "A semaphore is a counter for controlling access to a limited number of resources; a mutex is a binary lock for mutual exclusion",
+        "A mutex can be signaled by a different thread; a semaphore cannot",
+        "A semaphore only works on a single CPU"
+      ],
+      "correct": 1,
+      "explanation": "A semaphore maintains a count: wait() decrements (blocks if zero), signal() increments (wakes a waiter). A count of 1 gives mutex behavior; higher counts allow N concurrent accesses (e.g., a connection pool). A mutex has ownership (only the locker should unlock); semaphores don't."
+    }
+  ]
+}

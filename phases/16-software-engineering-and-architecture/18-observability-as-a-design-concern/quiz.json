@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 18
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between monitoring and observability?",
+      "options": [
+        "Monitoring uses metrics; observability uses logs",
+        "Monitoring tells you about expected problems; observability lets you investigate unknown problems",
+        "Observability is only for distributed systems; monitoring is for monoliths",
+        "They are different words for the same practice"
+      ],
+      "correct": 1,
+      "explanation": "Monitoring answers questions you planned for (known-knowns). Observability is a system property that lets you ask and answer questions you never anticipated (unknown-unknowns) by examining external outputs like logs, metrics, and traces."
+    },
+    {
+      "stage": "pre",
+      "question": "Which three pillars make up the foundation of observability?",
+      "options": [
+        "Alerting, dashboards, runbooks",
+        "Metrics, traces, logs",
+        "Uptime, latency, throughput",
+        "CPU, memory, disk I/O"
+      ],
+      "correct": 1,
+      "explanation": "The three pillars of observability are metrics (aggregated numeric measurements), logs (discrete event records), and traces (request-scoped journeys across services). Each answers different questions: 'what' is happening, 'why' it happened, and 'where' a request went."
+    },
+    {
+      "stage": "post",
+      "question": "Your API endpoint has a P99 latency of 500ms and a 2% error rate. Which methodology are these measurements part of?",
+      "options": [
+        "USE method (Utilization, Saturation, Errors)",
+        "RED method (Rate, Errors, Duration)",
+        "Golden signals (Latency, Traffic, Errors, Saturation)",
+        "Both RED and golden signals, but not USE"
+      ],
+      "correct": 3,
+      "explanation": "P99 latency and error rate are part of both RED (Rate, Errors, Duration) and the golden signals (Latency, Traffic, Errors, Saturation). USE (Utilization, Saturation, Errors) applies to infrastructure resources like CPUs and disks, not API endpoints. The question specifically mentions API endpoint metrics, so RED and golden signals both apply."
+    },
+    {
+      "stage": "post",
+      "question": "A correlation ID (trace ID) in structured logs primarily enables which capability?",
+      "options": [
+        "Reducing log storage costs by deduplicating entries",
+        "Following a single request across multiple services in log aggregation systems",
+        "Encrypting log entries for security compliance",
+        "Auto-scaling based on log volume"
+      ],
+      "correct": 1,
+      "explanation": "Correlation IDs (trace IDs) are propagated across service boundaries and included in every log entry. This lets you search a single ID across all services and reconstruct the full request journey — linking what would otherwise be isolated log entries into a coherent debugging narrative."
+    },
+    {
+      "stage": "post",
+      "question": "Your SLO is 99.9% availability over a 30-day month. How much error budget does that give you, and what should you do when 90% of it is consumed?",
+      "options": [
+        "43.2 minutes of error budget; when 90% used, increase capacity immediately",
+        "432 minutes of error budget; when 90% used, stop deploying new features and focus on reliability",
+        "43.2 minutes of error budget; when 90% used, freeze deploys and prioritize reliability work",
+        "7.2 hours of error budget; when 90% used, add more monitoring dashboards"
+      ],
+      "correct": 2,
+      "explanation": "99.9% of 30 days = 0.1% downtime allowed = 43.2 minutes/month. Error budgets guide decision-making: at 90% consumed (~39 minutes of errors), you should freeze non-essential deploys and prioritize reliability work. Adding dashboards doesn't fix the underlying issue; increasing capacity doesn't address the root cause."
+    },
+    {
+      "stage": "post",
+      "question": "Why should you alert on symptoms (e.g., 'checkout error rate > 1%') rather than causes (e.g., 'Redis connection pool > 80%')?",
+      "options": [
+        "Symptoms are easier to measure than causes",
+        "Causes are internal metrics that don't affect users",
+        "Causes change over time; symptoms are stable. The same symptom (users can't check out) is always worth alerting on, even if the underlying cause changes",
+        "Alerting on causes creates too many false positives"
+      ],
+      "correct": 2,
+      "explanation": "Causes change — today it's Redis, tomorrow it's a slow query, next week it's a bad deploy. Symptoms are stable: 'users can't check out' is always worth acting on regardless of root cause. Symptom-based alerts remain valid even as the system evolves, reducing alert churn and ensuring every alert is actionable."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 3,
+    "title": "Network Layer Ipv4 Ipv6 Subnetting Cidr"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the broadcast address for the subnet 10.0.0.0/26?",
+      "options": [
+        "10.0.0.255",
+        "10.0.0.63",
+        "10.0.0.64",
+        "10.0.0.31"
+      ],
+      "correct": 1,
+      "explanation": "A /26 subnet has 64 addresses. The network address is 10.0.0.0 and the broadcast address is 10.0.0.63. Usable hosts are 10.0.0.1 through 10.0.0.62."
+    },
+    {
+      "stage": "pre",
+      "question": "Which field exists in the IPv4 header but is removed from the IPv6 header?",
+      "options": [
+        "Source Address",
+        "Time to Live / Hop Limit",
+        "Header Checksum",
+        "Version"
+      ],
+      "correct": 2,
+      "explanation": "IPv6 removes the header checksum because the transport layer (TCP/UDP) already provides error detection. This avoids recomputing the checksum at every router hop."
+    },
+    {
+      "stage": "post",
+      "question": "How many usable host addresses are in a /30 subnet?",
+      "options": [
+        "0",
+        "2",
+        "4",
+        "6"
+      ],
+      "correct": 1,
+      "explanation": "A /30 subnet has 4 total addresses. Subtract the network address (all host bits 0) and the broadcast address (all host bits 1) to get 2 usable hosts. This is commonly used for point-to-point links."
+    },
+    {
+      "stage": "post",
+      "question": "What does CIDR notation 192.168.0.0/22 specify?",
+      "options": [
+        "A network with 254 usable hosts",
+        "A network that aggregates 4 Class C networks (192.168.0.0–192.168.3.255)",
+        "A point-to-point link",
+        "A single host address"
+      ],
+      "correct": 1,
+      "explanation": "A /22 prefix covers 1024 addresses (2^10), aggregating the four /24 networks 192.168.0.0, 192.168.1.0, 192.168.2.0, and 192.168.3.0. After subtracting network and broadcast, 1022 hosts are usable."
+    },
+    {
+      "stage": "pre",
+      "question": "What is CIDR notation (e.g., 192.168.1.0/24)?",
+      "options": [
+        "A way to specify the port number for a service",
+        "An IP address with a prefix length indicating how many bits are the network portion",
+        "A format for MAC addresses",
+        "A DNS record type"
+      ],
+      "correct": 1,
+      "explanation": "CIDR (Classless Inter-Domain Routing) expresses an IP address and its network mask as address/prefix-length. /24 means the first 24 bits are the network (255.255.255.0), leaving 8 bits for hosts (254 usable). This replaced rigid classful addressing and enables efficient route aggregation."
+    }
+  ]
+}

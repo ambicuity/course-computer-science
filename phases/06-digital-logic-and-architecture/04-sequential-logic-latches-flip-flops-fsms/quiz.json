@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 6,
+    "lesson": 4,
+    "title": "Sequential Logic — Latches, Flip-Flops, FSMs",
+    "note": "4 MCQs on latch vs flip-flop, Mealy vs Moore, state encoding, setup/hold time."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between a D latch and a D flip-flop?",
+      "options": [
+        "A D latch uses NOR gates; a D flip-flop uses NAND gates.",
+        "A D latch is level-sensitive (transparent when enabled); a D flip-flop captures input only on a clock edge.",
+        "A D latch stores multiple bits; a D flip-flop stores only one bit.",
+        "A D latch requires a clock; a D flip-flop does not."
+      ],
+      "correct": 1,
+      "explanation": "A D latch is level-sensitive — its output follows the input whenever the enable is high. A D flip-flop is edge-triggered, sampling the input only at the rising (or falling) clock edge. This edge-triggered behavior is what makes flip-flops the basis of synchronous design."
+    },
+    {
+      "stage": "pre",
+      "question": "In a Mealy FSM, the output depends on:",
+      "options": [
+        "The current state only",
+        "The current input only",
+        "Both the current state and the current input",
+        "The previous state and the previous input"
+      ],
+      "correct": 2,
+      "explanation": "A Mealy machine's output is a function of both the current state and the current input (output = f(state, input)). A Moore machine's output depends on state only. The Mealy model can respond to inputs faster (within the same cycle) but may produce glitches if inputs change mid-cycle."
+    },
+    {
+      "stage": "post",
+      "question": "You are designing an FSM with 10 states on an FPGA. Which state encoding is typically fastest for FPGA synthesis, and why?",
+      "options": [
+        "Binary encoding — fewer flip-flops means shorter routing.",
+        "Gray encoding — single-bit transitions reduce dynamic power.",
+        "One-hot encoding — each state maps to one flip-flop, making next-state decode logic trivial (simple OR/AND gates).",
+        "Random encoding — lets the synthesizer explore the full solution space."
+      ],
+      "correct": 2,
+      "explanation": "On FPGAs, one-hot encoding is often fastest because each state is a single flip-flop, and the next-state logic reduces to simple multiplexing. The trade-off is using more flip-flops (10 for 10 states vs. 4 for binary), but FPGA fabric has abundant flip-flops. Binary encoding uses fewer flip-flops but creates complex combinational decode logic that increases propagation delay."
+    },
+    {
+      "stage": "post",
+      "question": "A flip-flop has a setup time of 0.2 ns and a hold time of 0.1 ns. The clock period is 10 ns. At what time relative to the rising clock edge must the input D become stable to guarantee correct operation?",
+      "options": [
+        "D must be stable at least 0.2 ns before the clock edge and remain stable at least 0.1 ns after it.",
+        "D must be stable for the entire 10 ns clock period.",
+        "D must be stable at least 0.1 ns before the clock edge and 0.2 ns after it.",
+        "D only needs to be stable at the exact moment of the clock edge."
+      ],
+      "correct": 0,
+      "explanation": "Setup time (Tsu = 0.2 ns) requires D to be stable BEFORE the clock edge — the input must settle at least 0.2 ns prior. Hold time (Th = 0.1 ns) requires D to remain stable AFTER the edge for at least 0.1 ns. Violating either causes metastability, where the flip-flop output is unpredictable."
+    },
+    {
+      "stage": "pre",
+      "question": "What distinguishes sequential logic from combinational logic?",
+      "options": [
+        "Sequential logic uses fewer gates",
+        "Sequential logic has memory — its outputs depend on current inputs AND previous state",
+        "Sequential logic is always faster",
+        "Combinational logic can't implement NOT gates"
+      ],
+      "correct": 1,
+      "explanation": "Combinational logic outputs depend only on current inputs. Sequential logic adds memory elements (flip-flops, latches) so that outputs depend on both current inputs and the stored state. This enables circuits like counters, registers, and finite state machines."
+    }
+  ]
+}

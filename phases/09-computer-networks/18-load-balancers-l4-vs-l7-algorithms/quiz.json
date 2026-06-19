@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 18,
+    "title": "Load Balancers — L4 vs L7, Algorithms",
+    "total_questions": 4
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between an L4 and an L7 load balancer?",
+      "options": [
+        "L4 uses UDP while L7 uses TCP",
+        "L4 routes by IP/port (transport layer) while L7 routes by URL, headers, cookies (application layer)",
+        "L4 supports health checks while L7 does not",
+        "L4 can only handle 4 backends while L7 handles up to 7"
+      ],
+      "correct": 1,
+      "explanation": "L4 load balancers operate at the transport layer, forwarding packets based on IP address and port without inspecting content. L7 load balancers parse the application protocol (typically HTTP) and route based on URL paths, headers, cookies, or request methods."
+    },
+    {
+      "stage": "pre",
+      "question": "Which load balancing algorithm distributes requests sequentially across backends in order?",
+      "options": [
+        "Least connections",
+        "IP hash",
+        "Round robin",
+        "Consistent hashing"
+      ],
+      "correct": 2,
+      "explanation": "Round robin cycles through backends one at a time: request 1 goes to backend A, request 2 to backend B, request 3 to backend C, request 4 back to backend A, and so on."
+    },
+    {
+      "stage": "post",
+      "question": "Why is consistent hashing preferred over simple modulo hashing when backends are added or removed?",
+      "options": [
+        "Consistent hashing uses less memory",
+        "Consistent hashing guarantees perfect distribution across all backends",
+        "Consistent hashing only remaps approximately 1/N of keys when a backend is added or removed",
+        "Consistent hashing does not require a hash function"
+      ],
+      "correct": 2,
+      "explanation": "With modulo hashing, adding or removing a backend remaps nearly all keys. Consistent hashing maps both keys and backends onto a ring; adding a backend only affects the keys that map to the space between its neighbors, approximately 1/N of the total."
+    },
+    {
+      "stage": "post",
+      "question": "What does the 'random two choices' algorithm do?",
+      "options": [
+        "Routes each request to two backends simultaneously for redundancy",
+        "Picks two random backends and routes to the one with fewer active connections",
+        "Randomly alternates between two fixed backends",
+        "Sends two copies of each request and uses whichever arrives first"
+      ],
+      "correct": 1,
+      "explanation": "Random two choices selects two backends at random, compares their active connection counts, and routes to the one with fewer connections. Research shows this achieves near-optimal load distribution with O(1) cost."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between L4 and L7 load balancing?",
+      "options": [
+        "L4 handles 4 requests per second; L7 handles 7",
+        "L4 routes based on IP/port (transport layer); L7 routes based on HTTP headers, URLs, or content (application layer)",
+        "L4 is hardware; L7 is software",
+        "L4 is encrypted; L7 is not"
+      ],
+      "correct": 1,
+      "explanation": "L4 load balancers make decisions based on TCP/UDP headers (source/dest IP and port). They're fast but unaware of application content. L7 load balancers inspect HTTP headers, URLs, cookies — enabling routing like '/api' to one pool and '/images' to another. L7 is more flexible but slower."
+    }
+  ]
+}

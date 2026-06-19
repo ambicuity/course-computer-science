@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the main idea of bidirectional typing?",
+      "options": ["Only runtime checks", "Split typing into synthesis and checking judgments", "No context needed", "Only explicit annotations everywhere"],
+      "correct": 1,
+      "explanation": "Bidirectional systems use two complementary judgments to control inference complexity and improve clarity."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between synthesis and checking mode in bidirectional typing?",
+      "options": ["They are the same", "Synthesis infers types bottom-up; checking verifies types top-down against an expected type", "Synthesis is for runtime, checking for compile time", "Checking produces types, synthesis consumes them"],
+      "correct": 1,
+      "explanation": "In synthesis mode the term produces its type; in checking mode the term is verified against a given expected type."
+    },
+    {
+      "stage": "post",
+      "question": "Why do lambdas often need expected types in bidirectional checkers?",
+      "options": ["Because lambdas are untypable", "Their parameter type may not be inferable without a checking target", "To avoid contexts", "Only for booleans"],
+      "correct": 1,
+      "explanation": "Checking a lambda against an expected arrow type provides parameter/domain information needed for body checking."
+    },
+    {
+      "stage": "post",
+      "question": "What is a practical benefit of bidirectional typing over unrestricted inference?",
+      "options": ["No type errors", "More predictable algorithms and clearer annotation boundaries", "No need for AST", "Automatic optimization"],
+      "correct": 1,
+      "explanation": "Bidirectional structure makes inference behavior more tractable and diagnostics easier to localize."
+    },
+    {
+      "stage": "post",
+      "question": "How does bidirectional typing relate to type annotation burden?",
+      "options": ["It eliminates all annotations", "It reduces annotations to strategic insertion points where inference is ambiguous", "It requires annotations everywhere", "It has no effect on annotations"],
+      "correct": 1,
+      "explanation": "Bidirectional systems typically need annotations only at 'turning points' — places where the mode switches from checking to synthesis."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 15, "title": "Phase Capstone - A Bidirectional Type-Checker for STLC + Extensions" }
+}

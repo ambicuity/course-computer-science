@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 9,
+    "lesson": 20,
+    "title": "Software-Defined Networking & eBPF"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does SDN fundamentally separate in a network device?",
+      "options": [
+        "Routing from switching",
+        "The control plane from the data plane",
+        "IPv4 from IPv6 forwarding",
+        "Hardware from software"
+      ],
+      "correct": 1,
+      "explanation": "SDN separates the control plane (which makes forwarding decisions) from the data plane (which forwards packets). In traditional networking both run on each device. SDN centralizes the control plane on a controller and leaves only the data plane on switches."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary safety mechanism that allows eBPF programs to run inside the Linux kernel?",
+      "options": [
+        "A restricted shell that limits command execution",
+        "A static verifier that checks programs before loading",
+        "Running all programs in userspace with system calls",
+        "Encrypting all BPF bytecode with a kernel key"
+      ],
+      "correct": 1,
+      "explanation": "The BPF verifier performs static analysis on every eBPF program before loading: it rejects programs with unbounded loops, checks that all memory accesses are within valid bounds, enforces type safety for BPF helpers, and limits instruction count (4096 by default). This ensures safety without runtime overhead."
+    },
+    {
+      "stage": "post",
+      "question": "In OpenFlow, a switch receives a packet that does not match any flow table entry. What happens next?",
+      "options": [
+        "The switch drops the packet silently",
+        "The switch floods the packet out all ports",
+        "The switch sends a PACKET_IN message to the controller",
+        "The switch installs a default drop rule and drops the packet"
+      ],
+      "correct": 2,
+      "explanation": "On a table-miss, the switch sends a PACKET_IN message to the SDN controller containing the packet (or header metadata). The controller processes it and can respond with a FLOW_MOD message to install a new flow rule so subsequent matching packets are forwarded directly by the switch."
+    },
+    {
+      "stage": "post",
+      "question": "An engineer wants to drop DDoS traffic at the earliest possible point in the Linux networking stack with minimal CPU overhead. Which hook should the eBPF program attach to?",
+      "options": [
+        "TC BPF ingress hook",
+        "iptables PREROUTING chain",
+        "XDP (eXpress Data Path)",
+        "Socket filter (SO_ATTACH_BPF)"
+      ],
+      "correct": 2,
+      "explanation": "XDP runs inside the network driver, before the kernel allocates an SKB (socket buffer). This means it can drop attack traffic before any memory allocation, queueing, or protocol processing occurs, achieving DDoS mitigation at line rate on commodity hardware. Cloudflare's L4Drop and Facebook's Katran both use XDP."
+    },
+    {
+      "stage": "pre",
+      "question": "What is eBPF and why is it significant for networking?",
+      "options": [
+        "A new network protocol replacing TCP",
+        "A technology that allows running sandboxed programs in the Linux kernel to inspect and modify network packets at various hook points",
+        "A hardware accelerator for encryption",
+        "A programming language for network devices"
+      ],
+      "correct": 1,
+      "explanation": "eBPF (extended Berkeley Packet Filter) lets users attach small, verified programs to kernel hook points (XDP, tc, socket). These programs can inspect, drop, redirect, or modify packets at near-wire speed — enabling programmable networking, monitoring, and security without modifying kernel code."
+    }
+  ]
+}

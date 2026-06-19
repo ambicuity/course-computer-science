@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 7,
+    "title": "Physically Based Rendering — BRDF, Microfacet"
+  },
+  "questions": [
+    {
+      "question": "Why does microfacet theory model real surfaces more accurately than the Phong reflection model?",
+      "options": [
+        "Phong uses a cosine lobe that has no physical basis — it cannot conserve energy, produce Fresnel effects, or distinguish metal from dielectric",
+        "Phong only works for perfectly smooth surfaces, while microfacet theory works for all surface types including anisotropic ones",
+        "Microfacet theory uses more parameters, making any possible BRDF representable",
+        "Phong's specular exponent is the same as roughness in microfacet theory, so they produce identical results"
+      ],
+      "correct": 0,
+      "explanation": "Phong's cos^nθ lobe is an empirical hack: increasing n concentrates energy but never accounts for energy redistribution, Fresnel variation with angle, or the fundamental difference between metallic and dielectric reflectance. Microfacet theory grounds everything in physical optics.",
+      "stage": "pre"
+    },
+    {
+      "question": "What is the key difference between the GGX (Trowbridge-Reitz) and Beckmann NDFs?",
+      "options": [
+        "GGX has a longer tail, producing a subtle 'halo' around specular highlights that Beckmann cannot reproduce",
+        "Beckmann is physically-based while GGX is an empirical approximation with no physical derivation",
+        "GGX always produces sharper specular peaks than Beckmann at the same roughness",
+        "They are mathematically identical — GGX is just the GPU-optimized form of Beckmann"
+      ],
+      "correct": 0,
+      "explanation": "GGX's power-law denominator gives it a slower falloff than Beckmann's exponential decay. This longer tail means more energy at the edges of specular highlights, creating the characteristic 'glow' around bright spots that Beckmann's sharp cutoff misses. This is why GGX has become the standard.",
+      "stage": "pre"
+    },
+    {
+      "question": "Schlick's Fresnel approximation F(cosθ) = F0 + (1-F0)(1-cosθ)^5 is widely used. How accurate is it compared to the full Fresnel equations?",
+      "options": [
+        "It is accurate to within ~1% for dielectrics, though it deviates slightly for conductors at specific angles where complex IOR matters",
+        "It is exact for all materials — Schlick derived it from the full Fresnel equations with no approximation",
+        "It is only accurate at normal incidence (θ=0) and grazing angles (θ=π/2), with up to 30% error at intermediate angles",
+        "It fails for metals entirely and must be replaced with a lookup table for conductors"
+      ],
+      "correct": 0,
+      "explanation": "Schlick's approximation matches the full Fresnel equations to within about 1% for common dielectrics (glass, water, plastic). For conductors with complex IORs, the F0 term absorbs the normal-incidence color, and the (1-cosθ)^5 approximation remains very close. It's not exact — the full equations involve complex arithmetic — but it's good enough for rendering.",
+      "stage": "pre"
+    },
+    {
+      "question": "A BRDF must satisfy energy conservation: ∫ fr(ωi,ωo) cosθo dωo ≤ 1 for all ωi. What happens if a BRDF violates this constraint?",
+      "options": [
+        "Surfaces can reflect more energy than they receive, causing rendered objects to appear brighter than the light source — an impossibility in physics",
+        "The rendering equation becomes unsolvable because iterative solvers will not converge",
+        "It only affects indirect lighting paths; direct lighting is unaffected because it doesn't integrate over the hemisphere",
+        "The BRDF can still be used if the total reflected energy across all wavelengths is ≤ 1, regardless of per-angle violations"
+      ],
+      "correct": 0,
+      "explanation": "Energy conservation is not a mathematical convenience — it's a physical law. A BRDF that violates it creates 'free energy' in the scene, making surfaces literally glow brighter than their illumination. This is one of the most visible artifacts of non-PBR models: cranking up the specular exponent in Phong creates an increasingly bright, narrow highlight that reflects more light than arrives.",
+      "stage": "post"
+    },
+    {
+      "question": "In the metallic-roughness PBR workflow, what happens when metallic = 1.0 for a material with albedo = (1.0, 0.8, 0.3)?",
+      "options": [
+        "The diffuse term vanishes entirely; F0 = albedo, so specular reflections take on the gold tint of the albedo",
+        "The surface becomes completely reflective like a mirror with no color tint, because metals have no diffuse component",
+        "Both diffuse and specular terms are present, but the specular uses albedo as F0 while diffuse is attenuated by 50%",
+        "The material behaves like a dielectric with F0 = 0.04 but with colored diffuse reflection matching the albedo"
+      ],
+      "correct": 0,
+      "explanation": "Metallic=1 removes the diffuse lobe (kD = 1-F = 0 for metals at specular peak, and the (1-metallic) factor kills the entire diffuse). F0 is computed as mix(0.04, albedo, metallic) = albedo. So gold's F0 = (1.0, 0.8, 0.3), and all reflection is specular with this tint. This is why gold reflections look gold — the surface itself colors the specular light.",
+      "stage": "post"
+    },
+    {
+      "question": "As the roughness parameter increases from 0 to 1 in the GGX NDF, what happens to the specular highlight?",
+      "options": [
+        "The highlight spreads wider and becomes dimmer because the microfacet normal distribution flattens, spreading the same total energy over a larger solid angle",
+        "The highlight stays the same size but becomes brighter because rougher surfaces scatter more light",
+        "The highlight becomes narrower because higher roughness concentrates microfacet normals near the surface normal",
+        "The highlight disappears entirely because roughness=1 causes the NDF denominator to overflow to infinity"
+      ],
+      "correct": 0,
+      "explanation": "In GGX, higher α² (roughness²) makes the peak of D(h) shorter and the tails heavier — more facets point away from the macro normal. The same total reflected energy gets spread over a wider angular range, so each direction receives less. This is energy conservation in action: the highlight area increases while peak intensity decreases, keeping total reflected energy constant.",
+      "stage": "post"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 10,
+    "lesson": 1,
+    "title": "What A Database Actually Is"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental difference between a CSV file and a database?",
+      "options": [
+        "CSV files are slower because they use text encoding",
+        "A database provides ACID guarantees, a query language, concurrency control, and crash recovery",
+        "Databases are always faster than file-based storage",
+        "CSV files cannot store more than 1 GB of data"
+      ],
+      "correct": 1,
+      "explanation": "A flat file like CSV offers none of the four ACID properties, has no query language beyond grep, no concurrency control, and relies on the application for crash recovery. A database engine provides all of these as built-in services."
+    },
+    {
+      "stage": "pre",
+      "question": "In a database engine's layered architecture, which component sits directly above the disk manager and caches recently used pages in memory?",
+      "options": [
+        "The executor",
+        "The access methods",
+        "The buffer pool",
+        "The transaction manager"
+      ],
+      "correct": 2,
+      "explanation": "The buffer pool sits right above the disk manager and caches disk pages (typically 8 KB or 16 KB each) in memory to avoid expensive disk reads. It uses a page replacement policy (LRU, clock, ARC) to decide which pages to evict."
+    },
+    {
+      "stage": "pre",
+      "question": "According to the RUM conjecture, which statement is true?",
+      "options": [
+        "A storage engine can optimize all three of read speed, update speed, and memory overhead simultaneously",
+        "A storage engine can optimize for at most two of read speed, update speed, and memory overhead",
+        "A storage engine must always optimize for read speed first",
+        "The RUM conjecture only applies to relational databases"
+      ],
+      "correct": 1,
+      "explanation": "The RUM conjecture states you can optimize at most two of Read, Update, and Memory. A B-tree optimizes for reads and memory (compact pages), an LSM-tree for updates and memory, and a hash index for reads and updates — but none can achieve all three."
+    },
+    {
+      "stage": "post",
+      "question": "In the Bitcask storage model, how is the in-memory hash index rebuilt after a crash?",
+      "options": [
+        "The index is written to a separate file on every PUT and read back on startup",
+        "The index is reconstructed by replaying the append-only log from beginning to end",
+        "The index is rebuilt from a network backup",
+        "The index is not recoverable after a crash"
+      ],
+      "correct": 1,
+      "explanation": "On startup, Bitcask scans the append-only log sequentially from the first byte to the last, recording the latest offset for each key. This rebuilds the entire hash index without any additional metadata — the log is the source of truth."
+    },
+    {
+      "stage": "post",
+      "question": "What is the Write-Ahead Log (WAL) primarily used for?",
+      "options": [
+        "Improving SELECT query performance through caching",
+        "Ensuring durability: before a page is modified, a record of the change is written to a sequential log that can be replayed after a crash",
+        "Storing the entire database in a log format instead of pages",
+        "Logging SQL queries for audit purposes"
+      ],
+      "correct": 1,
+      "explanation": "The WAL ensures durability (the D in ACID). Before any database page modification hits the data file, a WAL record describing the change is written and fsynced. On crash recovery, the WAL is replayed to restore the database to its last committed state."
+    },
+    {
+      "stage": "post",
+      "question": "A database's query optimizer chooses a plan by:",
+      "options": [
+        "Picking the plan that matches a fixed template",
+        "Using a random search through possible plans",
+        "Estimating the cost of alternative plan trees using table statistics and picking the cheapest",
+        "Always using a sequential scan for simplicity"
+      ],
+      "correct": 2,
+      "explanation": "The optimizer enumerates alternative execution strategies (different join orders, index choices, access methods), estimates the cost of each using table statistics (row count, selectivity, index size), and selects the plan with the lowest estimated total cost."
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 2,
+    "title": "Sorting I — Insertion, Selection, Bubble, and Why They Lose",
+    "note": "2 pre-lesson, 2 post-lesson MCQs."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the best-case time complexity of insertion sort on an already-sorted array?",
+      "options": [
+        "O(1)",
+        "O(n)",
+        "O(n log n)",
+        "O(n²)"
+      ],
+      "correct": 1,
+      "explanation": "When the input is already sorted, the inner while-loop breaks immediately on every iteration, so insertion sort does exactly n−1 comparisons and zero shifts: O(n)."
+    },
+    {
+      "stage": "pre",
+      "question": "A sort is 'stable' if:",
+      "options": [
+        "It always runs in O(n log n) time",
+        "Equal elements keep their original relative order",
+        "It uses no extra memory",
+        "It performs the same number of comparisons on every input"
+      ],
+      "correct": 1,
+      "explanation": "Stability means that if two elements compare as equal, their order in the output matches their order in the input. This matters when sorting by one key while preserving another."
+    },
+    {
+      "stage": "post",
+      "question": "Selection sort always performs Θ(n²) comparisons, even on sorted input. Why?",
+      "options": [
+        "It cannot detect that the input is sorted",
+        "The inner loop must scan the entire unsorted suffix to find the minimum",
+        "It swaps elements on every iteration",
+        "It uses recursion that cannot terminate early"
+      ],
+      "correct": 1,
+      "explanation": "Selection sort has no early exit mechanism. To find the minimum in the unsorted portion, it must compare every element in that portion on every pass, yielding n(n−1)/2 comparisons regardless of input order."
+    },
+    {
+      "stage": "post",
+      "question": "Python's sorted() uses Tim sort, which calls insertion sort internally. Why does Tim sort use insertion sort rather than merge sort for small subarrays?",
+      "options": [
+        "Insertion sort has lower constant factors and no recursion overhead for small n",
+        "Insertion sort is O(n log n) for all inputs",
+        "Merge sort cannot sort small arrays",
+        "Insertion sort uses less code, reducing binary size"
+      ],
+      "correct": 0,
+      "explanation": "For small n (typically n < 32), the O(n²) cost of insertion sort is dominated by low constant factors: no recursion, no auxiliary array, and excellent cache locality. The overhead of divide-and-conquer makes merge sort slower at small scales."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of these O(n^2) sorting algorithms has the best performance on nearly-sorted input?",
+      "options": [
+        "Selection sort",
+        "Bubble sort",
+        "Insertion sort",
+        "All are equal"
+      ],
+      "correct": 2,
+      "explanation": "Insertion sort runs in O(n) on nearly-sorted data because each element only needs to shift past a few neighbors. Selection sort always scans the entire unsorted portion regardless of order, and bubble sort still needs multiple passes."
+    }
+  ]
+}

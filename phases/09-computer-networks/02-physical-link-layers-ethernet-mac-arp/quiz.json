@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 2,
+    "title": "Physical Link Layers Ethernet Mac Arp"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the minimum size of an Ethernet frame payload (before FCS)?",
+      "options": [
+        "0 bytes",
+        "46 bytes",
+        "64 bytes",
+        "1500 bytes"
+      ],
+      "correct": 1,
+      "explanation": "The Ethernet payload must be at least 46 bytes. If actual data is shorter, padding is added. The complete minimum frame (header + payload + FCS) is 64 bytes."
+    },
+    {
+      "stage": "pre",
+      "question": "An ARP request is sent as a broadcast frame. What is the destination MAC address?",
+      "options": [
+        "00:00:00:00:00:00",
+        "FF:FF:FF:FF:FF:FF",
+        "The MAC of the default gateway",
+        "The MAC of the DNS server"
+      ],
+      "correct": 1,
+      "explanation": "ARP requests are broadcast using the Ethernet broadcast address FF:FF:FF:FF:FF:FF, so every device on the LAN segment receives and processes the request."
+    },
+    {
+      "stage": "post",
+      "question": "What EtherType value indicates an IPv4 packet in an Ethernet frame?",
+      "options": [
+        "0x0806",
+        "0x0800",
+        "0x86DD",
+        "0x8100"
+      ],
+      "correct": 1,
+      "explanation": "EtherType 0x0800 identifies IPv4. 0x0806 is ARP, 0x86DD is IPv6, and 0x8100 is VLAN-tagged (802.1Q)."
+    },
+    {
+      "stage": "post",
+      "question": "Why is ARP spoofing possible?",
+      "options": [
+        "MAC addresses can be easily changed on modern NICs",
+        "ARP has no authentication mechanism — any host can claim any IP-to-MAC mapping",
+        "Switches forward broadcast frames to all ports",
+        "ARP replies are encrypted with a shared key"
+      ],
+      "correct": 1,
+      "explanation": "ARP has no authentication. A malicious host can send unsolicited ARP replies (gratuitous ARP) to poison another host's ARP cache, enabling man-in-the-middle attacks."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of a MAC address?",
+      "options": [
+        "To identify a device on the internet globally",
+        "To uniquely identify a network interface on a local network segment for frame delivery",
+        "To encrypt network traffic",
+        "To assign IP addresses to devices"
+      ],
+      "correct": 1,
+      "explanation": "A MAC (Media Access Control) address is a 48-bit hardware identifier burned into each network interface. It's used at the data link layer (Layer 2) for local network delivery. Switches learn MAC addresses to forward frames only to the correct port rather than flooding all ports."
+    }
+  ]
+}

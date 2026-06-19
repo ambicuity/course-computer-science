@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 13
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A team needs to build a public API that must be easily explored via curl and cached by CDNs. Which paradigm is the strongest fit?",
+      "options": [
+        "REST — HTTP semantics (GET, cache headers) and simple URL structure are native to CDNs and curl",
+        "GraphQL — single endpoint with flexible queries makes caching straightforward",
+        "gRPC — binary protobuf over HTTP/2 gives the best cache hit ratio",
+        "WebSocket — persistent connections are ideal for public APIs"
+      ],
+      "correct": 0,
+      "explanation": "REST maps directly to HTTP caching (ETag, Cache-Control) and URL-based routing that CDNs understand. GraphQL requires custom cache logic, gRPC is binary and browser-hostile, and WebSocket is stateful — none of these are as cache-friendly or curl-accessible as REST."
+    },
+    {
+      "stage": "pre",
+      "question": "In a protobuf message, what happens if you remove a field by deleting its line and reusing its field number for a new field?",
+      "options": [
+        "Old clients silently ignore the new field — protobuf is designed for this",
+        "Nothing — protobuf handles field number reuse gracefully",
+        "Old clients will decode the new field using the old field's type, causing data corruption or crashes",
+        "The protobuf compiler will reject the file and refuse to compile"
+      ],
+      "correct": 2,
+      "explanation": "Protobuf uses field numbers on the wire, not names. If field number 3 was 'email' and you reuse it for 'avatar_url' with type bytes, old clients will try to decode bytes as a string — producing garbage. Instead, you must reserve the field number: `reserved 3; reserved 'email';`."
+    },
+    {
+      "stage": "post",
+      "question": "A mobile app needs to fetch user profiles with their 5 most recent orders and each order's items — a deeply nested query. Over-fetching is a critical problem on restricted bandwidth. Which paradigm best solves this?",
+      "options": [
+        "REST — nested /users/:id/orders/items endpoints let the client compose exactly what it needs",
+        "GraphQL — the client specifies exactly which nested fields to return in a single request, eliminating over-fetching",
+        "gRPC — binary protobuf encoding reduces payload size enough to offset over-fetching",
+        "REST with HTTP/2 — multiplexed streams solve the latency problem"
+      ],
+      "correct": 1,
+      "explanation": "GraphQL's core value proposition is letting clients declare the exact shape of the response: `{ user(id: 42) { name orders(first: 5) { total items { name price } } } }`. REST would either over-fetch (GET /users/42 then GET /users/42/orders) or require custom endpoints per use case. gRPC's binary encoding helps with size but doesn't solve the N+1 request problem."
+    },
+    {
+      "stage": "post",
+      "question": "You need to add a new optional `phone` field to an existing API. Which statement is true across all three paradigms?",
+      "options": [
+        "Adding an optional field is a breaking change — old clients will crash on unknown fields",
+        "It is safe in REST and GraphQL but breaking in gRPC because protobuf requires all fields to be present",
+        "Adding an optional field is backward-compatible in all three paradigms — old clients ignore unknown fields",
+        "It is safe in gRPC (protobuf ignores unknown fields) but breaking in REST and GraphQL where schemas are strict"
+      ],
+      "correct": 2,
+      "explanation": "All three paradigms handle unknown fields gracefully: REST clients ignore new JSON keys, GraphQL resolvers don't error on extra fields in the schema, and protobuf follows the 'unknown fields' rule where old binaries skip field numbers they don't recognize. This is why 'add fields, never remove' is the universal safe-evolution rule."
+    },
+    {
+      "stage": "post",
+      "question": "Which versioning strategy is most 'RESTful' according to Roy Fielding's original constraints, and which is most practical for a public API?",
+      "options": [
+        "Most RESTful: URL path (/v2/users). Most practical: URL path (/v2/users).",
+        "Most RESTful: Content negotiation (Accept: application/vnd.api.v2+json). Most practical: URL path (/v2/users).",
+        "Most RESTful: Query parameter (?version=2). Most practical: Header (X-API-Version: 2).",
+        "Most RESTful: Header (X-API-Version: 2). Most practical: Content negotiation."
+      ],
+      "correct": 1,
+      "explanation": "Fielding's REST constraints say a resource's identity should be independent of its representation — so content negotiation (same URL, different Accept header) is most RESTful. But URL path versioning /v2/users is overwhelmingly more practical: it's visible in browsers, cacheable by CDNs, and debuggable with curl."
+    },
+    {
+      "stage": "post",
+      "question": "An architecture has browser clients calling an API gateway, which calls 5 internal microservices. What is the recommended hybrid approach?",
+      "options": [
+        "Use GraphQL everywhere for consistency — the gateway resolves all queries",
+        "Use REST externally (browser-friendly, cacheable) and gRPC internally (low latency, strongly typed, streaming capable)",
+        "Use gRPC everywhere — gRPC-Web handles browser clients with minimal overhead",
+        "Use REST everywhere — it's simpler and internal latency is negligible compared to external latency"
+      ],
+      "correct": 1,
+      "explanation": "The hybrid approach matches each paradigm to its strength: REST for external browser clients (native HTTP, caching, wide tooling), gRPC for internal services (binary protocol, code generation, streaming, HTTP/2 multiplexing). GraphQL can be added as an aggregation layer for mobile clients. This isn't just theory — Netflix, Lyft, and Slack all use this pattern."
+    }
+  ]
+}

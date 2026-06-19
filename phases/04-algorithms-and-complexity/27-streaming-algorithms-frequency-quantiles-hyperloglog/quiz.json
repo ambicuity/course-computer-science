@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 4,
+    "lesson": 27,
+    "title": "Streaming Algorithms — Frequency, Quantiles, HyperLogLog"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A streaming algorithm processes N items arriving one at a time. What is the typical memory bound for a useful streaming algorithm?",
+      "options": [
+        "O(N) — must store all items",
+        "O(N log N) — one item per comparison",
+        "O(polylog N) — sub-linear in stream length",
+        "O(1) — constant, independent of N and any accuracy parameter"
+      ],
+      "correct": 2,
+      "explanation": "Streaming algorithms trade exactness for space, requiring O(polylog N) memory — typically O(1/ε · log(1/δ)) or O(log N). O(N) defeats the purpose (you'd store the whole stream), O(1) is too restrictive for useful accuracy, and O(N log N) is even larger."
+    },
+    {
+      "stage": "pre",
+      "question": "In reservoir sampling with k slots, after processing the i-th element (i > k), what is the probability that any specific earlier element remains in the reservoir?",
+      "options": [
+        "k/i",
+        "1/i",
+        "k/(i−1)",
+        "(i−k)/i"
+      ],
+      "correct": 0,
+      "explanation": "By induction: the first k items each have probability k/k = 1 at step k. At step i > k, each existing item is replaced with probability (k/i) × (1/k) = 1/i, so it survives with probability (1 − 1/i). Multiplying from step k+1 to i gives k/i. Every element in the stream has the same k/i probability — the sample is exactly uniform."
+    },
+    {
+      "stage": "post",
+      "question": "A Count-Min Sketch uses w columns and d rows. After N insertions, what does the ε-δ guarantee state about the estimate for element x?",
+      "options": [
+        "The estimate equals the true count with probability 1 − δ",
+        "The estimate is within ±εN of the true count with probability 1 − δ",
+        "The estimate is always ≥ true count, and exceeds it by at most εN with probability ≥ 1 − δ",
+        "The estimate has relative error at most ε with probability 1 − δ"
+      ],
+      "correct": 2,
+      "explanation": "The Count-Min Sketch always overestimates (never underestimates) because min-of-inflated-counts ≥ true count. The guarantee is: true_count ≤ estimate ≤ true_count + εN with probability ≥ 1 − δ. The error is additive (εN), not multiplicative, and is one-sided."
+    },
+    {
+      "stage": "post",
+      "question": "HyperLogLog estimates cardinality by hashing elements and tracking the maximum number of leading zeros per register. Why does it use the harmonic mean across registers instead of the arithmetic mean?",
+      "options": [
+        "The harmonic mean is faster to compute incrementally",
+        "The harmonic mean reduces the impact of outlier registers that overestimate",
+        "The harmonic mean guarantees the estimate is always an integer",
+        "The arithmetic mean would produce a biased low estimate"
+      ],
+      "correct": 1,
+      "explanation": "Individual registers can have inflated max-leading-zero counts due to chance. The arithmetic mean is sensitive to these outliers. The harmonic mean (m / Σ 2^(−register[j])) effectively down-weights extreme values, producing a more robust cardinality estimate. This is why HyperLogLog outperforms LogLog (which uses the arithmetic mean)."
+    },
+    {
+      "stage": "pre",
+      "question": "Why can't a streaming algorithm simply store all elements to count distinct values?",
+      "options": [
+        "Because hash tables are too slow",
+        "Because the stream may be too large to fit in memory, requiring sublinear space",
+        "Because elements arrive out of order",
+        "Because streaming algorithms can only handle integers"
+      ],
+      "correct": 1,
+      "explanation": "Streaming algorithms process data in one pass with limited memory (often O(log n) space). Storing all elements would require O(n) space. HyperLogLog estimates distinct count using hash-based probabilistic counting in just ~1.5 KB regardless of stream size."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which ACID property guarantees that a partially executed transaction is fully undone if a crash occurs before COMMIT?",
+      "options": [
+        "Atomicity",
+        "Consistency",
+        "Isolation",
+        "Durability"
+      ],
+      "correct": 0,
+      "explanation": "Atomicity ensures all-or-nothing execution. If a crash interrupts a transaction, the undo log restores the pre-transaction state — no partial effects survive."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a 'dirty read'?",
+      "options": [
+        "Reading a value that has been modified by a committed transaction",
+        "Reading a value that has been written by an uncommitted transaction",
+        "Reading stale data from a replica",
+        "Reading corrupted data from disk"
+      ],
+      "correct": 1,
+      "explanation": "A dirty read occurs when a transaction reads a value written by another transaction that has not yet committed. If the writer later rolls back, the reader saw data that never officially existed."
+    },
+    {
+      "stage": "post",
+      "question": "Which isolation level guarantees that the same read within a single transaction always returns the same value, but does NOT prevent phantoms according to the SQL standard?",
+      "options": [
+        "READ UNCOMMITTED",
+        "READ COMMITTED",
+        "REPEATABLE READ",
+        "SERIALIZABLE"
+      ],
+      "correct": 2,
+      "explanation": "REPEATABLE READ prevents non-repeatable reads (same row, same value) via snapshot isolation. The SQL standard says phantoms are still possible, though implementations like PostgreSQL's MVCC also prevent them at this level."
+    },
+    {
+      "stage": "post",
+      "question": "In PostgreSQL, which isolation level uses Serializable Snapshot Isolation (SSI) with predicate locks to detect write skew?",
+      "options": [
+        "READ UNCOMMITTED",
+        "READ COMMITTED",
+        "REPEATABLE READ",
+        "SERIALIZABLE"
+      ],
+      "correct": 3,
+      "explanation": "SERIALIZABLE in PostgreSQL uses SSI, which tracks read-write conflicts via predicate locks. This detects write skew — the anomaly where two transactions each locally preserve an invariant but together violate it."
+    },
+    {
+      "stage": "post",
+      "question": "Two concurrent transactions both read counter = 10, each increment by 5, and both write counter = 15. What anomaly is this?",
+      "options": [
+        "Dirty write",
+        "Lost update",
+        "Phantom read",
+        "Read skew"
+      ],
+      "correct": 1,
+      "explanation": "This is a lost update. Each transaction's increment was computed from the same original value (10), and the second write (15) overwrites the first (15). The expected result is 20 (10 + 5 + 5), but the result is 15 (or 20 if T1 commits and T2 re-reads). The key issue: the second writer didn't re-read after the first commit."
+    },
+    {
+      "stage": "post",
+      "question": "What mechanism do databases use to guarantee durability of committed transactions?",
+      "options": [
+        "Keeping a copy of all data in RAM",
+        "Forcing the WAL (Write-Ahead Log) to disk via fsync before acknowledging commit",
+        "Replicating data to a second server synchronously",
+        "Writing data directly to the table file on every INSERT"
+      ],
+      "correct": 1,
+      "explanation": "Durability is achieved by ensuring the transaction's log records are on non-volatile storage (fsync on the WAL file) before returning COMMIT. If the power fails, the WAL is replayed on restart. In-memory copies and replication help but are separate concerns."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 13,
+    "title": "Transactions Acid Anomalies"
+  }
+}

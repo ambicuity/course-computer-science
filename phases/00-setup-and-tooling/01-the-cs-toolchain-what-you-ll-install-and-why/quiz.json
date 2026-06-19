@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Two different `gcc` binaries are installed on your machine. Which one runs when you type `gcc`?",
+      "options": [
+        "The one with the highest version number",
+        "The first one found in PATH, scanned left to right",
+        "The one most recently installed",
+        "Whichever the operating system chooses at random"
+      ],
+      "correct": 1,
+      "explanation": "The shell scans `PATH` left to right and runs the first executable file with a matching name. Version numbers and install order are irrelevant — only PATH order matters."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does the course install Rust through `rustup` instead of `apt install rustc` or `brew install rust`?",
+      "options": [
+        "rustup is the only way to install Rust",
+        "Distro package managers usually ship outdated Rust versions and can't manage multiple toolchains side by side",
+        "apt and brew don't support Rust",
+        "Cargo is not available through apt or brew"
+      ],
+      "correct": 1,
+      "explanation": "Distro package managers freeze versions for distro release cycles, so their Rust is often a year+ stale. `rustup` is a toolchain manager: it tracks stable/beta/nightly, lets you pin per-project toolchains, and updates atomically."
+    },
+    {
+      "stage": "post",
+      "question": "Your script needs to detect whether `python3` is installed without crashing if it isn't. Which check is most portable across shells and minimal containers?",
+      "options": [
+        "`which python3`",
+        "`type python3`",
+        "`command -v python3 >/dev/null 2>&1`",
+        "`ls /usr/bin/python3`"
+      ],
+      "correct": 2,
+      "explanation": "`command -v` is a POSIX shell built-in, so it works in stripped-down containers that don't ship `which`. `ls /usr/bin/python3` fails if Python is installed elsewhere (e.g., Homebrew on macOS puts it in `/opt/homebrew/bin`)."
+    },
+    {
+      "stage": "post",
+      "question": "A learner says: 'My CI passes but my laptop fails on the same code.' Which is the single most likely cause given what this lesson covered?",
+      "options": [
+        "The CI runs on faster hardware",
+        "The CI uses a different toolchain version (e.g., gcc 13 in CI vs gcc 11 locally)",
+        "The CI has more cores",
+        "GitHub caches the wrong build artifact"
+      ],
+      "correct": 1,
+      "explanation": "Mismatched toolchain versions between CI and laptop are the most common cause of 'works in CI / fails locally' (or vice versa). Lesson takeaway: pin toolchain versions in CI *and* document them in your verify script."
+    },
+    {
+      "stage": "post",
+      "question": "What is the purpose of running `--version` on every tool in the lesson's `verify-toolchain.sh`?",
+      "options": [
+        "Aesthetic — just to make the table look nice",
+        "It signals whether the binary on PATH is actually functional (some installations break, leaving a binary that crashes on launch)",
+        "Required by POSIX for all tools",
+        "It updates the tool to the latest version"
+      ],
+      "correct": 1,
+      "explanation": "A tool's presence on `PATH` does NOT prove it can run — corrupted installs, missing shared libraries, and ARM/x86_64 mismatches all produce binaries that exist but crash. Running `--version` and capturing the result is the cheapest live-fire test."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 1,
+    "title": "The Cs Toolchain What You Ll Install And Why"
+  }
+}

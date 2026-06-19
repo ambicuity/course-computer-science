@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the central trade-off of a bump allocator?",
+      "options": [
+        "No trade-off — strictly better",
+        "Trades the ability to free individual allocations for blazing-fast alloc (offset bump). All allocations must die together (when the allocator is dropped or reset).",
+        "Slower than malloc",
+        "Wastes memory"
+      ],
+      "correct": 1,
+      "explanation": "Bump = 1-instruction alloc. The cost: no per-allocation free. The pattern shines when all allocations share a phase (HTTP request, compiler pass, game frame) — bulk-freed at phase end. For varied lifetimes, use malloc or a generational arena."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does `Bump::alloc` take `&self` (shared) rather than `&mut self` (exclusive)?",
+      "options": [
+        "Performance",
+        "So you can keep MULTIPLE references alive at once from the same Bump. Internally it uses `Cell<usize>` for the offset to mutate through shared `&`. The borrow checker still ensures returned references can't outlive the Bump.",
+        "Required by Rust syntax",
+        "It's a bug"
+      ],
+      "correct": 1,
+      "explanation": "If alloc took &mut self, only one allocation could be outstanding at a time — useless! By taking &self + using Cell for internal state, multiple references can coexist. Each returned reference borrows from self, so the Bump can't be dropped while any are alive. The internal mutability is the standard pattern."
+    },
+    {
+      "stage": "post",
+      "question": "Why are typed arenas (like `Arena<Node>`) particularly useful for graph data structures in Rust?",
+      "options": [
+        "Faster than Vec",
+        "Graph nodes can refer to each other by shared references `&'a Node<'a>` — no Rc<RefCell<>>, no ownership chains. The arena owns everything; all references share its lifetime; the whole graph dies together.",
+        "Rust requires it",
+        "It's the only way to make cycles"
+      ],
+      "correct": 1,
+      "explanation": "Standard Rust ownership makes graphs awkward (Rust prefers tree shapes). Arenas are the practical answer: the arena is the sole owner, every node has the arena's lifetime, references between nodes use plain &T. Used internally by rustc, LLVM, V8, every modern compiler."
+    },
+    {
+      "stage": "post",
+      "question": "What does `arena.alloc(value)` return, and why is it sound to return `&mut T` from `&self`?",
+      "options": [
+        "It's not sound",
+        "Returns `&mut T` to the just-pushed slot. Sound because each call creates a fresh distinct slot — no aliasing — and the arena never moves or returns the same slot twice.",
+        "Returns `Box<T>`",
+        "Returns the index"
+      ],
+      "correct": 1,
+      "explanation": "Returning &mut T from &self looks unsound in general (two &mut to the same T = data race). It's sound here because the arena never returns the same slot twice — each call carves a fresh memory cell. Rust's type system can't prove this directly, so the arena uses small `unsafe` blocks; the safe public API maintains the invariant."
+    },
+    {
+      "stage": "post",
+      "question": "When you call `bump.reset()` (clearing the bump's offset), what happens to outstanding references?",
+      "options": [
+        "They become null",
+        "Rust's borrow checker prevents `reset()` from being called while any reference returned by alloc() is still in scope. If the API were unsafe, references would dangle. The safe API ties reset to `&mut self`, requiring exclusive access.",
+        "They auto-update",
+        "Memory is re-zeroed"
+      ],
+      "correct": 1,
+      "explanation": "reset() takes &mut self. The borrow checker ensures no &T or &mut T from alloc() can coexist with that &mut. So when you call reset(), the compiler has already confirmed no references are alive. This is the standard 'invalidation via exclusive borrow' pattern."
+    },
+    {
+      "stage": "post",
+      "question": "When would you choose a bump allocator over Rust's default `Box<T>`?",
+      "options": [
+        "Never",
+        "When many objects share a phase (per-request, per-frame, per-pass), and you want sub-cycle alloc cost and bulk-free convenience — beating per-allocation Box / global allocator by 10×+ in such workloads",
+        "When T is small",
+        "When you only have one thread"
+      ],
+      "correct": 1,
+      "explanation": "Default Box<T> uses the global allocator (jemalloc / mimalloc / system) — fast but per-allocation. Arenas/bumps are ~1 cycle per alloc and zero per individual free. For per-request server handlers and compiler passes that allocate millions of small objects, the win is enormous. Production crates: `bumpalo`, `typed_arena`, `id_arena`."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 16,
+    "title": "Build A Bump And Arena Allocator In Rust"
+  }
+}

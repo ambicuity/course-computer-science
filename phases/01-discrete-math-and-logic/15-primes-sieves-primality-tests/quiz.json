@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Asymptotic runtime of the Sieve of Eratosthenes for finding all primes ≤ N?",
+      "options": [
+        "O(N²)",
+        "O(N log N)",
+        "O(N log log N)",
+        "O(√N)"
+      ],
+      "correct": 2,
+      "explanation": "Time is O(N log log N): each prime p contributes ~N/p marking operations; summing 1/p over primes ≤ N gives ln ln N by Mertens' theorem. Space is O(N) for the boolean array. The log log is so close to 1 in practice that the sieve is often called 'nearly linear.'"
+    },
+    {
+      "stage": "pre",
+      "question": "The Prime Number Theorem states π(N) is asymptotically equal to:",
+      "options": [
+        "N",
+        "log N",
+        "N / ln N",
+        "√N"
+      ],
+      "correct": 2,
+      "explanation": "π(N) ~ N / ln N. Intuition: a 'random' integer near N is prime with probability about 1 / ln N. For N = 10⁹, expect about 4.8 × 10⁷ primes; the actual count is about 5.0 × 10⁷ — the ratio still creeps to 1 slowly."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Miller-Rabin succeed where the plain Fermat test fails on Carmichael numbers?",
+      "options": [
+        "It uses more witnesses",
+        "Miller-Rabin checks for non-trivial square roots of 1 (in addition to a^(n-1) ≡ 1). Carmichael numbers fool Fermat but always have non-trivial square roots of 1 modulo them, which Miller-Rabin catches.",
+        "It tries more bases",
+        "Magic"
+      ],
+      "correct": 1,
+      "explanation": "Write n - 1 = 2^s · d. Miller-Rabin first computes x = a^d, then squares s times. If at any intermediate step x = 1 but x was not n-1 the previous step, we've found a 'non-trivial square root of 1' — proof that n is composite. Carmichael numbers have these; primes don't."
+    },
+    {
+      "stage": "post",
+      "question": "Miller-Rabin's error probability with k independent random witnesses is at most:",
+      "options": [
+        "1/k",
+        "1/2^k",
+        "1/4^k (one quarter per witness, independence assumed)",
+        "Zero"
+      ],
+      "correct": 2,
+      "explanation": "Rabin proved that for any composite n, at most 1/4 of witnesses in [2, n-2] fail to detect compositeness. With k random independent witnesses, error ≤ 4^(-k). With k = 40, error ≤ 10^(-24) — astronomically small. For 64-bit numbers, a specific 12-witness set is *deterministic* (no error)."
+    },
+    {
+      "stage": "post",
+      "question": "For finding all primes up to N = 10⁶, which is the right algorithm?",
+      "options": [
+        "Trial division on each number (O(N · √N))",
+        "Sieve of Eratosthenes (O(N log log N))",
+        "Miller-Rabin on each number (O(N · log³ N))",
+        "Pollard's rho on each number"
+      ],
+      "correct": 1,
+      "explanation": "Sieve dominates for 'enumerate primes ≤ N'. Trial division is O(N · √N) ≈ 10^9 — slow. Miller-Rabin is overkill (and slower per-test than just checking small divisors). Pollard's rho factors; doesn't enumerate. Sieve fills 10^6 primes in ~50 ms."
+    },
+    {
+      "stage": "post",
+      "question": "Which is the right tool to check whether a specific 2048-bit number is prime?",
+      "options": [
+        "Sieve up to 2^2048",
+        "Miller-Rabin with 40+ random witnesses (probabilistic, but error ≤ 10^(-24))",
+        "Trial division",
+        "Pollard's rho"
+      ],
+      "correct": 1,
+      "explanation": "Sieve is infeasible (2^2048 array). Trial division would take ~2^1024 operations. Miller-Rabin runs in O(k · log³ n) ≈ 40 · 11 · 10⁶ ≈ 4·10⁸ multiplications — milliseconds with modpow. Every TLS handshake's RSA key was checked this way."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 15,
+    "title": "Primes Sieves Primality Tests"
+  }
+}

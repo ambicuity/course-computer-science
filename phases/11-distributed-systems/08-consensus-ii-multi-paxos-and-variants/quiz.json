@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In single-decree Paxos, each run decides one value. What must you do to build a replicated log (a sequence of decisions)?",
+      "options": [
+        "Run a single Paxos instance with a list of values as the proposal",
+        "Run a separate Paxos instance per log slot, each deciding one value",
+        "Extend the accept message to carry multiple values at once",
+        "Increase the quorum size so acceptors can batch decisions"
+      ],
+      "correct": 1,
+      "explanation": "Multi-Paxos runs one independent Paxos instance per slot in the log. Each instance decides exactly one value — the command for that slot position. You cannot decide a list in one instance (that would violate the single-decree guarantee), and you cannot batch decisions just by changing message sizes."
+    },
+    {
+      "stage": "pre",
+      "question": "In Multi-Paxos, what does the 'Phase 1 skip' optimization assume that allows the leader to go straight to Phase 2 (Accept) for new proposals?",
+      "options": [
+        "That all acceptors are online and reachable",
+        "That the leader has already won Phase 1 for its proposal number and remains stable",
+        "That the quorum size has been reduced to 1",
+        "That no other proposer exists in the system"
+      ],
+      "correct": 1,
+      "explanation": "Phase 1 establishes that the proposer has the highest proposal number and discovers any previously accepted values. Once a leader completes Phase 1, it knows no higher-numbered proposal exists. As long as the leader remains stable, it can skip Phase 1 for every subsequent slot — only Phase 2 (Accept) is needed. This halves latency per command."
+    },
+    {
+      "stage": "post",
+      "question": "A leader crashes after committing slot 4 but before committing slot 3. The new leader finds slot 3 empty. What must the new leader do before applying slot 4's value to the state machine?",
+      "options": [
+        "Skip slot 3 and apply slot 4 — gaps are allowed in replicated logs",
+        "Fill slot 3 with a no-op command, then apply slots 3 and 4 in order",
+        "Discard slot 4 and re-propose everything from slot 3 onward",
+        "Wait for the old leader to recover and finish slot 3"
+      ],
+      "correct": 1,
+      "explanation": "A replicated state machine requires sequential application. You cannot apply slot 4 before slot 3 — the state machine would produce wrong results. The new leader must fill the gap at slot 3 (with a no-op if no value was previously accepted, or with the previously accepted value uncovered during Phase 1) before proceeding."
+    },
+    {
+      "stage": "post",
+      "question": "EPaxos (Egalitarian Paxos) differs from Multi-Paxos in that it has no distinguished leader. What is the key trade-off this introduces?",
+      "options": [
+        "It achieves lower latency for all commands because there is no leader bottleneck",
+        "Conflicting commands may require a second round trip to resolve ordering, while independent commands commit in one round trip",
+        "It requires a larger quorum for every command, making it slower than Multi-Paxos in all cases",
+        "It can only handle a single value, like single-decree Paxos"
+      ],
+      "correct": 1,
+      "explanation": "EPaxos allows any replica to propose. Commands that commute (no dependency on each other) commit in a single round trip, which is faster than Multi-Paxos for read-heavy or independent workloads. However, conflicting commands need a dependency graph and a second round trip to establish order, making it slower than Multi-Paxos for contended keys."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key idea behind 'Vertical Paxos'?",
+      "options": [
+        "Running Paxos instances in parallel on different threads for throughput",
+        "Allowing each slot in the log to be decided by a different set of acceptors, enabling reconfiguration without stopping the system",
+        "Piggybacking multiple proposal values in a single Accept message to save bandwidth",
+        "Using a smaller quorum by delegating to auxiliary acceptors that are only activated on failure"
+      ],
+      "correct": 1,
+      "explanation": "Vertical Paxos associates each slot (or range of slots) with a configuration — a specific set of acceptors. A configuration-change command at slot N installs a new configuration for all slots > N. This allows the system to change its membership (add or remove acceptors) without shutting down or pausing the log."
+    },
+    {
+      "stage": "post",
+      "question": "Google's 'Paxos Made Live' paper describes engineering challenges in deploying Paxos. Which of these is NOT one of the challenges they report?",
+      "options": [
+        "Acceptors must persist promises and accepted values to disk before responding, requiring group commit for performance",
+        "The replicated log grows without bound, requiring periodic snapshotting and log truncation",
+        "The Paxos proof guarantees liveness, so no special handling is needed for leader failover",
+        "Nodes join and leave the system, requiring safe reconfiguration without losing quorum"
+      ],
+      "correct": 2,
+      "explanation": "This is the opposite of what the paper reports. Paxos guarantees *safety* (no two nodes decide different values), but it does *not* guarantee liveness (progress) under all conditions — the FLP impossibility result proves that deterministic consensus cannot guarantee liveness in an asynchronous system. Leader failover requires careful timeouts, failure detection heuristics, and recovery of in-flight state."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 8,
+    "title": "Consensus Ii Multi Paxos And Variants"
+  }
+}

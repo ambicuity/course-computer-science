@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A dynamic array doubles capacity when full. What is the amortized cost of n pushes?",
+      "options": [
+        "O(n²)",
+        "O(n) — each push is O(1) amortized; total work across n pushes is ≤ 3n",
+        "O(n log n)",
+        "O(log n)"
+      ],
+      "correct": 1,
+      "explanation": "Total work: n writes + 1 + 2 + 4 + ... + n/2 = 2n−1 copies. So ≤ 3n operations across n pushes. Per push: O(1) amortized. The 'occasional copy' looks expensive but is paid for by the cheap pushes before it."
+    },
+    {
+      "stage": "pre",
+      "question": "What does 'amortized' mean — exactly?",
+      "options": [
+        "Average expected cost (probabilistic)",
+        "Worst-case AVERAGE cost across any sequence of operations — a deterministic worst-case guarantee per op averaged over a sequence",
+        "Average cost in the best case",
+        "Cost ignoring the slowest operation"
+      ],
+      "correct": 1,
+      "explanation": "Amortized is stronger than 'expected' (which is probabilistic) but weaker than 'worst-case per op'. It guarantees: for ANY sequence of n ops, total work ≤ c·n for some constant c. The individual ops can be O(n); the sum is O(n). Critical distinction for real-time systems: amortized O(1) does NOT imply bounded latency."
+    },
+    {
+      "stage": "post",
+      "question": "Why does a `+k` growth policy (cap += 8 each resize) cost O(n) per push amortized?",
+      "options": [
+        "It doesn't — it's still O(1)",
+        "There are n/k resizes; each copies its current size, so total copy work = k + 2k + 3k + ... + n = n²/(2k). Divide by n: O(n/k) = O(n) per push.",
+        "Because k is too small",
+        "Because realloc is slow"
+      ],
+      "correct": 1,
+      "explanation": "The arithmetic series defeats you. With k=8 and n=1M, total copies ≈ 6×10¹⁰ — vs ~2M for doubling. The lesson's main.c verifies this: amortized = 62,500 writes/push for +k vs 2.05 for 2×. Geometric growth (×factor) is what makes push amortized O(1); arithmetic growth doesn't."
+    },
+    {
+      "stage": "post",
+      "question": "In the banker's (accounting) method for push with doubling, how many credits do you charge per push?",
+      "options": [
+        "1",
+        "3 — one for the actual write, two banked. The bank pays for the copies during resizes.",
+        "log n",
+        "n"
+      ],
+      "correct": 1,
+      "explanation": "Each push deposits 3 units. 1 covers the write; 2 go in the bank. When you resize doubling from size n to 2n, you must copy n elements — but the n most-recently-added elements each banked 2 credits, totaling 2n. The bank fully covers the copies. Constant per push = O(1) amortized."
+    },
+    {
+      "stage": "post",
+      "question": "When should a dynamic array shrink, and why not eagerly?",
+      "options": [
+        "After every pop",
+        "When len < cap/4, shrink to len*2 (or similar). Eager shrink-on-pop allows push-pop oscillation at the cap boundary, costing O(n) per op forever.",
+        "Never",
+        "When the GC runs"
+      ],
+      "correct": 1,
+      "explanation": "Imagine cap=N, len=N. Pop one → eager shrink to N/2 → push one → grow to N → pop one → shrink to N/2 → ... Each op is O(n). The 1/4 rule provides hysteresis: only shrink when usage drops well below half. Provably amortized O(1) for both push and pop. Standard libraries (std::vector, Vec, Go slice) implement this."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the growth factor 2 vs 1.5 a real engineering trade-off, not a 'just pick one' decision?",
+      "options": [
+        "It isn't",
+        "2× never reuses old freed chunks (next alloc is bigger than sum of all previous); 1.5× and φ eventually do, which can reduce heap fragmentation. But 2× has fewer resizes and simpler analysis.",
+        "Only 2× is correct",
+        "Memory is infinite"
+      ],
+      "correct": 1,
+      "explanation": "With factor=2, geometric series 1+2+4+...+n/2 < n, so the next allocation is bigger than the sum of all previous ones combined → can't reuse the holes. With factor<2 (1.5, φ≈1.618), eventually the new allocation fits in previously freed space, reducing fragmentation. Real allocators (jemalloc) make 2× workable via size-class binning. Rust picks 2; Microsoft STL picks 1.5; Go picks 2 then 1.25. No universal winner."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 1,
+    "title": "Arrays Dynamic Arrays Amortized Analysis"
+  }
+}

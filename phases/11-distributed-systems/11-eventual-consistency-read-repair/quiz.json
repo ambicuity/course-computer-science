@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does 'eventual consistency' guarantee?",
+      "options": [
+        "All reads always return the most recent write within a bounded time",
+        "Given no new updates, eventually all replicas converge to the same value, with no guaranteed time bound",
+        "Write operations are immediately visible to all replicas",
+        "If two replicas diverge, the system automatically picks the later timestamp"
+      ],
+      "correct": 1,
+      "explanation": "Eventual consistency only guarantees convergence — eventually all replicas will agree — but provides no bound on how long convergence takes. It does not guarantee recency (stale reads are possible), does not guarantee immediate visibility, and does not pick a winner automatically (siblings may require resolution)."
+    },
+    {
+      "stage": "pre",
+      "question": "In a Dynamo-style system, when a read detects that two replicas hold different versions of the same key, what happens?",
+      "options": [
+        "The system picks the version with the higher Lamport timestamp and discards the other",
+        "The system returns both versions (siblings) to the client for conflict resolution",
+        "The system aborts the read and returns an error",
+        "The system overwrites both replicas with a default value"
+      ],
+      "correct": 1,
+      "explanation": "Dynamo-style systems detect concurrent versions (siblings) via vector clock comparison — if VCs are incomparable, neither caused the other, so both are valid. The system returns both to the client, which resolves the conflict. This is a deliberate design choice: the system doesn't have enough information to pick a winner, so it lets the application decide."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between read-repair and anti-entropy?",
+      "options": [
+        "Read-repair uses Merkle trees; anti-entropy compares all keys directly",
+        "Read-repair is triggered by client reads and fixes keys that are accessed; anti-entropy is a background process that compares all keys via Merkle trees and fixes divergence even for keys nobody reads",
+        "Read-repair is asynchronous; anti-entropy is synchronous",
+        "Read-repair only works during network partitions; anti-entropy only works when all nodes are up"
+      ],
+      "correct": 1,
+      "explanation": "Read-repair is a read-path mechanism: when a client reads a key, the coordinator compares versions across R replicas and pushes updates to stale ones. It only fixes keys that clients read. Anti-entropy is a background process (often using Merkle trees) that periodically compares all data between replica pairs, catching divergence in keys that nobody reads. Both can work during normal operation or after partitions heal."
+    },
+    {
+      "stage": "post",
+      "question": "Why do Merkle trees reduce the cost of comparing two replicas from O(N) to O(log N)?",
+      "options": [
+        "They compress the data so each replica is smaller",
+        "Each internal node hashes its children — if two root hashes match, the entire subtrees are identical, so you skip whole branches. You only recurse into branches whose hashes differ.",
+        "They sort the keys alphabetically so you only compare keys that start with the same letter",
+        "They use bloom filters internally to prune impossible matches"
+      ],
+      "correct": 1,
+      "explanation": "A Merkle tree is a hash tree where leaves hash individual key-value pairs and internal nodes hash their children. Comparing root hashes is O(1). If they differ, compare left and right child hashes (O(2) instead of O(N/2)). Recurse only on mismatched subtrees. The number of comparisons scales with the height of the tree (O(log N)), not the number of keys (O(N)), because matching subtrees are skipped entirely."
+    },
+    {
+      "stage": "post",
+      "question": "In hinted handoff, when replica C is down, a write intended for C is stored on replica D. What happens when C recovers?",
+      "options": [
+        "C automatically discovers it is stale and pulls the latest data from all replicas",
+        "D delivers the stored hints to C, replaying the writes that C missed during its downtime",
+        "C sends a recovery request to the coordinator, which re-executes all recent writes on C",
+        "The system triggers a full anti-entropy repair immediately upon C's recovery"
+      ],
+      "correct": 1,
+      "explanation": "Hinted handoff stores writes destined for a down replica on a healthy neighbor (the 'hint target'). When the down replica recovers, the hint target delivers these stored writes. This is best-effort: if the hint target also goes down before delivery, the hints are lost (anti-entropy eventually catches the divergence). C does not auto-discover staleness — hints are explicitly delivered by D."
+    },
+    {
+      "stage": "post",
+      "question": "With N=3 replicas, which combination of R and W provides quorum intersection (guaranteeing that every read sees at least one up-to-date replica)?",
+      "options": [
+        "R=1, W=1 (2 ≤ 3 — no intersection guarantee)",
+        "R=2, W=2 (4 > 3 — quorum intersection guaranteed)",
+        "R=2, W=1 (3 = 3 — boundary, not sufficient for intersection)",
+        "R=3, W=1 (4 > 3 — intersection, but W=1 means a single replica acknowledges the write)"
+      ],
+      "correct": 1,
+      "explanation": "Quorum intersection requires R + W > N. With N=3: R=2, W=2 gives 4 > 3 — any set of 2 replicas and any set of 2 replicas must overlap by at least 1, so every read quorum includes at least 1 replica from the write quorum (which holds the latest value). R=1, W=1 gives 2 ≤ 3 (no guarantee). R=2, W=1 gives exactly 3 = 3 (boundary — intersection is possible but not guaranteed for all combinations)."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 11,
+    "title": "Eventual Consistency Read Repair"
+  }
+}

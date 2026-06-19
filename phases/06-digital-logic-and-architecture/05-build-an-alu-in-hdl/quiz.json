@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 5,
+    "title": "Build an ALU in HDL"
+  },
+  "questions": [
+    {
+      "stage": "post",
+      "question": "Which ALU operation does the RISC-V `beq` instruction use internally to test if two registers are equal?",
+      "options": [
+        "ADD — adds the two operands and checks overflow",
+        "SUB — subtracts b from a and checks the zero flag",
+        "XOR — xors the two operands and checks the zero flag",
+        "SLT — compares them with set-less-than and checks if result is 1"
+      ],
+      "correct": 1,
+      "explanation": "beq computes a − b. If the result is zero, the zero flag asserts and the branch is taken. The SUB operation plus the zero flag is exactly how equality is tested in hardware."
+    },
+    {
+      "stage": "post",
+      "question": "What is the value of the carry flag after `ALU_ADD` with `a = 0xFFFFFFFF` and `b = 1`?",
+      "options": [
+        "0 — no carry because the result fits in 32 bits",
+        "1 — carry is set because 0xFFFFFFFF + 1 overflows 32 bits",
+        "Undefined — carry is only meaningful for SUB",
+        "1 — carry is set, but so is overflow"
+      ],
+      "correct": 1,
+      "explanation": "0xFFFFFFFF + 1 = 0x100000000, which requires 33 bits. The 33rd bit is the carry. The result truncated to 32 bits is 0, so zero = 1 as well. Overflow is 0 because this is unsigned wrap, not signed overflow."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the ALU use a 4-bit opcode rather than a 1-hot encoding with 10 bits for 10 operations?",
+      "options": [
+        "4 bits matches the RISC-V funct3/funct7 fields, so the control unit can wire them directly",
+        "4 bits is always faster than 10 bits in every technology",
+        "1-hot would require 10 multiplexers instead of 1",
+        "The RISC-V specification mandates 4-bit ALU opcodes"
+      ],
+      "correct": 0,
+      "explanation": "The ALU opcode bits mirror the instruction's funct3 and funct7 fields, so the control unit passes them through without re-encoding. This minimizes wiring and avoids an extra decode step."
+    },
+    {
+      "stage": "post",
+      "question": "The signed overflow flag is set when `a = 0x7FFFFFFF, b = 1, alu_op = ALU_ADD`. What is the result and why is overflow asserted?",
+      "options": [
+        "Result = 0x80000000, overflow = 1 because a positive + positive yielded a negative",
+        "Result = 0x80000000, overflow = 0 because the addition completed normally",
+        "Result = 0x00000000, overflow = 1 because the result wrapped to zero",
+        "Result = 0x7FFFFFFF, overflow = 1 because b was ignored"
+      ],
+      "correct": 0,
+      "explanation": "0x7FFFFFFF is +2147483647. Adding 1 gives 0x80000000, which in two's complement is −2147483648. Both operands had sign bit 0 but the result has sign bit 1 — this is the definition of signed overflow."
+    },
+    {
+      "stage": "pre",
+      "question": "What operations does a basic ALU (Arithmetic Logic Unit) typically support?",
+      "options": [
+        "Only addition and subtraction",
+        "Arithmetic (add, subtract) and logical (AND, OR, XOR, shift) operations",
+        "Floating-point multiplication only",
+        "Memory read and write operations"
+      ],
+      "correct": 1,
+      "explanation": "A basic ALU performs arithmetic operations (addition, subtraction, sometimes multiplication) and bitwise logical operations (AND, OR, XOR, NOT, shifts). The operation is selected by an opcode input. The ALU also produces condition flags (zero, carry, overflow, negative)."
+    }
+  ]
+}

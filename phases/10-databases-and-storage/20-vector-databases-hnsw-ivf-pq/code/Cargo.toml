@@ -1,0 +1,12 @@
+[workspace]
+[package]
+name = "hnsw"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "hnsw"
+path = "main.rs"
+
+[dependencies]
+rand = "0.8"

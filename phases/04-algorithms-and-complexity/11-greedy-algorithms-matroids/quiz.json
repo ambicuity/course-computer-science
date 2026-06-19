@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 4,
+    "lesson": 11,
+    "title": "Greedy Algorithms & Matroids"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "For coin denominations [1, 3, 4], greedy change-making fails for target 6. What is the greedy result, and why does it fail?",
+      "options": [
+        "Greedy gives [4,1,1] = 3 coins; optimal is [3,3] = 2 coins. The denominations lack the canonical (greedy-optimal) property.",
+        "Greedy gives [4,2] = 2 coins; this matches the optimal answer.",
+        "Greedy gives [3,3] = 2 coins; this matches the optimal answer.",
+        "Greedy gives [4,1,1] = 3 coins; this is actually optimal for these denominations."
+      ],
+      "correct": 0,
+      "explanation": "Greedy picks the largest coin ≤ remaining: 4+1+1 = 3 coins. The optimal solution is 3+3 = 2 coins. The coin system [1,3,4] is not canonical — a locally optimal choice (pick 4) does not lead to a globally optimal solution. This is why DP is needed for arbitrary coin systems."
+    },
+    {
+      "stage": "post",
+      "question": "A matroid M = (E, I) must satisfy which two properties for the family of independent sets I?",
+      "options": [
+        "Commutativity and associativity",
+        "Hereditary property and exchange property",
+        "Optimal substructure and overlapping subproblems",
+        "Prefix-free encoding and canonical ordering"
+      ],
+      "correct": 1,
+      "explanation": "A matroid requires: (1) Hereditary — every subset of an independent set is independent, and (2) Exchange — if A, B are independent with |A| < |B|, some element of B\\A can be added to A while preserving independence. These two properties together guarantee that the greedy algorithm finds a maximum-weight independent set."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Huffman coding produce optimal prefix-free codes?",
+      "options": [
+        "Because it uses dynamic programming to explore all possible trees.",
+        "Because the two least-frequent characters must be the deepest leaves in any optimal prefix tree; merging them first preserves optimality at every step (greedy choice property).",
+        "Because it assigns the shortest codes to all characters equally.",
+        "Because it sorts characters alphabetically, which ensures balance."
+      ],
+      "correct": 1,
+      "explanation": "Huffman coding is greedy and optimal. An exchange argument proves the two least-frequent characters are always deepest in any optimal tree. Merging them as siblings first preserves the optimal substructure — the remaining subproblem (with the merged node replacing the two) has an optimal solution that, combined with this greedy choice, yields a globally optimal tree."
+    },
+    {
+      "stage": "post",
+      "question": "Kruskal's algorithm for minimum spanning trees is a greedy algorithm on which mathematical structure?",
+      "options": [
+        "A vector matroid defined by the graph's adjacency matrix",
+        "A graphic matroid where independent sets are acyclic edge subsets (forests)",
+        "A uniform matroid U(n-1, m) where n is vertices and m is edges",
+        "A partition matroid where each vertex forms its own group"
+      ],
+      "correct": 1,
+      "explanation": "Kruskal's algorithm works on the graphic matroid: the ground set is the graph's edges, and a set of edges is independent if it contains no cycle (i.e., it is a forest). The greedy strategy — add edges in weight order, skipping any that create a cycle — is exactly the matroid greedy algorithm applied to the graphic matroid with edge weights."
+    },
+    {
+      "stage": "pre",
+      "question": "What distinguishes a greedy algorithm from dynamic programming?",
+      "options": [
+        "Greedy algorithms always use recursion while DP uses iteration",
+        "Greedy makes locally optimal choices without reconsidering; DP explores all subproblems",
+        "Greedy is always faster than DP",
+        "DP only works on graphs while greedy works on arrays"
+      ],
+      "correct": 1,
+      "explanation": "A greedy algorithm commits to the locally best choice at each step and never backtracks. DP instead solves all subproblems and combines them. Greedy works when local optimality implies global optimality (e.g., Huffman coding), but fails when it doesn't (e.g., 0/1 knapsack)."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the load factor α of a hash table, and why does it matter?",
+      "options": [
+        "Memory usage in MB",
+        "α = n entries / m slots. Controls expected collision rate. Open addressing degrades severely past α ≈ 0.7; chaining tolerates α > 1.",
+        "Hash function quality",
+        "Lookup time in ns"
+      ],
+      "correct": 1,
+      "explanation": "α is the single knob that controls collision rate. For linear probing, expected probe length is ~1/(1-α): at α=0.5, ≈2 probes; at α=0.9, 10; at α=0.99, ~100. Chaining handles α>1 because buckets can hold multiple entries — but cache locality dies. Production tables resize at α ≈ 0.7-0.9 depending on scheme."
+    },
+    {
+      "stage": "pre",
+      "question": "Two equally-fast alternatives: chaining and open addressing. What's the cache-locality argument that favors open addressing?",
+      "options": [
+        "Less memory",
+        "Open addressing keeps entries contiguous in one array — a probe walks a cache line, hot in L1. Chaining scatters nodes across the heap, so each probe is a potential cache miss.",
+        "Faster hash function",
+        "Easier deletion"
+      ],
+      "correct": 1,
+      "explanation": "A single cache line (64B) holds ~4 hash-table entries (16-byte each). Linear probing's typical 1-3 probe sequence stays in one cache line — ~1ns total. Chaining loads the bucket head, then chases a `next` pointer to a randomly-placed Node — each pointer-chase is potentially 100 ns. Hence Python, Rust, Go, and most modern hash tables use open addressing."
+    },
+    {
+      "stage": "post",
+      "question": "What does Robin Hood hashing do on insert when it finds an occupied slot?",
+      "options": [
+        "Always moves the existing entry",
+        "Compares probe distances. If the existing entry has SHORTER probe distance than the incoming, swap them — the 'rich' entry gives up its slot to the 'poor' one. Caps max probe length at O(log n) with high probability.",
+        "Skips the slot",
+        "Rebuilds the table"
+      ],
+      "correct": 1,
+      "explanation": "Probe distance = how many slots from the entry's ideal position. The Robin Hood invariant: keep this distance equal across entries. On insert, if you find someone with a shorter distance, you steal their slot and continue with their entry as the incoming. Result: a near-uniform distance distribution, even at α=0.9, where naive linear probing has clusters of length 100. This is the trick behind Rust's old HashMap and SwissTable."
+    },
+    {
+      "stage": "post",
+      "question": "Why can't you 'just zero out' a slot to delete in open addressing?",
+      "options": [
+        "Zero is a valid key",
+        "Deleting breaks the probe chain — a subsequent lookup probes to the zero, thinks the slot is empty, and stops before reaching the target. Fix: tombstones, or back-shift delete (Robin Hood).",
+        "Memory leak",
+        "Cache invalidation"
+      ],
+      "correct": 1,
+      "explanation": "Imagine A and B hash to the same bucket. A is inserted (slot i), B probes forward (slot i+1). Now delete A by zeroing slot i. A future lookup of B starts at i, sees zero, reports 'not found' — wrong. Fixes: (1) mark slot as TOMBSTONE so probes continue past; (2) back-shift: walk forward shifting entries back until you find an entry with probe distance 0 or an empty slot."
+    },
+    {
+      "stage": "post",
+      "question": "What is hash flooding, and how do production hash tables defend against it?",
+      "options": [
+        "Hash collisions during normal use",
+        "An attacker sends N keys all hashing to one bucket, forcing O(N²) work. Defense: per-table random seed mixed into hash → adversary can't predict which keys collide.",
+        "Memory exhaustion",
+        "Slow disk writes"
+      ],
+      "correct": 1,
+      "explanation": "CVE-2011-4815 disclosed this attack against Python, Perl, PHP, Java, Ruby — any framework that hash-tabled HTTP form params could be DOSed with a 1KB request. The fix: keyed hash (SipHash, Wyhash with per-process key) so the adversary can't compute colliding keys without knowing the key. Rust's std::HashMap uses SipHash by default for this reason. Performance-sensitive code (compilers, JITs) opts into faster non-DOS-resistant hashes like FxHash."
+    },
+    {
+      "stage": "post",
+      "question": "Why is hash-table resize amortized O(1) per insert despite occasional O(n) rebuilds?",
+      "options": [
+        "It's actually O(n)",
+        "Same banker's argument as dynamic-array push: total work across n inserts is ≤ 3n (n inserts + ≤ 2n rebuilt entries via geometric resizing). Divide by n: O(1) amortized.",
+        "Hash functions are fast",
+        "Resizes are async"
+      ],
+      "correct": 1,
+      "explanation": "Identical to the dynamic-array analysis. Doubling capacity at α threshold means resizes happen at sizes ~1, 2, 4, 8, ..., n/2; total entries rebuilt across all resizes is ≤ 2n. Total work for n inserts: n + 2n = 3n → O(1) per insert amortized. The same caveat as Vec: amortized is not worst-case — an individual insert can be O(n). For bounded latency, use incremental rehashing (Redis does this)."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 5,
+    "title": "Hash Tables Open Addressing Vs Chaining"
+  }
+}

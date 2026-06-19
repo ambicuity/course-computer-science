@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 13,
+    "lesson": 8,
+    "title": "Lock-Free Data Structures — Treiber Stack, MS Queue",
+    "note": "Two pre-lesson and two post-lesson questions."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the defining guarantee of a lock-free data structure?",
+      "options": [
+        "Every thread makes progress in a bounded number of steps.",
+        "At least one thread makes progress in any finite time interval.",
+        "No thread ever needs to wait for another thread.",
+        "The data structure uses no atomic operations at all."
+      ],
+      "correct": 1,
+      "explanation": "Lock-free guarantees system-wide progress: at least one thread makes forward progress in any finite time interval. Option A describes wait-free (a stronger guarantee). Option C is the goal but not the formal definition. Option D is impossible — lock-free structures rely on atomic CAS."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does the dummy node in a Michael-Scott queue solve?",
+      "options": [
+        "It prevents memory allocation on every enqueue.",
+        "It ensures head and tail are never null, eliminating empty-queue special cases in CAS logic.",
+        "It doubles the throughput by allowing batch enqueues.",
+        "It allows the queue to grow beyond the available memory."
+      ],
+      "correct": 1,
+      "explanation": "The dummy node is an always-present sentinel that head always points to. This means head and tail are never null, which eliminates the need for special-case CAS when the queue is empty. Without it, an empty queue with null head/tail would require conditional logic around every CAS."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is NOT a valid strategy for handling the ABA problem in lock-free data structures?",
+      "options": [
+        "Tagged pointers (packing an ABA counter with the pointer).",
+        "Hazard pointers (marking in-use pointers before dereferencing).",
+        "Using a mutex to protect all pointer loads.",
+        "Epoch-based reclamation (deferring free until all threads have left the epoch)."
+      ],
+      "correct": 2,
+      "explanation": "Using a mutex defeats the entire purpose of lock-free programming — you reintroduce contention, convoying, and priority inversion. Tagged pointers, hazard pointers, and epoch-based reclamation are all valid ABA-mitigation strategies that preserve lock-freedom."
+    },
+    {
+      "stage": "post",
+      "question": "In the Treiber stack's push operation, what happens when the CAS on the head pointer fails?",
+      "options": [
+        "The thread blocks until the head pointer becomes available.",
+        "The thread retries: it reloads the head pointer, relinks the new node's next, and attempts CAS again.",
+        "The operation is forwarded to a dedicated service thread.",
+        "The data structure falls back to a mutex-based stack for this operation."
+      ],
+      "correct": 1,
+      "explanation": "CAS failure means another thread modified head between our load and our CAS. We simply loop: reload head, set node.next to the new head, and retry CAS. This is the standard lock-free retry pattern. The thread never blocks — it just tries again with fresh values."
+    },
+    {
+      "stage": "pre",
+      "question": "What does 'lock-free' mean in the context of data structures?",
+      "options": [
+        "The data structure doesn't use any synchronization",
+        "At least one thread is guaranteed to make progress in a bounded number of steps, even if other threads are suspended",
+        "The data structure uses only atomic variables",
+        "The data structure is faster than all locked alternatives"
+      ],
+      "correct": 1,
+      "explanation": "Lock-free guarantees system-wide progress: if any thread is suspended, the remaining threads can still complete their operations. This is stronger than obstruction-free but weaker than wait-free (which guarantees per-thread progress). Lock-free structures use CAS loops rather than locks."
+    }
+  ]
+}

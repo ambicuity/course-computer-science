@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 18,
+    "title": "Post-Quantum — Kyber, Dilithium, SPHINCS+"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does Shor's algorithm imply for currently deployed public-key cryptography?",
+      "options": [
+        "It can speed up RSA key generation by a factor of ~4000.",
+        "It breaks RSA, DSA, ECDSA, and Diffie-Hellman in polynomial time on a sufficiently large quantum computer.",
+        "It only affects symmetric ciphers like AES, not public-key schemes.",
+        "It requires a quantum computer with millions of qubits and is therefore not a practical concern."
+      ],
+      "correct": 1,
+      "explanation": "Shor's algorithm factors integers and computes discrete logarithms in polynomial time. A large-enough quantum computer would completely break RSA, DSA, ECDSA, Ed25519, and Diffie-Hellman. The threat is serious enough that NIST standardized PQC replacements (Kyber, Dilithium, SPHINCS+) starting in 2024, and 'harvest now, decrypt later' attacks mean data encrypted today may be decrypted retroactively."
+    },
+    {
+      "stage": "pre",
+      "question": "What makes Learning With Errors (LWE) problems cryptographically hard?",
+      "options": [
+        "They require finding a needle in a random-looking haystack — given noisy linear equations, recover the secret without knowing which equations are noisy.",
+        "They rely on the difficulty of multiplying large prime numbers.",
+        "They depend on the birthday paradox to find collisions.",
+        "They are based on the difficulty of reversing a cryptographic hash function."
+      ],
+      "correct": 0,
+      "explanation": "LWE asks: given many noisy approximate linear equations (A, b = As + e) where e is small random noise, recover the secret s. Without knowing e, the system looks uniformly random. This 'hidden noise' structure is believed hard even for quantum computers and forms the foundation of Kyber (MLWE) and Dilithium (MLWE). Unlike RSA or ECC, no known quantum algorithm provides a significant speedup against LWE."
+    },
+    {
+      "stage": "post",
+      "question": "NIST selected three post-quantum algorithm families in its 2024 standardization. Which statement correctly characterizes all three?",
+      "options": [
+        "Kyber is a lattice-based signature scheme, Dilithium is a hash-based KEM, and SPHINCS+ is a code-based signature scheme.",
+        "Kyber is a KEM based on Module LWE, Dilithium is a signature scheme also based on Module LWE, and SPHINCS+ is a signature scheme based only on hash function security.",
+        "All three are lattice-based schemes at different NIST security levels, with SPHINCS+ being the most efficient in signature size.",
+        "Kyber is a code-based KEM, Dilithium is a lattice-based signature, and SPHINCS+ is a multivariate-quadratic signature."
+      ],
+      "correct": 1,
+      "explanation": "Kyber (ML-KEM, FIPS 203) and Dilithium (ML-DSA, FIPS 204) are both based on the Module-LWE lattice problem. They share a common mathematical foundation, which means a cryptanalytic break of MLWE would affect both. SPHINCS+ (SLH-DSA, FIPS 205) uses a completely different security assumption — it only needs a secure hash function — making it a conservative fallback if lattice assumptions are ever weakened."
+    },
+    {
+      "stage": "post",
+      "question": "Why does TLS 1.3 use hybrid key exchange (e.g., X25519 + Kyber-768) rather than switching to PQC-only key exchange?",
+      "options": [
+        "Kyber-768 ciphertexts are too large (1088 B) for a single TLS round trip, so X25519 is used as a compression mechanism.",
+        "Hybrid exchange ensures security against both classical and quantum adversaries simultaneously, providing defense in depth even if one system is broken.",
+        "X25519 is faster than Kyber, so it is used for the initial handshake while Kyber derives the master secret.",
+        "Kyber-768 provides only NIST level 3 security, so X25519 is needed to reach level 5."
+      ],
+      "correct": 1,
+      "explanation": "Hybrid key exchange combines a classical KEM (X25519) with a PQC KEM (Kyber-768) so that the resulting shared secret is secure as long as at least one of the two is unbroken. This protects against: (1) a cryptanalytic break of MLWE, and (2) a quantum computer breaking X25519. TLS 1.3's X25519Kyber768 hybrid is the most widely deployed PQC migration strategy, used by Google, Cloudflare, and others."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is post-quantum cryptography necessary?",
+      "options": [
+        "Current encryption is too slow for modern computers",
+        "Quantum computers can break RSA and ECC using Shor's algorithm, requiring new algorithms based on different mathematical problems",
+        "Post-quantum algorithms use less memory",
+        "Quantum computers can generate truly random numbers"
+      ],
+      "correct": 1,
+      "explanation": "Shor's algorithm on a sufficiently powerful quantum computer can factor large numbers and compute discrete logarithms in polynomial time, breaking RSA, Diffie-Hellman, and ECC. Post-quantum algorithms (lattice-based Kyber, hash-based SPHINCS+) rely on problems believed hard even for quantum computers."
+    }
+  ]
+}

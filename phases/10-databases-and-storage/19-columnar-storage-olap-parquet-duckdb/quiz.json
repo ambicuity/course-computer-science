@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental difference between row-oriented (OLTP) and column-oriented (OLAP) storage?",
+      "options": [
+        "Row-oriented stores data in tables; column-oriented uses graphs.",
+        "Row-oriented stores all columns of a row together on disk; column-oriented stores each column's values contiguously.",
+        "Column-oriented databases cannot store integers, only columns.",
+        "Row-oriented is always faster for every query type."
+      ],
+      "correct": 1,
+      "explanation": "Row-oriented storage places all fields of a row next to each other on disk (good for point queries and many small transactions). Column-oriented storage groups each column's values contiguously (good for reading only the columns needed by an analytical query and achieving high compression)."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of the following compression techniques works best for a column storing ISO country codes (e.g., 'US', 'US', 'US', 'GB', 'GB', 'JP')?",
+      "options": [
+        "Run-length encoding (RLE)",
+        "Delta encoding",
+        "Double-delta encoding",
+        "Shannon-Fano coding"
+      ],
+      "correct": 0,
+      "explanation": "Country codes are low-cardinality strings with many repeated runs, making RLE the natural choice: ('US', 3), ('GB', 2), ('JP', 1). Delta encoding works for ordered integers / timestamps, not unordered string enums."
+    },
+    {
+      "stage": "post",
+      "question": "In the Parquet file format, what information stored in the column chunk metadata allows a query engine to skip reading an entire row group?",
+      "options": [
+        "The CRC32 checksum of each page.",
+        "The column name and data type.",
+        "The min/max statistics and null count for the column chunk.",
+        "The page header encoding type."
+      ],
+      "correct": 2,
+      "explanation": "Each column chunk stores min, max, and null_count in its metadata. If a query filters `WHERE revenue > 1000` and a column chunk's max is 500, the engine can skip that entire chunk without reading or decompressing it. This is called predicate pushdown."
+    },
+    {
+      "stage": "post",
+      "question": "How does DuckDB's vectorized execution differ from SQLite's per-tuple execution model?",
+      "options": [
+        "DuckDB processes one row at a time but uses faster I/O.",
+        "SQLite processes rows in vectors; DuckDB processes one row at a time.",
+        "DuckDB passes arrays (vectors) of 1024+ values between operators instead of individual rows.",
+        "There is no difference — both use the same Volcano iterator model."
+      ],
+      "correct": 2,
+      "explanation": "DuckDB uses a vectorized pull-based model where operators exchange fixed-size columnar vectors (typically 2048 tuples). This amortizes function call overhead and enables SIMD instructions. SQLite, in contrast, uses the classic Volcano iterator model that yields one tuple per next() call."
+    },
+    {
+      "stage": "post",
+      "question": "A Parquet file contains a column of 64-bit timestamps stored as deltas from a base value. What compression technique is being used, and what advantage does it provide?",
+      "options": [
+        "RLE; it collapses adjacent identical timestamps into (value, count) pairs.",
+        "Delta encoding; timestamps near each other have small differences, so fewer bits are needed per value after the base.",
+        "Dictionary encoding; each unique timestamp gets a 2-byte code.",
+        "Bit-packing; each timestamp is truncated to 32 bits."
+      ],
+      "correct": 1,
+      "explanation": "Delta encoding stores a base value followed by the differences (deltas) between consecutive values. For timestamps at a regular cadence (e.g., one per second), deltas are small integers that compress much better than the full 64-bit originals. Double-delta goes further by delta-encoding the deltas."
+    },
+    {
+      "stage": "post",
+      "question": "What does the Dremel algorithm provide that makes Parquet suitable for storing nested data like JSON or Protocol Buffers?",
+      "options": [
+        "It shreds each nested field into a separate file.",
+        "It uses definition levels and repetition levels to flatten arbitrarily nested structures into columns without loss of structure.",
+        "It converts all nested data to XML before encoding.",
+        "It stores each nested object as a binary blob in a single column."
+      ],
+      "correct": 1,
+      "explanation": "The Dremel algorithm annotates each value with a definition level (how many optional fields in the path are present) and a repetition level (which repeated field is repeating). This encodes the full tree structure of nested data into flat columns, allowing Parquet to represent complex nested data without shredding or blob storage."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 19,
+    "title": "Columnar Storage Olap Parquet Duckdb"
+  }
+}

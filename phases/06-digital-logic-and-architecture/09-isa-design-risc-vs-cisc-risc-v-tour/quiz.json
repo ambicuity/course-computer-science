@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 9,
+    "title": "Isa Design Risc Vs Cisc Risc V Tour"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of the following best distinguishes RISC from CISC?",
+      "options": [
+        "RISC uses variable-length instructions; CISC uses fixed-length",
+        "RISC restricts ALU operations to registers (load/store architecture); CISC allows memory operands",
+        "RISC has fewer registers than CISC",
+        "RISC requires microcode for every instruction"
+      ],
+      "correct": 1,
+      "explanation": "The defining trait of RISC is a load/store architecture: arithmetic instructions operate only on registers, with explicit load/store for memory access. CISC allows memory operands directly in ALU instructions. RISC actually has *more* registers and uses fixed-width instructions without microcode."
+    },
+    {
+      "stage": "pre",
+      "question": "How many general-purpose registers does RV32I define, and what is special about register x0?",
+      "options": [
+        "16 registers; x0 is the program counter",
+        "32 registers; x0 is hardwired to zero (reads always return 0, writes are discarded)",
+        "64 registers; x0 is reserved for interrupts",
+        "32 registers; x0 is the stack pointer"
+      ],
+      "correct": 1,
+      "explanation": "RV32I has 32 registers (x0–x31). Register x0 is hardwired to the constant 0 — every read returns 0 and every write is silently discarded. This eliminates the need for a separate nop instruction and simplifies many patterns (e.g., `mv rd, rs` is `addi rd, rs, 0`). The stack pointer is x2."
+    },
+    {
+      "stage": "post",
+      "question": "In RISC-V, which instruction format is used for the `sw` (store word) instruction?",
+      "options": [
+        "R-type — three register operands",
+        "I-type — register + 12-bit immediate",
+        "S-type — split immediate encoded around rs2 and rs1",
+        "B-type — branch offset with sign bit in bit 31"
+      ],
+      "correct": 2,
+      "explanation": "Store instructions use the S-type format because they have no destination register (rd). Instead, the immediate is split: bits [11:5] go in the upper field and bits [4:0] go where rd would normally be, alongside rs1 (base address) and rs2 (data to store)."
+    },
+    {
+      "stage": "post",
+      "question": "Under the standard RISC-V calling convention, where are the first two function arguments placed, and where does the return value go?",
+      "options": [
+        "Arguments in a0–a1, return value in t0",
+        "Arguments in s0–s1, return value in a0",
+        "Arguments in a0–a1, return value in a0",
+        "Arguments in t0–t1, return value in ra"
+      ],
+      "correct": 2,
+      "explanation": "Arguments are passed in a0–a7 (up to 8 args). The return value goes in a0 (and a1 for 64-bit values on RV64). The return address is in ra (x1). Temporary registers t0–t6 are caller-saved; saved registers s0–s11 are callee-saved."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the fundamental design philosophy of RISC architectures?",
+      "options": [
+        "Maximize the number of instructions in the ISA",
+        "Simple, fixed-length instructions that each execute in one cycle, with many registers",
+        "Variable-length instructions for code density",
+        "Hardware-based instruction interpretation"
+      ],
+      "correct": 1,
+      "explanation": "RISC (Reduced Instruction Set Computer) favors simplicity: fixed-length instructions, a load-store architecture (only load/store access memory), many general-purpose registers, and instructions designed for single-cycle execution. This simplifies pipelining and enables higher clock speeds."
+    }
+  ]
+}

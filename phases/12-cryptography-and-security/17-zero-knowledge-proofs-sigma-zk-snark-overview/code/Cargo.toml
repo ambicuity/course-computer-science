@@ -1,0 +1,17 @@
+[workspace]
+
+[package]
+name = "zk-proofs-lesson"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sha2 = "0.10"
+rand = "0.8"
+num-bigint = { version = "0.4", features = ["rand"] }
+num-traits = "0.2"
+hex = "0.4"
+
+[[bin]]
+name = "main"
+path = "main.rs"

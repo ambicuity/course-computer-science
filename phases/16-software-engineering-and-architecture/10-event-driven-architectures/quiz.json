@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 10
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What distinguishes an event from a command in a distributed system?",
+      "options": [
+        "An event instructs a specific handler to act; a command notifies that something happened",
+        "An event is a past-tense fact that has already happened; a command is an imperative request to a specific handler",
+        "Events and commands are the same — they differ only in naming convention",
+        "Commands are always async; events are always sync"
+      ],
+      "correct": 1,
+      "explanation": "Events are past-tense facts (OrderCreated) that have already occurred and are broadcast to any interested party. Commands are imperative requests (ReserveInventory) sent to a specific handler, where the sender expects a result."
+    },
+    {
+      "stage": "pre",
+      "question": "In a choreography-based saga, how is the next step triggered after a local transaction completes?",
+      "options": [
+        "A central orchestrator calls the next service directly",
+        "The completing service publishes an event, and the next service reacts to it",
+        "A shared database table is polled by all services",
+        "The saga coordinator sends a command to a message queue"
+      ],
+      "correct": 1,
+      "explanation": "In choreography, there is no central coordinator. Each service publishes an event when its local transaction completes, and the next service in the chain subscribes to that event and reacts independently."
+    },
+    {
+      "stage": "post",
+      "question": "A payment service processes the same PaymentProcessed event twice due to a network retry. What principle prevents double-charging the customer?",
+      "options": [
+        "Exactly-once delivery guarantees from the message broker",
+        "Idempotency — the handler tracks processed event IDs and skips duplicates",
+        "Eventual consistency — the system will converge to the correct state over time",
+        "Two-phase commit across all services"
+      ],
+      "correct": 1,
+      "explanation": "Idempotency means processing the same event multiple times produces the same result as processing it once. The handler checks a deduplication key (like orderId) and skips if it has already processed that event. This is essential because at-least-once delivery is the practical guarantee most systems provide."
+    },
+    {
+      "stage": "post",
+      "question": "In the saga pattern, what happens when the payment step fails after inventory has already been reserved?",
+      "options": [
+        "The entire transaction is rolled back using a distributed database transaction",
+        "A compensating transaction (e.g., ReleaseInventory) is published to semantically undo the reservation",
+        "The system enters an inconsistent state until a human intervenes",
+        "The original reservation expires after a timeout, requiring no explicit action"
+      ],
+      "correct": 1,
+      "explanation": "Sagas use compensating transactions to undo previous steps when a later step fails. Since there is no distributed transaction spanning all services, each completed step must have a semantic inverse (ReserveInventory has ReleaseInventory) that is triggered by the failure event."
+    },
+    {
+      "stage": "post",
+      "question": "Which scenario is a strong signal that you should choose event-driven architecture over request-response?",
+      "options": [
+        "You need an immediate, synchronous response with the latest data",
+        "Multiple independent services must react to the same state change without the producer knowing about them",
+        "Your system has a single service and will never need to scale",
+        "You need ACID guarantees across multiple databases"
+      ],
+      "correct": 1,
+      "explanation": "Event-driven architecture excels at fan-out: one event triggers multiple independent consumers without the producer knowing who they are. This is the core decoupling benefit. When you need an immediate response (option A), request-response is better. When you need cross-database ACID, you need a different pattern entirely."
+    },
+    {
+      "stage": "post",
+      "question": "Why is schema evolution a critical concern in event-driven systems?",
+      "options": [
+        "Events are ephemeral and disappear after processing, so schemas don't matter",
+        "Events are immutable records that may be processed by consumers written at different times, so schema changes can break old consumers",
+        "Schema evolution only matters for relational databases, not event systems",
+        "Event buses automatically handle schema migration, so developers don't need to worry about it"
+      ],
+      "correct": 1,
+      "explanation": "Events are durable, immutable records. An event produced today may be consumed by code written months from now (or years ago during replay). Changing the event schema (removing a field, changing a type) breaks consumers that depend on the old shape. This is why backward-compatible changes and schema registries are essential."
+    }
+  ]
+}

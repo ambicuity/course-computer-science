@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between linear and affine usage?",
+      "options": ["Linear allows many uses", "Linear requires exactly once; affine allows at most once", "Affine requires exactly twice", "No difference"],
+      "correct": 1,
+      "explanation": "Linear enforces exact consumption; affine permits dropping but not duplication."
+    },
+    {
+      "stage": "pre",
+      "question": "Why do linear types prevent memory leaks in theory?",
+      "options": ["They disable allocation", "Every allocated resource must be consumed exactly once, preventing forgotten cleanup", "They use garbage collection", "They have no heap"],
+      "correct": 1,
+      "explanation": "By requiring exactly one use, linear types ensure resources are always explicitly consumed (e.g., freed or closed)."
+    },
+    {
+      "stage": "post",
+      "question": "How does Rust ownership relate to affine typing intuition?",
+      "options": ["Values are freely duplicated by default", "Moves prevent uncontrolled reuse, approximating affine constraints", "Rust has no borrowing", "Ownership is runtime-only"],
+      "correct": 1,
+      "explanation": "Rust move semantics and borrow rules enforce disciplined resource usage with compile-time checks."
+    },
+    {
+      "stage": "post",
+      "question": "Why are these constraints useful for systems code?",
+      "options": ["They improve font rendering", "They reduce resource-lifecycle and aliasing bug classes", "They remove all logic bugs", "They disable optimization"],
+      "correct": 1,
+      "explanation": "Ownership disciplines prevent many misuse patterns around memory and resources."
+    },
+    {
+      "stage": "post",
+      "question": "What is the `Drop` trait in Rust an example of?",
+      "options": ["A runtime garbage collector", "Affine type enforcement: values are consumed (dropped) when they go out of scope", "A linear type annotation", "A type inference rule"],
+      "correct": 1,
+      "explanation": "`Drop` ensures cleanup code runs when an affine value is consumed at scope end, combining ownership discipline with deterministic destruction."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 8, "title": "Linear and Affine Types - Rust's Lineage" }
+}

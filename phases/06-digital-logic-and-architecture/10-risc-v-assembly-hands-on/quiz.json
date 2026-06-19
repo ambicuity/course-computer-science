@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 10,
+    "title": "Risc V Assembly Hands On"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does `addi sp, sp, -16` do at the start of a function, and why is it necessary?",
+      "options": [
+        "It subtracts 16 from the program counter to create a loop",
+        "It allocates 16 bytes on the stack for saving registers and local variables",
+        "It clears the stack pointer to prepare for a new process",
+        "It stores the value 16 at the address pointed to by sp"
+      ],
+      "correct": 1,
+      "explanation": "The RISC-V stack grows downward (toward lower addresses). `addi sp, sp, -16` subtracts 16 from the stack pointer, allocating 16 bytes (4 words) for this function's stack frame. The function then uses `sw`/`lw` with positive offsets from the new sp to save and restore registers."
+    },
+    {
+      "stage": "pre",
+      "question": "In a function call, which registers must the callee save before using, according to the standard RISC-V calling convention?",
+      "options": [
+        "a0–a7 (argument registers)",
+        "t0–t6 (temporary registers)",
+        "s0–s11 (saved registers) and ra (return address)",
+        "All registers must always be saved"
+      ],
+      "correct": 2,
+      "explanation": "Callee-saved registers (s0–s11) must be preserved across function calls — if the callee uses them, it must save them on entry and restore on exit. The return address (ra) must also be saved if the function makes further calls (jal overwrites ra). Caller-saved registers (t0–t6, a0–a7) are the caller's responsibility to save if it needs their values after the call."
+    },
+    {
+      "stage": "post",
+      "question": "What is the difference between `lw` and `lb` in RISC-V?",
+      "options": [
+        "lw loads from ROM; lb loads from RAM",
+        "lw loads a 32-bit word and sign-extends; lb loads a single byte and zero-extends",
+        "lw loads a 32-bit word and sign-extends; lb loads a single byte and sign-extends",
+        "lw requires alignment; lb works on any memory address"
+      ],
+      "correct": 2,
+      "explanation": "`lw` loads 4 bytes (a 32-bit word) from memory into a register, sign-extending to fill the register width. `lb` loads a single byte and sign-extends it to fill the register. There is also `lbu` which zero-extends the byte. Both require naturally aligned addresses on strict implementations, though many real systems allow unaligned access with a performance penalty."
+    },
+    {
+      "stage": "post",
+      "question": "To check if a string is a palindrome, you need to compare characters from both ends moving inward. Which RISC-V instruction would you use to branch when two loaded bytes are NOT equal?",
+      "options": [
+        "beq a0, a1, not_palindrome",
+        "bne a0, a1, not_palindrome",
+        "blt a0, a1, not_palindrome",
+        "jal a0, not_palindrome"
+      ],
+      "correct": 1,
+      "explanation": "`bne` (branch if not equal) compares two registers and jumps if they differ. After loading the left character into one register and the right character into another, `bne` is the natural choice to detect a mismatch. `beq` would branch when they ARE equal (wrong direction for detecting non-palindromes). `blt` compares magnitudes, not equality. `jal` is an unconditional jump-and-link, not a conditional branch."
+    },
+    {
+      "stage": "pre",
+      "question": "In RISC-V assembly, what does the instruction `add x1, x2, x3` do?",
+      "options": [
+        "Adds the value at memory address x2 to x3 and stores in x1",
+        "Adds the values in registers x2 and x3 and stores the result in register x1",
+        "Adds 1 to the value in register x2 and stores in x3",
+        "Copies the value from x2 to x1 and adds x3"
+      ],
+      "correct": 1,
+      "explanation": "RISC-V is a load-store architecture where arithmetic instructions operate on registers. `add x1, x2, x3` reads the values from registers x2 and x3, adds them, and writes the sum to register x1. Memory is accessed only through explicit load/store instructions."
+    }
+  ]
+}

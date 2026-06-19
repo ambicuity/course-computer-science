@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 3,
+    "title": "Combinational Logic — Adders, Mux, Decoders"
+  },
+  "questions": [
+    {
+      "stage": "post",
+      "question": "What is the worst-case gate delay of an N-bit ripple-carry adder?",
+      "options": [
+        "O(1)",
+        "O(log N)",
+        "O(N)",
+        "O(N²)"
+      ],
+      "correct": 2,
+      "explanation": "In a ripple-carry adder, the carry must propagate through all N full adder stages sequentially, giving O(N) delay."
+    },
+    {
+      "stage": "post",
+      "question": "How many select bits does an 8:1 multiplexer require?",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "8"
+      ],
+      "correct": 1,
+      "explanation": "An N:1 mux needs log2(N) select bits. log2(8) = 3."
+    },
+    {
+      "stage": "post",
+      "question": "A 3-to-8 decoder with an active-high enable produces how many outputs, and how many are active at a time when enabled?",
+      "options": [
+        "3 outputs, 1 active",
+        "8 outputs, 1 active",
+        "8 outputs, 3 active",
+        "8 outputs, all active"
+      ],
+      "correct": 1,
+      "explanation": "A 3-to-8 decoder has 2^3 = 8 outputs. When enabled, exactly one output is asserted (one-hot encoding)."
+    },
+    {
+      "stage": "post",
+      "question": "In a carry-lookahead adder, what do the Generate (G) and Propagate (P) signals represent?",
+      "options": [
+        "G = a XOR b, P = a AND b",
+        "G = a AND b, P = a XOR b",
+        "G = a OR b, P = a XOR b",
+        "G = a XOR b, P = a OR b"
+      ],
+      "correct": 1,
+      "explanation": "Generate G_i = a_i AND b_i means this stage produces a carry regardless of the incoming carry. Propagate P_i = a_i XOR b_i means an incoming carry passes through. These signals let all carries be computed in parallel."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between a half adder and a full adder?",
+      "options": [
+        "A half adder is twice as fast",
+        "A full adder accepts a carry-in bit in addition to two operand bits",
+        "A half adder can only add 4-bit numbers",
+        "A full adder uses twice as many transistors but produces the same output"
+      ],
+      "correct": 1,
+      "explanation": "A half adder adds two single bits, producing a sum and carry. A full adder adds three bits: two operands plus a carry-in from a previous stage. Full adders are chained together to build multi-bit adders like ripple-carry and carry-lookahead adders."
+    }
+  ]
+}

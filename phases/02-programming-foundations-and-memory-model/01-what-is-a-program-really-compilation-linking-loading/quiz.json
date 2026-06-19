@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which section of the binary holds zero-initialized global variables?",
+      "options": [
+        ".text",
+        ".data",
+        ".bss (size recorded in the binary but contents are zero-filled at load — saves disk)",
+        ".rodata"
+      ],
+      "correct": 2,
+      "explanation": ".bss = 'Block Started by Symbol'. The kernel maps an anonymous page of zeros, sized by the section header. So `int big_array[1000000];` adds only a tiny header to your executable, not 4 MB of zeros."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the linker do that the compiler does not?",
+      "options": [
+        "Parse C syntax",
+        "Type-check expressions",
+        "Resolve symbols across multiple .o files (and libraries), merge sections, apply relocations",
+        "Optimize loops"
+      ],
+      "correct": 2,
+      "explanation": "The compiler emits one .o per translation unit. The linker merges those .o's section by section and resolves cross-references — replacing 'call printf' with the actual address (or a PLT stub) of printf. Linker errors like 'undefined reference to X' come from this stage."
+    },
+    {
+      "stage": "post",
+      "question": "Static vs dynamic linking: which gives the larger binary?",
+      "options": [
+        "Static — it copies library code into the executable; dynamic leaves references resolved at load time by ld-linux.so/dyld.",
+        "Dynamic — it includes more metadata",
+        "They produce the same size",
+        "It depends on the optimization level"
+      ],
+      "correct": 0,
+      "explanation": "Static linking copies needed code from .a archives into the executable; a 'hello world' statically linked against musl can be 500 KB+; against glibc, 2+ MB. Dynamic links to a shared .so loaded at runtime — keeps your binary small but adds the load-time dependency."
+    },
+    {
+      "stage": "post",
+      "question": "What is the dynamic loader and when does it run?",
+      "options": [
+        "A linker option",
+        "A userspace program (ld-linux.so / dyld) that the kernel hands control to at `exec`; it maps shared libraries into the process and patches dynamic-symbol references before main() runs.",
+        "A kernel module",
+        "Part of gcc"
+      ],
+      "correct": 1,
+      "explanation": "When the kernel execs a dynamic binary, it mmaps the executable, then loads the dynamic loader specified in the binary's PT_INTERP header and transfers control to it. The loader runs in userspace, maps every .so the binary needs, resolves symbols (lazily via the PLT/GOT, or eagerly with BIND_NOW), then jumps to _start which calls main."
+    },
+    {
+      "stage": "post",
+      "question": "Why is LD_PRELOAD a powerful tool — and a security concern?",
+      "options": [
+        "It speeds up linking",
+        "It tells the dynamic loader to map a user-specified .so BEFORE the default libraries — so any symbol it defines shadows the original. Used for ltrace, fault injection, and mock libraries; also for attacks if abused.",
+        "It disables all symbol resolution",
+        "It's purely cosmetic"
+      ],
+      "correct": 1,
+      "explanation": "LD_PRELOAD puts your .so first in the search order. Any function it defines (e.g., a malloc shim) replaces libc's. Legitimate uses: tracing, mocking, instrumentation. Attacks: hijack `puts`, `read`, or `crypto` functions in unprivileged binaries. Hardened binaries set the secure-execution flag and the loader ignores LD_PRELOAD for setuid programs."
+    },
+    {
+      "stage": "post",
+      "question": "Looking at `/proc/<pid>/maps` for a running C program, which region typically grows DOWNWARD as the program runs?",
+      "options": [
+        ".text",
+        "Heap",
+        "Stack — extended toward lower addresses as functions are called and locals are pushed",
+        "rodata"
+      ],
+      "correct": 2,
+      "explanation": "Convention on most architectures: stack grows toward lower addresses, heap grows toward higher. They start far apart in the virtual address space. A 'stack overflow' is the stack pointer crossing into a guard page mapped between the two regions — the kernel catches the page fault and the process dies with SIGSEGV."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 1,
+    "title": "What Is A Program Really Compilation Linking Loading"
+  }
+}

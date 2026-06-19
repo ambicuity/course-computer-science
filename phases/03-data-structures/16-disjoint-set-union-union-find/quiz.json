@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What's the amortized complexity per Union-Find operation with both union-by-rank and path compression?",
+      "options": [
+        "O(log n)",
+        "O(α(n)) where α is the inverse Ackermann function — bounded by 4 for any practical n. Effectively constant.",
+        "O(1)",
+        "O(n)"
+      ],
+      "correct": 1,
+      "explanation": "Tarjan & Van Leeuwen 1984 proved this bound, and Tarjan showed it's tight for pointer-machine DSU. α(2^65536) ≈ 4. For any n ≤ 10²⁰ (more than atoms in the universe), α ≤ 4. So in any actual program: 'constant per op'. But it's NOT exactly O(1); the lower bound is α(n)."
+    },
+    {
+      "stage": "pre",
+      "question": "Which two heuristics achieve the α(n) bound together?",
+      "options": [
+        "Hashing + rotation",
+        "Union by rank (or size) AND path compression. Each alone gives O(log n); together they give O(α(n)).",
+        "Balancing + recursion",
+        "Caching + prefetch"
+      ],
+      "correct": 1,
+      "explanation": "Union-by-rank: attach the shorter tree under the taller → height grows ≤ log n. Path compression (or path halving): every find points all walked nodes directly at the root → future finds on those nodes are O(1). Either alone: O(log n). Both together: O(α(n)) — Tarjan's result. The combined effect is more than the sum of parts because they reinforce each other."
+    },
+    {
+      "stage": "post",
+      "question": "How is DSU used in Kruskal's MST algorithm?",
+      "options": [
+        "For sorting",
+        "Process edges in weight order. For each edge (u, v, w): if find(u) ≠ find(v), include the edge in MST and unite(u, v). DSU efficiently detects whether adding an edge would create a cycle.",
+        "For shortest path",
+        "Random selection"
+      ],
+      "correct": 1,
+      "explanation": "Kruskal builds an MST by greedy edge selection. The key question per edge: 'are u and v already connected via earlier edges?' DSU answers this in O(α(n)). Total complexity: O(m log m) for sorting + O(m α(n)) for the DSU ops = O(m log m). This is one of the cleanest greedy-algorithm + data-structure pairings in CS."
+    },
+    {
+      "stage": "post",
+      "question": "What does 'path compression' do during a find operation?",
+      "options": [
+        "Saves memory",
+        "After locating the root, points every node on the find-path directly at the root. Subsequent finds on those nodes are O(1).",
+        "Compresses the array",
+        "Hashes the path"
+      ],
+      "correct": 1,
+      "explanation": "Walk up to find the root r. Then walk back down and set every visited node's parent to r. The next find on any of these nodes hits the root in one step. Implementations: full compression (two-pass), path halving (`parent[x] = parent[parent[x]]` in the loop — one-pass), path splitting. All give the same asymptotic guarantee; halving is the most cache-friendly."
+    },
+    {
+      "stage": "post",
+      "question": "Does DSU support split (un-union) efficiently?",
+      "options": [
+        "Yes, in O(1)",
+        "No — DSU is fundamentally 'monotonic'. Splitting a set after unions would require recomputing the union tree. For undo/rollback, use rollback DSU (no path compression) with O(log n) per op.",
+        "Yes via inverse find",
+        "Always splits cleanly"
+      ],
+      "correct": 1,
+      "explanation": "Standard DSU is one-way: only union, no split. The α(n) bound depends on path compression destroying historical structure. For problems needing undo (offline graph queries, backtracking), use rollback DSU: do NOT compress paths; record every parent/rank change on a stack; rollback pops them. Cost becomes O(log n) per op (only union by rank's height bound applies), but undo is now possible."
+    },
+    {
+      "stage": "post",
+      "question": "Where in real systems is DSU used outside graph algorithms?",
+      "options": [
+        "Only graphs",
+        "Type-inference (equivalence classes of type variables), image segmentation (Felzenszwalb pixel-merging), epoll wakeup deduplication, the SAT solver's congruence closure procedure.",
+        "Web routing",
+        "Crypto"
+      ],
+      "correct": 1,
+      "explanation": "Anywhere you have a dynamic equivalence relation, DSU shows up. Hindley-Milner type inference uses it to track which type variables have been unified. Image segmentation merges similar adjacent pixels. SMT solvers maintain congruence classes (terms known to be equal) via DSU. The Linux kernel uses a DSU-like structure to deduplicate wakeup events when multiple fds in epoll fire simultaneously."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 16,
+    "title": "Disjoint Set Union Union Find"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why model TCP as a state machine first?",
+      "options": ["To avoid packets entirely", "To make transition correctness explicit before implementing full protocol features", "To remove timer handling", "To skip reading RFCs"],
+      "correct": 1,
+      "explanation": "The TCP state machine defines which segments are legal in each state and what transitions they trigger. Getting the state machine right first prevents bugs in retransmission, flow control, and connection teardown from masking state machine errors."
+    },
+    {
+      "stage": "pre",
+      "question": "What are the three layers of the TCP/IP stack?",
+      "options": ["Application, Database, Storage", "TCP (connections), IP (addressing), Ethernet (framing)", "Parser, Executor, Storage", "Client, Server, Router"],
+      "correct": 1,
+      "explanation": "Each layer has a different addressing scheme (ports, IP addresses, MAC addresses) and a different contract. The TCP layer manages connections and byte streams. The IP layer handles packet routing. The Ethernet layer handles local network framing."
+    },
+    {
+      "stage": "post",
+      "question": "What is the role of checksums in a TCP/IP stack?",
+      "options": ["Data compression", "Error detection over transmitted data so corrupted segments are rejected", "Encryption", "Connection scheduling"],
+      "correct": 1,
+      "explanation": "The IPv4 header checksum verifies header integrity. The TCP checksum covers the pseudo-header, TCP header, and payload. Both the sender and receiver compute the checksum; if they differ, the segment was corrupted and is silently discarded."
+    },
+    {
+      "stage": "post",
+      "question": "Why keep packet parsing and connection state logic separated?",
+      "options": ["To duplicate code unnecessarily", "To isolate byte-level correctness from protocol-state correctness for independent testing", "To slow down execution", "To avoid writing tests"],
+      "correct": 1,
+      "explanation": "Packet parsing is a pure function (bytes -> struct) with no side effects. Connection state is a state machine with transitions and side effects. Separating them means you can test parsing with known byte sequences and test state transitions with synthetic segment structs."
+    },
+    {
+      "stage": "post",
+      "question": "What happens if a TCP segment's sequence number is outside the receive window?",
+      "options": ["The segment is accepted and buffered", "The segment is silently discarded or triggers an ACK with the expected sequence number", "The connection is reset immediately", "The segment is retransmitted"],
+      "correct": 1,
+      "explanation": "RFC 793 specifies that segments outside the receive window are dropped. The receiver may send an ACK indicating the expected sequence number, which helps the sender detect lost segments and retransmit."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 5, "title": "Build a User-Space TCP/IP Stack" }
+}

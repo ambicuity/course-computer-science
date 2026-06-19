@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which two properties usually define sorting correctness?",
+      "options": ["Output is sorted and is a permutation of input", "Output is shorter and lexicographically minimal", "Output has no duplicates and no zeros", "Output equals quicksort output"],
+      "correct": 0,
+      "explanation": "A correct sort must preserve elements (permutation: no elements lost or invented) and produce ordered output (sortedness: every adjacent pair is in order). Both are needed; neither alone is sufficient."
+    },
+    {
+      "stage": "pre",
+      "question": "What does formal verification provide that testing cannot?",
+      "options": ["Faster execution", "Mathematical proof that a property holds for all possible inputs", "Better error messages", "Smaller code size"],
+      "correct": 1,
+      "explanation": "Testing checks specific inputs. Formal verification proves properties for all inputs: if the proof is accepted by the kernel, the property holds universally. This eliminates entire classes of bugs."
+    },
+    {
+      "stage": "post",
+      "question": "Why prove permutation in addition to sortedness?",
+      "options": ["Sortedness alone allows dropping or inventing elements", "Permutation implies asymptotic complexity", "Permutation proves stable sorting automatically", "Sortedness and permutation are equivalent"],
+      "correct": 0,
+      "explanation": "Without the permutation property, sort could return [1,2,3] for any input. That's sorted but wrong. The permutation property ensures the output contains exactly the same elements as the input."
+    },
+    {
+      "stage": "post",
+      "question": "What is extraction in Coq?",
+      "options": ["Removing unused lemmas", "Converting verified Coq definitions to executable OCaml or Haskell code", "Exporting proof scripts", "Importing external libraries"],
+      "correct": 1,
+      "explanation": "Extraction converts Coq's functional language (Gallina) to OCaml or Haskell. The extracted code inherits the correctness properties proven in Coq. This bridges the gap between verification and execution."
+    },
+    {
+      "stage": "post",
+      "question": "Why is insertion sort a good first algorithm to verify?",
+      "options": ["It is the fastest sort", "It has simple recursive structure that maps naturally to inductive proofs", "It doesn't need correctness proofs", "It works on all data types"],
+      "correct": 1,
+      "explanation": "Insertion sort's structure (insert one element, then sort the rest) maps directly to Coq's induction principles. The key lemma (insert preserves sortedness) has a clean inductive proof. More complex sorts (quicksort, mergesort) require more involved proofs."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 15, "title": "Build a Verified Sorting Library in Coq/Lean" }
+}

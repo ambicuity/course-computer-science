@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does `#define NDEBUG` (or the `-DNDEBUG` compiler flag) do in C?",
+      "options": [
+        "Enables debugging",
+        "Disables `assert()` — every `assert(cond);` compiles to nothing in release builds. Use to remove assertion cost in production.",
+        "Adds debug symbols",
+        "Aborts the build"
+      ],
+      "correct": 1,
+      "explanation": "Standard C convention: with `-DNDEBUG`, `assert()` is a no-op. So a `assert(expensive_check())` in dev becomes free in release. Don't put side effects inside assert; they vanish too. Pair with sanitizers in CI to catch what asserts would catch."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the difference between Rust's `assert!` and `debug_assert!`?",
+      "options": [
+        "There isn't one",
+        "`assert!` is always checked (debug AND release). `debug_assert!` is checked only in debug; in `--release` it's compiled away. Use debug_assert for expensive sanity checks.",
+        "`assert!` is for tests only",
+        "`debug_assert!` doesn't panic"
+      ],
+      "correct": 1,
+      "explanation": "Same distinction as C's assert vs assert-with-NDEBUG, but explicit. assert! for invariants critical to safety; debug_assert! for sanity checks you want in dev but not in production hot paths. Both panic on failure (terminating the thread or process)."
+    },
+    {
+      "stage": "post",
+      "question": "AddressSanitizer (ASAN) primarily catches which bug classes?",
+      "options": [
+        "Logic bugs in business code",
+        "Heap-buffer-overflow, use-after-free, double-free, stack-buffer-overflow, and at exit, memory leaks. Memory-safety errors broadly.",
+        "Race conditions",
+        "Incorrect parsing"
+      ],
+      "correct": 1,
+      "explanation": "ASAN instruments every load and store, validating against a shadow-memory map that tracks which bytes are 'allocated' or 'freed.' Catches the canonical C/C++ memory bugs at runtime, before they crash mysteriously hours later. Cost: ~2× slower, ~3× memory; runs in dev/CI."
+    },
+    {
+      "stage": "post",
+      "question": "Why are assertions for *programmer* errors and not for *user-input* errors?",
+      "options": [
+        "Both are fine",
+        "Assertions terminate the process — appropriate for 'bug in code' but not for 'malformed input from outside.' User input should be validated and produce a clean error (return code, Result::Err) without aborting.",
+        "Asserts are too slow",
+        "Asserts only work on integers"
+      ],
+      "correct": 1,
+      "explanation": "Assertion failures = bugs. The right response is a loud crash + debug session. User errors (bad JSON, missing file, network timeout) are *expected* — the program should handle them gracefully. Mixing the two leads to processes that crash on bad input — a DOS vector and a UX disaster."
+    },
+    {
+      "stage": "post",
+      "question": "UndefinedBehavior Sanitizer (UBSAN) catches what?",
+      "options": [
+        "Memory leaks",
+        "Signed integer overflow, null deref, misaligned access, invalid shifts, function not returning a value — UB that C's spec says 'compiler can do anything' but the compiler is willing to instrument runtime checks for.",
+        "Logic bugs",
+        "Style issues"
+      ],
+      "correct": 1,
+      "explanation": "C/C++ have hundreds of UB triggers; modern optimizers assume they don't happen and aggressively transform code under that assumption. UBSAN inserts runtime checks: catch UB the moment it occurs, before the optimizer's wrong-on-this-input transformation breaks things. ~5-20% overhead — cheap enough to run in production sometimes."
+    },
+    {
+      "stage": "post",
+      "question": "An invariant on a sorted-array data structure says 'the array is monotonically nondecreasing.' Where should you assert it?",
+      "options": [
+        "Once at startup",
+        "After every mutation (insert/delete/sort) — debug-assert traverse the array to verify. In release builds the check compiles away; in CI it catches any operation that breaks the invariant immediately.",
+        "Only in unit tests",
+        "Only at process exit"
+      ],
+      "correct": 1,
+      "explanation": "Invariants are 'always-true' properties; the standard practice is to assert them at the boundaries of operations — typically after any state-changing function. debug_assert (Rust) or assert in C costs O(n) per insert in debug, but free in release. CI runs the test suite under debug + sanitizers; any operation that breaks the invariant fails immediately."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 17,
+    "title": "Defensive Programming Asserts Invariants Asan Ubsan"
+  }
+}

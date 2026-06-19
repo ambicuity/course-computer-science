@@ -1,0 +1,6 @@
+main;compress;lz4;literal_copy -70
+main;parse;tokenize;scan_string -80
+main;compress;lz4;hash_match -130
+main;io;read_block;kernel_read 10
+main;io;write_block;kernel_write 5
+main;parse;tokenize;scan_char -120

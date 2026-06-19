@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 1,
+    "title": "The Compilation Pipeline End To End"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the compilation pipeline, what is the primary output of the lexer stage?",
+      "options": [
+        "An abstract syntax tree",
+        "A stream of tokens",
+        "Intermediate representation",
+        "Machine code"
+      ],
+      "correct": 1,
+      "explanation": "The lexer (scanner) converts a character stream into a token stream. Each token is a categorized chunk of text such as a keyword, identifier, number, or operator."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key advantage of separating a compiler into a frontend and a backend?",
+      "options": [
+        "It eliminates the need for an optimizer",
+        "It allows N source languages and M targets to share N + M components instead of N × M",
+        "It removes the need for a linker",
+        "It guarantees single-pass compilation"
+      ],
+      "correct": 1,
+      "explanation": "With frontend/backend separation, each language needs only a frontend and each target needs only a backend. LLVM exemplifies this: Clang (C/C++), rustc (Rust), and Swift all emit LLVM IR, which then targets x86, ARM, RISC-V, etc."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following best describes LLVM IR?",
+      "options": [
+        "A high-level scripting language for build automation",
+        "A typed, SSA-based, RISC-like intermediate representation used as a universal middle layer",
+        "A binary object file format for linking",
+        "A preprocessor macro language"
+      ],
+      "correct": 1,
+      "explanation": "LLVM IR is a typed, static single assignment (SSA) based intermediate representation with a RISC-like instruction set. It serves as the contract between language frontends and architecture backends."
+    },
+    {
+      "stage": "post",
+      "question": "What distinguishes a JIT compiler from a traditional ahead-of-time (AOT) compiler?",
+      "options": [
+        "JIT compilers do not use an AST",
+        "JIT compilers compile code at runtime, often starting with interpretation and compiling hot paths to machine code",
+        "JIT compilers cannot perform optimization",
+        "JIT compilers produce object files for later linking"
+      ],
+      "correct": 1,
+      "explanation": "A JIT compiler executes code initially via interpretation or baseline compilation, profiles which code paths are hot (frequently executed), and then compiles those paths to optimized machine code at runtime."
+    },
+    {
+      "stage": "pre",
+      "question": "What are the major phases of a typical compilation pipeline?",
+      "options": [
+        "Edit, save, run, debug",
+        "Lexing, parsing, semantic analysis, optimization, code generation",
+        "Compile, link, load, execute",
+        "Input, output, error handling"
+      ],
+      "correct": 1,
+      "explanation": "A compiler transforms source code through: (1) Lexing — tokenizing input, (2) Parsing — building an AST, (3) Semantic analysis — type checking, scope resolution, (4) Optimization — improving the IR, (5) Code generation — emitting target code. Linking and loading come after compilation."
+    }
+  ]
+}

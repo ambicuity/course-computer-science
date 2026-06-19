@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 13,
+    "title": "Real-Time Techniques — Deferred, Tiled, Cluster"
+  },
+  "questions": [
+    {
+      "question": "What is the primary purpose of the G-buffer in deferred rendering?",
+      "options": [
+        "To store the final rendered image before post-processing",
+        "To decouple geometry data from lighting by storing per-pixel surface properties (position, normal, albedo, etc.) in multiple render targets",
+        "To accelerate ray tracing by caching bounding volume hierarchies",
+        "To compress texture data for faster GPU memory access"
+      ],
+      "correct": 1,
+      "explanation": "The G-buffer stores per-pixel surface properties (world position, normal, albedo, specular, roughness, depth) in multiple render targets during the geometry pass. This decouples geometry processing from lighting: the lighting pass reads the G-buffer without needing to re-render objects.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why does deferred rendering have difficulty supporting MSAA (multisample anti-aliasing)?",
+      "options": [
+        "MSAA requires floating-point render targets which are incompatible with G-buffer formats",
+        "The G-buffer stores one set of surface properties per pixel, but MSAA requires evaluating shading at multiple sub-pixel samples, which would multiply bandwidth and storage by the sample count",
+        "The lighting pass operates in screen space and cannot access sub-pixel coverage data",
+        "MSAA is inherently incompatible with any multi-pass rendering technique"
+      ],
+      "correct": 1,
+      "explanation": "MSAA works by shading at multiple sub-pixel locations and resolving. In deferred rendering, the G-buffer stores a single set of surface properties per pixel. Using MSAA would require storing surface data per sub-sample, dramatically increasing memory bandwidth and storage. This is why deferred renderers typically use post-process AA (FXAA, SMAA, TAA) instead.",
+      "stage": "pre"
+    },
+    {
+      "question": "In forward rendering, why does the cost scale as O(objects × lights)?",
+      "options": [
+        "Because each light must be drawn once per object, requiring separate draw calls or iterating over all lights in each object's shader",
+        "Because the GPU can only process one light at a time per frame",
+        "Because each object requires a separate render pass for depth sorting",
+        "Because lighting calculations are O(n²) due to inter-reflection between objects"
+      ],
+      "correct": 0,
+      "explanation": "In forward rendering, every surface must evaluate every light that affects it. In a single-pass approach, each fragment loops over all lights; in a multi-pass approach, each light requires a separate draw of all affected objects. Either way, the total work grows as the product of objects and lights, unlike deferred rendering which decouples them.",
+      "stage": "pre"
+    },
+    {
+      "question": "What is the key difference between tiled and clustered light culling?",
+      "options": [
+        "Tiled uses a compute shader while clustered uses a fragment shader",
+        "Tiled subdivides the screen into 2D tiles with a min/max depth range, while clustered extends this into 3D by adding explicit depth slices, giving tighter light assignment when depth complexity is high",
+        "Clustered renders geometry in clusters while tiled renders it in tiles",
+        "Tiled is used in forward rendering and clustered is used in deferred rendering exclusively"
+      ],
+      "correct": 1,
+      "explanation": "Tiled rendering divides the screen into 2D tiles (e.g., 16×16 pixels) and uses a single min/max depth range per tile. When a tile contains surfaces at very different depths, the min/max range becomes large and includes lights that affect no visible surface. Clustered rendering adds explicit depth slices, creating 3D frustum clusters. Each cluster has its own light list, eliminating the wasted work from empty depth ranges.",
+      "stage": "post"
+    },
+    {
+      "question": "Which of these is a disadvantage of deferred rendering compared to forward rendering?",
+      "options": [
+        "Deferred rendering cannot handle more than 4 lights per scene",
+        "Deferred rendering requires storing and reading multiple full-screen render targets (the G-buffer), consuming significant memory bandwidth and making transparency difficult since only the nearest surface is stored",
+        "Deferred rendering produces images with incorrect normals because the G-buffer stores them in screen space",
+        "Deferred rendering is always slower than forward rendering regardless of scene complexity"
+      ],
+      "correct": 1,
+      "explanation": "The G-buffer requires writing 3-4 full-screen render targets in the geometry pass and reading them all in the lighting pass, which is bandwidth-intensive. Transparency is also problematic because only the nearest surface is stored — transparent objects need a separate forward pass after the lighting pass. However, deferred handles many opaque lights efficiently.",
+      "stage": "post"
+    },
+    {
+      "question": "Forward+ (tiled forward) rendering combines tiled light culling with forward rendering. What advantage does this have over traditional deferred rendering?",
+      "options": [
+        "It eliminates the need for any light culling",
+        "It supports MSAA and transparent objects naturally because it stays in a forward pipeline, while still limiting per-pixel light evaluation to only those lights overlapping each tile",
+        "It reduces the number of draw calls to exactly one per frame",
+        "It removes the need for any compute shader passes"
+      ],
+      "correct": 1,
+      "explanation": "Forward+ uses a compute shader to build per-tile light lists, then renders objects in a forward pass where each fragment only evaluates lights from its tile's list. This preserves the ability to use MSAA and render transparent objects (which deferred struggles with), while still achieving the key benefit of per-pixel light culling that limits costly shading operations.",
+      "stage": "post"
+    }
+  ]
+}

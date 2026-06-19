@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 5,
+    "title": "Rasterization II — Z-buffer, Clipping, Culling"
+  },
+  "questions": [
+    {
+      "question": "Why is 1/z interpolation preferred over raw z interpolation for depth in screen space?",
+      "options": [
+        "1/z is linear in screen space after perspective projection, while raw z is not",
+        "1/z produces smaller numerical values, saving memory bandwidth",
+        "1/z avoids the need for a near plane, simplifying the pipeline",
+        "1/z makes the depth buffer integer-only, which is faster on GPU hardware"
+      ],
+      "correct": 0,
+      "explanation": "After the perspective projection, 1/z varies linearly across the triangle in screen space. This means barycentric interpolation of 1/z is exact, whereas interpolating raw z in screen space produces incorrect depth values. This property also extends to all vertex attributes — perspective-correct interpolation of attributes like texture coordinates uses the same 1/z weighting.",
+      "stage": "pre"
+    },
+    {
+      "question": "What is the primary cause of z-fighting, and what is the most effective remedy?",
+      "options": [
+        "Integer overflow in the depth buffer; increase buffer bit width to 64-bit",
+        "Insufficient depth precision when two surfaces are at nearly the same depth; push the near plane out as far as possible",
+        "Incorrect winding order causing flickering; reverse triangle vertex order",
+        "Backface culling removing the wrong surface; disable backface culling for coplanar geometry"
+      ],
+      "correct": 1,
+      "explanation": "Z-fighting occurs because the non-linear mapping of depth after perspective projection concentrates precision near the near plane, leaving little precision at larger depths. When two surfaces occupy nearly the same depth, rounding errors cause random selection between them. The most effective remedy is pushing the near plane out (increasing the near distance), which dramatically redistributes precision more evenly across the depth range. Other remedies include using reversed-Z depth mapping or floating-point depth buffers.",
+      "stage": "pre"
+    },
+    {
+      "question": "In backface culling, how is a back-facing triangle identified in screen space?",
+      "options": [
+        "The triangle's normal vector has a negative w component in clip space",
+        "The signed area (2D cross product of edges) is negative, indicating clockwise winding when the front face convention is CCW",
+        "The triangle's centroid is behind the near plane after the perspective divide",
+        "The dot product of the triangle's color with the light direction is negative"
+      ],
+      "correct": 1,
+      "explanation": "In screen space, the signed area of a triangle — computed as half the 2D cross product of two edge vectors — is positive for CCW winding (front-facing under the standard convention) and negative for CW winding (back-facing). This test is extremely cheap (a few multiplies and adds) and is the standard method for backface culling after projection to screen coordinates.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why must clipping be performed in homogeneous clip coordinates rather than in normalized device coordinates (NDC) after the perspective divide?",
+      "options": [
+        "NDC coordinates are floating-point and clipping them causes rounding errors",
+        "Vertices behind the camera (w ≤ 0) would produce inverted coordinates after the perspective divide, destroying information about which side of the camera they were on",
+        "Clip coordinates are the only coordinate system that has exactly six planes to clip against",
+        "The perspective divide is computationally free, but clipping in NDC requires a separate hardware unit"
+      ],
+      "correct": 1,
+      "explanation": "The perspective divide (dividing by w) is undefined for w=0 and produces inverted (mirrored) coordinates for vertices with w < 0 (behind the camera). A vertex at (-1, -1, -1, -1) in clip space maps to (1, 1, 1) in NDC — it appears inside the frustum! Clipping in homogeneous space avoids this singularity entirely. Each clip plane in homogeneous space is a simple linear inequality (e.g., x + w ≥ 0 for the left plane), making intersection computation exact and well-defined.",
+      "stage": "post"
+    },
+    {
+      "question": "In Sutherland-Hodgman polygon clipping, a triangle that straddles the near clip plane with exactly one vertex inside the frustum produces:",
+      "options": [
+        "One triangle, with the two outside vertices projected onto the near plane",
+        "One triangle formed by the inside vertex and the two intersection points on the near plane",
+        "Two triangles: one from the inside portion and one that is entirely behind the camera",
+        "Zero triangles: any triangle crossing the near plane is discarded"
+      ],
+      "correct": 1,
+      "explanation": "When one vertex is inside and two are outside, the Sutherland-Hodgman algorithm clips each edge crossing the plane. The two edges from the inside vertex to the outside vertices each produce an intersection point on the near plane. The result is a single triangle formed by the inside vertex and the two intersection points. When two vertices are inside and one is outside, the result is two triangles: a quad formed by the two inside vertices and two intersection points, split into two triangles.",
+      "stage": "post"
+    },
+    {
+      "question": "Which is the correct order of the culling hierarchy from cheapest (earliest) to most expensive (latest)?",
+      "options": [
+        "Occlusion culling → Backface culling → Frustum culling",
+        "Backface culling → Frustum culling → Occlusion culling",
+        "Frustum culling → Occlusion culling → Backface culling",
+        "Frustum culling → Backface culling → Occlusion culling (Z-buffer)"
+      ],
+      "correct": 3,
+      "explanation": "The pipeline applies culling in order of increasing cost per test: (1) View frustum culling operates on bounding volumes of whole objects — a simple sphere/plane test per object. (2) Backface culling operates per-triangle — a signed-area test discards ~50% of triangles in closed meshes. (3) Occlusion culling (Z-buffer) operates per-pixel per-fragment — the most granular and expensive test, but the only one that can resolve surfaces that pass both frustum and backface tests but are hidden behind other geometry.",
+      "stage": "post"
+    }
+  ]
+}

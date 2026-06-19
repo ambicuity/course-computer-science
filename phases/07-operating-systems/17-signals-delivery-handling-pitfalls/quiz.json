@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 17: Signals — Delivery, Handling, Pitfalls",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Why is it unsafe to call printf() inside a signal handler?",
+      "options": [
+        "printf() is too slow for signal handlers",
+        "printf() is not async-signal-safe — it can corrupt stdio state if interrupted mid-call",
+        "printf() allocates memory on every call, which is always safe",
+        "The signal handler runs in userspace, so all functions are safe"
+      ],
+      "explanation": "A signal handler can interrupt code at any point, including inside printf() itself. Calling printf() from a handler while another printf() is in progress corrupts internal stdio state. Only async-signal-safe functions like write() should be used.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "What advantage does sigaction() have over signal()?",
+      "options": [
+        "sigaction() is simpler and requires fewer parameters",
+        "sigaction() lets the handler stay installed after firing (no SIG_DFL reset), supports SA_RESTART, and gives fine-grained signal mask control",
+        "signal() cannot handle SIGINT",
+        "sigaction() works on Windows, signal() does not"
+      ],
+      "explanation": "On some systems signal() resets the handler to SIG_DFL after the first invocation. sigaction() keeps the handler installed, supports SA_RESTART to avoid EINTR, SA_SIGINFO for extended info, and controls which signals are blocked during the handler.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "A shared flag between a signal handler and main code must be declared as:",
+      "options": [
+        "static int",
+        "volatile sig_atomic_t",
+        "const char *",
+        "pthread_mutex_t"
+      ],
+      "explanation": "volatile prevents the compiler from optimizing away reads/writes. sig_atomic_t guarantees the read/write is atomic (fits in a single machine word), so the handler cannot interrupt a partial read or write.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "What happens when a signal is delivered while the signal is blocked via sigprocmask()?",
+      "options": [
+        "The signal is discarded permanently",
+        "The signal is marked as pending and delivered when the signal is unblocked",
+        "The process terminates immediately",
+        "The handler is called in a separate thread"
+      ],
+      "explanation": "Blocked signals become pending — they are kept in a bitmask by the kernel. When the signal is unblocked (SIG_UNBLOCK or SIG_SETMASK), all pending signals are delivered in order.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between synchronous and asynchronous signals?",
+      "options": [
+        "Synchronous signals come from hardware; asynchronous from software",
+        "Synchronous signals are caused by the process's own actions (e.g., segfault); asynchronous come from external sources (e.g., SIGKILL from another process)",
+        "Synchronous signals can be caught; asynchronous cannot",
+        "There is no difference"
+      ],
+      "correct": 1,
+      "explanation": "Synchronous signals (SIGSEGV, SIGFPE, SIGILL) are caused by the instruction that triggered them — they're delivered immediately to the faulting thread. Asynchronous signals (SIGTERM, SIGINT, SIGUSR1) can arrive at any time from other processes or the kernel. This distinction affects how signal handlers must be written."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 17,
+    "title": "Signals Delivery Handling Pitfalls"
+  }
+}

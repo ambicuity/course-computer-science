@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 4,
+    "lesson": 17,
+    "title": "Network Flow — Ford-Fulkerson, Edmonds-Karp, Dinic",
+    "note": "4 MCQs covering max-flow min-cut, Edmonds-Karp complexity, Dinic's level graph, and min-cut recovery."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "The max-flow min-cut theorem states that in any flow network the maximum flow value equals the minimum cut capacity. What does the minimum cut represent?",
+      "options": [
+        "The set of edges with the smallest total capacity whose removal disconnects s from t",
+        "The shortest path from s to t",
+        "The set of nodes closest to the source",
+        "The edge with the smallest capacity in the entire graph"
+      ],
+      "correct": 0,
+      "explanation": "A minimum cut is a partition (S, T) with s in S and t in T such that the total capacity of edges from S to T is minimized. Removing these edges disconnects s from t."
+    },
+    {
+      "stage": "post",
+      "question": "What is the worst-case time complexity of the Edmonds-Karp algorithm?",
+      "options": [
+        "O(V E)",
+        "O(V E²)",
+        "O(V² E)",
+        "O(E · max_flow)"
+      ],
+      "correct": 1,
+      "explanation": "Edmonds-Karp uses BFS for augmenting paths. Each edge becomes critical (bottleneck) at most O(V) times, each BFS costs O(E), giving O(V E²) total."
+    },
+    {
+      "stage": "post",
+      "question": "In Dinic's algorithm, what is the primary purpose of building the level graph using BFS before each phase of DFS blocking flow?",
+      "options": [
+        "To find the minimum cut edges directly",
+        "To ensure augmenting paths are shortest (fewest edges), allowing multiple shortest paths to be saturated simultaneously",
+        "To detect negative cycles in the residual graph",
+        "To sort edges by capacity for greedy selection"
+      ],
+      "correct": 1,
+      "explanation": "The level graph restricts edges to those on shortest s-t paths. This lets Dinic's saturate all shortest augmenting paths in one blocking-flow phase instead of finding them one at a time, yielding O(V² E) instead of O(V E²)."
+    },
+    {
+      "stage": "post",
+      "question": "After computing max-flow, how do you recover the minimum cut edges?",
+      "options": [
+        "Take all edges with zero residual capacity",
+        "Let S = nodes reachable from s in the residual graph; cut edges are original edges (u, v) where u ∈ S and v ∉ S",
+        "Take the bottleneck edge from each augmenting path",
+        "Remove edges in decreasing order of flow until s and t disconnect"
+      ],
+      "correct": 1,
+      "explanation": "After max-flow, BFS/DFS from s in the residual graph finds all reachable nodes S. The original edges crossing from S to V\\S form the minimum cut, and their total capacity equals the max-flow value by the max-flow min-cut theorem."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the max-flow min-cut theorem state?",
+      "options": [
+        "The maximum flow equals the sum of all edge capacities",
+        "The maximum flow from source to sink equals the capacity of the minimum cut separating them",
+        "The minimum cut always has exactly two edges",
+        "Maximum flow can only be computed on bipartite graphs"
+      ],
+      "correct": 1,
+      "explanation": "The max-flow min-cut theorem proves that the maximum amount of flow that can be sent from source to sink equals the minimum total capacity of edges whose removal disconnects source from sink. This is a fundamental duality result in combinatorial optimization."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 11,
+    "lesson": 12,
+    "title": "CRDTs — Counters, Sets, Sequences"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a CvRDT (state-based CRDT), why must the merge function be idempotent?",
+      "options": [
+        "To ensure the data type can only grow (monotonicity)",
+        "Because replicas may receive the same state update more than once due to unreliable networks",
+        "To guarantee that concurrent writes produce the same result on all replicas",
+        "Because the merge function must preserve type information across serializations"
+      ],
+      "correct": 1,
+      "explanation": "In unreliable networks, the same state update can be delivered multiple times. Idempotence (merge(a, a) = a) ensures that receiving a duplicate has no effect — the result is the same as receiving it once. Without idempotence, duplicate deliveries would corrupt state."
+    },
+    {
+      "stage": "pre",
+      "question": "A G-Counter uses per-replica slots and merges with element-wise max. What fundamental operation can a G-Counter NOT support?",
+      "options": [
+        "Reading the counter value",
+        "Merging two replicas' states",
+        "Decrementing the counter",
+        "Incrementing the counter"
+      ],
+      "correct": 2,
+      "explanation": "A G-Counter only grows — each replica increments its own slot, and merge takes the max. Since max can only increase values, there's no way to decrease any slot. To support decrement, you need a PN-Counter (two G-Counters: one for increments, one for decrements)."
+    },
+    {
+      "stage": "post",
+      "question": "In an OR-Set, replica A adds element \"x\" with tag (A,1) and then removes \"x\", while replica B concurrently adds \"x\" with tag (B,1). After merging, is \"x\" in the set?",
+      "options": [
+        "No, because remove overrides all adds",
+        "Yes, because A's remove only tombstones tag (A,1), and B's tag (B,1) survives",
+        "It depends on which replica merges first",
+        "No, because remove and add cancel out"
+      ],
+      "correct": 1,
+      "explanation": "This is the add-wins semantics of OR-Set. Replica A's remove only tombstones the tags it has observed — (A,1). B's tag (B,1) was never seen by A, so it isn't removed. After merge, \"x\" is present via the surviving tag (B,1). This is why OR-Set is called \"observed-remove\": you can only remove what you've observed."
+    },
+    {
+      "stage": "post",
+      "question": "Why is a G-Counter's merge (element-wise max) guaranteed to converge regardless of merge order?",
+      "options": [
+        "Because max is the only operation possible on integers",
+        "Because max is commutative (max(a,b)=max(b,a)), associative (max(max(a,b),c)=max(a,max(b,c))), and idempotent (max(a,a)=a)",
+        "Because each replica only increments its own slot, so no two replicas ever modify the same key",
+        "Because G-Counters use vector clocks to order operations"
+      ],
+      "correct": 1,
+      "explanation": "The three properties — commutativity, associativity, and idempotence — together guarantee that merge converges. Commutativity means merge order between two replicas doesn't matter. Associativity means grouping of merges doesn't matter. Idempotence means duplicate deliveries don't matter. All three are necessary for convergence in unreliable networks."
+    },
+    {
+      "stage": "post",
+      "question": "What is the primary disadvantage of a LWW-Register compared to an OR-Set?",
+      "options": [
+        "LWW-Register uses more memory than OR-Set",
+        "LWW-Register cannot handle concurrent writes — it silently discards all but the highest-timestamp write",
+        "LWW-Register requires a central coordinator to assign timestamps",
+        "LWW-Register is slower to merge than OR-Set"
+      ],
+      "correct": 1,
+      "explanation": "LWW-Register resolves all conflicts by picking the value with the highest timestamp. If two replicas concurrently write different values based on the same prior state, one write is silently lost. There's no way to detect or recover the discarded write. OR-Set preserves both concurrent adds (add-wins semantics), so no information is silently lost."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between CvRDTs and CmRDTs?",
+      "options": [
+        "CvRDTs can only be used for counters; CmRDTs can be used for any data type",
+        "CvRDTs gossip full state and merge with a commutative/associative/idempotent function; CmRDTs broadcast operations that must be commutative and delivered in causal order",
+        "CvRDTs require consensus; CmRDTs do not",
+        "CvRDTs are for read-heavy workloads; CmRDTs are for write-heavy workloads"
+      ],
+      "correct": 1,
+      "explanation": "CvRDTs (state-based) send the entire state and rely on the merge function being commutative, associative, and idempotent. CmRDTs (operation-based) send individual operations and require that those operations commute, plus they need reliable causal broadcast for exactly-once delivery. CvRDTs are simpler to implement but use more bandwidth; CmRDTs are more efficient but harder to deploy correctly."
+    }
+  ]
+}

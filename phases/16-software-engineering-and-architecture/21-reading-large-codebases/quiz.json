@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 21,
+    "title": "Reading Large Codebases"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You join a new team and need to understand a 200,000-line codebase. What should you read FIRST to orient yourself?",
+      "options": [
+        "The most frequently changed source files, found via git log",
+        "The README and top-level directory structure",
+        "The main entry point function, line by line",
+        "The test suite, starting from the first test file alphabetically"
+      ],
+      "correct": 1,
+      "explanation": "The README and directory structure provide orientation — what the project does, how it's organized, and where things live. This is the 'look at the map before walking the streets' principle. Starting with git log or the entry point is useful but premature without orientation. Tests are great documentation but come after you understand the project's purpose and structure."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the '20-minute rule' for reading codebases recommend?",
+      "options": [
+        "Spend no more than 20 minutes on any single file before moving on",
+        "Spend 20 minutes reading code before asking a question, so you can ask a precise question or find the answer yourself",
+        "Read the first 20 minutes of git history to understand the project's founding",
+        "Set a 20-minute timer and switch to a different module each time it goes off"
+      ],
+      "correct": 1,
+      "explanation": "The 20-minute rule says: before asking someone for help, spend 20 minutes investigating on your own. This is not about stubbornness — it ensures you ask precise, answerable questions rather than vague ones. After 20 minutes of focused reading, you'll either have found the answer or can ask 'Why does verifyToken in auth.go:47 return ErrExpired when claims.Exp is in the past?' instead of 'How does auth work?'"
+    },
+    {
+      "stage": "post",
+      "question": "You need to fix a bug where users get a 'connection timeout' error. What is the correct reading strategy?",
+      "options": [
+        "Start at the entry point and read linearly until you find network-related code",
+        "Read every test file to understand all the possible timeouts",
+        "Trace backwards from the error message: find where it's defined, where it's returned, and what data was passed",
+        "Read the README to understand the project's network architecture"
+      ],
+      "correct": 2,
+      "explanation": "Bug fixing uses a backwards-tracing strategy: start at the error (the symptom), find the code that produces it, trace backwards to understand what conditions cause it, and fix the root cause. This is surgical and targeted. Reading linearly from the entry point wastes time on unrelated code. Reading all tests is exhaustive when you need precision. The README is for orientation, not debugging."
+    },
+    {
+      "stage": "post",
+      "question": "Why should you read a module's tests before reading its implementation?",
+      "options": [
+        "Tests are shorter, so you finish faster",
+        "Tests show intent (what the code should do), while implementation shows how — and understanding 'what' before 'how' builds better mental models",
+        "Tests always pass, so they are a reliable source of truth",
+        "Implementation code is usually poorly written, so tests are easier to understand"
+      ],
+      "correct": 1,
+      "explanation": "Tests express intent — given this input, the output should be that. Implementation expresses mechanism — here's how I achieve that result. Reading 'what' before 'how' gives you a mental framework: you know what to expect when you read the implementation, so you can verify it matches the intent rather than trying to infer the intent from the mechanism."
+    },
+    {
+      "stage": "post",
+      "question": "You encounter a codebase organized into directories called `ports/`, `adapters/`, and `domain/`. What architecture pattern is this, and what should you read first?",
+      "options": [
+        "Layered architecture — read the controllers first, then models, then views",
+        "Hexagonal architecture (ports and adapters) — read the domain core first, then the adapters, since the domain should have zero external dependencies",
+        "Microservices architecture — read the docker-compose.yml first, then each service independently",
+        "Event-driven architecture — read the event definitions first, then the handlers"
+      ],
+      "correct": 1,
+      "explanation": "The `ports/`, `adapters/`, `domain/` structure is hexagonal architecture (ports and adapters). The domain core in `domain/` should contain pure business logic with no knowledge of databases, HTTP, or any external system. Reading it first gives you the business rules. Then read `ports/` (the interfaces the domain exposes) and `adapters/` (the thin translation layers to external systems). This follows the architecture onion principle: read interfaces before implementations."
+    },
+    {
+      "stage": "post",
+      "question": "Which navigation tool is specifically designed for jumping to symbol definitions in your editor, and what advantage does it have over grep/ripgrep?",
+      "options": [
+        "ripgrep — it searches faster than grep and respects .gitignore",
+        "GitHub code search — it can search across multiple repositories",
+        "ctags and LSP (Language Server Protocol) — they understand language semantics, so they find definitions and references with type-aware accuracy, not just text matches",
+        "git blame — it shows who wrote each line, helping you find the author to ask about definitions"
+      ],
+      "correct": 2,
+      "explanation": "ctags builds a symbol index and LSP provides language-aware navigation. Both understand that `Cache` in `interface Cache` is a type definition, not a variable name or a string. grep and ripgrep find text matches — they cannot distinguish a type definition from a variable name that happens to be spelled the same. This semantic understanding makes ctags/LSP far superior for navigation, while grep/rigrep are better for broad pattern searches like 'find all TODO comments' or 'find all error types'."
+    }
+  ]
+}

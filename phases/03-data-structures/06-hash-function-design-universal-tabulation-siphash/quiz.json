@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is SHA-256 a BAD choice as the hash function inside a HashMap?",
+      "options": [
+        "It produces too many collisions",
+        "It's ~50–100× slower than non-crypto hashes; for HashMap lookup you only need good distribution, not collision-resistance.",
+        "It's not portable",
+        "It can't produce 64-bit output"
+      ],
+      "correct": 1,
+      "explanation": "SHA-256 is designed to resist preimage and collision attacks by sophisticated adversaries — costing ~1 ns/byte and ~10 ns/u64. A HashMap needs to hash millions of times per second; SipHash-1-3 or FxHash do ~10x more hashes per second. The right tool for the right job: SHA-256 for content addressing (Git, IPFS); SipHash for hash-tabling untrusted input; FxHash/Wyhash for everything else."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the 'avalanche' property of a good hash function?",
+      "options": [
+        "Outputs are large",
+        "Flipping any single input bit flips ~50% of output bits, independent of input value or which bit was flipped. Bad mixing → predictable collisions.",
+        "Hashing is slow",
+        "Output uses all 64 bits"
+      ],
+      "correct": 1,
+      "explanation": "Avalanche measures how well one input bit mixes into the output. Ideal: 0.5 (each output bit has 50/50 chance of flipping). x*31 scores ~0.06 (terrible — high bits barely change with low bits). FNV-1a: ~0.4 (mediocre). splitmix64, SipHash, tabulation: ~0.5 (ideal). The lesson's main.c measures this on 1000 random inputs × 64 bits."
+    },
+    {
+      "stage": "post",
+      "question": "Why does SipHash use a SECRET KEY rather than being a pure function of the input?",
+      "options": [
+        "For speed",
+        "Adversaries who don't know the key can't construct colliding inputs. Used by Python/Rust HashMap to block hash-flooding DOS attacks. Per-process random key.",
+        "Cryptographic strength",
+        "Output size"
+      ],
+      "correct": 1,
+      "explanation": "CVE-2011-4815 showed how predictable hashes let attackers DOS web frameworks by sending N HTTP keys that all hash to one bucket. SipHash is a *keyed* pseudo-random function — its output depends on a 128-bit secret. The framework generates a random key at startup; the adversary can't predict which keys collide. Python set PYTHONHASHSEED=random by default, Rust did the same for its default hasher. The cost: SipHash is ~5× slower than FxHash."
+    },
+    {
+      "stage": "post",
+      "question": "What makes TABULATION HASHING provably universal, and why does that matter?",
+      "options": [
+        "Random tables are unpredictable",
+        "It's 3-universal: Pr_{T}[h_T(x)=h_T(y) for 3 distinct keys] ≤ 1/m³ over random table choice. Gives proven worst-case bounds in academic algorithms, even against adversarial input.",
+        "Faster than splitmix",
+        "Cryptographically secure"
+      ],
+      "correct": 1,
+      "explanation": "Universal hashing (Carter-Wegman, 1977) is a mathematical guarantee: pick h uniformly from the family, and collision probability is bounded REGARDLESS of input. Plain functions (FNV, mix64) don't have this property — there exist inputs that collide for them. Tabulation hashing reaches 3-universality with just XOR of random table lookups. Used when you need proven bounds (perfect hashing, streaming algorithms with worst-case guarantees)."
+    },
+    {
+      "stage": "post",
+      "question": "When SHOULD you use FxHash over SipHash?",
+      "options": [
+        "When DOS is possible",
+        "When input keys are trusted (compiler internals, batch jobs, internal services). FxHash is ~2-5× faster but has predictable collisions — fine if no adversary can submit keys.",
+        "Whenever",
+        "Never"
+      ],
+      "correct": 1,
+      "explanation": "FxHash is used inside rustc (compiler interning) and Firefox (DOM caching) — both contexts where the keys come from the source code or DOM, never from an adversary. Performance matters more than DOS resistance. Don't use FxHash for: HTTP form parsing, JSON deserialization of user input, anywhere keys come from untrusted sources. The Rust stdlib defaults to SipHash; you opt into FxHash via `hashbrown` or `rustc_hash` crates."
+    },
+    {
+      "stage": "post",
+      "question": "splitmix64 is a 'finalizer' or 'mixer' hash. What inputs is it designed for?",
+      "options": [
+        "Long strings",
+        "A single 64-bit integer; maps any u64 to a well-distributed u64 in ~3 cycles. Used to mix small fixed-size keys, mix counter values, derive PRNG state.",
+        "Variable-length strings",
+        "Files"
+      ],
+      "correct": 1,
+      "explanation": "splitmix64 is a 64-bit mixer: add a constant, multiply, shift, multiply, shift. Designed for the integer-key HashMap case where you have a u64 (or fits-in-u64 input) and need an avalanche-good 64-bit output. Not a stream hash for strings. Used to derive seeds in xoshiro PRNGs, mix hash outputs for OpenAddressing tables, and as the integer hasher inside many HashMap implementations including rustc_hash."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 6,
+    "title": "Hash Function Design Universal Tabulation Siphash"
+  }
+}

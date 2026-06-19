@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which formula correctly expresses 'every dog is a mammal'?",
+      "options": [
+        "∀x. Dog(x) ∧ Mammal(x)",
+        "∀x. Dog(x) → Mammal(x)",
+        "∃x. Dog(x) → Mammal(x)",
+        "∃x. Dog(x) ∧ Mammal(x)"
+      ],
+      "correct": 1,
+      "explanation": "Universal statements use implication, not conjunction. `∀x. Dog(x) ∧ Mammal(x)` would mean 'everything is both a dog and a mammal' — false. The implication form is vacuously true for non-dogs and asserts mammal-ness for dogs."
+    },
+    {
+      "stage": "pre",
+      "question": "What does `∀x ∃y. Loves(x, y)` say, contrasted with `∃y ∀x. Loves(x, y)`?",
+      "options": [
+        "They mean the same thing",
+        "The first: everyone has someone they love (y may depend on x). The second: there is one specific person whom everyone loves.",
+        "The first is a typo",
+        "Both require y to be unique"
+      ],
+      "correct": 1,
+      "explanation": "Order of quantifiers matters. `∀x ∃y` lets y depend on x (different beloved per person). `∃y ∀x` demands a single y that works for every x. The second is much stronger. This distinction is central to cryptographic claims: 'for every adversary there exists a key the adversary can't break' is WEAKER than 'there exists a key no adversary can break.'"
+    },
+    {
+      "stage": "post",
+      "question": "What is the De Morgan equivalent of `¬∀x. Even(x)`?",
+      "options": [
+        "∀x. ¬Even(x)",
+        "∃x. ¬Even(x)",
+        "¬∃x. Even(x)",
+        "∀x. Odd(x)"
+      ],
+      "correct": 1,
+      "explanation": "`¬∀x. P(x) ≡ ∃x. ¬P(x)`. 'Not everything is even' ⇔ 'something is not even'. Useful when pushing negation inward — most proof systems prefer it that way."
+    },
+    {
+      "stage": "post",
+      "question": "What does Skolemization replace?",
+      "options": [
+        "All universals with new constants",
+        "Each existential `∃y` with a function `f(...)` of the universally-quantified variables in scope, capturing y's dependence on them",
+        "Free variables with constants",
+        "Predicates with their negations"
+      ],
+      "correct": 1,
+      "explanation": "Skolemization eliminates existentials by introducing fresh function symbols. `∀x ∃y. P(x, y)` becomes `∀x. P(x, f(x))` — the f-function captures 'given x, the witness for y.' SMT solvers do this before CNF conversion. The Skolem function need not be defined; its existence is what's asserted."
+    },
+    {
+      "stage": "post",
+      "question": "In `∀x. (P(x, y) → ∃z. Q(x, z))`, which variables are free?",
+      "options": [
+        "x and z",
+        "y only",
+        "x, y, z",
+        "y and z"
+      ],
+      "correct": 1,
+      "explanation": "x is bound by `∀x`, z is bound by `∃z`. y appears unquantified — it's free. A closed formula has no free variables; this one isn't closed until y is bound (by an enclosing quantifier or by being a fixed constant in an interpretation)."
+    },
+    {
+      "stage": "post",
+      "question": "Why is `∀x. P(x) → Q(x)` logically equivalent to `¬∃x. (P(x) ∧ ¬Q(x))`?",
+      "options": [
+        "They aren't equivalent",
+        "Push negation inward via De Morgan + implication = ¬P ∨ Q: ∀x.(P(x)→Q(x)) ≡ ∀x. ¬(P(x) ∧ ¬Q(x)) ≡ ¬∃x. (P(x) ∧ ¬Q(x))",
+        "By Skolemization",
+        "By induction"
+      ],
+      "correct": 1,
+      "explanation": "Step 1: P → Q ≡ ¬(P ∧ ¬Q). Step 2: ∀x. ¬R(x) ≡ ¬∃x. R(x). Compose: ∀x. (P(x) → Q(x)) ≡ ∀x. ¬(P(x) ∧ ¬Q(x)) ≡ ¬∃x. (P(x) ∧ ¬Q(x)). 'Every P is Q' is the same as 'no P is a non-Q.' Useful when searching for a counterexample to a universal claim."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 2,
+    "title": "Predicate Logic Quantifiers"
+  }
+}

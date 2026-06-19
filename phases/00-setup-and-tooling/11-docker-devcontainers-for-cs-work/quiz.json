@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What's the difference between a Docker image and a container?",
+      "options": [
+        "There's no difference",
+        "An image is an immutable layered filesystem + metadata; a container is a *process* started from an image with its own writable top layer",
+        "Images run, containers are stored",
+        "Containers are virtual machines; images are not"
+      ],
+      "correct": 1,
+      "explanation": "Image = the build artifact (data on disk). Container = a running (or paused) process using that image's filesystem + an empty writable layer. One image can spawn many containers. Containers vanish when stopped; the image persists."
+    },
+    {
+      "stage": "pre",
+      "question": "Why do `COPY . .` lines belong near the BOTTOM of a Dockerfile rather than the top?",
+      "options": [
+        "The Dockerfile spec requires it",
+        "Each Dockerfile instruction produces a layer; layers below a changed one are invalidated. Copying volatile source code last keeps the slow `apt-get` / `pip install` layers cached across edits",
+        "It's faster to type",
+        "Copying first causes permission errors"
+      ],
+      "correct": 1,
+      "explanation": "Docker caches each layer by content. Changing a layer invalidates all layers below it. If your source `COPY` is at the top, every source edit re-runs `apt-get install`. Put expensive, stable installs first; put volatile copies last for the fastest dev loop."
+    },
+    {
+      "stage": "post",
+      "question": "Your Docker image ballooned to 2 GB. Looking at the Dockerfile you see `RUN apt-get update && apt-get install -y X Y Z`. What's the most common cause of bloat?",
+      "options": [
+        "The base image is too big",
+        "The apt cache (`/var/lib/apt/lists/*`) was not removed in the same RUN; it stays in the layer forever",
+        "X, Y, Z are big packages",
+        "Docker compresses badly"
+      ],
+      "correct": 1,
+      "explanation": "`apt-get update` populates ~50-100 MB of metadata under `/var/lib/apt/lists/`. Each Dockerfile instruction's filesystem changes are committed to a layer; deleting that cache *in a later RUN* still leaves it in the earlier layer. Always end install RUNs with `&& rm -rf /var/lib/apt/lists/*`."
+    },
+    {
+      "stage": "post",
+      "question": "You bind-mount your project into a container and edit files inside. Back on the host, the files are owned by root. Why?",
+      "options": [
+        "Docker requires root ownership",
+        "By default, processes in the container run as root (UID 0); when they write through the bind mount, the kernel records the writer's UID — which is 0 on your host's namespace too. Fix with `--user $(id -u):$(id -g)`, a non-root USER in the Dockerfile, or rootless Docker / Podman",
+        "Permissions can't be controlled with Docker",
+        "The bind mount is corrupt"
+      ],
+      "correct": 1,
+      "explanation": "Inside the container, root is UID 0. The container shares the host's filesystem (over the bind mount); UID 0 inside = UID 0 outside. Pass `--user $(id -u):$(id -g)` to match your host UID, or add `USER nonroot` in the Dockerfile, or use Podman's rootless mode which automatically remaps UIDs via user namespaces."
+    },
+    {
+      "stage": "post",
+      "question": "Why use a multi-stage build for a Rust binary that you ship as a Docker image?",
+      "options": [
+        "Multi-stage is required by Rust",
+        "Stage 1 has the full toolchain; stage 2 has only the compiled binary. The final image is much smaller (~80 MB vs 1.5 GB) because the Rust compiler, cargo registry, and source code aren't shipped — just the binary",
+        "Multi-stage makes the build faster",
+        "Single-stage builds can't be pushed to registries"
+      ],
+      "correct": 1,
+      "explanation": "Multi-stage = compile in a fat image, copy artifacts into a thin one. The runtime image is what you ship; smaller = faster pulls, smaller attack surface, less storage cost in the registry. Distroless takes this further (no shell, no package manager — just glibc + your binary)."
+    },
+    {
+      "stage": "post",
+      "question": "What problem does a devcontainer.json solve that a plain Dockerfile doesn't?",
+      "options": [
+        "Nothing — they're equivalent",
+        "It tells the editor to *open* the workspace inside the container — wiring up the LSP, the debugger, the terminal, and the file watcher; a Dockerfile alone just gives you an image, not an editor integration",
+        "It's faster to build",
+        "Dockerfiles can't install editor extensions"
+      ],
+      "correct": 1,
+      "explanation": "A Dockerfile builds an image. `devcontainer.json` wraps that image with editor instructions: which user to attach as, which VS Code extensions to install in the container, which post-create commands to run, which port-forwards to set up. Same recipe → editor + container both wired up."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 11,
+    "title": "Docker Devcontainers For Cs Work"
+  }
+}

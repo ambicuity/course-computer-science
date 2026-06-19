@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why keep crawl/index/rank boundaries explicit in a search engine?",
+      "options": ["To avoid modularity entirely", "To isolate failures and tune each stage independently", "To remove ranking from the design", "To skip tokenization"],
+      "correct": 1,
+      "explanation": "Clear interfaces let you test tokenization without crawling, test indexing without ranking, and test ranking with a known index. When relevance drops, you can identify which stage introduced the problem."
+    },
+    {
+      "stage": "pre",
+      "question": "What is an inverted index and why is it called 'inverted'?",
+      "options": ["A reversed document list", "A mapping from terms to documents, inverting the document-to-terms relationship", "A sorted array of all words", "A compressed file format"],
+      "correct": 1,
+      "explanation": "A forward index maps documents to their terms. An inverted index inverts this: it maps each term to the list of documents containing it. This makes query-time term lookup O(1) instead of scanning all documents."
+    },
+    {
+      "stage": "post",
+      "question": "What does an inverted index optimize?",
+      "options": ["Rendering speed", "Term-to-document lookup efficiency for query processing", "Compression only", "Network retries"],
+      "correct": 1,
+      "explanation": "Without an inverted index, a query for 'algorithms' would scan every document. With an inverted index, you directly look up the posting list for 'algorithms' and get the matching documents in O(1). Multi-term queries intersect posting lists."
+    },
+    {
+      "stage": "post",
+      "question": "How does BM25 differ from basic TF-IDF?",
+      "options": ["BM25 ignores term frequency", "BM25 adds document length normalization and term frequency saturation", "BM25 uses neural networks", "BM25 only works for short queries"],
+      "correct": 1,
+      "explanation": "BM25 normalizes for document length (long documents naturally have more term occurrences) and saturates term frequency (the 100th occurrence of a term matters less than the 2nd). These adjustments produce more robust rankings than raw TF-IDF."
+    },
+    {
+      "stage": "post",
+      "question": "Why begin with a simple ranking baseline like TF-IDF?",
+      "options": ["Because advanced ranking is unnecessary", "To establish measurable behavior before adding complex relevance features", "To avoid testing relevance", "To avoid indexing"],
+      "correct": 1,
+      "explanation": "A baseline ranking lets you measure improvement. If BM25 gives better results than TF-IDF on your test queries, you know the improvement is from the ranking function, not from indexing bugs. Without a baseline, you can't measure progress."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 8, "title": "Build a Search Engine (Crawler + Index + Ranker)" }
+}

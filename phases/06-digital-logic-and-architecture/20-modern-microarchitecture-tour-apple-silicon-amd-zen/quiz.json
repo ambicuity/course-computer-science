@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 20,
+    "title": "Modern Microarchitecture Tour Apple Silicon Amd Zen"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Apple's M-series P-cores achieve very high IPC partly because of their unusually large reorder buffer (~630+ entries). What is the primary function of the reorder buffer?",
+      "options": [
+        "Caching decoded micro-ops to skip the decode stage on reuse",
+        "Holding in-flight instructions to ensure they retire in program order despite out-of-order execution",
+        "Buffering store data until the cache line is evicted",
+        "Predicting branch targets before the branch instruction is decoded"
+      ],
+      "correct": 1,
+      "explanation": "The reorder buffer (ROB) holds all in-flight micro-ops and tracks their completion status. It guarantees in-order retirement — the architectural state is only updated when the oldest completed μop reaches the head of the ROB. A larger ROB allows the processor to look further ahead for independent instructions."
+    },
+    {
+      "stage": "pre",
+      "question": "AMD's 3D V-Cache technology adds 64 MB of SRAM stacked on top of the CCD. Which workload benefits MOST from this extra cache?",
+      "options": [
+        "A streaming video encoder with sequential access patterns",
+        "A database with a 50 MB B-tree working set that previously exceeded L3 capacity",
+        "A single-threaded integer benchmark that fits entirely in L1",
+        "A GPU shader running on a discrete graphics card"
+      ],
+      "correct": 1,
+      "explanation": "3D V-Cache most benefits workloads whose working set is larger than 32 MB (the base L3) but fits in 96 MB (L3 + V-Cache). A 50 MB B-tree would thrash the base L3 but stay resident in 3D V-Cache, eliminating most DRAM accesses."
+    },
+    {
+      "stage": "post",
+      "question": "In Intel's Alder Lake hybrid design, Thread Director classifies threads to decide P-core vs. E-core placement. What hardware signal does Thread Director primarily use?",
+      "options": [
+        "The thread's instruction pointer value",
+        "Whether the thread is memory-bound or compute-bound and its instruction mix",
+        "The thread's priority level from the OS scheduler",
+        "The amount of L2 cache the thread has consumed"
+      ],
+      "correct": 1,
+      "explanation": "Thread Director monitors each thread's microarchitectural behavior — memory access patterns, branch frequency, SIMD usage — and classifies it as performance-sensitive (place on P-core) or throughput-oriented (place on E-core). The OS scheduler uses these hardware hints for placement."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Apple Silicon's Unified Memory Architecture (UMA) give a performance advantage over traditional discrete CPU+GPU systems for mixed workloads?",
+      "options": [
+        "The DRAM chips physically run at a higher clock frequency",
+        "CPU and GPU share the same memory pool, eliminating PCIe copy overhead when data alternates between serial and parallel processing",
+        "UMA increases the total memory bandwidth beyond what any discrete system can achieve",
+        "The GPU has direct access to the CPU's L3 cache"
+      ],
+      "correct": 1,
+      "explanation": "In traditional systems, data must be copied over PCIe from CPU DRAM to GPU VRAM and back — a costly operation. With UMA, both CPU and GPU access the same physical DRAM. There is no copy overhead, and data written by the GPU is immediately visible to the CPU and vice versa."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a big.LITTLE / hybrid architecture, as seen in Apple Silicon and Intel Alder Lake?",
+      "options": [
+        "Using only large, high-performance cores",
+        "Combining high-performance cores with energy-efficient cores on the same chip",
+        "Separating CPU and GPU onto different dies",
+        "Using variable clock speeds on identical cores"
+      ],
+      "correct": 1,
+      "explanation": "Hybrid architectures mix big (high-performance, power-hungry) cores with LITTLE (energy-efficient, slower) cores. The OS schedules demanding tasks on big cores and background tasks on LITTLE cores, achieving both high performance when needed and energy efficiency at idle."
+    }
+  ]
+}

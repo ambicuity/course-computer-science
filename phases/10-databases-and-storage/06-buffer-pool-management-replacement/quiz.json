@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of a buffer pool in a database storage engine?",
+      "options": [
+        "To compress pages before writing them to disk",
+        "To cache recently accessed disk pages in memory to avoid slow I/O",
+        "To reorder write operations for better sequential throughput",
+        "To encrypt pages at rest"
+      ],
+      "correct": 1,
+      "explanation": "A buffer pool sits between the storage engine and the disk manager, keeping frequently accessed pages in memory and dramatically reducing the number of slow disk reads."
+    },
+    {
+      "stage": "pre",
+      "question": "What does it mean to 'pin' a page in a buffer pool?",
+      "options": [
+        "Encrypt the page so it cannot be read by other threads",
+        "Mark the page so the replacement policy prefers it for eviction",
+        "Increment a reference count that prevents the page from being evicted",
+        "Write the page to disk immediately"
+      ],
+      "correct": 2,
+      "explanation": "Pinning increments the page's pin count. A page with pin_count > 0 is in use and cannot be evicted. Unpin releases the reference when the storage engine is done."
+    },
+    {
+      "stage": "post",
+      "question": "How does the Clock (second-chance) replacement algorithm work?",
+      "options": [
+        "It evicts the page that was least frequently used by tracking hit counters",
+        "It maintains a sorted list and evicts from the tail every clock tick",
+        "It sweeps a circular hand; pages with ref_bit=1 get their bit cleared and survive, pages with ref_bit=0 are evicted",
+        "It randomly selects a page to evict to avoid worst-case patterns"
+      ],
+      "correct": 2,
+      "explanation": "The Clock algorithm sweeps a circular hand through frames. If the ref_bit is 1, it clears it (second chance) and moves on. If ref_bit is 0, that page is evicted. Pinned pages are always skipped."
+    },
+    {
+      "stage": "post",
+      "question": "What is the 'double buffering problem' in database systems?",
+      "options": [
+        "Using two separate buffer pools for indexes and heap data",
+        "The same page being cached in both the OS page cache and the database buffer pool, wasting memory",
+        "Mirroring the buffer pool across two servers for high availability",
+        "Holding two versions of the same page for MVCC visibility"
+      ],
+      "correct": 1,
+      "explanation": "When the database uses buffered I/O, the OS also caches file blocks in its page cache. This means the same data exists in two caches, wasting memory. Solutions include O_DIRECT (bypassing the OS cache) and posix_fadvise."
+    },
+    {
+      "stage": "post",
+      "question": "When is a dirty page written back to disk?",
+      "options": [
+        "Immediately after every modification",
+        "Only when the page is evicted from the buffer pool, or when explicitly flushed (e.g., by a background writer or checkpointer)",
+        "Never — dirty pages are only written during database shutdown",
+        "Every time the pin count reaches zero"
+      ],
+      "correct": 1,
+      "explanation": "Dirty pages are written back on eviction (to make room) or during explicit flush operations (background writer, checkpointer, or manual flush). Writing immediately would defeat the purpose of caching."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of the following is NOT a page replacement policy used in databases?",
+      "options": [
+        "LRU (Least Recently Used)",
+        "Clock (Second-Chance)",
+        "ARC (Adaptive Replacement Cache)",
+        "ECS (Earliest Created Segment)"
+      ],
+      "correct": 3,
+      "explanation": "LRU, Clock, and ARC are all real replacement policies. 'ECS' is not a known page replacement algorithm. ARC is used by ZFS and InnoDB; Clock variants are used by PostgreSQL; LRU with midpoint insertion is used by InnoDB."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 6,
+    "title": "Buffer Pool Management Replacement"
+  }
+}

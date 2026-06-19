@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "How many distinct 5-card poker hands are there from a 52-card deck?",
+      "options": [
+        "52 · 51 · 50 · 49 · 48",
+        "52! / 5!",
+        "C(52, 5) = 2,598,960",
+        "5^52"
+      ],
+      "correct": 2,
+      "explanation": "Order doesn't matter for a poker hand, so this is C(52, 5) = 52! / (5! · 47!) = 2,598,960. The first option overcounts by 5! since it treats different orderings of the same hand as distinct."
+    },
+    {
+      "stage": "pre",
+      "question": "Pascal's rule states `C(n, k) = C(n-1, k-1) + C(n-1, k)`. Why is it true combinatorially?",
+      "options": [
+        "It's a definition",
+        "Pick any element x: a k-subset of n either contains x (then choose k-1 from the other n-1) or doesn't (then choose k from the other n-1). The two cases are disjoint and exhaustive.",
+        "It's only true for k = 1",
+        "It's a special case of the binomial theorem"
+      ],
+      "correct": 1,
+      "explanation": "Combinatorial proof: fix any one element. Partition the C(n, k) subsets into those containing it (C(n-1, k-1) ways to pick the rest) and those not containing it (C(n-1, k) ways). Sum of disjoint cases = total. Same idea generates Pascal's triangle row by row."
+    },
+    {
+      "stage": "post",
+      "question": "Stars-and-bars: how many ways to write 10 = x₁ + x₂ + x₃ + x₄ with all xᵢ ≥ 0?",
+      "options": [
+        "C(10, 4) = 210",
+        "C(13, 3) = 286",
+        "10!/4!",
+        "4^10"
+      ],
+      "correct": 1,
+      "explanation": "Stars-and-bars: n stars, k-1 bars among them → C(n + k - 1, k - 1). Here C(10 + 4 - 1, 4 - 1) = C(13, 3) = 286. This formula solves a huge class of 'distribute n indistinguishable items into k distinguishable buckets' problems."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the sum of all entries in row n of Pascal's triangle equal 2ⁿ?",
+      "options": [
+        "Coincidence",
+        "The row sum is `Σₖ C(n, k)` = number of all subsets of an n-element set, and an n-element set has 2ⁿ subsets (each element is independently in/out).",
+        "It's only true for prime n",
+        "It comes from Stirling's approximation"
+      ],
+      "correct": 1,
+      "explanation": "C(n, 0) + C(n, 1) + ... + C(n, n) counts subsets of size 0 + 1 + ... + n. Together those exhaust 𝒫({1,…,n}), whose size is 2ⁿ. Combinatorial proof of an algebraic identity — also flows from the binomial theorem with x = y = 1."
+    },
+    {
+      "stage": "post",
+      "question": "Estimate C(100, 50) with Stirling's approximation. Approximately what magnitude?",
+      "options": [
+        "~10²⁰",
+        "~10²⁹",
+        "~10⁵⁰",
+        "~10¹⁰⁰"
+      ],
+      "correct": 1,
+      "explanation": "C(n, n/2) ≈ 2ⁿ / √(πn/2). For n=100: 2¹⁰⁰ ≈ 1.27 × 10³⁰, divided by √(50π) ≈ 12.5, gives ~10²⁹. Useful intuition: the central binomial coefficient is the dominant term in row n; its sum is 2ⁿ, but most of it is concentrated near the middle column."
+    },
+    {
+      "stage": "post",
+      "question": "How many distinct arrangements of the letters in 'MISSISSIPPI' are there?",
+      "options": [
+        "11!",
+        "11! / (1! · 4! · 4! · 2!) = 34,650",
+        "11 · 10 · 9 · 8 · 7",
+        "C(11, 4)"
+      ],
+      "correct": 1,
+      "explanation": "Multinomial coefficient: 11 letters with multiplicities 1 (M), 4 (I), 4 (S), 2 (P). Total arrangements = 11! / (1! · 4! · 4! · 2!) = 34,650. 11! overcounts by the factor of indistinguishability of each repeated letter group."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 8,
+    "title": "Combinatorics Counting Permutations Combinations"
+  }
+}

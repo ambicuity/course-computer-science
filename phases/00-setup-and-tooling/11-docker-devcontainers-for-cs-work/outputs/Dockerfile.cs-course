@@ -1,0 +1,43 @@
+# Dockerfile.cs-course — production-ready image for the whole course.
+# Multi-stage: stage 1 builds toolchains; stage 2 is a slimmer runtime.
+
+# ─── Stage 1: full toolchain ──────────────────────────────────────────
+FROM debian:bookworm-slim AS toolchain
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential gdb valgrind \
+        clang clangd lldb \
+        cmake ninja-build \
+        ca-certificates curl git pkg-config \
+        python3 python3-pip python3-venv pipx \
+        nodejs npm \
+        sudo && \
+    rm -rf /var/lib/apt/lists/*
+
+# Non-root user (devcontainer convention)
+ARG USERNAME=student
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN groupadd --gid ${USER_GID} ${USERNAME} && \
+    useradd  --uid ${USER_UID} --gid ${USER_GID} -m -s /bin/bash ${USERNAME} && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME}
+
+USER ${USERNAME}
+ENV PATH=/home/${USERNAME}/.cargo/bin:/home/${USERNAME}/.local/bin:$PATH
+
+# Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs \
+        | sh -s -- -y --default-toolchain stable --profile default --component clippy --component rustfmt --component rust-analyzer
+
+# Go (binary tarball; apt's go is usually stale)
+USER root
+RUN curl -fsSL https://go.dev/dl/go1.22.0.linux-amd64.tar.gz | tar -C /usr/local -xzf -
+ENV PATH=/usr/local/go/bin:$PATH
+
+# Pyright + Ruff via pipx
+USER ${USERNAME}
+RUN pipx ensurepath && pipx install pyright && pipx install ruff
+
+WORKDIR /home/${USERNAME}/course
+CMD ["bash"]

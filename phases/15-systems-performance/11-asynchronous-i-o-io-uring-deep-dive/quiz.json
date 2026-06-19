@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 11
+  },
+  "questions": [
+    {
+      "question": "What is the primary mechanism by which io_uring avoids syscalls for I/O submission?",
+      "options": [
+        "It uses signal handlers to defer kernel entry",
+        "User and kernel share a memory-mapped ring buffer; the app writes SQEs and the kernel reads them without a syscall",
+        "It performs I/O in user space via DMA bypass",
+        "It replaces syscalls with ioctls that are cheaper to execute"
+      ],
+      "correct": 1,
+      "explanation": "io_uring's core design is a shared-memory ring buffer pair. The user writes SQEs into the submission queue, and the kernel consumes them. With SQPOLL, even the submit syscall is eliminated — a kernel thread polls the ring.",
+      "stage": "pre"
+    },
+    {
+      "question": "What field in the SQE allows the application to match a completion (CQE) back to the original request?",
+      "options": [
+        "opcode",
+        "fd",
+        "user_data",
+        "buf_index"
+      ],
+      "correct": 2,
+      "explanation": "The 64-bit user_data field is copied verbatim from the SQE to the CQE. Since CQEs can arrive out of order, user_data is the only reliable way to correlate a completion with its request.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why does Linux AIO fail to provide truly asynchronous buffered file I/O?",
+      "options": [
+        "It requires root privileges for buffered I/O",
+        "Buffered reads still block inside io_submit because the page cache lookup is synchronous",
+        "The kernel refuses to queue buffered operations and returns -EAGAIN",
+        "It only supports write operations, not reads"
+      ],
+      "correct": 1,
+      "explanation": "Linux AIO's io_submit for buffered (non-O_DIRECT) files performs the page cache lookup synchronously in the calling context. If the page is not cached, the thread blocks — exactly the behavior async I/O is meant to avoid.",
+      "stage": "pre"
+    },
+    {
+      "question": "When should you prefer IORING_SETUP_IOPOLL (busy-polling) over interrupt-driven completion?",
+      "options": [
+        "When running on a system with slow spinning hard drives",
+        "When CPU utilization must be minimized at all costs",
+        "When I/O device latency is microseconds and the CPU would idle waiting for interrupts anyway",
+        "When you have more I/O threads than CPU cores"
+      ],
+      "correct": 2,
+      "explanation": "IOPOLL trades CPU time for lower latency. It makes sense when the device is fast (NVMe, μs-scale) and the CPU would be idle during the interrupt wait. On slow devices, the CPU waste of busy-polling dominates.",
+      "stage": "post"
+    },
+    {
+      "question": "What advantage do fixed buffers (IORING_REGISTER_BUFFERS) provide?",
+      "options": [
+        "They encrypt data in transit between user and kernel space",
+        "They allow the kernel to skip page table walks and fget() lookups per operation by pre-pinning memory",
+        "They double the buffer size available for each I/O operation",
+        "They enable zero-copy network transmission to remote hosts"
+      ],
+      "correct": 1,
+      "explanation": "Fixed buffers are pre-registered with the kernel, which pins their pages and validates their addresses once. Each subsequent I/O operation skips the per-op page fault and lookup overhead. Fixed files similarly skip per-op fget() lookups.",
+      "stage": "post"
+    },
+    {
+      "question": "What does IORING_OP_MULTISHOT_ACCEPT do differently from a regular IORING_OP_ACCEPT?",
+      "options": [
+        "It accepts multiple file descriptors in a single CQE",
+        "It submits a single SQE that automatically re-arms after each completion, delivering one CQE per new connection",
+        "It accepts connections on multiple listening sockets simultaneously",
+        "It batches accept calls to reduce the number of kernel transitions"
+      ],
+      "correct": 1,
+      "explanation": "A multishot accept posts one SQE and the kernel re-arms it after each new connection, delivering one CQE per connection. Without it, you'd need to submit a new accept SQE after every connection — adding overhead under high connection rates.",
+      "stage": "post"
+    }
+  ]
+}

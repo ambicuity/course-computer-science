@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In MapReduce, what happens during the shuffle phase?",
+      "options": [
+        "Map workers process input splits in parallel and emit key-value pairs",
+        "Reduce workers fetch their assigned intermediate partitions from map workers",
+        "The master node aggregates all intermediate results before distributing to reducers",
+        "Combiners run on the reduce side to pre-aggregate values"
+      ],
+      "correct": 1,
+      "explanation": "The shuffle phase is when reduce workers fetch (pull) their assigned partition of intermediate data from map workers. The intermediate data was partitioned by hash(key) % R during the map phase. Map processing happens in the map phase (option A), the master doesn't aggregate (option C), and combiners run on the map side (option D)."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of a combiner in MapReduce?",
+      "options": [
+        "To combine the outputs of multiple reduce tasks into a single file",
+        "To perform local aggregation on the map side before shipping data over the network",
+        "To merge intermediate results from different map tasks on the reduce side",
+        "To eliminate duplicate keys from the final output"
+      ],
+      "correct": 1,
+      "explanation": "A combiner runs on the map side to locally aggregate intermediate values before they are shuffled across the network. For word count, a combiner that sums counts locally reduces the number of (word, count) pairs shipped from mappers to reducers. Options A and C describe reduce-side operations, and D describes a side effect, not the primary purpose."
+    },
+    {
+      "stage": "post",
+      "question": "In Spark, what distinguishes a narrow dependency from a wide dependency?",
+      "options": [
+        "Narrow dependencies involve fewer partitions; wide dependencies involve more partitions",
+        "Narrow dependencies can be pipelined within a single stage; wide dependencies require a shuffle and form stage boundaries",
+        "Narrow dependencies are for batch processing; wide dependencies are for streaming",
+        "Narrow dependencies run on the driver; wide dependencies run on executors"
+      ],
+      "correct": 1,
+      "explanation": "A narrow dependency means each output partition depends on at most one input partition (e.g., map, filter), so transformations can be pipelined without a shuffle. A wide dependency means output partitions depend on multiple input partitions (e.g., groupByKey, join), requiring a shuffle that forms a stage boundary. The distinction is about data flow, not partition count (A), processing mode (C), or execution location (D)."
+    },
+    {
+      "stage": "post",
+      "question": "When a Spark partition is lost due to node failure, how does RDD recovery work?",
+      "options": [
+        "The partition is replicated on another node and restored from the replica",
+        "The lost partition's lineage of transformations is replayed from the nearest available data or checkpoint",
+        "The entire job must be restarted from the beginning",
+        "The partition is recomputed from the reduce output stored on disk"
+      ],
+      "correct": 1,
+      "explanation": "Spark's RDDs track lineage — the chain of transformations that produced each partition. When a partition is lost, Spark recomputes it by replaying the transformations from the nearest available ancestor partition or checkpoint. This avoids the overhead of replication (A). Only the lost partition needs recompute, not the whole job (C). And MapReduce materializes to disk; Spark does not (D)."
+    },
+    {
+      "stage": "post",
+      "question": "In the Dataflow/Beam model, what does a watermark represent?",
+      "options": [
+        "The maximum memory allocated to a processing pipeline",
+        "The deadline for a window to produce its first result",
+        "A timestamp indicating that all events with event time up to that point are believed to have arrived",
+        "The number of allowed late arrivals before a window is closed"
+      ],
+      "correct": 2,
+      "explanation": "A watermark at time T declares that the system believes all events with event time ≤ T have arrived. It's how the Dataflow model tracks progress of event time in an unbounded stream. Events arriving after the watermark passes their window end are 'late data.' Option A describes a resource limit, B describes a trigger concept, and D describes allowed lateness — a separate parameter."
+    },
+    {
+      "stage": "post",
+      "question": "Why is MapReduce poorly suited for iterative algorithms like k-means or PageRank?",
+      "options": [
+        "MapReduce cannot process large datasets because it stores everything in memory",
+        "Each iteration requires a full read-shuffle-write cycle, materializing intermediate results to disk between every step, creating an I/O bottleneck",
+        "The reduce function cannot aggregate numerical values required by iterative algorithms",
+        "MapReduce does not support key-value pair inputs needed by graph algorithms"
+      ],
+      "correct": 1,
+      "explanation": "MapReduce materializes every intermediate result to disk. For an iterative algorithm running N iterations, that's N full read-disk-shuffle-write cycles. Spark avoids this by keeping intermediate RDDs in memory across iterations (caching). MapReduce does process large datasets (A is wrong), reducers can aggregate numbers (C is wrong), and MapReduce's key-value model is well-suited for graph algorithms (D is wrong)."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 16,
+    "title": "Mapreduce Spark Dataflow"
+  }
+}

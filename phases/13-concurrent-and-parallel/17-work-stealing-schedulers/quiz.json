@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 17,
+    "title": "Work-Stealing Schedulers"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental advantage of work-stealing over a centralized work queue?",
+      "options": [
+        "It eliminates the need for synchronization entirely.",
+        "Each worker primarily accesses its own deque, reducing contention and improving cache locality.",
+        "It guarantees O(1) completion time for any parallel program.",
+        "It requires no atomic operations, only simple loads and stores."
+      ],
+      "correct": 1,
+      "explanation": "Work-stealing assigns each worker its own deque; workers normally push/pop their own tasks (LIFO, good locality). Stealing from others (FIFO) only happens when idle, so the hot task-queue cache line is uncontended most of the time. This is better than a centralized queue where every access contends on a single mutex or CAS."
+    },
+    {
+      "stage": "post",
+      "question": "In the Cilk work-stealing scheduler, how does each worker manage its tasks?",
+      "options": [
+        "A single global priority queue shared by all workers.",
+        "A lock-free stack; workers steal from the top via CAS.",
+        "A double-ended queue (deque) — owner pushes/pops at the bottom, thieves steal from the top.",
+        "A lock-free hash table partitioned by task priority."
+      ],
+      "correct": 2,
+      "explanation": "Each Cilk worker owns a deque. The owner pushes new tasks and pops existing ones from the bottom (LIFO), exploiting temporal locality. Thieves steal the oldest tasks from the top (FIFO), which minimizes the chance of stealing a task whose data is still hot in the victim's cache."
+    },
+    {
+      "stage": "post",
+      "question": "What expected completion time does the work-stealing theorem guarantee for a computation with work T₁ and span T∞ on P cores?",
+      "options": [
+        "E[T_P] ≤ T₁ / P + T∞",
+        "E[T_P] ≤ T₁ / P + O(T∞)",
+        "E[T_P] ≤ max(T₁, T∞) / P",
+        "E[T_P] ≤ T₁ / (P × T∞)"
+      ],
+      "correct": 1,
+      "explanation": "The theorem states E[T_P] ≤ T₁/P + O(T∞). T₁/P is the linear-speedup term (Amdahl), and O(T∞) captures the critical-path overhead. The constant hidden in O(T∞) is small (~2 in Cilk's analysis). This tells us that work-stealing achieves near-perfect linear speedup until parallelism (T₁/T∞) exceeds the number of cores."
+    },
+    {
+      "stage": "post",
+      "question": "In the Chase-Lev lock-free deque, which operation does NOT require a compare-and-swap (CAS)?",
+      "options": [
+        "A thief stealing a task when the deque has >1 element.",
+        "The owner popping the last remaining element.",
+        "The owner popping an element when the deque has >1 element.",
+        "A thief stealing a task when the deque has exactly 1 element."
+      ],
+      "correct": 2,
+      "explanation": "When the owner pops and there is more than one element remaining (top < bottom after decrement), the owner simply reads the task — no CAS needed. CAS is required for: (a) the owner popping the last element (race with stealers), (b) all steals (must atomically advance the top index), and (c) growing the buffer (swapping the array pointer)."
+    },
+    {
+      "stage": "pre",
+      "question": "How does work stealing balance load across threads?",
+      "options": [
+        "By assigning tasks to threads using round-robin",
+        "Each thread has its own queue; idle threads steal tasks from other threads' queues",
+        "By redistributing tasks every second",
+        "By using a single shared queue protected by a lock"
+      ],
+      "correct": 1,
+      "explanation": "In work stealing, each worker thread has a local deque (double-ended queue). It pushes and pops tasks from its own end. When idle, it steals tasks from another thread's queue (the other end). This provides good locality (each thread works on its own tasks) with automatic load balancing."
+    }
+  ]
+}

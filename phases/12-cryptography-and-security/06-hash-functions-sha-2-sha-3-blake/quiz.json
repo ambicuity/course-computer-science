@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 12,
+    "lesson": 6,
+    "title": "Hash Functions — SHA-2, SHA-3, BLAKE"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the birthday attack bound for finding a collision in an n-bit hash function?",
+      "options": [
+        "2^n hash evaluations — same as brute force",
+        "2^(n/2) hash evaluations — due to the birthday paradox",
+        "2^(n-1) hash evaluations — you need nearly the full space",
+        "n * 2^(n/2) hash evaluations — linear in the output size"
+      ],
+      "correct": 1,
+      "explanation": "The birthday paradox shows that among 2^(n/2) random values from a space of 2^n, there's roughly a 50% chance of a collision. This means SHA-256 has only 128-bit collision resistance, not 256-bit. This is the fundamental reason we use 256-bit hashes when we want 128-bit security."
+    },
+    {
+      "stage": "pre",
+      "question": "Which property of a hash function means: given a hash value h, it is computationally infeasible to find any message m such that H(m) = h?",
+      "options": [
+        "Collision resistance",
+        "Second preimage resistance",
+        "Preimage resistance",
+        "Avalanche effect"
+      ],
+      "correct": 2,
+      "explanation": "Preimage resistance means you cannot reverse the hash function — given only the output h, finding any input that produces it requires ~2^n work. Collision resistance (finding any two inputs with the same hash) is a different and stronger property. Second preimage resistance is in between: given one input, finding a different one that hashes to the same value."
+    },
+    {
+      "stage": "post",
+      "question": "Why is SHA-256 vulnerable to length extension attacks, but SHA-3 is not?",
+      "options": [
+        "SHA-256 uses 32-bit words while SHA-3 uses 64-bit lanes",
+        "SHA-256's Merkle-Damgård construction lets an attacker use the hash output as a chain variable and continue compression; SHA-3's sponge construction hides internal capacity bits that the attacker cannot guess",
+        "SHA-256 pads messages with the length but SHA-3 does not",
+        "SHA-3 uses more rounds (24 vs 64) making it harder to invert"
+      ],
+      "correct": 1,
+      "explanation": "In Merkle-Damgård, the final hash output IS the internal chain variable. An attacker can set this as the IV and continue processing additional blocks. In SHA-3's sponge, the output comes from only the rate portion of the state, while the capacity portion (512 bits for SHA-3-256) is hidden. To extend, the attacker would need to guess those capacity bits — requiring 2^512 work."
+    },
+    {
+      "stage": "post",
+      "question": "In the Keccak permutation used by SHA-3, which step provides the ONLY nonlinearity in the entire construction?",
+      "options": [
+        "θ (theta) — column parity mixing",
+        "ρ (rho) — lane rotation",
+        "χ (chi) — bitwise mixing: x ⊕ (¬y ∧ z)",
+        "ι (iota) — round constant XOR"
+      ],
+      "correct": 2,
+      "explanation": "The χ step is the only nonlinear operation in Keccak. It computes x ⊕ (¬y ∧ z), which is a 3-bit nonlinear function. All other steps (θ for diffusion, ρ for rotation, π for permutation, ι for symmetry breaking) are linear. This is a deliberate design choice: one nonlinear step per round is sufficient when combined with strong linear diffusion."
+    },
+    {
+      "stage": "post",
+      "question": "Why is BLAKE2 faster than MD5 on modern CPUs despite MD5's simpler design?",
+      "options": [
+        "BLAKE2 uses fewer rounds than MD5 (10 vs 64)",
+        "BLAKE2's ARX (Add-Rotate-XOR) operations map directly to modern SIMD instructions, while MD5's older design doesn't benefit from hardware acceleration",
+        "BLAKE2 has a smaller internal state than MD5",
+        "BLAKE2 skips message padding, saving overhead"
+      ],
+      "correct": 1,
+      "explanation": "BLAKE2 uses Add-Rotate-XOR (ARX) operations that map perfectly to modern CPU SIMD units (SSE2, AVX2, NEON). MD5 was designed in 1991 for scalar CPUs — its reliance on table lookups makes it cache-sensitive and SIMD-unfriendly. On modern hardware, BLAKE2b can process data at over 1 GB/s while MD5 tops out around 400 MB/s."
+    },
+    {
+      "stage": "post",
+      "question": "If collision resistance of SHA-256 is 128 bits (birthday bound) and preimage resistance is 256 bits, what is the security level of second preimage resistance?",
+      "options": [
+        "64 bits — weaker than both",
+        "128 bits — same as collision resistance",
+        "256 bits — same as preimage resistance",
+        "192 bits — the geometric mean"
+      ],
+      "correct": 2,
+      "explanation": "Second preimage resistance requires finding a second input m₂ ≠ m₁ such that H(m₂) = H(m₁), given a specific m₁. This requires ~2^n work for an n-bit hash — the same as preimage resistance. Collision resistance is weaker (2^(n/2) birthday bound) because you get to choose BOTH inputs freely. For SHA-256: collisions cost 2^128, second preimages cost 2^256."
+    }
+  ]
+}

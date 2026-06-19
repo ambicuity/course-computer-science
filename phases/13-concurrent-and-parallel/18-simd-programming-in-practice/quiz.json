@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 18,
+    "title": "SIMD Programming in Practice",
+    "type": "Build"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of the following is the primary reason a compiler often cannot auto-vectorise a simple loop like `for (int i = 0; i < N; i++) c[i] = a[i] + b[i];`?",
+      "options": [
+        "The loop uses floating-point types",
+        "The compiler cannot prove that the pointers `a`, `b`, `c` do not alias (overlap in memory)",
+        "The loop body is too short",
+        "Floating-point addition is not associative"
+      ],
+      "correct": 1,
+      "explanation": "When the compiler cannot prove that `a`, `b`, and `c` point to disjoint memory regions, it must assume the worst case (aliasing, where a write to `c[i]` could change `a[j]` or `b[j]`). This prevents vectorisation because vectorised code reads multiple elements before writing, which would produce wrong results under aliasing. Adding `__restrict__` tells the compiler the pointers are disjoint and allows vectorisation."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the vector width (in bits) of an AVX2 register on x86-64?",
+      "options": [
+        "128 bits",
+        "256 bits",
+        "512 bits",
+        "64 bits"
+      ],
+      "correct": 1,
+      "explanation": "AVX2 uses 256-bit YMM registers. SSE uses 128-bit XMM registers, and AVX-512 uses 512-bit ZMM registers. Each 256-bit register can hold 8 single-precision (f32) or 4 double-precision (f64) values."
+    },
+    {
+      "stage": "post",
+      "question": "After running the AVX2 dot-product kernel on two arrays of 1 million floats, you measure a 4× speedup over scalar code. AVX2 can execute 8 float operations per instruction. Why is the speedup less than 8×?",
+      "options": [
+        "The compiler incorrectly optimised the scalar code",
+        "Horizontal reduction (summing the 8 vector lanes into one scalar) adds overhead, and memory bandwidth may be a bottleneck",
+        "AVX2 cannot process more than 4 floats at once for multiplications",
+        "The `_mm256_load_ps` intrinsic requires 64-byte alignment and causes a fault otherwise"
+      ],
+      "correct": 1,
+      "explanation": "The dot product requires a horizontal reduction at the end to combine the 8 partial sums into a single scalar. This reduction involves extracting the upper 128 bits, adding pairs, and performing two `_mm256_hadd_ps` operations — all of which are serialising steps that do not achieve 8× throughput. Additionally, if the data does not fit in L1/L2 cache, memory bandwidth may become the limiting factor. An 8× speedup is only achievable for purely vertical (lane-wise) operations on data that stays in registers."
+    },
+    {
+      "stage": "post",
+      "question": "You are writing a cross-platform SIMD library that must run on both x86-64 (AVX2) and AArch64 (NEON). Which approach is most maintainable?",
+      "options": [
+        "Write two separate implementations using platform-specific intrinsics (`<immintrin.h>` and `<arm_neon.h>`) guarded by `#ifdef`",
+        "Use Rust's portable SIMD (`std::simd::f32x8`) so the same source compiles to efficient code on both ISAs",
+        "Use the `-mavx2` flag on both platforms and rely on the compiler to translate x86 intrinsics to NEON",
+        "Write scalar code only; modern compilers auto-vectorise well enough on both platforms"
+      ],
+      "correct": 1,
+      "explanation": "Rust's `std::simd` provides a portable abstraction: `f32x8` compiles to AVX2 on x86 and to paired NEON 128-bit operations on AArch64. Option 0 (platform intrinsics) works but duplicates code and is error-prone. Option 2 is impossible — x86 intrinsics have no meaning on ARM. Option 3 (relying purely on auto-vectorisation) gives up control and often leaves performance on the table. A C++ alternative would be the Highway library or `std::experimental::simd`."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the main benefit of SIMD programming over scalar programming?",
+      "options": [
+        "SIMD code is always shorter",
+        "SIMD processes multiple data elements with a single instruction, achieving data-level parallelism",
+        "SIMD eliminates the need for multithreading",
+        "SIMD works only on GPUs"
+      ],
+      "correct": 1,
+      "explanation": "SIMD (Single Instruction, Multiple Data) instructions operate on vectors — e.g., AVX-256 adds 8 floats in one cycle vs 8 scalar additions. This is independent of threading (you can have SIMD on each thread). It's ideal for numerical computing, image processing, and any loop over arrays."
+    }
+  ]
+}

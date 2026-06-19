@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What's a segment tree's complexity for range query and point update?",
+      "options": [
+        "O(1) and O(n)",
+        "Both O(log n). Each operation walks one path from leaf to root touching ~log n nodes.",
+        "Both O(n)",
+        "Both O(1)"
+      ],
+      "correct": 1,
+      "explanation": "A segment tree of n leaves has 2n nodes total and height ⌈log₂ n⌉. Point update walks one root-to-leaf path. Range query splits the range into O(log n) disjoint canonical subtrees, summing each. Combined: any pattern of range-query and point-update operations is O(log n) each."
+    },
+    {
+      "stage": "pre",
+      "question": "What does 'lazy propagation' enable in a segment tree?",
+      "options": [
+        "Faster reads",
+        "Range UPDATE (apply +x to all of A[l..r]) in O(log n) instead of O(n). Defers applying the update to children until needed for a query.",
+        "Compression",
+        "Threading"
+      ],
+      "correct": 1,
+      "explanation": "Without lazy: range update touches O(n) leaves. With lazy: mark the node with a 'pending update' and remember it for later. When you need to look inside the node (a query or smaller-range update), 'push down' the lazy value to its children first. Both range-update and range-query become O(log n). Used for range-sum-with-range-add, range-max-with-range-add, etc."
+    },
+    {
+      "stage": "post",
+      "question": "What's the magic of Fenwick trees?",
+      "options": [
+        "Hashing",
+        "Using `i & -i` (low bit) to navigate. Each index covers `i & -i` elements ending at i. Update and prefix-sum each touch O(log n) entries, with half the code and ~2× the speed of a segment tree.",
+        "Caching",
+        "Bit shifting only"
+      ],
+      "correct": 1,
+      "explanation": "`i & -i` extracts the lowest set bit (two's complement trick). Each Fenwick tree index covers an exclusive range of size = that low bit. Update walks UP by adding low_bit; prefix-sum walks DOWN by subtracting low_bit. The data structure feels magical because the index arithmetic itself encodes the tree structure — no actual tree, just an array. Fenwick 1994 paper showed this beats segment tree on cache locality for sum/XOR ops."
+    },
+    {
+      "stage": "post",
+      "question": "When should you use segment tree vs Fenwick BIT?",
+      "options": [
+        "Random preference",
+        "BIT: when op is invertible (sum, XOR) and you only need point-update + range-query. Segment tree: for arbitrary monoid ops (min, max, gcd) or when you need lazy range-update.",
+        "Always segment",
+        "Always BIT"
+      ],
+      "correct": 1,
+      "explanation": "BIT works because prefix-sum subtraction recovers any range. For min/max you can't 'subtract' a range, so BIT doesn't work directly (there are tricks for monotonic data but they're brittle). Segment tree generalizes to any monoid (assoc op + identity). Use BIT for sums (fastest, simplest); use segment tree everything else. Most competitive programmers know both — choosing the right one matters."
+    },
+    {
+      "stage": "post",
+      "question": "Iterative segment tree's array layout: child indices of node i are what?",
+      "options": [
+        "i+1 and i+2",
+        "2i and 2i+1 (same as a binary heap). The tree's n leaves live at indices [n, 2n); the root is at 1; index 0 is unused.",
+        "log(i) and log(i)+1",
+        "i/2 and i/3"
+      ],
+      "correct": 1,
+      "explanation": "Same layout as a binary heap: complete binary tree implicit-arrayed. Leaves are at indices [n, 2n); internals at [1, n). Parent of i: i/2. This is what makes the iterative implementation 6 lines: the update walks i, i/2, i/4, ... to 1; query walks two indices outward from a common ancestor. No recursion, no pointers, perfect cache locality."
+    },
+    {
+      "stage": "post",
+      "question": "If you need range MIN with point UPDATE, can you use a Fenwick tree?",
+      "options": [
+        "Yes, easily",
+        "Not directly — min isn't invertible. Use a segment tree (5-10 line modification: replace + with min in the build/update/query). Or a sparse table for static (no updates) RMQ.",
+        "Only XOR works",
+        "Hash table instead"
+      ],
+      "correct": 1,
+      "explanation": "Fenwick's whole trick is `range = prefix(r) - prefix(l)` — only works for invertible ops. For min, you can't 'undo' a min. Solutions: (1) segment tree with min as the combiner (works); (2) sparse table for O(1) RMQ on static arrays (no updates allowed); (3) for the special case of small-domain integers, a 'merge sort tree' or 'wavelet tree' supports indexed min. Pick by access pattern."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 17,
+    "title": "Segment Trees Fenwick Bit"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is phased kernel bring-up important?",
+      "options": ["To avoid hardware docs", "To isolate failures across boot/scheduling/memory stages", "To skip testing", "To remove assembly"],
+      "correct": 1,
+      "explanation": "Incremental bring-up narrows failure surfaces. If you enable paging before the boot path is verified, a crash could be either a boot bug or a paging bug. Phased development isolates each failure mode."
+    },
+    {
+      "stage": "pre",
+      "question": "What must the boot assembly do before calling any C function?",
+      "options": ["Load the filesystem driver", "Set up the stack pointer and clear BSS", "Initialize the network stack", "Create the first process"],
+      "correct": 1,
+      "explanation": "C code requires a valid stack for local variables and function calls, and zero-initialized BSS for global variables. Without these, the first C function call will crash."
+    },
+    {
+      "stage": "post",
+      "question": "What is the scheduler's core responsibility?",
+      "options": ["Parsing binaries", "Selecting runnable tasks according to policy by saving/restoring CPU context", "Allocating files", "Compiling drivers"],
+      "correct": 1,
+      "explanation": "The scheduler saves the current task's registers, picks the next runnable task from the run queue, and restores that task's registers. The policy (round-robin, priority, CFS) determines which task is picked."
+    },
+    {
+      "stage": "post",
+      "question": "On RISC-V Sv39, what does the MMU use to translate virtual addresses?",
+      "options": ["A flat array mapping every virtual page", "A 3-level radix tree page table indexed by 9-bit VPN fields", "A hash table of recent translations", "The kernel's software page walker"],
+      "correct": 1,
+      "explanation": "Sv39 splits the 39-bit virtual address into three 9-bit VPN indices (VPN[2], VPN[1], VPN[0]) and a 12-bit offset. The MMU walks the 3-level page table using these indices to find the physical page frame number."
+    },
+    {
+      "stage": "post",
+      "question": "Why must `sfence.vma` be executed after modifying page table entries?",
+      "options": ["To flush the instruction cache", "To invalidate stale TLB entries so the MMU sees the new mappings", "To synchronize memory across cores", "To trigger a page fault for testing"],
+      "correct": 1,
+      "explanation": "The TLB caches recent page table walks. After modifying page table entries, old translations may still be cached. `sfence.vma` flushes the TLB, forcing the MMU to re-walk the page table with the updated entries."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 2, "title": "Build a Kernel That Boots, Schedules, Pages" }
+}

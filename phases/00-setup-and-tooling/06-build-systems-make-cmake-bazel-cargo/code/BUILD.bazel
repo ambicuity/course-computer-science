@@ -1,0 +1,16 @@
+# Equivalent of the Makefile / CMakeLists.txt for Bazel.
+# Run:  bazel build //:hello
+# Note: requires bazel installed; not exercised in this lesson's run.sh.
+
+cc_library(
+    name = "greet",
+    srcs = ["greet.c"],
+    hdrs = ["greet.h"],
+    visibility = ["//visibility:public"],
+)
+
+cc_binary(
+    name = "hello",
+    srcs = ["hello.c"],
+    deps = [":greet"],
+)

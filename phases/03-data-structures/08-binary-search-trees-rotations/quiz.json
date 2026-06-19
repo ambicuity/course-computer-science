@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Insert keys 1, 2, 3, ..., 1000 into a plain BST in order. What is the resulting height?",
+      "options": [
+        "~10 (log₂ 1000)",
+        "1000 — every key becomes the right child of the previous; the BST degenerates into a linked list, search is O(n).",
+        "~32 (√1000)",
+        "Roughly 500"
+      ],
+      "correct": 1,
+      "explanation": "Plain BSTs have NO balance guarantee. Sorted input → right chain. Search degenerates to O(n) — defeating the purpose of using a tree. This is the motivation for AVL, red-black, splay, and treap trees: rotate during insert/delete to keep height ~log n. The lesson's main.c demonstrates h=1000 for sorted vs h=22 for random."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a left rotation at node N (with right child R)?",
+      "options": [
+        "Reverse the BST",
+        "R becomes the new subtree root. N becomes R's new left child. R's original left subtree becomes N's right subtree. Three pointer swaps; preserves inorder.",
+        "Sort the tree",
+        "Delete N"
+      ],
+      "correct": 1,
+      "explanation": "The rotation is purely structural: \nbefore: N (left=A) right=R(left=B, right=C)\nafter : R (left=N(left=A, right=B), right=C)\nInorder before: A N B R C. Inorder after: A N B R C — identical. The BST invariant is preserved. This 3-pointer rewire is the universal balancing primitive."
+    },
+    {
+      "stage": "post",
+      "question": "Delete a BST node with TWO children. What's the algorithm?",
+      "options": [
+        "Forbidden",
+        "Replace the node's key with its inorder successor's key (smallest in right subtree), then delete the successor recursively. The successor has 0 or 1 child, so its deletion is simple.",
+        "Move it to the leaves",
+        "Rebuild the tree"
+      ],
+      "correct": 1,
+      "explanation": "Hibbard's algorithm. The inorder successor (or predecessor) is the closest key in the tree to the deleted one — putting it in the deleted node's slot preserves BST order. By definition the inorder successor has no left child, so removing it is the trivial 0/1-child case. Note: Hibbard delete has a known leftward bias over many ops; balanced trees fix this by re-balancing after delete."
+    },
+    {
+      "stage": "post",
+      "question": "Why does a rotation preserve the BST invariant?",
+      "options": [
+        "Magic",
+        "Inorder is preserved: before and after rotation, an inorder walk produces the same sequence of keys. Since the BST property is equivalent to 'inorder yields sorted', it must hold after.",
+        "Rotations only happen at leaves",
+        "Compiler optimization"
+      ],
+      "correct": 1,
+      "explanation": "Theorem: A binary tree satisfies the BST invariant ⟺ its inorder traversal is strictly increasing. Rotations rearrange pointers but never change the inorder sequence — so the invariant is preserved. This is why rotations are the fundamental balancing operation: they let you change height locally without breaking ordering."
+    },
+    {
+      "stage": "post",
+      "question": "Why must balanced BSTs (AVL, RB) eagerly rebalance after every insert and delete?",
+      "options": [
+        "For elegance",
+        "Sequential or adversarial insert orders would otherwise create unbalanced trees with O(n) height. The eager rebalance keeps height O(log n) with a constant amount of extra work per op.",
+        "Memory layout",
+        "Cache efficiency"
+      ],
+      "correct": 1,
+      "explanation": "Without rebalancing, an adversary can construct an O(n)-height tree with O(n) operations and then DOS your service with O(n) per query. AVL spends O(1) extra work per insert/delete to do up to 2 rotations; red-black spends a similar amount; B-trees do a split/merge per overflow. The cost is amortized: a constant per op for asymptotic guarantee."
+    },
+    {
+      "stage": "post",
+      "question": "When should you reach for a BST instead of a hash table?",
+      "options": [
+        "Always",
+        "When you need sorted-by-key iteration, range queries (find all keys in [lo, hi]), or successor/predecessor queries. Hash tables can't do any of these in O(log n).",
+        "When data is small",
+        "Never"
+      ],
+      "correct": 1,
+      "explanation": "Hash tables: O(1) point lookups, no ordering. BSTs: O(log n) lookups, but support range/order queries in O(log n + k) where k = output size. Real systems use both: Postgres has hash indexes (point lookups) and B-tree indexes (range scans + order). Redis SORTEDSET uses a balanced tree skip-list hybrid. Pick based on access patterns."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 8,
+    "title": "Binary Search Trees Rotations"
+  }
+}

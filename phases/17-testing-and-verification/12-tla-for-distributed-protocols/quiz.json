@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why use TLA+ for distributed protocols?",
+      "options": ["To generate production binaries", "To explore protocol state transitions and catch design flaws early", "To replace logging", "To tune CPU performance"],
+      "correct": 1,
+      "explanation": "TLA+ is used to model and check behavior across interleavings difficult to cover with tests alone."
+    },
+    {
+      "stage": "pre",
+      "question": "What does it mean for a distributed protocol to be 'linearizable'?",
+      "options": ["It uses a single thread", "All operations appear to execute atomically in some sequential order consistent with real-time", "It never crashes", "It has no network delays"],
+      "correct": 1,
+      "explanation": "Linearizability means each operation takes effect instantaneously between its invocation and response, as if on a single-copy data structure."
+    },
+    {
+      "stage": "post",
+      "question": "What does an invariant like `at most one leader` represent?",
+      "options": ["A liveness objective", "A safety property over reachable states", "A compiler optimization", "A timeout policy"],
+      "correct": 1,
+      "explanation": "Leader uniqueness is a safety property that must never be violated in any reachable state."
+    },
+    {
+      "stage": "post",
+      "question": "How should a counterexample trace be used?",
+      "options": ["Ignored unless seen in production", "As actionable evidence to refine the protocol design/spec", "Only for documentation", "As a benchmark metric"],
+      "correct": 1,
+      "explanation": "Counterexamples expose real protocol flaws in the model and guide concrete design changes."
+    },
+    {
+      "stage": "post",
+      "question": "Why model message loss explicitly in a TLA+ spec of a distributed protocol?",
+      "options": ["To make the spec shorter", "To verify the protocol recovers correctly under omission failures", "Because TLA+ requires it syntactically", "To test serialization formats"],
+      "correct": 1,
+      "explanation": "Distributed systems must handle lost messages; modeling this reveals whether recovery and retry logic actually work."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 12, "title": "TLA+ for Distributed Protocols" }
+}

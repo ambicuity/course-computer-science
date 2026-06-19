@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 10,
+    "lesson": 22,
+    "title": "Phase Capstone \u2014 Build an MVCC KV Store with a SQL Frontend"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the MVCC model implemented in this capstone, what determines whether a row version is visible to a transaction?",
+      "options": [
+        "The row's begin_ts must equal the transaction's ID",
+        "The row's begin_ts must be committed in the transaction's snapshot and its end_ts must be 0 or not yet committed",
+        "The row must be locked by the transaction in shared mode",
+        "The row's end_ts must be less than the transaction's start time"
+      ],
+      "correct": 1,
+      "explanation": "A row version is visible if begin_ts was committed before the snapshot was taken AND end_ts is either 0 (still current) or belongs to a transaction that hasn't committed yet. This gives each transaction a consistent point-in-time view."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the correct ordering of operations when processing a SELECT query from SQL text to result rows?",
+      "options": [
+        "Executor \u2192 Planner \u2192 Binder \u2192 Parser \u2192 Storage Engine",
+        "Parser \u2192 Binder \u2192 Planner \u2192 Executor \u2192 Storage Engine",
+        "Parser \u2192 Executor \u2192 Planner \u2192 Binder \u2192 Storage Engine",
+        "Binder \u2192 Parser \u2192 Planner \u2192 Storage Engine \u2192 Executor"
+      ],
+      "correct": 1,
+      "explanation": "The query pipeline is: Parser (SQL \u2192 AST), Binder (AST \u2192 logical plan with resolved names), Planner (logical plan \u2192 physical plan with index selection), Executor (Volcano-style physical execution), Storage Engine (page access)."
+    },
+    {
+      "stage": "pre",
+      "question": "In the ARIES recovery protocol, which phase is responsible for rolling back uncommitted transactions?",
+      "options": [
+        "Analysis phase",
+        "REDO phase",
+        "UNDO phase",
+        "Checkpoint phase"
+      ],
+      "correct": 2,
+      "explanation": "Analysis rebuilds the transaction table and dirty page table. REDO replays all logged updates (committed and uncommitted) to ensure no committed update is lost. UNDO then rolls back only the transactions that were still active at crash time, using CLRs for idempotency."
+    },
+    {
+      "stage": "post",
+      "question": "A query uses 'SELECT * FROM orders WHERE amount > 100'. The table has a primary key index on 'id'. What execution plan should the planner produce?",
+      "options": [
+        "IndexScan on 'id' with a filter for amount > 100",
+        "SeqScan of the entire table with a filter for amount > 100",
+        "HashJoin between the index and the table",
+        "Sort on amount followed by binary search"
+      ],
+      "correct": 1,
+      "explanation": "The planner should choose a SeqScan because the WHERE clause references 'amount', which has no index. An IndexScan on 'id' would not help since the predicate isn't on 'id'. The executor will scan all pages, and the Filter operator will check the predicate on each row."
+    },
+    {
+      "stage": "post",
+      "question": "Two concurrent transactions T1 and T2 both attempt UPDATE users SET name = ... WHERE id = 5. T1 commits first. What happens when T2 tries to commit?",
+      "options": [
+        "T2's update silently overwrites T1's update",
+        "T2 is aborted and must retry because the version created by T1 has begin_ts = T1's ID, which is committed in T2's snapshot, triggering the first-committer-wins rule",
+        "T2's update is serialized after T1's, both succeed",
+        "T2 is blocked until T1 releases its lock, then proceeds"
+      ],
+      "correct": 1,
+      "explanation": "Under first-committer-wins MVCC, when T2 goes to commit, it detects that the row version it updated already has a newer version (created by T1) with begin_ts committed in T2's snapshot. This is a write-write conflict. T2 must abort because it started before T1 committed but tries to write after T1's write is visible."
+    },
+    {
+      "stage": "post",
+      "question": "In the capstone's architecture, why must the WAL log record be written BEFORE the corresponding page modification?",
+      "options": [
+        "To ensure the page modification can be persisted atomically with the log record",
+        "To satisfy the WAL invariant: the log must always be ahead of the data, so that REDO can reconstruct any page from the log if needed",
+        "To allow UNDO to find the before-image of each modification",
+        "To ensure the LSN on the page matches the LSN in the log record"
+      ],
+      "correct": 1,
+      "explanation": "The WAL invariant states that a log record must reach stable storage before the corresponding dirty page is written to disk. If a crash occurs between the page write and the log write, REDO cannot replay the change and the modification is lost. But if the log is written first and the crash occurs before the page write, REDO will simply replay the log to reconstruct the page. The log must always be ahead of the data."
+    }
+  ]
+}

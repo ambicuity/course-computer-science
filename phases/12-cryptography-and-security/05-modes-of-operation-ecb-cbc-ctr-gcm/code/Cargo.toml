@@ -1,0 +1,8 @@
+[package]
+name = "aes-128-gcm"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "aes_128_gcm"
+path = "main.rs"

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why separate pure logic from IO in functional design?",
+      "options": ["To avoid all types", "To improve testability and compositional reasoning", "To force recursion", "To disable performance tuning"],
+      "correct": 1,
+      "explanation": "Pure logic is easier to test and reason about; IO shell handles side effects at boundaries."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the functor abstraction in Haskell?",
+      "options": ["A class for mutable state", "A type class for mapping a function over a wrapped context", "A loop construct", "A file I/O primitive"],
+      "correct": 1,
+      "explanation": "`Functor` provides `fmap`, letting you apply a function inside a context (list, Maybe, IO) without unwrapping it."
+    },
+    {
+      "stage": "post",
+      "question": "When is point-free style helpful?",
+      "options": ["Always", "When it clarifies composition without obscuring intent", "Never", "Only in monads"],
+      "correct": 1,
+      "explanation": "Point-free style is useful when readable; explicit arguments can be clearer in many cases."
+    },
+    {
+      "stage": "post",
+      "question": "What is a fold primarily used for?",
+      "options": ["IO buffering", "Structural aggregation over data structures", "Type inference", "Module imports"],
+      "correct": 1,
+      "explanation": "Folds accumulate results by traversing structure recursively with a combining function."
+    },
+    {
+      "stage": "post",
+      "question": "What is the Applicative functor useful for over plain Functor?",
+      "options": ["Faster execution", "Applying multi-argument functions to wrapped values without manual unwrapping", "Mutable state", "File system access"],
+      "correct": 1,
+      "explanation": "Applicative's `<*>` lets you lift multi-argument functions into a context, composing independent effectful computations."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 10, "title": "Functional Programming Deep - Haskell Idioms" }
+}

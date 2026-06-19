@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is sizeof(struct {char a; int b; char c;}) on a typical 64-bit Linux/macOS system?",
+      "options": [
+        "6",
+        "8",
+        "12",
+        "16"
+      ],
+      "correct": 2,
+      "explanation": "Alignment rules: int needs to start at a 4-byte boundary. After char a (1 byte), 3 bytes of padding align b. After b (4 bytes), c takes 1 byte. The struct must round up to a multiple of its largest alignment (4), so 3 bytes of tail padding → total 12. Reordering as {int b; char a; char c;} saves 4 bytes."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does the compiler insert padding bytes in a struct?",
+      "options": [
+        "To make structs bigger",
+        "To satisfy each field's alignment requirement, so the CPU can issue aligned loads (which are faster, and on ARM/RISC-V, required)",
+        "It's mandated by the C standard",
+        "For security"
+      ],
+      "correct": 1,
+      "explanation": "Most architectures require N-byte loads at addresses divisible by N. Padding ensures each field starts at an aligned address. On x86 misaligned access is slow; on ARM/RISC-V it traps (SIGBUS). The struct's overall size also rounds up to satisfy alignment when the struct itself is placed in an array."
+    },
+    {
+      "stage": "post",
+      "question": "When SHOULD you use `__attribute__((packed))`?",
+      "options": [
+        "Always — to save space",
+        "For wire-format / on-disk structures where the byte layout must be exact, AND you accept slower (or trapping) misaligned access. NEVER for hot in-memory data on alignment-strict CPUs.",
+        "Never",
+        "Only on 32-bit systems"
+      ],
+      "correct": 1,
+      "explanation": "Packed structs save bytes but every multi-byte field access becomes potentially-misaligned. On x86 you take a perf hit; on ARM/RISC-V the CPU may trap (SIGBUS). Reserve packed for: network protocol headers (must match the wire format), binary file formats, hardware registers. For optimization-by-density, prefer field reordering."
+    },
+    {
+      "stage": "post",
+      "question": "How can you reduce the size of `struct { char a; double b; char c; }` without losing fields?",
+      "options": [
+        "You can't",
+        "Reorder so the largest-alignment field comes first: `struct { double b; char a; char c; }` — saves 8 bytes (24 → 16 on typical platforms).",
+        "Use __attribute__((aligned(1)))",
+        "Declare all fields as char"
+      ],
+      "correct": 1,
+      "explanation": "Original layout: char (1) + 7-byte pad + double (8) + char (1) + 7-byte pad = 24. Reordered: double (8) + char + char + 6-byte pad = 16. Rule of thumb: sort fields by descending alignment requirement. Cumulative savings across millions of objects can be in the hundreds of MBs."
+    },
+    {
+      "stage": "post",
+      "question": "Type-punning between `float` and `uint32_t` via `union { float f; uint32_t u; }` is:",
+      "options": [
+        "Undefined behavior",
+        "Defined behavior in C99+ — unions are an explicit exception to the strict-aliasing rule",
+        "Only works on Intel CPUs",
+        "Requires -fno-strict-aliasing"
+      ],
+      "correct": 1,
+      "explanation": "C99 (and C11) explicitly allow reading any member of a union, regardless of which was last written — it's *implementation-defined* what value you get (depends on the bit-level representation), but it's not UB. The pattern is widely used for IEEE 754 bit manipulation. Note: in C++ the rules are stricter; use `std::bit_cast` (C++20) instead."
+    },
+    {
+      "stage": "post",
+      "question": "Bitfields like `unsigned int x : 3;` are convenient but have what major portability hazard?",
+      "options": [
+        "They're slow",
+        "Their layout (bit order within the storage unit, packing across word boundaries) is IMPLEMENTATION-DEFINED. Two compilers, or the same compiler with different `-march`, may produce different bit positions.",
+        "They only support unsigned",
+        "They can't be used in unions"
+      ],
+      "correct": 1,
+      "explanation": "C says bitfield ordering and alignment are implementation-defined. Big-endian / little-endian, compiler vendor, ABI choice — all may differ. For protocols and disk formats, never use C bitfields; do explicit shift-and-mask. Bitfields are fine for in-memory packed flags as long as you never serialize them naively."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 8,
+    "title": "Structs Unions Bitfields Alignment"
+  }
+}

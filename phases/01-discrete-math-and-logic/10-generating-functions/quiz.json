@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the ordinary generating function (OGF) of the sequence (1, 1, 1, 1, …)?",
+      "options": [
+        "x · (1 - x)",
+        "1 / (1 - x)",
+        "1 / (1 + x)",
+        "x / (1 - x)²"
+      ],
+      "correct": 1,
+      "explanation": "The geometric series 1 + x + x² + x³ + … sums (in the formal-power-series sense) to 1/(1 - x). This is the most-used OGF; many catalog entries derive from it by substitution or differentiation."
+    },
+    {
+      "stage": "pre",
+      "question": "What does multiplying two OGFs A(x) · B(x) correspond to at the sequence level?",
+      "options": [
+        "Element-wise product (aₙ · bₙ)",
+        "Convolution: (a * b)ₙ = Σₖ₌₀ⁿ aₖ · bₙ₋ₖ",
+        "Concatenation",
+        "Min(aₙ, bₙ)"
+      ],
+      "correct": 1,
+      "explanation": "Power-series multiplication is convolution: to get the coefficient of xⁿ in A·B, sum products aₖ bₙ₋ₖ over all k. This is why OGFs are useful for problems where 'split into two parts' yields a recurrence — the split becomes a product of two series."
+    },
+    {
+      "stage": "post",
+      "question": "Fibonacci's recurrence `Fₙ = Fₙ₋₁ + Fₙ₋₂` (F₀=0, F₁=1) yields which OGF?",
+      "options": [
+        "F(x) = 1 / (1 - x)",
+        "F(x) = x / (1 - x - x²)",
+        "F(x) = x² / (1 - x²)",
+        "F(x) = (1 - x) · (1 + x²)"
+      ],
+      "correct": 1,
+      "explanation": "Multiply both sides of the recurrence by xⁿ, sum n ≥ 2, recognize Σ Fₙ xⁿ on each side: F(x) - x = x·F(x) + x²·F(x), giving F(x) = x / (1 - x - x²). Partial fractions on this gives Binet's formula Fₙ = (φⁿ - ψⁿ)/√5."
+    },
+    {
+      "stage": "post",
+      "question": "The Catalan generating function satisfies which equation?",
+      "options": [
+        "C(x) = 1 + x · C(x)²",
+        "C(x) = 1 / (1 - 4x)",
+        "C(x) = x · (1 + C(x))",
+        "C(x) = C(x²)"
+      ],
+      "correct": 0,
+      "explanation": "From the Catalan recurrence Cₙ₊₁ = Σₖ Cₖ · Cₙ₋ₖ (split at the root / first matching paren), one gets C(x) = 1 + x · C(x)². Solving the quadratic in C(x) gives C(x) = (1 - √(1-4x))/(2x), whose coefficients are Cₙ = (1/(n+1)) C(2n, n)."
+    },
+    {
+      "stage": "post",
+      "question": "Why is `[xⁿ] (1/(1-x))ᵏ = C(n+k-1, k-1)`?",
+      "options": [
+        "Combinatorial identity proven independently",
+        "(1/(1-x))ᵏ is the OGF of 'ways to write n as an ordered sum of k non-negative integers' — i.e., stars-and-bars from Lesson 08; the formula C(n+k-1, k-1) is its count.",
+        "Falls from differentiation",
+        "By symmetry of binomial coefficients"
+      ],
+      "correct": 1,
+      "explanation": "Each factor `1/(1-x)` is `1 + x + x² + …` — 'choose xⁱ for some i ≥ 0'. Multiplying k copies gives k independent choices summing to some total n, which is exactly the stars-and-bars count. The OGF view turns combinatorial intuition into algebra and vice versa."
+    },
+    {
+      "stage": "post",
+      "question": "What's the OGF of the partition function p(n)?",
+      "options": [
+        "1 / (1 - x)",
+        "∏ₖ₌₁ ∞ 1/(1 - xᵏ)",
+        "e^x",
+        "(1 + x)^n"
+      ],
+      "correct": 1,
+      "explanation": "Each factor `1/(1 - xᵏ) = 1 + xᵏ + x^(2k) + …` represents 'use the part k any non-negative number of times.' The infinite product captures every possible combination of parts. There's no closed form for p(n), but Hardy-Ramanujan derived asymptotic `p(n) ~ e^(π√(2n/3)) / (4n√3)` from this product."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 10,
+    "title": "Generating Functions"
+  }
+}

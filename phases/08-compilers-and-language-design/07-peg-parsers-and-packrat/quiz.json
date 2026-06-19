@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 7,
+    "title": "Peg Parsers And Packrat"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between PEG's ordered choice (/) and CFG's alternation (|)?",
+      "options": [
+        "PEG uses parentheses, CFG uses brackets",
+        "PEG's ordered choice always picks the first matching alternative; CFG alternation considers all possibilities and may produce ambiguity",
+        "PEG alternation is recursive, CFG alternation is not",
+        "There is no meaningful difference — they are syntactic sugar for the same thing"
+      ],
+      "correct": 1,
+      "explanation": "In PEG, `a / b` tries `a` first. If `a` succeeds, `b` is never attempted. In CFG, `A → a | b` means both alternatives are equally valid, which can lead to ambiguity (multiple parse trees). PEG's ordering eliminates ambiguity by construction."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does packrat parsing solve, and at what cost?",
+      "options": [
+        "It solves ambiguity by trying all paths; the cost is slower parsing",
+        "It solves exponential time complexity by memoizing (rule, position) results; the cost is O(n × rules) space",
+        "It solves left recursion by rewriting rules; the cost is losing ordered choice",
+        "It solves error recovery by caching partial results; the cost is complex implementation"
+      ],
+      "correct": 1,
+      "explanation": "Naive recursive PEG parsing can be exponential because the same (rule, position) pair may be tried repeatedly. Packrat caching stores every result, guaranteeing each pair is computed at most once → O(n) time. The tradeoff is O(n) space per rule, or O(n × |rules|) total."
+    },
+    {
+      "stage": "post",
+      "question": "Which PEG operator succeeds WITHOUT consuming input, and how is it used?",
+      "options": [
+        "`*` (zero-or-more) — matches zero characters",
+        "`!a` (not-predicate) — succeeds if `a` fails, without consuming input; used for lookahead assertions",
+        "`?` (optional) — may consume zero characters",
+        "`/` (ordered choice) — the second branch consumes nothing"
+      ],
+      "correct": 1,
+      "explanation": "The not-predicate `!a` peeks ahead: if parser `a` would fail at the current position, `!a` succeeds without consuming any input. The and-predicate `&a` works similarly but succeeds when `a` succeeds. Both are zero-width assertions used for context-sensitive matching."
+    },
+    {
+      "stage": "post",
+      "question": "In the PEG expression `E ← E '+' T / T`, what is the primary challenge for a naive PEG parser?",
+      "options": [
+        "The grammar is ambiguous because '+' appears in two places",
+        "The left recursion in `E ← E '+' T` causes infinite recursion since `E` calls itself without consuming input first",
+        "Ordered choice cannot handle operators",
+        "PEG does not support non-terminals on the right-hand side"
+      ],
+      "correct": 1,
+      "explanation": "When the parser tries to match `E`, it immediately tries `E '+' T` which starts by trying to match `E` again — infinite recursion with no input consumed. This mirrors the left-recursion problem in recursive descent. Solutions include the Warth et al. iterative algorithm or rewriting the grammar."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key difference between PEG (Parsing Expression Grammar) and CFG parsing?",
+      "options": [
+        "PEG uses regular expressions while CFG uses BNF",
+        "PEG uses ordered choice (first matching alternative wins) and never backtracks past a matched rule",
+        "PEG can only parse regular languages",
+        "CFG is more expressive than PEG"
+      ],
+      "correct": 1,
+      "explanation": "PEG uses ordered choice (a / b tries 'a' first; if it fails, tries 'b') rather than unordered alternatives. This makes PEG unambiguous by design — no conflicts to resolve. Packrat parsing achieves O(n) time by memoizing, at the cost of O(n) space per parsing function."
+    }
+  ]
+}

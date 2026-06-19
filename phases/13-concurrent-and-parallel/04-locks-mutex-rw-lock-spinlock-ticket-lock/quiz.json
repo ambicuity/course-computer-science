@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 4,
+    "title": "Locks — Mutex, RW Lock, Spinlock, Ticket Lock"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What distinguishes a spinlock from a mutex (blocking lock)?",
+      "options": [
+        "A spinlock uses busy-waiting; a mutex blocks (deschedules) the waiting thread",
+        "A spinlock blocks in the kernel; a mutex spins in userspace",
+        "A spinlock is only available on Linux; a mutex is cross-platform",
+        "There is no difference — the terms are synonyms for the same primitive"
+      ],
+      "correct": 0,
+      "explanation": "A spinlock loops (busy-waits) until the lock is free, burning CPU cycles. A mutex puts the waiting thread to sleep via a system call (futex on Linux), allowing the CPU to run other threads. Spinlocks are appropriate only for very short critical sections (< 1 µs); mutexes are preferred when the wait could be long."
+    },
+    {
+      "stage": "post",
+      "question": "What makes a ticket lock \"fair\" in a way that a plain spinlock is not?",
+      "options": [
+        "A ticket lock uses a random backoff to give all threads equal opportunity",
+        "A ticket lock assigns monotonically increasing ticket numbers so waiters proceed in FIFO order",
+        "A ticket lock periodically boosts the priority of waiting threads",
+        "A ticket lock limits the number of times a thread can acquire the lock consecutively"
+      ],
+      "correct": 1,
+      "explanation": "A ticket lock has two counters: ticket (next free number) and turn (whose turn it is). Each caller atomically fetch-and-adds ticket to get a unique number, then waits until turn equals that number. Since numbers are assigned in arrival order, service is guaranteed FIFO — no thread can be starved. A plain spinlock has no ordering guarantee; the thread that happens to read the cleared flag first wins, which can starve threads on the far side of a NUMA node."
+    },
+    {
+      "stage": "post",
+      "question": "When would you choose an RwLock over a Mutex?",
+      "options": [
+        "When the critical section is shorter than 100 ns",
+        "When writes dominate reads (more than 50% of accesses are writes)",
+        "When the workload is read-mostly and you need multiple concurrent readers",
+        "When you need recursive locking (same thread locking multiple times)"
+      ],
+      "correct": 2,
+      "explanation": "RwLock allows multiple concurrent readers but only one exclusive writer. It shines when reads dominate writes (e.g., 100:1 ratio or higher) because readers do not block each other. If writes are frequent, the RwLock's additional overhead (tracking reader count, waking waiters) makes it slower than a plain Mutex. RwLock does not provide recursive locking — use a recursive mutex for that."
+    },
+    {
+      "stage": "post",
+      "question": "In Rust, what happens to a Mutex when a thread panics while holding the lock?",
+      "options": [
+        "The mutex is automatically unlocked and the data is zeroed",
+        "The mutex becomes \"poisoned\" — subsequent lock attempts return Err",
+        "The panic is silently caught and the critical section is rolled back",
+        "The mutex deadlocks — no thread can ever acquire it again"
+      ],
+      "correct": 1,
+      "explanation": "When a thread panics while holding a std::sync::Mutex guard, the mutex marks itself as poisoned. Any future attempt to lock it returns Err(PoisonError). This prevents other threads from observing potentially corrupted data. However, the error contains the MutexGuard, so you can recover by calling into_inner() on the PoisonError if you know the data is still consistent. This is Rust's approach to the general problem of crash recovery in critical sections."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between a mutex and a spinlock?",
+      "options": [
+        "They are identical",
+        "A mutex puts the waiting thread to sleep; a spinlock busy-waits (spins) until the lock is available",
+        "A spinlock is always faster than a mutex",
+        "A mutex can only protect integer variables"
+      ],
+      "correct": 1,
+      "explanation": "A mutex (mutual exclusion) puts a waiting thread to sleep via the OS scheduler, freeing the CPU for other work. A spinlock loops checking the lock, wasting CPU cycles but avoiding context-switch overhead. Spinlocks are better for very short critical sections; mutexes for longer waits."
+    }
+  ]
+}

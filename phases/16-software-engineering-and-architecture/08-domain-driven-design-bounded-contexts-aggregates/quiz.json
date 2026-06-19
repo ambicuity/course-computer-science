@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 8,
+    "title": "Domain-Driven Design — Bounded Contexts, Aggregates"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of a bounded context in Domain-Driven Design?",
+      "options": [
+        "To define a database schema for a microservice",
+        "To establish an explicit boundary within which a single model and ubiquitous language apply consistently",
+        "To group all related code into one large module for easier deployment",
+        "To enforce referential integrity across all subsystems"
+      ],
+      "correct": 1,
+      "explanation": "A bounded context defines a boundary within which one model and one ubiquitous language are consistent. Outside that boundary, the same real-world concept can be modeled differently — and that is correct, not a mistake. It is not about database schemas, deployment, or cross-system integrity."
+    },
+    {
+      "stage": "pre",
+      "question": "What distinguishes a value object from an entity in DDD?",
+      "options": [
+        "A value object has a unique ID; an entity does not",
+        "An entity is immutable; a value object is mutable",
+        "An entity has identity that persists across state changes; a value object has no identity and is compared by its attributes",
+        "A value object is stored in its own table; an entity is always embedded"
+      ],
+      "correct": 2,
+      "explanation": "Entities have distinct identity (an ID) that endures across state changes — two Customer entities with the same data but different IDs are different objects. Value objects have no identity; two Money(10, USD) objects are equal because their attributes match. Value objects are immutable; entities are mutable but retain identity."
+    },
+    {
+      "stage": "post",
+      "question": "Why does DDD insist that all changes to objects within an aggregate must go through the aggregate root?",
+      "options": [
+        "Because the aggregate root is the only object that has a database primary key",
+        "To enforce invariants consistently — the root is the single point of control that ensures all business rules are checked before any mutation",
+        "To reduce the number of database queries needed for writes",
+        "Because the aggregate root is always the largest object in the cluster"
+      ],
+      "correct": 1,
+      "explanation": "The aggregate root enforces invariants — business rules that must always hold. If external code could reach into internal entities directly, they could set attributes that violate the aggregate's rules. The root is the gatekeeper that checks all preconditions before mutating any part of the aggregate."
+    },
+    {
+      "stage": "post",
+      "question": "When should you use an Anti-Corruption Layer (ACL)?",
+      "options": [
+        "Whenever you want to speed up database queries between services",
+        "When a downstream bounded context integrates with an upstream model it does not control and needs to protect its own model from pollution",
+        "When two bounded contexts share the same database and need transactional consistency",
+        "When you want to expose your domain model as a public API"
+      ],
+      "correct": 1,
+      "explanation": "An ACL sits between a downstream context and an upstream model it doesn't control. It translates upstream data into the downstream context's model, isolating the downstream code from upstream schema changes. It is a strategic pattern for maintaining model integrity at context boundaries, not a performance or API tool."
+    },
+    {
+      "stage": "post",
+      "question": "A team is building a simple CRUD admin panel for managing employee records. There are no complex business rules — just basic create, read, update, delete operations. Is DDD the right approach?",
+      "options": [
+        "Yes — every project benefits from bounded contexts and aggregates",
+        "Yes — DDD repositories make CRUD operations more efficient",
+        "No — DDD adds modeling overhead that is unnecessary for simple CRUD domains without complex business logic",
+        "No — DDD only works for event-sourced systems"
+      ],
+      "correct": 2,
+      "explanation": "DDD shines when domains have complex business rules, multiple models of the same concept, or many teams collaborating. For simple CRUD with no complex logic, the overhead of aggregates, bounded contexts, and ubiquitous language is unnecessary — a straightforward data-access layer is simpler and more appropriate."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is a well-designed aggregate boundary for an e-commerce Order?",
+      "options": [
+        "Order contains OrderLines, and each OrderLine holds a direct reference to the full Product aggregate from the Catalog context",
+        "Order contains OrderLines, each line holds a productId (identity reference) — the Product aggregate lives in a separate bounded context",
+        "Order, OrderLines, Customer, Product, Inventory, and Payment are all in one aggregate so every operation is transactionally consistent",
+        "Order contains OrderLines, and external code can directly mutate an OrderLine's quantity without going through the Order root"
+      ],
+      "correct": 1,
+      "explanation": "Well-designed aggregates reference other aggregates by identity (productId), not by reference to the full object. The Product belongs to the Catalog context, not the Order context. Aggregates should be small — one transaction should touch only one aggregate. And all mutations must go through the aggregate root, not bypass it."
+    }
+  ]
+}

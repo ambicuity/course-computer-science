@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Linearity of expectation: E[X + Y] = E[X] + E[Y] requires X and Y to be:",
+      "options": [
+        "Independent",
+        "Disjoint",
+        "Identically distributed",
+        "Nothing — it holds always for any two random variables"
+      ],
+      "correct": 3,
+      "explanation": "Linearity of expectation is *unconditional*. E[X + Y] = E[X] + E[Y] for any random variables on the same probability space — independent or not. This is what makes it powerful: you can break complex random objects into indicator variables, sum the easy expectations, and ignore the dependencies."
+    },
+    {
+      "stage": "pre",
+      "question": "What is E[Xᵢ] when Xᵢ is the indicator of event A (1 on A, 0 otherwise)?",
+      "options": [
+        "P(A)",
+        "1",
+        "0",
+        "|A|"
+      ],
+      "correct": 0,
+      "explanation": "E[1_A] = 1 · P(A) + 0 · P(¬A) = P(A). The 'indicator trick' lets you turn 'count of events that happened' into a sum of P(event) — the most-used technique in randomized algorithm analysis."
+    },
+    {
+      "stage": "post",
+      "question": "At what n is the birthday-paradox collision probability ~ 1/2 with 365 buckets?",
+      "options": [
+        "183 (= half of 365)",
+        "23",
+        "70",
+        "365"
+      ],
+      "correct": 1,
+      "explanation": "n ≈ 23 is the classic birthday-paradox number: with 23 people, P(collision) ≈ 0.507. The threshold scales as √m: for m=365, √m ≈ 19, and the actual cutoff is a small constant above that. This is why a 128-bit hash gives only ~64 bits of collision resistance."
+    },
+    {
+      "stage": "post",
+      "question": "Coupon collector: expected time to collect all n distinct coupons (uniform draws) is:",
+      "options": [
+        "n",
+        "n²",
+        "n · Hₙ ≈ n · ln n",
+        "Exponential in n"
+      ],
+      "correct": 2,
+      "explanation": "Sum of geometric expectations: when you have i out of n, P(new) = (n - i)/n so expected wait is n/(n - i). Sum from i = 0 to n - 1 gives n · Hₙ ≈ n ln n + γn. For n=100, the answer is ~519 — much more than 100, intuitive since the last few coupons are rare."
+    },
+    {
+      "stage": "post",
+      "question": "Markov's inequality says, for non-negative X:",
+      "options": [
+        "P(X ≥ a) ≤ E[X] / a",
+        "P(X ≥ a) ≤ E[X²] / a²",
+        "P(X ≥ μ) = 1/2",
+        "P(X ≥ a) ≤ Var(X) / a"
+      ],
+      "correct": 0,
+      "explanation": "Markov: for X ≥ 0, P(X ≥ a) ≤ E[X]/a. Crude but only requires the mean. Chebyshev uses variance to give a tighter (but still polynomial) bound: P(|X − μ| ≥ kσ) ≤ 1/k². For sums of independent variables, Chernoff bounds give exponential tails."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the union bound P(A₁ ∪ A₂ ∪ ... ∪ Aₙ) ≤ Σ P(Aᵢ) so widely used?",
+      "options": [
+        "It's tight",
+        "It requires NO independence assumption; lets you bound 'at least one of these bad events' by summing each event's probability — almost always good enough for asymptotic guarantees.",
+        "It computes exact probabilities",
+        "It's only valid for n ≤ 100"
+      ],
+      "correct": 1,
+      "explanation": "The union bound assumes nothing about the relationships among events. P(union) ≤ Σ P(individuals) — a one-sided inclusion-exclusion. Used everywhere in randomized analysis: 'with probability ≥ 1 - 1/n^c, all n hash buckets behave nicely' is union-bound + per-bucket tail bound."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 19,
+    "title": "Discrete Probability Expectation"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is BVH important in path tracers?",
+      "options": ["It increases image noise", "It prunes intersection tests by skipping geometry the ray cannot hit", "It replaces the need for sampling", "It removes recursion from path tracing"],
+      "correct": 1,
+      "explanation": "Without BVH, every ray tests against every primitive (O(n)). BVH organizes geometry into a tree of bounding boxes. A ray that misses a box skips all geometry inside it, reducing intersection tests to O(log n) on average."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the Moller-Trumbore algorithm compute?",
+      "options": ["The color of a pixel", "The intersection point of a ray and a triangle using cross products", "The BVH tree depth", "The camera field of view"],
+      "correct": 1,
+      "explanation": "Moller-Trumbore is a fast ray-triangle intersection test. It uses two edge cross products to compute barycentric coordinates and the intersection distance t, all without explicitly computing the triangle's plane equation."
+    },
+    {
+      "stage": "post",
+      "question": "What does sample count primarily affect in a path tracer?",
+      "options": ["Source code size", "Image noise (variance) and render time", "The BVH tree depth", "The geometry topology"],
+      "correct": 1,
+      "explanation": "Each sample is a random ray through the pixel. More samples average out the random noise from Monte Carlo integration. Noise decreases as 1/sqrt(N), so 4x more samples gives 2x less noise, but 4x longer render time."
+    },
+    {
+      "stage": "post",
+      "question": "How does a BVH reduce intersection tests from O(n) to O(log n)?",
+      "options": ["By sorting primitives by color", "By organizing geometry in a tree of bounding boxes so rays skip non-overlapping subtrees", "By caching intersection results", "By using SIMD instructions"],
+      "correct": 1,
+      "explanation": "Each BVH node stores an AABB containing all geometry in its subtree. A ray first tests against the AABB. If it misses, the entire subtree is skipped. For a balanced tree, this means O(log n) node visits instead of O(n) primitive tests."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the Surface Area Heuristic (SAH) preferred over median split for BVH construction?",
+      "options": ["SAH is simpler to implement", "SAH minimizes expected ray-AABB test cost by considering the surface area of child boxes", "SAH always produces balanced trees", "SAH uses less memory"],
+      "correct": 1,
+      "explanation": "Median split produces balanced trees but ignores geometry distribution. SAH splits at the position that minimizes the expected cost: probability of hitting the left box times left subtree cost plus probability of hitting the right box times right subtree cost. This produces faster traversal even if the tree is unbalanced."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 6, "title": "Build a Path Tracer with BVH" }
+}

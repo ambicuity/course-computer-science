@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the time complexity of the Floyd-Warshall algorithm on a graph with V vertices?",
+      "options": [
+        "O(V · E log V)",
+        "O(V² log V)",
+        "O(V³)",
+        "O(V⁴)"
+      ],
+      "correct": 2,
+      "explanation": "Floyd-Warshall has three nested loops — one over each intermediate vertex k, one over each source i, and one over each destination j. Each iteration does constant work (a comparison and optional update), giving O(V³). This is independent of the number of edges."
+    },
+    {
+      "stage": "pre",
+      "question": "Johnson's algorithm uses a potential function h[v] derived from Bellman-Ford. What does the reweighting w'(u,v) = w(u,v) + h[u] − h[v] guarantee?",
+      "options": [
+        "It makes all edge weights equal to zero",
+        "It ensures all reweighted edges are non-negative while preserving shortest paths",
+        "It doubles the original shortest path distances",
+        "It removes all negative edges by making them zero"
+      ],
+      "correct": 1,
+      "explanation": "The potential function h satisfies h[v] ≤ h[u] + w(u,v) for all edges (from the Bellman-Ford distances), which means w'(u,v) = w(u,v) + h[u] − h[v] ≥ 0. Along any path the h-values telescope and cancel, so shortest paths are preserved. This lets Dijkstra run on the reweighted graph."
+    },
+    {
+      "stage": "post",
+      "question": "On a dense graph with V=500 vertices and E ≈ V² edges (no negative weights), which algorithm is expected to be fastest for APSP?",
+      "options": [
+        "Floyd-Warshall — O(V³) beats O(V·E log V) ≈ O(V³ log V)",
+        "Johnson's algorithm — O(V·E log V) is always faster than O(V³)",
+        "Repeated Dijkstra — it skips the Bellman-Ford step",
+        "They are all the same on dense graphs"
+      ],
+      "correct": 0,
+      "explanation": "Floyd-Warshall is O(V³). Johnson's and repeated Dijkstra are O(V·E log V) = O(V³ log V) when E = V². The log V factor makes Floyd-Warshall the winner on dense graphs. Johnson's advantage appears on sparse graphs where E ≪ V²."
+    },
+    {
+      "stage": "post",
+      "question": "After running Floyd-Warshall, how do you detect which vertex pairs are affected by a negative cycle?",
+      "options": [
+        "Check if dist[i][i] > 0 for any vertex i",
+        "Check if dist[i][j] was updated on the final iteration of k",
+        "Check if dist[i][i] < 0 — vertex i lies on or reaches a negative cycle; any pair (u,v) where dist[u][i] and dist[i][v] are finite is also affected",
+        "Negative cycles cannot be detected by Floyd-Warshall"
+      ],
+      "correct": 2,
+      "explanation": "A negative cycle exists iff dist[i][i] < 0 for some i after Floyd-Warshall completes. Any pair (u,v) where u can reach i and i can reach v will have undefined shortest paths (−∞). You check dist[u][i] ≠ ∞ and dist[i][v] ≠ ∞ to find all affected pairs."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the time complexity of the Floyd-Warshall algorithm for all-pairs shortest paths?",
+      "options": [
+        "O(VE)",
+        "O(V^2 log V)",
+        "O(V^3)",
+        "O(V^4)"
+      ],
+      "correct": 2,
+      "explanation": "Floyd-Warshall uses three nested loops over all vertices (k, i, j), giving O(V^3). It works by considering each vertex as a potential intermediate node and checking if routing through it shortens any pair's distance."
+    }
+  ],
+  "_meta": {
+    "phase": 4,
+    "lesson": 15,
+    "title": "Graph Algorithms Iii Floyd Warshall Johnson Apsp"
+  }
+}

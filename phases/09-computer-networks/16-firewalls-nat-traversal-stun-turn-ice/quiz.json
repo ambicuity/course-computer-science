@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 16,
+    "title": "Firewalls, NAT Traversal, STUN/TURN/ICE",
+    "total_questions": 4
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the 5-tuple that a packet-filtering firewall uses to match rules?",
+      "options": [
+        "src_ip, dst_ip, src_port, dst_port, protocol",
+        "src_mac, dst_mac, src_ip, dst_ip, vlan",
+        "src_ip, dst_ip, ttl, checksum, flags",
+        "src_port, dst_port, seq_num, ack_num, window"
+      ],
+      "correct": 0,
+      "explanation": "The 5-tuple uniquely identifies a flow: source IP, destination IP, source port, destination port, and transport protocol (TCP/UDP)."
+    },
+    {
+      "stage": "pre",
+      "question": "What does a STUN server tell a client?",
+      "options": [
+        "The client's MAC address as seen by the server",
+        "The client's public IP:port mapping as seen from the Internet",
+        "The nearest TURN server's relay address",
+        "The client's NAT type (full cone, symmetric, etc.)"
+      ],
+      "correct": 1,
+      "explanation": "STUN replies with the XOR-MAPPED-ADDRESS attribute, which contains the client's public IP:port as the server observed it — this is the server-reflexive candidate."
+    },
+    {
+      "stage": "post",
+      "question": "In ICE, why does the algorithm try host candidates before relay candidates?",
+      "options": [
+        "Host candidates have higher security than relay candidates",
+        "Relay candidates require authentication that host candidates do not",
+        "Host candidates are the cheapest path (direct connection, no server load)",
+        "ICE mandates alphabetical ordering of candidate types"
+      ],
+      "correct": 2,
+      "explanation": "ICE tries the cheapest paths first: host (direct LAN) → server-reflexive (STUN-discovered public IP) → relay (TURN relay that costs bandwidth). Direct connections avoid server load and reduce latency."
+    },
+    {
+      "stage": "post",
+      "question": "When both peers are behind symmetric NATs, what must ICE use to establish a connection?",
+      "options": [
+        "Server-reflexive candidates discovered via STUN",
+        "Host candidates on the same subnet",
+        "Relay candidates allocated via TURN",
+        "Peer-reflexive candidates learned from ARP"
+      ],
+      "correct": 2,
+      "explanation": "Symmetric NAT creates a different port mapping for each destination, so neither peer can predict the other's public port. TURN relay always works because the relay server has a public address that both peers can reach."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem do STUN, TURN, and ICE solve?",
+      "options": [
+        "They encrypt network traffic",
+        "They help establish peer-to-peer connections when both peers are behind NATs",
+        "They provide DNS resolution",
+        "They assign IP addresses dynamically"
+      ],
+      "correct": 1,
+      "explanation": "When both peers are behind NAT, direct connections fail. STUN discovers the public IP/port mapping. TURN provides a relay when direct connection is impossible. ICE coordinates candidates (host, server-reflexive, relay) and tests connectivity to find the best working path."
+    }
+  ]
+}

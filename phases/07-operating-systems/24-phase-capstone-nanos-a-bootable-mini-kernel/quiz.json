@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 24,
+    "title": "Phase Capstone — 'nanos': A Bootable Mini-Kernel"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In RISC-V, which registers must a context switch save and restore (callee-saved)?",
+      "options": [
+        "All 32 general-purpose registers",
+        "Only ra (return address) and sp (stack pointer)",
+        "ra, sp, gp, and s0–s11 (the callee-saved registers)",
+        "Only the program counter and flags"
+      ],
+      "correct": 2,
+      "explanation": "The RISC-V calling convention defines s0–s11, ra, sp, and gp as callee-saved. The caller-saved registers (t0–t6, a0–a7) are already saved on the stack by the C compiler when they're in use. The context switch only needs to save/restore the callee-saved set — the process's own C code has already spilled caller-saved registers to the stack."
+    },
+    {
+      "stage": "post",
+      "question": "nanos uses a bump allocator instead of a slab or buddy allocator. What is the key trade-off?",
+      "options": [
+        "Bump is faster but cannot free individual allocations",
+        "Bump uses less code but requires an MMU",
+        "Bump is slower but handles fragmentation better",
+        "Bump requires a page table to be set up first"
+      ],
+      "correct": 0,
+      "explanation": "A bump allocator increments a pointer for each allocation. It has zero fragmentation overhead and O(1) allocation time, but it cannot free individual objects — you can only reset the entire heap. This is fine for a boot-phase allocator or a kernel that never frees (nanos), but real kernels need per-object deallocation, hence buddy/slab allocators."
+    },
+    {
+      "stage": "post",
+      "question": "How does nanos's shell process differ from the three dummy processes?",
+      "options": [
+        "The shell runs in user mode; dummy processes run in kernel mode",
+        "The shell is called directly from kernel_main and never goes through the scheduler",
+        "The shell has a larger stack because it parses commands",
+        "The shell uses a different scheduling algorithm"
+      ],
+      "correct": 1,
+      "explanation": "In nanos, the shell is called directly from kernel_main() and blocks on uart_getc(). It never participates in round-robin scheduling — the three dummy processes run in the background only if the shell were to yield. A real kernel would run the shell as a user-space process, with the kernel scheduling it like any other process and using syscall instructions for I/O."
+    },
+    {
+      "stage": "post",
+      "question": "What would need to change in nanos to support preemptive scheduling (time-slicing) instead of cooperative?",
+      "options": [
+        "Nothing — nanos already uses preemptive scheduling via the UART interrupt",
+        "Set up the RISC-V timer (CLINT/SBI), handle timer interrupts, and call the scheduler from the interrupt handler",
+        "Add a second CPU core and run the scheduler on it",
+        "Compile kernel.c with -O3 to make context switches faster"
+      ],
+      "correct": 1,
+      "explanation": "Cooperative scheduling requires processes to voluntarily yield control. To add preemptive time-slicing, you need a periodic timer interrupt. On RISC-V, this means configuring the CLINT (Core-Local Interruptor) timer, writing a trap handler in boot.s that calls the scheduler on timer interrupts, and ensuring context_switch is safe to call from interrupt context. This is Exercise 3 (Hard) in the lesson."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the minimum a kernel must do to be considered 'bootable'?",
+      "options": [
+        "Support networking and a file system",
+        "Initialize hardware, set up memory management, and start executing a user-space process",
+        "Provide a graphical interface",
+        "Implement all POSIX system calls"
+      ],
+      "correct": 1,
+      "explanation": "A minimal bootable kernel must: (1) initialize the CPU (set up GDT/IDT on x86), (2) set up virtual memory (at least identity mapping), (3) handle timer interrupts for scheduling, and (4) create at least one process and jump to user mode. Everything else (file systems, networking) can come later."
+    }
+  ]
+}

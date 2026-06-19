@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package users.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "users/v1";
+option java_package = "com.example.users.v1";
+
+// --- Messages ---
+
+message User {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    ACTIVE = 1;
+    SUSPENDED = 2;
+    DEACTIVATED = 3;
+  }
+  Status status = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+  // Field 7 reserved: was "nickname", deprecated and removed in v2.
+  // Never reuse field number 7.
+  reserved 7;
+  reserved "nickname";
+}
+
+message GetUserRequest {
+  int64 id = 1;
+}
+
+message ListUsersRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+  User.Status status_filter = 3;
+}
+
+message ListUsersResponse {
+  repeated User users = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+}
+
+message UpdateUserRequest {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  // Using optional to distinguish "not provided" from "set to empty"
+  optional User.Status status = 4;
+}
+
+message DeleteUserRequest {
+  int64 id = 1;
+}
+
+message DeleteUserResponse {
+  bool success = 1;
+}
+
+message StreamUsersRequest {
+  User.Status status_filter = 1;
+}
+
+// --- Service ---
+
+service UserService {
+  // Unary: fetch a single user by ID
+  rpc GetUser(GetUserRequest) returns (User);
+
+  // Unary: list users with pagination
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+
+  // Unary: create a new user
+  rpc CreateUser(CreateUserRequest) returns (User);
+
+  // Unary: update an existing user
+  rpc UpdateUser(UpdateUserRequest) returns (User);
+
+  // Unary: soft-delete a user
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+
+  // Server streaming: receive a live feed of users matching a filter
+  // New users or status changes are pushed to the client in real time
+  rpc StreamUsers(StreamUsersRequest) returns (stream User);
+}

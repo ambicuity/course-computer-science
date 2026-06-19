@@ -1,0 +1,79 @@
+{
+  "lesson": "04-regular-expressions-automata",
+  "title": "Regular Expressions ↔ Automata",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple-choice",
+      "question": "Which three operations form the algebraic basis of regular expressions?",
+      "options": [
+        "Union, intersection, complement",
+        "Union, concatenation, Kleene star",
+        "Concatenation, reversal, Kleene star",
+        "Union, concatenation, intersection"
+      ],
+      "explanation": "Regular expressions are built from three operations: union (|), concatenation (juxtaposition), and Kleene star (*). These are sufficient to describe all regular languages. Intersection and complement are not part of the regex algebra, though they are definable for regular languages.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "type": "multiple-choice",
+      "question": "In Thompson construction, how many accept states does each NFA fragment have?",
+      "options": [
+        "Zero",
+        "Exactly one",
+        "One or more",
+        "Two"
+      ],
+      "explanation": "Thompson construction always produces NFA fragments with exactly one start state and exactly one accept state. This property is essential for composition — concatenation connects the single accept of the left fragment to the single start of the right fragment via an ε-transition.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "type": "multiple-choice",
+      "question": "What does the pumping lemma prove?",
+      "options": [
+        "That all languages are regular",
+        "That a language is not regular (by contradiction)",
+        "That NFA and DFA are equivalent",
+        "That Thompson construction is correct"
+      ],
+      "explanation": "The pumping lemma is a proof technique used to show a language is NOT regular. You assume the language is regular (with pumping length p), choose a specific string, and show that pumping it produces a string outside the language — a contradiction.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "type": "multiple-choice",
+      "question": "How many states does Thompson construction produce for the regex 'a' (a single character)?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "0"
+      ],
+      "explanation": "For a single character 'a', Thompson construction creates exactly 2 states: a start state and an accept state, connected by a single transition labeled 'a'. This is the base case of the construction.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "Which of these languages CANNOT be described by a regular expression?",
+      "options": [
+        "Strings of 0s and 1s ending in '01'",
+        "Strings of balanced parentheses",
+        "Strings containing an even number of 1s",
+        "Strings over {a, b} with no two consecutive a's"
+      ],
+      "correct": 1,
+      "explanation": "Balanced parentheses require tracking nesting depth, which needs unbounded memory — beyond what a finite automaton or regex can provide. This is a context-free language, provably not regular by the pumping lemma. The other options are all regular."
+    }
+  ],
+  "_meta": {
+    "phase": 5,
+    "lesson": 4,
+    "title": "Regular Expressions Automata"
+  }
+}

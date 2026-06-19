@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A 'naïve' array queue (with `head` walking forward) does what when the cap is full?",
+      "options": [
+        "Discards old elements",
+        "Shifts the surviving elements back to index 0 — an O(n) operation. Repeated enqueue+dequeue at full cap is O(n) per cycle.",
+        "Crashes",
+        "Doubles capacity"
+      ],
+      "correct": 1,
+      "explanation": "Without wraparound, the array fills monotonically: head grows, tail grows, slot 0 stays empty after first dequeue. When head + len == cap, you either shift (O(n)) or grow (O(n) too). The cure is the ring buffer: indices wrap modulo cap. The lesson's main.c shows the naive shift at 247 ns/op vs 0.4 ns/op for the ring — 600× slower."
+    },
+    {
+      "stage": "pre",
+      "question": "Why use power-of-2 capacity for a ring buffer?",
+      "options": [
+        "Memory alignment",
+        "(i + 1) % cap becomes (i + 1) & (cap - 1) — a single AND instruction instead of a divide.",
+        "Tradition",
+        "Hash collision avoidance"
+      ],
+      "correct": 1,
+      "explanation": "Modulo is one of the slowest integer ops (~20-30 cycles); bitwise AND is 1 cycle. With cap = 2^k, (i+1) % cap == (i+1) & (cap-1). Real ring buffers (VecDeque, ArrayDeque, every kernel one) use this. Cost: capacity wastes up to 2× memory; benefit: queue ops bottleneck on memory throughput, not modulo."
+    },
+    {
+      "stage": "post",
+      "question": "Python's `list.pop(0)` has what complexity?",
+      "options": [
+        "O(1)",
+        "O(n) — Python lists are arrays with index 0 at the start, so pop(0) shifts every other element down. Use collections.deque for queues.",
+        "O(log n)",
+        "Constant amortized"
+      ],
+      "correct": 1,
+      "explanation": "CPython's `list` is `Objects/listobject.c` — a dynamic array. `pop(0)` calls `list_ass_slice` which memmoves the tail down. Hence the ubiquitous 'never use a list as a queue' rule. `collections.deque` is the answer: a linked list of fixed-size blocks, O(1) at both ends. The lesson's main.py measures 26 ms vs 1.3 ms for 50K rolls — 20× faster."
+    },
+    {
+      "stage": "post",
+      "question": "When would you reach for a linked-list queue instead of a ring buffer?",
+      "options": [
+        "Never",
+        "Lock-free MPMC queues (Michael-Scott), or when nodes are owned by the producer and must be referenceable across enqueue. Ring buffers are better for everything else.",
+        "When data is small",
+        "When iteration is rare"
+      ],
+      "correct": 1,
+      "explanation": "The Michael-Scott queue (1996) is fundamentally linked because each enqueue atomic-swaps a single node into place; multiple producers can't safely share array slots without coordination. Other linked uses: schedulers where each task's wakeup data lives in the task struct (intrusive queue), and message brokers where every message has its own allocation lifetime."
+    },
+    {
+      "stage": "post",
+      "question": "A queue implemented with two stacks (push on one, pop from the other; transfer when empty) has what amortized cost per op?",
+      "options": [
+        "O(n)",
+        "O(1) amortized. Each element is pushed onto stack-in once and pushed onto stack-out once across its lifetime. Total work for n ops = O(n).",
+        "O(log n)",
+        "O(√n)"
+      ],
+      "correct": 1,
+      "explanation": "Classic accounting: each enqueue does 1 push (cost 1 + bank 2 = 3). When stack-out is empty, transferring k elements is paid for by their banked credits. So per op: ≤ 3 amortized. The individual transfer can be O(n) — bad for real-time, fine for batch. Functional Okasaki queues use this trick to give purely-functional O(1) amortized queues."
+    },
+    {
+      "stage": "post",
+      "question": "What is the cost of `growslice` (doubling) on a ring buffer with content split across the wraparound?",
+      "options": [
+        "O(1)",
+        "O(n) one-time copy: walk from head to end-of-buffer, then from start-of-buffer to tail, into the new contiguous buffer. Indices reset to head=0, tail=len.",
+        "O(n²)",
+        "Impossible to grow"
+      ],
+      "correct": 1,
+      "explanation": "After growth you must 'un-wrap' the queue: copy [head .. cap) followed by [0 .. tail) into the new buffer starting at index 0. The two memcpy calls add up to len bytes — O(n). Amortized per op: O(1), same as Vec push. Rust's VecDeque does exactly this (see vec_deque/mod.rs:handle_capacity_increase)."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 3,
+    "title": "Stacks Queues Array And List Backings"
+  }
+}

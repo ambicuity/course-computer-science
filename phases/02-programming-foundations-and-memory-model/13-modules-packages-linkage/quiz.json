@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In C, what does `static` at file scope (i.e., outside any function) do?",
+      "options": [
+        "Makes the variable read-only",
+        "Gives the declaration INTERNAL linkage — the name is visible only inside this translation unit, not exported to the linker",
+        "Allocates it on the stack",
+        "Marks it as a compile-time constant"
+      ],
+      "correct": 1,
+      "explanation": "File-scope `static` = internal linkage. Without it, the variable has external linkage and any other .c can `extern`-declare it and link. `static` is C's way of saying 'this is implementation detail of this file.' Encapsulation in C."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the purpose of an include guard like `#ifndef FOO_H / #define FOO_H / ... / #endif`?",
+      "options": [
+        "Optimization",
+        "Prevents multiple inclusions of the same header in one translation unit, which would cause duplicate type/function declarations",
+        "Tells the compiler to use a faster path",
+        "Required by C standard"
+      ],
+      "correct": 1,
+      "explanation": "Headers often include other headers; without guards, the same struct/function declaration appears multiple times and the compiler errors with 'redefinition.' Include guards make the second-and-later inclusions a no-op. `#pragma once` is a vendor extension that does the same."
+    },
+    {
+      "stage": "post",
+      "question": "In a Rust project, what is the difference between a *crate* and a *package*?",
+      "options": [
+        "They're synonyms",
+        "A crate is a single unit of compilation (one library OR one binary). A package contains one or more crates and is managed by cargo (one Cargo.toml). Most packages contain just one crate.",
+        "Crate is older terminology",
+        "Crate is for binaries; package is for libraries"
+      ],
+      "correct": 1,
+      "explanation": "Cargo terminology: a *package* is the project (one Cargo.toml). A *crate* is one compilation target inside it — usually one library and/or one binary. Most everyday Rust packages have one crate; complex projects can have multiple (workspace)."
+    },
+    {
+      "stage": "post",
+      "question": "Rust's `pub(crate) fn foo()` means:",
+      "options": [
+        "Public to everyone, even external crates",
+        "Visible inside this crate, but NOT exported to other crates that depend on this one — internal-API visibility",
+        "Private to this module",
+        "Only visible in the parent module"
+      ],
+      "correct": 1,
+      "explanation": "`pub(crate)` = 'internal-API public'. The function/type is reachable from any module in this crate, but downstream crates that pull in your crate as a dependency can't see it. Equivalent of Java's package-private or Kotlin's `internal`. Default `pub` is public to the world."
+    },
+    {
+      "stage": "post",
+      "question": "Why do C headers contain DECLARATIONS but C source files contain DEFINITIONS?",
+      "options": [
+        "Tradition",
+        "Definitions can appear in exactly one translation unit (or the linker reports 'multiple definition'). Headers are included by many .c files — so they hold declarations (prototypes) that don't allocate storage or emit code.",
+        "Headers are faster",
+        "Compiler bug workaround"
+      ],
+      "correct": 1,
+      "explanation": "One Definition Rule: each non-inline function or non-extern variable has exactly one definition across the whole program. If a definition lived in a header included by N .c files, you'd have N definitions and a linker error. So headers carry declarations (which can appear many times) and .c files carry definitions (which must appear exactly once)."
+    },
+    {
+      "stage": "post",
+      "question": "In Go, names exported from a package are determined by:",
+      "options": [
+        "An `export` keyword",
+        "Capitalization: identifiers starting with an uppercase letter are exported (visible outside the package); lowercase ones are package-private",
+        "A `pub` modifier",
+        "The package declaration"
+      ],
+      "correct": 1,
+      "explanation": "Go made the unusual choice of using identifier capitalization for visibility: `fmt.Println` is exported (capital P); `fmt.format` would be package-private. Pros: visibility is visible at every call site. Cons: refactoring a name from internal to exported requires touching every reference."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 13,
+    "title": "Modules Packages Linkage"
+  }
+}

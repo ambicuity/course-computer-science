@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a functional dependency X → Y?",
+      "options": [
+        "A constraint where X is always the primary key",
+        "If two tuples agree on X, they must agree on Y",
+        "A foreign key relationship between two tables",
+        "A function that maps primary keys to foreign keys"
+      ],
+      "correct": 1,
+      "explanation": "X → Y means the value of X uniquely determines the value of Y — if two rows have the same X, they must have the same Y. This is the fundamental building block of normalization theory."
+    },
+    {
+      "stage": "pre",
+      "question": "A relation is in 1NF if:",
+      "options": [
+        "Every non-key column depends on 'the key, the whole key, and nothing but the key'",
+        "Every column holds atomic values — no repeating groups or multi-valued attributes",
+        "There are no transitive dependencies between non-key columns",
+        "Every determinant is a candidate key"
+      ],
+      "correct": 1,
+      "explanation": "First Normal Form requires that all columns are atomic (single-valued). Repeating groups and multi-valued attributes violate 1NF and must be decomposed into separate tables."
+    },
+    {
+      "stage": "pre",
+      "question": "An update anomaly in a denormalized schema means:",
+      "options": [
+        "The database runs slowly during UPDATE operations",
+        "A transaction deadlocks when updating multiple rows",
+        "Updating a value requires changing the same value in many rows, risking inconsistency",
+        "UPDATE statements cannot use WHERE clauses"
+      ],
+      "correct": 2,
+      "explanation": "When the same fact (e.g., an advisor's name) is stored in many rows, a single update must touch every copy. Miss one, and the database becomes inconsistent — this is an update anomaly."
+    },
+    {
+      "stage": "post",
+      "question": "What distinguishes BCNF from 3NF?",
+      "options": [
+        "BCNF allows transitive dependencies; 3NF does not",
+        "BCNF requires every FD's LHS to be a superkey; 3NF allows exceptions when the RHS is a prime attribute",
+        "BCNF applies only to relations with composite keys; 3NF applies to all relations",
+        "There is no difference — BCNF and 3NF are equivalent"
+      ],
+      "correct": 1,
+      "explanation": "3NF allows FDs where the RHS is a prime attribute (part of some candidate key) even if the LHS is not a superkey. BCNF closes this loophole: every non-trivial FD must have a superkey as its LHS. The classic example is R(A,B,C) with FDs {AB→C, C→B}: C→B is valid in 3NF (B is prime) but violates BCNF."
+    },
+    {
+      "stage": "post",
+      "question": "A binary decomposition of R into R1 and R2 is lossless if and only if:",
+      "options": [
+        "Every FD of R is preserved in either R1 or R2",
+        "R1 ∩ R2 forms a superkey in R1 or R2",
+        "R1 and R2 have no attributes in common",
+        "Both R1 and R2 are in BCNF"
+      ],
+      "correct": 1,
+      "explanation": "The lossless join property for a binary decomposition requires that the common attributes R1 ∩ R2 be a superkey in at least one of R1 or R2. This ensures no spurious tuples appear when joining."
+    },
+    {
+      "stage": "post",
+      "question": "Which normal form addresses multi-valued dependencies (MVDs)?",
+      "options": [
+        "3NF",
+        "BCNF",
+        "4NF",
+        "DKNF"
+      ],
+      "correct": 2,
+      "explanation": "Fourth Normal Form (4NF) handles multi-valued dependencies, which arise when one attribute determines a set of independent values for another. 4NF requires that every non-trivial MVD's LHS be a superkey — otherwise the relation must be further decomposed."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 4,
+    "title": "Normalization 1Nf Bcnf And 4Nf"
+  }
+}

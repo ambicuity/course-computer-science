@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 18,
+    "title": "Phase Capstone — A Path Tracer + a Triangle Rasterizer"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why would a graphics engineer need to understand BOTH rasterization and path tracing, rather than mastering just one?",
+      "options": [
+        "They approximate the same rendering equation with opposite tradeoffs — speed vs. physical correctness — and production systems use both",
+        "Rasterization is obsolete and only included for historical interest",
+        "Path tracing is always superior, but universities still teach rasterization for legacy reasons",
+        "The two techniques solve completely unrelated problems and are never used together"
+      ],
+      "correct": 0,
+      "explanation": "Both rasterization and path tracing approximate Kajiya's rendering equation. Rasterization is fast but physically incomplete (no GI, soft shadows, caustics). Path tracing is physically correct but slow. Production systems like game engines and film pipelines use both — rasterization for real-time preview and ray tracing for final quality or specific effects."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of these visual effects can a path tracer produce 'for free' (as an emergent property of simulating light transport) that a basic rasterizer cannot?",
+      "options": [
+        "Vertex transformation from model space to clip space",
+        "Soft shadows, color bleeding, and caustics",
+        "Z-buffer depth testing and depth-based visibility",
+        "Barycentric interpolation across a triangle"
+      ],
+      "correct": 1,
+      "explanation": "Soft shadows, color bleeding, and caustics emerge naturally from path tracing's simulation of light bouncing between surfaces. Vertex transforms, z-buffering, and barycentric interpolation are mechanical steps available to both rasterizers and ray tracers."
+    },
+    {
+      "stage": "post",
+      "question": "In the dual-renderer capstone, the Camera struct is shared between both renderers. What does this design choice demonstrate?",
+      "options": [
+        "That camera code is trivial and doesn't matter",
+        "That both rendering approaches consume the same scene and view information — the mathematical description of 'what to look at' is renderer-agnostic",
+        "That path tracing doesn't actually need camera parameters",
+        "That the rasterizer should define its own camera to avoid coupling"
+      ],
+      "correct": 1,
+      "explanation": "The Camera encapsulates the eye position, target, up vector, field of view, and aspect ratio. Both the rasterizer (via the MVP matrix) and the path tracer (via primary ray construction) consume these same parameters. This shows that the core math — transforms, projections, ray generation — is shared infrastructure, not renderer-specific."
+    },
+    {
+      "stage": "post",
+      "question": "Russian roulette in path tracing terminates paths probabilistically. Why is this necessary, and how does it avoid introducing bias?",
+      "options": [
+        "It is necessary to reduce memory usage; surviving paths are not rescaled, which introduces slight bias but saves RAM",
+        "It is necessary because paths could bounce infinitely; surviving paths are rescaled by 1/(1-p) so the expected value remains unchanged, keeping the estimator unbiased",
+        "It is necessary because GPUs require fixed-length work; it introduces bias equal to the termination probability p",
+        "It is an approximation that introduces noise but not bias, in the same way that sample counting introduces noise"
+      ],
+      "correct": 1,
+      "explanation": "Without termination, paths could bounce infinitely, requiring an arbitrary depth cutoff that would bias the result. Russian roulette terminates with probability p and rescales surviving contributions by 1/(1-p), which preserves the expected value of the estimator, keeping it unbiased while making computation finite."
+    },
+    {
+      "stage": "post",
+      "question": "When comparing the rasterizer and path tracer outputs on the same Cornell Box scene, which difference is most immediately visible?",
+      "options": [
+        "The rasterizer produces no image at all because it cannot handle triangle geometry",
+        "The path tracer shows color bleeding from the red and green walls onto the floor, while the rasterizer shows only direct illumination with hard or no shadows",
+        "Both produce identical images because they solve the same rendering equation",
+        "The rasterizer shows more realistic lighting because it uses a z-buffer"
+      ],
+      "correct": 1,
+      "explanation": "The Cornell Box is designed to highlight global illumination: red and green walls bleed their color onto nearby white surfaces, and soft shadow penumbrae appear around objects. The rasterizer only computes direct lighting (Lambert shading with a dot product against each light), so it produces a flat-lit scene without color bleeding or soft shadows."
+    },
+    {
+      "stage": "post",
+      "question": "How does the capstone's Scene::intersect() function — which linearly scans all spheres and triangles — relate to Lesson 12 (Acceleration Structures)?",
+      "options": [
+        "It implements BVH, matching the Lesson 12 approach exactly",
+        "It is a naive O(n) scan that can be replaced by a BVH for O(log n) performance, without changing either renderer's calling code — both renderers benefit from the optimization",
+        "Only the path tracer benefits from acceleration; the rasterizer doesn't use intersection at all",
+        "Acceleration structures are only needed for scenes with more than 1 million triangles, so the naive scan is always sufficient"
+      ],
+      "correct": 1,
+      "explanation": "The scene intersection is a clean interface: both the path tracer's trace() and the rasterizer's shadow ray tests call Scene::intersect(). Replacing the linear scan with a BVH only requires changing that one function. The path tracer benefits more (every secondary ray uses it), but the rasterizer's shadow rays also benefit. This is a key architectural insight: shared math and scene layers enable independent optimization."
+    }
+  ]
+}

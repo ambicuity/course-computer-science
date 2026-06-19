@@ -1,0 +1,294 @@
+name: ci-cd-pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION_DEFAULT: '20'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION_DEFAULT }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint -- --format json --output-file eslint-report.json
+
+      - name: Run Prettier check
+        run: npx prettier --check .
+
+      - name: Run type check
+        run: npx tsc --noEmit
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-report
+          path: eslint-report.json
+          retention-days: 7
+
+  test:
+    name: Test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['18', '20', '22']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:unit -- --coverage --ci --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./coverage
+          JEST_JUNIT_OUTPUT_NAME: junit.xml
+
+      - name: Run integration tests
+        run: npm run test:integration -- --ci
+
+      - name: Upload coverage
+        if: matrix.node-version == env.NODE_VERSION_DEFAULT
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION_DEFAULT }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Check for known vulnerabilities
+        uses: github/codeql-action/analyze@v3
+        continue-on-error: true
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION_DEFAULT }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Upload build artefact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+          retention-days: 7
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build, security]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: staging
+      url: https://staging.example.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artefact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+      - name: Configure deployment credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_STAGING }}
+          aws-region: us-east-1
+
+      - name: Deploy to staging
+        run: |
+          echo "::group::Deploying to staging"
+          aws s3 sync dist/ s3://staging-bucket/ --delete
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CDN_STAGING }} \
+            --paths "/*"
+          echo "::endgroup::"
+
+      - name: Run smoke tests
+        run: |
+          echo "Running smoke tests against staging..."
+          curl -sf https://staging.example.com/health || exit 1
+          curl -sf https://staging.example.com/ | grep -q "OK" || exit 1
+          echo "Smoke tests passed"
+
+      - name: Notify staging deploy
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          curl -X POST "${{ secrets.SLACK_WEBHOOK }}" \
+            -H 'Content-type: application/json' \
+            -d "{\"text\":\"Staging deploy ${STATUS}: ${{ github.event.head_commit.message }}\"}"
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://example.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artefact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+
+      - name: Configure deployment credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_PRODUCTION }}
+          aws-region: us-east-1
+
+      - name: Deploy to production (canary 10%)
+        run: |
+          echo "::group::Canary deployment - 10% traffic"
+          aws s3 sync dist/ s3://production-bucket/ --delete
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CDN_PRODUCTION }} \
+            --paths "/*"
+          echo "Canary deployment initiated"
+          echo "::endgroup::"
+
+      - name: Canary health check
+        run: |
+          echo "Waiting 60 seconds for canary monitoring..."
+          sleep 60
+          ERROR_RATE=$(curl -sf https://monitoring.example.com/api/error-rate?window=60 || echo "1.0")
+          echo "Error rate: ${ERROR_RATE}"
+          if (( $(echo "$ERROR_RATE > 0.01" | bc -l) )); then
+            echo "::error::Error rate too high for canary: ${ERROR_RATE}"
+            exit 1
+          fi
+          echo "Canary health check passed"
+
+      - name: Promote canary to 100%
+        run: |
+          echo "::group::Full rollout - 100% traffic"
+          echo "All traffic now routed to new version"
+          echo "::endgroup::"
+
+      - name: Run production smoke tests
+        run: |
+          curl -sf https://example.com/health || exit 1
+          curl -sf https://example.com/ | grep -q "OK" || exit 1
+          echo "Production smoke tests passed"
+
+      - name: Notify production deploy
+        if: always()
+        run: |
+          STATUS="${{ job.status }}"
+          curl -X POST "${{ secrets.SLACK_WEBHOOK }}" \
+            -H 'Content-type: application/json' \
+            -d "{\"text\":\"Production deploy ${STATUS}: ${{ github.event.head_commit.message }}\"}"
+
+  rollback:
+    name: Rollback
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: failure()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_PRODUCTION }}
+          aws-region: us-east-1
+
+      - name: Rollback to previous version
+        run: |
+          echo "::group::Rolling back production"
+          PREVIOUS_VERSION=$(aws s3 ls s3://production-bucket-versions/ \
+            | tail -2 | head -1 | awk '{print $4}')
+          if [ -n "$PREVIOUS_VERSION" ]; then
+            aws s3 sync "s3://production-bucket-versions/${PREVIOUS_VERSION}/" \
+              s3://production-bucket/ --delete
+            aws cloudfront create-invalidation \
+              --distribution-id ${{ secrets.CDN_PRODUCTION }} \
+              --paths "/*"
+            echo "Rolled back to version: ${PREVIOUS_VERSION}"
+          else
+            echo "::error::No previous version found for rollback"
+            exit 1
+          fi
+          echo "::endgroup::"
+
+      - name: Notify rollback
+        run: |
+          curl -X POST "${{ secrets.SLACK_WEBHOOK }}" \
+            -H 'Content-type: application/json' \
+            -d '{"text":":rotating_light: Production rollback triggered from CI/CD pipeline"}'

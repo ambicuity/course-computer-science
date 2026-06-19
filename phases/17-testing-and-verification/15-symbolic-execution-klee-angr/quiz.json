@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is symbolic execution mainly used for?",
+      "options": ["Rendering graphics", "Exploring program paths via symbolic inputs and constraints", "Compressing binaries", "Scheduling threads"],
+      "correct": 1,
+      "explanation": "Symbolic execution tracks branch constraints to discover inputs that reach specific paths."
+    },
+    {
+      "stage": "pre",
+      "question": "What does a 'symbolic variable' represent in symbolic execution?",
+      "options": ["A global constant", "An unconstrained input that can take any value satisfying path conditions", "A pointer to the heap", "A compiler flag"],
+      "correct": 1,
+      "explanation": "Symbolic variables stand in for unknown inputs; the engine accumulates constraints on them as execution follows different paths."
+    },
+    {
+      "stage": "post",
+      "question": "What is path explosion?",
+      "options": ["Program crash due to recursion", "Rapid growth of possible branch paths", "Stack overflow only", "Solver bug"],
+      "correct": 1,
+      "explanation": "Each branch can fork execution states, causing exponential growth in paths."
+    },
+    {
+      "stage": "post",
+      "question": "How does symbolic execution complement fuzzing?",
+      "options": ["It replaces fuzzing entirely", "It can derive deep branch-satisfying inputs that random mutation may miss", "It only works on UI code", "It avoids constraint solving"],
+      "correct": 1,
+      "explanation": "Symbolic methods can target guarded paths by solving constraints directly."
+    },
+    {
+      "stage": "post",
+      "question": "What is concolic execution?",
+      "options": ["A type of garbage collection", "A hybrid approach mixing concrete and symbolic execution", "A new programming language", "A static analysis technique only"],
+      "correct": 1,
+      "explanation": "Concolic execution runs the program with concrete inputs while tracking symbolic constraints, negating path conditions to explore new branches."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 15, "title": "Symbolic Execution - KLEE, angr" }
+}

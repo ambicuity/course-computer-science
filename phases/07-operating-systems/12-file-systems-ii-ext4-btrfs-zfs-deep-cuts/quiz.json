@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 12: File Systems II — ext4, btrfs, ZFS deep cuts",
+  "questions": [
+    {
+      "id": 1,
+      "question": "How does ext4's extent-based allocation improve over ext3's per-block pointers?",
+      "options": [
+        "It compresses blocks before writing",
+        "It describes contiguous block runs with a single (start, length) pair, reducing inode overhead",
+        "It caches block pointers in RAM instead of on disk",
+        "It eliminates the need for a block bitmap"
+      ],
+      "explanation": "An extent is a (start_block, length) tuple. A single extent entry can describe up to 128 MB of contiguous data (32K blocks × 4 KB). A 1 GB file needs ~8 extent entries instead of 262,144 per-block pointers, dramatically reducing inode size and indirect block overhead.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "What makes btrfs snapshots space-efficient?",
+      "options": [
+        "btrfs compresses snapshot data with zstd",
+        "btrfs skips metadata in snapshots",
+        "Copy-on-write means only modified blocks consume new space; unchanged blocks are shared",
+        "btrfs stores snapshots on a separate fast device"
+      ],
+      "explanation": "btrfs uses CoW everywhere. A snapshot is just a new root pointer to the same B-tree. When a block is modified, only the new copy consumes space. The old block remains referenced by the snapshot. Until data diverges, snapshots cost nearly zero additional space.",
+      "stage": "pre",
+      "correct": 2
+    },
+    {
+      "id": 3,
+      "question": "What is the primary reason ZFS does not need a separate journal like ext4's JBD2?",
+      "options": [
+        "ZFS uses a simpler file system structure",
+        "ZFS transaction groups (txg) make every write part of an atomic batch — the uberblock update is the commit",
+        "ZFS only works on SSDs which don't need journaling",
+        "ZFS rewrites the entire superblock on every write"
+      ],
+      "explanation": "ZFS batches writes into transaction groups (~5s). All writes in a txg are flushed to new blocks (CoW), then the uberblock (root pointer) is atomically updated. If a crash occurs before the uberblock update, the old state is intact. After the update, the new state is complete. No partial writes possible — no journal needed.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "Which file system's RAID 5/6 implementation is NOT recommended for production use?",
+      "options": [
+        "ext4's mdadm RAID",
+        "btrfs's built-in RAID 5/6",
+        "ZFS's RAIDZ2/RAIDZ3",
+        "mdadm software RAID"
+      ],
+      "explanation": "btrfs RAID 5/6 has a well-known 'write hole' problem where a power loss during a stripe write can leave parity inconsistent. The btrfs wiki explicitly warns against RAID 5/6 for production. Use RAID 1/10 instead. ZFS's RAIDZ and mdadm's RAID 5/6 handle this correctly.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What is copy-on-write (CoW) in the context of file systems like btrfs and ZFS?",
+      "options": [
+        "A compression technique that reduces file sizes",
+        "When modifying data, the new version is written to a new location rather than overwriting the old one",
+        "A method for sharing files between users",
+        "A way to write data to two disks simultaneously"
+      ],
+      "correct": 1,
+      "explanation": "Copy-on-write means updates don't overwrite existing data in place. Instead, new blocks are allocated for modified data, and pointers are updated atomically. This provides crash consistency (old data is intact if the write fails), instant snapshots, and deduplication."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 12,
+    "title": "File Systems Ii Ext4 Btrfs Zfs Deep Cuts"
+  }
+}

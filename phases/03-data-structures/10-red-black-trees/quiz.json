@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What are the five red-black tree invariants?",
+      "options": [
+        "Sorted, balanced, full, complete, perfect",
+        "(1) Every node R/B; (2) root is B; (3) NILs are B; (4) no two reds in a row; (5) all root→NIL paths have equal B count.",
+        "Heights are equal",
+        "Inorder is sorted"
+      ],
+      "correct": 1,
+      "explanation": "Invariants 4 (no two reds) and 5 (equal black-height) together force the tree to be 'roughly balanced.' Along any path, RED and BLACK nodes alternate at worst → half the nodes are BLACK → height ≤ 2 × black-height ≤ 2 log₂(n+1). Looser than AVL's 1.44 log but cheaper to maintain on writes."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is red-black the default balanced BST in production (C++, Java, Linux)?",
+      "options": [
+        "It's the only one",
+        "Fewer rotations per insert/delete than AVL (3 vs log n in delete), making it cheaper on write-heavy workloads. Slightly taller (2 log n vs 1.44 log n), but the lookup penalty is dwarfed by write savings.",
+        "Better cache locality",
+        "Constant time"
+      ],
+      "correct": 1,
+      "explanation": "AVL is read-optimal (tightest height). RB is write-amortized-optimal (fewest total rotations over insert+delete pairs). For std::map / TreeMap, where uses are mixed, RB wins. The pattern: never optimize for one dimension; pick the trade-off that fits actual workloads."
+    },
+    {
+      "stage": "post",
+      "question": "In insert fixup, what does the 'uncle is RED' case do?",
+      "options": [
+        "Rotate",
+        "Recolor: parent + uncle → BLACK, grandparent → RED. No rotation. Propagate the imbalance up the tree (grandparent might now violate vs ITS parent).",
+        "Delete uncle",
+        "Swap with sibling"
+      ],
+      "correct": 1,
+      "explanation": "When the uncle is RED, both children of the grandparent are RED (after the insert). Recoloring solves the local conflict at zero rotation cost. But the grandparent becoming RED can violate at the next level up. Hence the loop. The 'uncle is RED' case can propagate O(log n) levels, but each level is O(1) work — and the 'uncle is BLACK' cases terminate immediately with 1-2 rotations."
+    },
+    {
+      "stage": "post",
+      "question": "Sedgewick's Left-Leaning RB tree simplifies the implementation by adding what constraint?",
+      "options": [
+        "All keys are positive",
+        "Only LEFT-leaning red links allowed (no right-red). Halves the number of cases. Used in newer Java collections, OCaml stdlib, and most modern tutorials. Same asymptotic guarantees.",
+        "Trees are static",
+        "Colors are integers"
+      ],
+      "correct": 1,
+      "explanation": "Classical RB allows red links on either side; this creates symmetric cases that double the code. LLRB forbids right-red, so every fixup uses one of three operations: rotate_left, rotate_right, flip_colors. Insert is 3 lines of conditions; delete is ~30 lines vs classical RB's ~150. Same 2 log n height bound. Sedgewick 2008 introduced it."
+    },
+    {
+      "stage": "post",
+      "question": "Linux's kernel red-black tree (lib/rbtree.c) is used in which subsystems?",
+      "options": [
+        "Just one",
+        "CFS scheduler (run queue ordered by vruntime), VM (vm_area_struct list per process), epoll's interest set, ext4 directory indices, and ~50 other places.",
+        "Networking only",
+        "Filesystems only"
+      ],
+      "correct": 1,
+      "explanation": "The Linux kernel's RB tree is the single most-used data structure outside the basic types. Its intrusive-list style (you embed `struct rb_node` in your struct) means it adds 1 pointer + 1 byte per element vs malloc. Read include/linux/rbtree.h: only 200 lines, declared with __attribute__((aligned(sizeof(long)))) so the LSB of parent_color can hold the color bit."
+    },
+    {
+      "stage": "post",
+      "question": "When does RB outperform B-trees in modern hardware?",
+      "options": [
+        "Always",
+        "When the working set fits in L2 cache. B-trees win for on-disk or large in-memory data (better cache-line utilization at high cap). RB wins for small in-memory sets (no pointer-chasing penalty inside a node).",
+        "Never",
+        "Only on Linux"
+      ],
+      "correct": 1,
+      "explanation": "B-tree nodes hold k keys; each pointer chase accesses one cache line. For a million-key tree, B-tree does ~3 cache misses vs RB's ~20. So B-trees win at scale. But for thousands of keys, RB's smaller pointer overhead (1 byte color vs ~64 bytes B-tree node header) wins. Production databases use B-trees; in-memory STL uses RB. There's no universal answer; measure for your workload."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 10,
+    "title": "Red Black Trees"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 8,
+    "title": "Dynamic Programming I — 1D, Memoization, Tabulation",
+    "note": "4 MCQs on identifying subproblems, memo vs tab, and LIS complexity."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which two properties must a problem have for dynamic programming to apply?",
+      "options": [
+        "Optimal substructure and overlapping subproblems",
+        "Greedy choice property and optimal substructure",
+        "Overlapping subproblems and polynomial space",
+        "Optimal substructure and deterministic transitions"
+      ],
+      "correct": 0,
+      "explanation": "DP requires (1) optimal substructure — the optimal solution contains optimal solutions to sub-problems, and (2) overlapping subproblems — the same sub-problems are solved repeatedly. The greedy choice property (option B) is what makes greedy algorithms work, not DP."
+    },
+    {
+      "stage": "pre",
+      "question": "In the coin change problem with coins [1, 3, 4] and amount 6, what is dp[6]?",
+      "options": [
+        "3",
+        "2",
+        "4",
+        "6"
+      ],
+      "correct": 1,
+      "explanation": "dp[6] = 2, using two coins of denomination 3 (3+3=6). While you could use six 1-coins or coins {1,1,4}, the minimum is 2. The transition dp[a] = 1 + min(dp[a-c]) for each coin c gives dp[6] = 1 + dp[3] = 1 + 1 = 2."
+    },
+    {
+      "stage": "post",
+      "question": "What is the time complexity of the O(n log n) LIS algorithm using patience sorting?",
+      "options": [
+        "O(n log n) because it sorts the entire array once",
+        "O(n log n) because each of the n elements triggers a binary search over at most n tails",
+        "O(n²) because the tails list can grow to size n",
+        "O(n) because bisect is constant time"
+      ],
+      "correct": 1,
+      "explanation": "For each of the n elements, we perform a binary search (O(log k) where k ≤ n) on the tails list to find the insertion position. The total is O(n log n). The tails list stores the smallest possible tail of increasing subsequences of each length — it is NOT the sorted array."
+    },
+    {
+      "stage": "post",
+      "question": "When is memoization (top-down) preferred over tabulation (bottom-up)?",
+      "options": [
+        "When all sub-problems must be solved regardless of input",
+        "When only a small fraction of sub-problems are actually needed",
+        "When the problem has no base case",
+        "When space optimisation with two variables is required"
+      ],
+      "correct": 1,
+      "explanation": "Memoization only computes sub-problems that are actually reached during recursion, making it efficient when the problem space is large but only a sparse subset of states is needed. Tabulation fills the entire table regardless. Space optimisation with two variables (option D) is a tabulation technique, not memoization."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key property a problem must have to be solvable by dynamic programming?",
+      "options": [
+        "Optimal substructure and overlapping subproblems",
+        "The problem must be NP-hard",
+        "The input must be a graph",
+        "The solution must use recursion"
+      ],
+      "correct": 0,
+      "explanation": "Dynamic programming requires optimal substructure (the optimal solution contains optimal solutions to subproblems) and overlapping subproblems (the same subproblem is solved multiple times). Without both, DP provides no advantage over plain recursion or greedy approaches."
+    }
+  ]
+}

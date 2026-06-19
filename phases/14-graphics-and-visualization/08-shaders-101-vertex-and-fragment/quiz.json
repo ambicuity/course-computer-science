@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 8,
+    "title": "Shaders 101 — Vertex and Fragment"
+  },
+  "questions": [
+    {
+      "question": "A vertex shader runs once per vertex while a fragment shader runs once per pixel-fragment. For a single triangle covering 10,000 pixels, how many times does each shader execute?",
+      "options": [
+        "Vertex: 3 times, Fragment: ~10,000 times",
+        "Vertex: 10,000 times, Fragment: 3 times",
+        "Both run exactly 3 times",
+        "Both run exactly 10,000 times"
+      ],
+      "correct": 0,
+      "explanation": "The vertex shader runs once per vertex in the draw call (3 vertices for one triangle). The fragment shader runs once per pixel that the rasterizer determines is covered by that triangle (~10,000 pixels). This asymmetry is why fragment shaders must be kept lean.",
+      "stage": "pre"
+    },
+    {
+      "question": "What role do varyings play in the GPU pipeline?",
+      "options": [
+        "They send per-vertex data from the CPU to the GPU via vertex buffers",
+        "They carry data from the vertex shader to the fragment shader, interpolated across each primitive by the rasterizer",
+        "They declare global constants that never change across an entire frame",
+        "They control which fragments pass the depth test"
+      ],
+      "correct": 1,
+      "explanation": "Varyings are written by the vertex shader and read by the fragment shader. The rasterizer interpolates them using barycentric coordinates so each fragment receives a smoothly blended value. This is how normals, UVs, and colors transition smoothly across a triangle.",
+      "stage": "pre"
+    },
+    {
+      "question": "In GLSL, how do you declare a value that is constant across all vertices and fragments in a single draw call (e.g., the model matrix)?",
+      "options": [
+        "As an attribute with layout(location = N) in",
+        "As an out variable in the vertex shader",
+        "As a uniform variable",
+        "As a varying variable"
+      ],
+      "correct": 2,
+      "explanation": "Uniforms are constant across an entire draw call — they do not change per vertex (that is an attribute) or per fragment. Matrices like model, view, and projection, as well as light positions, are typically passed as uniforms.",
+      "stage": "pre"
+    },
+    {
+      "question": "In GLSL you write `#version 330 core` and `void main()` as the entry point. In WGSL for WebGPU, how are the vertex and fragment entry points declared?",
+      "options": [
+        "`fn main() @vertex` and `fn main() @fragment`",
+        "`@vertex fn vs(input) -> Output` and `@fragment fn fs(input) -> Output`",
+        "`vertex void main()` and `fragment void main()`",
+        "WGSL uses the same `#version` and `void main()` as GLSL"
+      ],
+      "correct": 1,
+      "explanation": "WGSL uses `@vertex` and `@fragment` attributes on named functions. Each entry point has its own function name (commonly `vs` and `fs`). Interface data is passed through structs with `@location(N)` and `@builtin(position)` attributes rather than GLSL's `layout(location=N)` qualifiers.",
+      "stage": "post"
+    },
+    {
+      "question": "You see a completely black object on screen. Your fragment shader computes: `vec3 result = max(dot(N, L), 0.0) * u_lightColor;` and your normals are correct. What is the most likely cause?",
+      "options": [
+        "The fragment shader should use `min` instead of `max`",
+        "The light direction vector L might be pointing from the light toward the surface instead of from the surface toward the light",
+        "The ambient term is too high",
+        "The GPU does not support GLSL 330"
+      ],
+      "correct": 1,
+      "explanation": "If L is computed as `normalize(lightPos - surfacePos)` it points toward the light (correct). If accidentally computed as `normalize(surfacePos - lightPos)` it points away from the light (inverted). When inverted, `dot(N, L)` becomes negative for surfaces facing the camera, clamping to 0 and producing black. The fix is to ensure L points from the surface toward the light.",
+      "stage": "post"
+    },
+    {
+      "question": "A common debugging technique for shaders is 'visual debugging' — encoding numerical data as colors. If you write `frag_color = vec4(v_normal * 0.5 + 0.5, 1.0);`, what does each color channel represent?",
+      "options": [
+        "Red = X rotation, Green = Y rotation, Blue = Z rotation",
+        "Red = normal X, Green = normal Y, Blue = normal Z (mapped from [-1,1] to [0,1])",
+        "Red = light intensity, Green = shadow, Blue = ambient",
+        "Red = tangent, Green = bitangent, Blue = UV coordinate"
+      ],
+      "correct": 1,
+      "explanation": "Normals are unit vectors in the range [-1, 1]. The expression `v_normal * 0.5 + 0.5` maps [-1, 1] → [0, 1], which is the valid color range. Each axis maps to a color channel: X → Red, Y → Green, Z → Blue. If normals are correct, surfaces facing right appear reddish, surfaces facing up appear greenish, and surfaces facing the camera appear bluish.",
+      "stage": "post"
+    }
+  ]
+}

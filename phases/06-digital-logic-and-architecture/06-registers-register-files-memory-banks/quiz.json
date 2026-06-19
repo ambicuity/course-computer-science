@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 6,
+    "title": "Registers, Register Files, Memory Banks"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A RISC-V register file has dual-port read and single-port write. How many address inputs does it need to read two source registers and write one destination register in a single cycle?",
+      "options": [
+        "3 address inputs: rs1_addr (5b), rs2_addr (5b), rd_addr (5b)",
+        "2 address inputs: a shared 5-bit address bus and a direction signal",
+        "1 address input: a multiplexed 5-bit bus that cycles through all three",
+        "32 address inputs: one per register"
+      ],
+      "correct": 0,
+      "explanation": "The register file needs three independent 5-bit address inputs: rs1_addr and rs2_addr for the two asynchronous reads, and rd_addr for the synchronous write. These are provided simultaneously by the instruction decoder."
+    },
+    {
+      "stage": "pre",
+      "question": "In RISC-V, register x0 is hardwired to zero. What happens when software writes a non-zero value to x0?",
+      "options": [
+        "The processor raises an illegal instruction exception",
+        "The write is silently discarded; x0 continues to read as 0",
+        "x0 stores the value until the next reset",
+        "The write succeeds but x0 is read-only for privileged code"
+      ],
+      "correct": 1,
+      "explanation": "Writes to x0 are discarded in hardware — the register file simply ignores the write when rd_addr is 0. This provides a convenient no-op sink and eliminates the need for special NOP encoding."
+    },
+    {
+      "stage": "post",
+      "question": "Why is SRAM used for CPU register files and caches instead of DRAM?",
+      "options": [
+        "SRAM does not need a power supply to retain data",
+        "SRAM is denser, fitting more bits per square millimeter",
+        "SRAM is faster and does not require periodic refresh cycles",
+        "SRAM uses only 1 transistor per bit, making it cheaper"
+      ],
+      "correct": 2,
+      "explanation": "SRAM uses 6 transistors per bit (fast, no refresh) vs. DRAM's 1 transistor + 1 capacitor (dense, needs refresh). The register file needs sub-nanosecond access with no refresh overhead, making SRAM the correct choice despite its higher cost and lower density."
+    },
+    {
+      "stage": "post",
+      "question": "A register file uses asynchronous read. When rs1_addr changes, when does rs1_data become valid?",
+      "options": [
+        "On the next rising clock edge",
+        "After a propagation delay through combinational logic, within the same cycle",
+        "Two clock cycles later, after the address is latched",
+        "Only when the write-enable signal is also asserted"
+      ],
+      "correct": 1,
+      "explanation": "Asynchronous read means the address-to-data path is purely combinational — the output updates after a gate delay as soon as the address changes, with no clock edge required. This is in contrast to synchronous read, where the address is sampled on a clock edge and data appears on the next edge."
+    },
+    {
+      "stage": "pre",
+      "question": "Why are registers the fastest storage in a CPU?",
+      "options": [
+        "Because they use magnetic storage",
+        "Because they are built from flip-flops directly on the CPU die, closest to the ALU",
+        "Because they are the largest storage in the system",
+        "Because they only store one bit each"
+      ],
+      "correct": 1,
+      "explanation": "Registers are implemented as flip-flops directly on the processor die, physically adjacent to the ALU and control unit. They have the shortest wire delays and no cache-miss penalty. A typical CPU has 32-64 general-purpose registers accessible in a single clock cycle."
+    }
+  ]
+}

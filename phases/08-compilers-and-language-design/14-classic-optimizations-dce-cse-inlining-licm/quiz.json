@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 14: Classic Optimizations — DCE, CSE, Inlining, LICM",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Dead Code Elimination (DCE) removes instructions under what condition?",
+      "options": [
+        "The instruction is inside a loop",
+        "The instruction's result is never used and has no side effects",
+        "The instruction uses more than two operands",
+        "The instruction appears after a branch"
+      ],
+      "explanation": "An instruction is dead if its computed value is never consumed by any subsequent instruction and the instruction has no observable side effects (like I/O). DCE performs a backward liveness analysis and sweeps anything not marked live.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "Common Subexpression Elimination (CSE) replaces a duplicate expression with what?",
+      "options": [
+        "A constant zero",
+        "A reference to the previously computed result",
+        "A new temporary variable with a fresh computation",
+        "Nothing — it deletes the duplicate entirely"
+      ],
+      "explanation": "CSE maintains a hash table of expressions (op, arg1, arg2) → result variable. When a duplicate is found, it replaces the recomputation with a copy from the previously stored result, avoiding redundant computation.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "What is the primary benefit of Loop-Invariant Code Motion (LICM)?",
+      "options": [
+        "It eliminates the loop entirely",
+        "It reduces the number of instructions executed per iteration by hoisting invariant computations before the loop",
+        "It converts the loop to recursion",
+        "It parallelizes the loop across multiple threads"
+      ],
+      "explanation": "LICM identifies instructions whose operands don't change across iterations (defined outside the loop or by other invariant instructions) and moves them before the loop header. The computation is done once instead of N times.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "Which optimization level in GCC/Clang typically enables LICM and aggressive inlining?",
+      "options": [
+        "-O0 (no optimization)",
+        "-O1 (basic)",
+        "-O2 (standard)",
+        "-g (debug symbols only)"
+      ],
+      "explanation": "At -O2, the compiler enables the standard set of optimizations including CSE, LICM, aggressive dead code elimination, and cost-based function inlining. -O0 does no optimization. -O1 enables only basic passes. -g adds debug info but doesn't change optimization.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "stage": "pre",
+      "question": "What does Dead Code Elimination (DCE) do?",
+      "options": [
+        "Removes code that is never executed at runtime",
+        "Removes computations whose results are never used",
+        "Removes all comments from source code",
+        "Removes unreachable functions from the binary"
+      ],
+      "correct": 1,
+      "explanation": "DCE removes instructions whose results are never read. If a variable is computed but never used (and has no side effects), the computation is dead and can be safely removed. In SSA form, this is straightforward: any definition with no uses is dead."
+    }
+  ],
+  "_meta": {
+    "phase": 8,
+    "lesson": 14,
+    "title": "Classic Optimizations Dce Cse Inlining Licm"
+  }
+}

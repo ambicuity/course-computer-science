@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 11,
+    "title": "Type Checking — Mono, Sub, Inference (HM)"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does unification do in Hindley-Milner type inference?",
+      "options": [
+        "Converts all types to a common supertype",
+        "Finds a substitution that makes two types structurally equal",
+        "Assigns types to variables based on explicit annotations only",
+        "Eliminates type variables by defaulting them to Int"
+      ],
+      "correct": 1,
+      "explanation": "Unification takes two types and tries to find a substitution for type variables that makes them identical. It is the core mechanism of HM type inference."
+    },
+    {
+      "stage": "pre",
+      "question": "What is let-polymorphism?",
+      "options": [
+        "A function can return different types in different branches",
+        "A let-bound variable can be instantiated with different types at each use site",
+        "Variables declared with let can be reassigned to values of a different type",
+        "Let bindings are always monomorphic to avoid complexity"
+      ],
+      "correct": 1,
+      "explanation": "Let-polymorphism allows a binding like `let id = λx. x` to have type scheme ∀α. α → α, so `id` can be used as `Int → Int` in one place and `Bool → Bool` in another."
+    },
+    {
+      "stage": "post",
+      "question": "In subtyping, a function that accepts `Animal` can be passed to a context expecting `fn(Dog) → Animal`. What variance rule applies to the argument position?",
+      "options": [
+        "Covariant — the argument type can be a subtype",
+        "Contravariant — the argument type can be a supertype",
+        "Invariant — the argument type must match exactly",
+        "Bivariant — either direction is acceptable"
+      ],
+      "correct": 1,
+      "explanation": "Function arguments are contravariant: if f accepts Animal, it can safely handle Dog arguments, so a function with a wider (supertype) parameter can substitute for one with a narrower parameter."
+    },
+    {
+      "stage": "post",
+      "question": "What does the occurs check in unification prevent?",
+      "options": [
+        "A type variable from being unified with a concrete type",
+        "A type variable from being unified with a type that contains itself (infinite type)",
+        "Two different type variables from being unified with each other",
+        "A type variable from being generalized in a let binding"
+      ],
+      "correct": 1,
+      "explanation": "The occurs check rejects unifications like α = α → β, which would require α to be an infinite type. Without it, the type checker could loop or produce nonsensical types."
+    },
+    {
+      "stage": "pre",
+      "question": "What is type inference, and which languages use Hindley-Milner type inference?",
+      "options": [
+        "Type inference requires all types to be explicitly annotated",
+        "Type inference automatically deduces types without explicit annotations; HM is used in Haskell, ML, and Rust",
+        "Type inference only works for primitive types",
+        "Type inference is the same as dynamic typing"
+      ],
+      "correct": 1,
+      "explanation": "Type inference deduces the types of expressions from context. Hindley-Milner (HM) is a complete algorithm that infers the most general type for let-polymorphic languages. Haskell and ML use HM; Rust uses a modified version. It provides static type safety without verbose annotations."
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 12,
+    "title": "Backtracking, Branch & Bound",
+    "note": "4 MCQs: 2 pre-lesson, 2 post-lesson."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In backtracking, what happens when a partial solution violates a constraint?",
+      "options": [
+        "The algorithm continues exploring deeper, hoping the violation resolves",
+        "The partial solution is pruned — the entire subtree below it is abandoned",
+        "The algorithm backtracks to the root and restarts",
+        "The constraint is temporarily relaxed and rechecked later"
+      ],
+      "correct": 1,
+      "explanation": "Pruning is the core mechanism of backtracking. When a constraint is violated, the partial solution provably cannot lead to a valid complete solution, so the entire subtree is skipped without exploration."
+    },
+    {
+      "stage": "pre",
+      "question": "For the N-Queens problem with n=8, naive brute force tries all permutations of 8 queens (8! = 40,320). How does backtracking reduce this?",
+      "options": [
+        "It uses dynamic programming to memoize subproblems",
+        "It prunes branches as soon as two queens share a column or diagonal, before placing all 8",
+        "It randomly samples configurations until it finds a valid one",
+        "It sorts the columns by a heuristic to try the best ones first"
+      ],
+      "correct": 1,
+      "explanation": "Backtracking checks constraints incrementally after each queen placement. If queens at rows 0 and 1 share a diagonal, rows 2–7 are never explored for that branch. This pruning reduces the search from 8! to about 15,720 explored nodes."
+    },
+    {
+      "stage": "post",
+      "question": "In branch & bound for the TSP, the bounding function returns a cost of 85 while the current best tour has cost 90. What should the algorithm do?",
+      "options": [
+        "Prune this branch because 85 < 90 means it is worse",
+        "Explore this branch because 85 < 90 means it could lead to a better solution",
+        "Update the best solution to 85 immediately",
+        "Ignore the bound and explore anyway to find all solutions"
+      ],
+      "correct": 1,
+      "explanation": "In branch & bound for minimization, the bounding function returns an optimistic lower bound. If bound (85) < current best (90), this partial solution could lead to a tour better than 90, so it must be explored. Pruning only happens when bound >= current best."
+    },
+    {
+      "stage": "post",
+      "question": "Which statement best distinguishes backtracking from branch & bound?",
+      "options": [
+        "Backtracking uses DFS while branch & bound always uses BFS",
+        "Backtracking finds any valid solution by pruning constraint violations; branch & bound finds the optimal solution by pruning branches whose bounds cannot beat the current best",
+        "Backtracking is O(n!) while branch & bound is always polynomial",
+        "Branch & bound cannot find all solutions, only one; backtracking always finds all"
+      ],
+      "correct": 1,
+      "explanation": "The fundamental difference: backtracking prunes on constraint violations (feasibility), while branch & bound prunes on bound comparisons (optimality). Backtracking searches for valid solutions; branch & bound searches for the best solution. Branch & bound is essentially backtracking augmented with a bounding function."
+    },
+    {
+      "stage": "pre",
+      "question": "How does branch and bound improve upon naive backtracking?",
+      "options": [
+        "By using randomization to skip branches",
+        "By computing bounds that prune branches provably worse than the current best",
+        "By converting the problem to a DP formulation",
+        "By sorting the search space first"
+      ],
+      "correct": 1,
+      "explanation": "Branch and bound computes a lower (or upper) bound for each partial solution. If the bound is already worse than the best solution found so far, that entire subtree is pruned. This can dramatically reduce the search space compared to exhaustive backtracking."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 16,
+    "title": "Parallel Patterns — Map, Reduce, Pipeline, Scan"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What distinguishes a parallel map from a parallel reduce?",
+      "options": [
+        "Map applies a function to each element independently; reduce combines all elements with an associative operator",
+        "Map requires synchronization between threads; reduce is embarrassingly parallel",
+        "Map can only be done sequentially; reduce is always parallel by nature",
+        "Map and reduce are the same pattern under different names"
+      ],
+      "correct": 0,
+      "explanation": "Map applies a function f to each element with no data dependences between elements — it is embarrassingly parallel (W=n, T=O(1)). Reduce combines all elements with an associative operator ⊕, requiring a tree combine where partial results depend on their children (W=n−1, T=O(log n)). The two patterns are often chained (map-reduce) but have fundamentally different work–span profiles."
+    },
+    {
+      "stage": "post",
+      "question": "What is the span (critical path length) of a parallel tree reduction on n elements?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "correct": 1,
+      "explanation": "A parallel tree reduction organizes the associative combine into a binary tree of depth log₂n. The root cannot be computed until both subtrees are complete, so the critical path (span) is O(log n). The total work remains O(n) — the tree does not reduce the number of operations, only the depth of dependences."
+    },
+    {
+      "stage": "post",
+      "question": "Why is a parallel prefix sum (scan) harder to parallelize than a map?",
+      "options": [
+        "The scan operator is non-associative and cannot be reordered",
+        "Each output depends on all previous inputs, creating an apparent sequential dependence chain",
+        "Scan requires O(n²) memory, making parallelization memory-bound",
+        "Scan can only be implemented recursively, which prevents parallel execution"
+      ],
+      "correct": 1,
+      "explanation": "In an inclusive scan, output[i] = x₀ ⊕ x₁ ⊕ ... ⊕ xᵢ. Every output depends on every preceding input — naive evaluation looks serial. Parallel scan algorithms (Hillis-Steele, Blelloch) overcome this by reusing partial sums across outputs, achieving O(log n) span. This cleverness is why the scan is considered a fundamental parallel primitive (it is not obvious that it can be parallelized at all)."
+    },
+    {
+      "stage": "post",
+      "question": "A pipeline has three stages with per-item latencies of 4ms, 7ms, and 2ms. What is the maximum steady-state throughput?",
+      "options": [
+        "500 items/s (limited by the fastest stage at 2ms)",
+        "~142 items/s (limited by the slowest stage at 7ms)",
+        "~77 items/s (limited by the total latency of 13ms)",
+        "250 items/s (limited by the first stage at 4ms)"
+      ],
+      "correct": 1,
+      "explanation": "In steady state, the pipeline's throughput is 1 / max(L₁, L₂, ..., Lₖ) — the slowest stage is the bottleneck. Here max latency = 7ms, so throughput = 1/0.007 ≈ 142 items/s. The total latency per item is 13ms (4+7+2), but latency and throughput are distinct metrics. Improving any non-bottleneck stage has zero effect on throughput. This is Amdahl's law applied to pipelines."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the Map-Reduce parallel pattern?",
+      "options": [
+        "A way to store data in a database",
+        "Map applies a function to each element independently; Reduce combines results using an associative operation",
+        "A compression algorithm",
+        "A networking protocol"
+      ],
+      "correct": 1,
+      "explanation": "Map applies a transformation to each element in parallel (no dependencies). Reduce combines results using an associative operation (sum, max, etc.) — this can be done in a tree pattern for O(log n) parallel time. Map-Reduce scales from multicore CPUs to clusters of thousands of machines."
+    }
+  ]
+}

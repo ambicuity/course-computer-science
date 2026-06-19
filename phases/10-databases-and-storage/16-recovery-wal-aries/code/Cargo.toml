@@ -1,0 +1,10 @@
+[package]
+name = "aries-recovery"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "aries-recovery"
+path = "main.rs"
+
+[workspace]

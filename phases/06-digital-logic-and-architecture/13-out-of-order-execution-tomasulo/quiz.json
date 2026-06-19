@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 13,
+    "title": "Out-of-Order Execution & Tomasulo"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In Tomasulo's algorithm, what is the purpose of the tag fields (qj, qk) in a reservation station?",
+      "options": [
+        "They store the architectural register names of the operands",
+        "They identify which reservation station will produce the needed operand value",
+        "They track the program counter of the instruction that generated each operand",
+        "They encode the latency of the functional unit that will execute the instruction"
+      ],
+      "correct": 1,
+      "explanation": "Tags (qj, qk) identify which reservation station (or ROB entry) will produce a pending operand. When that station finishes and broadcasts on the CDB, dependent stations match the tag and capture the value. This is the core of register renaming — operands are tracked by producer tag, not register name."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the Common Data Bus (CDB) do in Tomasulo's algorithm?",
+      "options": [
+        "It carries instructions from the decoder to the reservation stations",
+        "It connects the register file to the functional units for operand reads",
+        "It broadcasts computed results so all waiting reservation stations can capture values for their pending operands",
+        "It signals the reorder buffer to commit the next instruction"
+      ],
+      "correct": 2,
+      "explanation": "The CDB is a shared broadcast bus. When a functional unit finishes, it puts the result and its reservation station tag on the CDB. Every reservation station checks the CDB: if its qj or qk matches the tag, it captures the value and clears the tag. One broadcast can resolve multiple pending dependencies simultaneously."
+    },
+    {
+      "stage": "post",
+      "question": "In what order do instructions commit (retire) from the reorder buffer?",
+      "options": [
+        "In the order they finished executing, regardless of program order",
+        "In program order, strictly from the ROB head, regardless of execution order",
+        "In order of their destination register number",
+        "In order of priority determined by instruction type (loads before ALU)"
+      ],
+      "correct": 1,
+      "explanation": "The ROB is a FIFO queue. Instructions execute out of order but commit strictly in program order from the ROB head. The head entry can only commit when it reaches WRITEBACK state. This guarantees precise exceptions — when an exception occurs, all prior instructions have committed and none after have."
+    },
+    {
+      "stage": "post",
+      "question": "How does Tomasulo's algorithm eliminate WAW (write-after-write) hazards?",
+      "options": [
+        "By stalling the later write until the earlier write commits",
+        "By renaming destination registers to unique physical registers",
+        "Because results go to the ROB entry first, not directly to the register file, and commit in program order — so the architectically correct value is always the last one in program order",
+        "WAW hazards cannot occur in out-of-order pipelines"
+      ],
+      "correct": 2,
+      "explanation": "Two instructions writing to the same register don't conflict because each writes its result to its own ROB entry, not the architectural register file. When they commit in program order, the later instruction's value overwrites the earlier one in the register file — producing the correct program-order result. This is effectively register renaming via the ROB."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the main goal of out-of-order execution?",
+      "options": [
+        "To reduce the number of instructions in a program",
+        "To keep the execution units busy by executing independent instructions when others are stalled",
+        "To simplify the processor design",
+        "To ensure instructions execute in program order"
+      ],
+      "correct": 1,
+      "explanation": "Out-of-order execution allows the processor to execute instructions as soon as their operands are ready, rather than waiting for preceding instructions to complete. Tomasulo's algorithm uses reservation stations and register renaming to track dependencies and maintain correct results despite out-of-order execution."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In Paxos, what does an Acceptor promise during Phase 1 (Prepare)?",
+      "options": [
+        "To accept any future proposal regardless of number",
+        "Not to accept any proposal numbered less than the received proposal number",
+        "To broadcast the proposal to all other acceptors",
+        "To commit the proposed value to persistent storage immediately"
+      ],
+      "correct": 1,
+      "explanation": "When an acceptor responds to a Prepare(n), it promises not to accept any proposal numbered less than n. This guarantee is what connects different rounds — any later proposer that reaches a quorum will discover any previously accepted value because at least one acceptor in the overlapping quorum will report it."
+    },
+    {
+      "stage": "pre",
+      "question": "Why must any two quorums overlap by at least one acceptor?",
+      "options": [
+        "To reduce the number of messages needed for consensus",
+        "To ensure that at least one acceptor knows which value was chosen or seen most recently, preventing conflicting decisions",
+        "To guarantee that network latency is bounded",
+        "So that the proposer can detect when a majority is unreachable"
+      ],
+      "correct": 1,
+      "explanation": "Quorum overlap is the foundation of Paxos's safety guarantee. If quorum Q1 chose value V, and a new proposer later reaches quorum Q2, at least one acceptor in Q2 was also in Q1. That acceptor will report V during Phase 1, forcing the new proposer to use V — never a different value."
+    },
+    {
+      "stage": "post",
+      "question": "A proposer completes Phase 1 and receives promises from a quorum. One acceptor reports it previously accepted (n=5, value='X'). No other acceptor reports any previously accepted value. What value must the proposer propose in Phase 2?",
+      "options": [
+        "The proposer's own originally intended value",
+        "The value with the highest proposal number from Phase 1 responses, which is 'X'",
+        "The value proposed by the acceptor with the lowest node ID",
+        "A new value that is a merge of 'X' and the proposer's value"
+      ],
+      "correct": 1,
+      "explanation": "Paxos requires that the proposer use the value from the highest-numbered previously accepted proposal reported during Phase 1. Since 'X' was accepted at n=5 and no other accepted value was reported, the proposer must propose 'X' — not its own value. This is the mechanism that guarantees a chosen value can never be changed."
+    },
+    {
+      "stage": "post",
+      "question": "What is the 'dueling proposers' problem in Paxos?",
+      "options": [
+        "Two proposers propose different values and both get chosen, violating safety",
+        "Two proposers keep incrementing proposal numbers and preempting each other, preventing either from completing Phase 2",
+        "Two acceptors refuse all proposals, making progress impossible",
+        "Two learners receive different values and cannot reconcile them"
+      ],
+      "correct": 1,
+      "explanation": "Dueling proposers is a liveness problem, not a safety problem. When two proposers alternate (P1 prepares with n=1, P2 prepares with n=2, P1's accept is rejected, P1 prepares with n=3, P2's accept is rejected, ...), neither can complete Phase 2 because the other keeps invalidating promises. Safety is never violated — no wrong value is chosen — but no value is chosen at all."
+    },
+    {
+      "stage": "post",
+      "question": "How does designating a 'distinguished proposer' (leader) solve the dueling proposers problem?",
+      "options": [
+        "The leader can accept proposals without waiting for a quorum",
+        "The leader skips Phase 1 entirely, reducing message count",
+        "Only one proposer runs at a time, so there is no competition to preempt each other and Phase 2 completes",
+        "The leader has a special veto power over other proposers' proposal numbers"
+      ],
+      "correct": 2,
+      "explanation": "A distinguished proposer is the only node that proposes values. Without a competing proposer to issue higher-numbered prepare requests, the leader's Phase 1 promises are never invalidated, so Phase 2 completes. The leader doesn't skip any phases or bypass quorum requirements — it just eliminates the competition that caused the livelock."
+    },
+    {
+      "stage": "post",
+      "question": "In a 5-node Paxos cluster, nodes A, B, and C (a quorum) have accepted value V at proposal number 5. A new proposer runs Phase 1 with proposal number 10. What happens?",
+      "options": [
+        "The new proposer can choose any value it wants because its proposal number is higher",
+        "At least one of A, B, or C will be in the new quorum and will report V in its Phase 1 response, forcing the proposer to use V",
+        "The acceptors reject the new proposal because V is already chosen",
+        "The new proposer must wait for all 5 acceptors to respond before proceeding"
+      ],
+      "correct": 1,
+      "explanation": "Since any two quorums overlap by at least one acceptor, at least one of {A, B, C} will respond to the new proposer's Phase 1. That acceptor will report that it accepted V at proposal number 5. The proposer must use V — the highest-numbered previously accepted value from Phase 1 responses — not its own proposed value. Higher proposal numbers give priority in the protocol, not the freedom to change a chosen value."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 7,
+    "title": "Consensus I Paxos Single Decree"
+  }
+}

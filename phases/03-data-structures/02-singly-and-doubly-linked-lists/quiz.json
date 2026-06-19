@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the SLL's `remove(node)` cost when you have only the node pointer (no predecessor)?",
+      "options": [
+        "O(1)",
+        "O(n) — you must scan from head to find the node that points to it",
+        "O(log n)",
+        "Impossible"
+      ],
+      "correct": 1,
+      "explanation": "In an SLL, you reach a node from its predecessor's `next`. Without a back-pointer, you must walk from head until `cur->next == node`. The DLL fixes this: `prev` is right there, so remove is O(1). This is the single biggest reason DLLs are used in practice (kernel run queues, LRU caches)."
+    },
+    {
+      "stage": "pre",
+      "question": "Why are linked lists usually slower than `Vec` for iteration, despite having the same Big-O?",
+      "options": [
+        "Linked lists are larger",
+        "Cache locality: a Vec's elements share cache lines (16 ints per 64B line); a list's nodes are scattered across the heap, so each step is a potential cache miss (~100 ns vs ~1 ns).",
+        "Pointers are slow to dereference",
+        "Modern CPUs penalize lists"
+      ],
+      "correct": 1,
+      "explanation": "Big-O hides the constant. A pointer-chase that crosses a cache line costs 100× a sequential array access. On modern hardware, sequential iteration of a Vec<int> can prefetch perfectly; a linked-list traversal can't. Stroustrup's famous demo: even an O(n) insert in a sorted Vec beats O(1) insert in a sorted DLL for n up to ~1M."
+    },
+    {
+      "stage": "post",
+      "question": "What does the Linux kernel's `container_of(ptr, type, member)` macro do?",
+      "options": [
+        "Allocates a new container",
+        "Recovers the enclosing struct pointer from a pointer to one of its fields, using offsetof: `(type *)((char *)ptr - offsetof(type, member))`. Enables intrusive lists.",
+        "Returns a vector",
+        "Type-checks the cast"
+      ],
+      "correct": 1,
+      "explanation": "Given a `struct list_head *node` and knowing it's a member named `tasks` inside `struct task`, you compute `(struct task *)((char *)node - offsetof(struct task, tasks))`. The list_head doesn't know what contains it; container_of asks the caller to declare it. This is what makes `struct task` simultaneously be a member of all_tasks, parent->children, and a wait_queue with one allocation."
+    },
+    {
+      "stage": "post",
+      "question": "Why does `std::collections::LinkedList` in Rust use raw pointers + `unsafe` internally, even though Rust has safe options?",
+      "options": [
+        "Performance",
+        "A safe DLL needs `Rc<RefCell<Node>>` (runtime borrow checking + extra pointer indirection) or `Option<Box<...>>` (can't have prev pointers). Raw pointers give the C-equivalent performance; the public API enforces single ownership at the list level, which makes the unsafe sound.",
+        "Backward compatibility",
+        "It can't be done safely"
+      ],
+      "correct": 1,
+      "explanation": "DLLs are fundamentally a many-to-many ownership puzzle that the borrow checker cannot reason about. Rust's solution: encapsulate the unsafety. Each node is heap-allocated and reached via `NonNull<DNode<T>>`. The `LinkedList<T>` API ensures no two methods can produce overlapping mutable references simultaneously, so the raw pointers are sound. This is the standard 'unsafe inside, safe outside' pattern."
+    },
+    {
+      "stage": "post",
+      "question": "When SHOULD you prefer a linked list over a Vec?",
+      "options": [
+        "Whenever you can",
+        "When you need O(1) removal at a known pointer (LRU, scheduler), O(1) splice, or stable iterators across mutation. Otherwise prefer Vec / VecDeque.",
+        "Whenever data is small",
+        "Never"
+      ],
+      "correct": 1,
+      "explanation": "Rust's std::collections::LinkedList docs literally tell you: 'It is almost always better to use VecDeque.' The real wins for linked lists are pointer-given removal (the LRU pattern, the kernel's run queue), O(1) splice (linked-list mergesort, work-stealing migrations), and iterator stability. If your access pattern is iteration or push-only-at-end, a Vec or VecDeque is faster."
+    },
+    {
+      "stage": "post",
+      "question": "What problem does Floyd's tortoise-and-hare algorithm solve, and why is it elegant?",
+      "options": [
+        "Sorting in O(n)",
+        "Cycle detection in a linked list using O(1) extra space: one pointer moves 1 step, another moves 2 steps. They meet inside a cycle if one exists; never meet if not. Constant memory; works in any list.",
+        "Sorting in O(n log n)",
+        "Building lists"
+      ],
+      "correct": 1,
+      "explanation": "Naïve cycle detection uses a hash set of visited nodes (O(n) space). Floyd's runs in O(1) extra space — just two pointers. The proof: in a cycle of length L, the gap between hare and tortoise modulo L decreases by 1 each step; after at most L steps they collide. Real use: in detecting cycles in random graphs, finding loop start in algorithms, even Pollard's rho for integer factorization."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 2,
+    "title": "Singly And Doubly Linked Lists"
+  }
+}

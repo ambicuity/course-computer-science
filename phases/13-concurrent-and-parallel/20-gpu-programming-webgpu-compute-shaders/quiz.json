@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 20,
+    "title": "GPU Programming — WebGPU / Compute Shaders",
+    "note": "Pre-lesson (q1-q2) test prior GPU/exposure knowledge. Post-lesson (q3-q4) verify WGSL WebGPU mechanics."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which statement best describes the relationship between WebGPU and CUDA?",
+      "options": [
+        "WebGPU is a JavaScript API only — it cannot run native applications",
+        "CUDA and WebGPU use the same shading language (CUDA C++ compiles to WGSL)",
+        "WebGPU is a cross-platform API that abstracts D3D12, Metal, and Vulkan — CUDA is a vendor-specific model for NVIDIA GPUs only",
+        "CUDA supports compute shaders; WebGPU does not — it only supports vertex/fragment shaders"
+      ],
+      "correct": 2,
+      "explanation": "WebGPU is a cross-platform GPU API designed to work across D3D12 (Windows), Metal (macOS/iOS), and Vulkan (Linux/Android). CUDA is NVIDIA's proprietary GPGPU model and only runs on NVIDIA hardware. WebGPU supports compute shaders via its compute pipeline."
+    },
+    {
+      "stage": "pre",
+      "question": "In WebGPU, what is a \"workgroup\"?",
+      "options": [
+        "The GPU device that executes commands",
+        "A collection of shader invocations that share memory and synchronize via barriers — analogous to a CUDA thread block",
+        "The top-level container for all GPU resources on a page",
+        "A command buffer that holds encoded GPU operations"
+      ],
+      "correct": 1,
+      "explanation": "A workgroup is a set of compute shader invocations that execute concurrently and can communicate via workgroup shared memory (`var<workgroup>`) and barriers (`workgroupBarrier()`). It is the WebGPU equivalent of a CUDA thread block."
+    },
+    {
+      "stage": "post",
+      "question": "In WGSL, what does `workgroupBarrier()` guarantee?",
+      "options": [
+        "All invocations across all workgroups are synchronized globally",
+        "All preceding memory accesses in the workgroup are visible to all invocations in the same workgroup before any subsequent access",
+        "Only the current invocation's writes are flushed to global memory",
+        "The GPU driver flushes its internal instruction cache"
+      ],
+      "correct": 1,
+      "explanation": "`workgroupBarrier()` is a full memory-and-execution barrier within a single workgroup. It ensures all stores issued before the barrier by any invocation in the workgroup are visible to all loads after the barrier. It does NOT synchronize across different workgroups — workgroups are independent."
+    },
+    {
+      "stage": "post",
+      "question": "What is the primary benefit of using workgroup shared memory (`var<workgroup>`) in a tiled matrix multiplication shader?",
+      "options": [
+        "It allows the CPU to read intermediate results without waiting for the GPU",
+        "It eliminates the need for storage buffers entirely",
+        "It reduces global memory traffic by loading tiles into fast on-chip memory, reusing each element TILE_SIZE times instead of re-reading from VRAM",
+        "It automatically parallelizes the matrix multiply across multiple GPUs"
+      ],
+      "correct": 2,
+      "explanation": "Workgroup shared memory is on-chip SRAM (much faster than global VRAM). Each tile of A and B is loaded from global memory into shared memory once, and then TILE_SIZE invocations each read from the shared copy. This reduces global memory traffic from O(N^3) to O(N^3 / TILE_SIZE), which is the key optimization in GPU matrix multiplication."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a compute shader in WebGPU?",
+      "options": [
+        "A shader that renders graphics",
+        "A program that runs on the GPU for general-purpose computation, not tied to the graphics pipeline",
+        "A JavaScript function that runs in the browser",
+        "A shader that only processes textures"
+      ],
+      "correct": 1,
+      "explanation": "Compute shaders are GPU programs for general computation — not part of the vertex/fragment graphics pipeline. Written in WGSL for WebGPU, they can process arbitrary data stored in GPU buffers. This enables GPU-accelerated physics, machine learning, and scientific computing in the browser."
+    }
+  ]
+}

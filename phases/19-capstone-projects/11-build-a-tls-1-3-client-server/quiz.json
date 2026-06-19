@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why model TLS as explicit states first?",
+      "options": ["To skip crypto entirely", "To make illegal transitions and missing checks visible before full implementation", "To remove the handshake", "To avoid reading RFCs"],
+      "correct": 1,
+      "explanation": "An explicit state machine makes every valid transition visible and every invalid transition detectable. This catches bugs like processing a Certificate before ServerHello, or deriving keys before the key exchange completes."
+    },
+    {
+      "stage": "pre",
+      "question": "How many round trips does a TLS 1.3 handshake require?",
+      "options": ["3 round trips", "1 round trip (1-RTT)", "0 round trips", "2 round trips"],
+      "correct": 1,
+      "explanation": "TLS 1.3 completes the key exchange in the first two messages (ClientHello + ServerHello). All subsequent messages are encrypted. This is faster than TLS 1.2 which required 2 round trips."
+    },
+    {
+      "stage": "post",
+      "question": "What is transcript data used for in TLS 1.3?",
+      "options": ["UI rendering", "Cryptographic verification: the Finished message is a MAC over the transcript hash", "Packet compression", "Load balancing"],
+      "correct": 1,
+      "explanation": "The transcript is the ordered concatenation of all handshake messages. The Finished message contains a MAC over the transcript hash. This verifies that both sides saw the same messages and that none were tampered with."
+    },
+    {
+      "stage": "post",
+      "question": "Why separate parser/state/crypto modules in a TLS implementation?",
+      "options": ["To maximize code coupling", "To isolate concerns and simplify security review and testing", "To disable code reuse", "To avoid error handling"],
+      "correct": 1,
+      "explanation": "Parser bugs (wrong byte offsets) are different from state bugs (wrong transitions) and crypto bugs (wrong key derivation). Separating them means you can test each independently and security auditors can focus on the crypto module."
+    },
+    {
+      "stage": "post",
+      "question": "What does forward secrecy guarantee?",
+      "options": ["Faster handshake", "Compromising long-term keys doesn't reveal past session keys", "Smaller certificates", "No need for certificate verification"],
+      "correct": 1,
+      "explanation": "Forward secrecy means that even if the server's private key is compromised tomorrow, an attacker can't decrypt today's recorded traffic. TLS 1.3 achieves this by using ephemeral ECDHE keys that are deleted after each session."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 11, "title": "Build a TLS 1.3 Client + Server" }
+}

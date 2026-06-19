@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 5,
+    "title": "Parsing Ii Ll 1 Predictive Tables"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does the FIRST set of a non-terminal contain?",
+      "options": [
+        "All non-terminals that can appear first in a derivation",
+        "All terminals that can begin any string derived from that non-terminal",
+        "All tokens that appear at the start of the input",
+        "The first production rule listed for that non-terminal"
+      ],
+      "correct": 1,
+      "explanation": "FIRST(X) is the set of terminals that can appear as the first symbol of a string derived from X. If X can derive ε, then ε is also in FIRST(X). FIRST sets are used to build the predictive parsing table."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the FOLLOW set of a non-terminal A contain?",
+      "options": [
+        "All terminals that can appear immediately after A in some sentential form",
+        "All non-terminals that A can derive",
+        "All terminals that A can derive as the leftmost symbol",
+        "The set of productions involving A"
+      ],
+      "correct": 0,
+      "explanation": "FOLLOW(A) is the set of terminals that can appear immediately to the right of A in some sentential form. The end marker $ is always in FOLLOW of the start symbol. FOLLOW sets are used when a production derives ε to decide which lookahead tokens trigger that production."
+    },
+    {
+      "stage": "post",
+      "question": "A grammar is LL(1) if and only if:",
+      "options": [
+        "Every non-terminal has exactly one production",
+        "The predictive parsing table has at most one production per cell — no FIRST/FIRST or FIRST/FOLLOW conflicts",
+        "The grammar contains no ε-productions",
+        "Every terminal appears in exactly one production"
+      ],
+      "correct": 1,
+      "explanation": "LL(1) requires that for every non-terminal A and lookahead token a, there is at most one production A → α with a in FIRST(α) (or in FOLLOW(A) if α ⇒* ε). Conflicts mean the parser cannot decide deterministically."
+    },
+    {
+      "stage": "post",
+      "question": "During LL(1) parsing with a stack, when the stack top is a non-terminal X and the current token is 'a', what does the parser do?",
+      "options": [
+        "Pop X and push the production from table[X][a] in reverse order",
+        "Pop X and read the next token",
+        "Pop X and push all productions for X onto the stack",
+        "Backtrack and try a different production"
+      ],
+      "correct": 0,
+      "explanation": "When the stack top is a non-terminal, the parser looks up table[X][current_token]. If a production X → Y₁ Y₂ … Yₖ is found, it pops X and pushes Yₖ, …, Y₂, Y₁ (reverse order) so that Y₁ is on top. This ensures leftmost derivation order."
+    },
+    {
+      "stage": "pre",
+      "question": "What does LL(1) mean in the context of parsing?",
+      "options": [
+        "Left-to-right scan, Leftmost derivation, 1 token lookahead",
+        "Left-to-right scan, Left-associative, 1 production rule",
+        "Linear time, Logarithmic space, 1 pass",
+        "Left-to-right scan, Longest match, 1 symbol"
+      ],
+      "correct": 0,
+      "explanation": "LL(1) means: reading input Left-to-right, producing a Leftmost derivation, with 1 token of lookahead. The parser uses a predictive table to choose which production to apply based on the current nonterminal and the next token. No backtracking is needed."
+    }
+  ]
+}

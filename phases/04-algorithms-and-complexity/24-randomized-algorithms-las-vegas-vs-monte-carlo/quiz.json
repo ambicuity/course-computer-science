@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 4,
+    "lesson": 24,
+    "title": "Randomized Algorithms — Las Vegas vs Monte Carlo"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental difference between a Las Vegas algorithm and a Monte Carlo algorithm?",
+      "options": [
+        "Las Vegas algorithms are always deterministic; Monte Carlo algorithms use randomness",
+        "Las Vegas algorithms always produce a correct answer but have randomized running time; Monte Carlo algorithms have bounded running time but may produce an incorrect answer",
+        "Las Vegas algorithms are slower but use less memory; Monte Carlo algorithms are faster but use more memory",
+        "There is no meaningful difference — both use randomness in the same way"
+      ],
+      "correct": 1,
+      "explanation": "Las Vegas algorithms guarantee correctness but their running time is a random variable (e.g., randomized quicksort). Monte Carlo algorithms always finish within a deterministic time bound but may return a wrong answer with some bounded probability (e.g., Miller-Rabin may label a composite as prime with probability ≤ 4^(−k))."
+    },
+    {
+      "stage": "pre",
+      "question": "In randomized quicksort, what is the expected number of comparisons for sorting n elements?",
+      "options": [
+        "O(n) — the random pivot makes it linear",
+        "O(n log n) with a constant factor of 2n ln n ≈ 1.39n log₂ n",
+        "O(n²) — randomization doesn’t change the worst case",
+        "O(n log² n) — two logarithmic factors from the recursion tree"
+      ],
+      "correct": 1,
+      "explanation": "Using indicator variables Xᵢⱜ for whether elements i and j (in sorted order) are compared, P(Xᵢⱜ = 1) = 2/(j−i+1). By linearity of expectation, E[total] = Σ 2/(j−i+1) = 2n Hₙ ≈ 2n ln n. This is ≈ 1.39n log₂ n, about 39% more comparisons than merge sort’s guaranteed n log n, but with better cache behaviour and smaller constants."
+    },
+    {
+      "stage": "post",
+      "question": "In the Miller-Rabin primality test with k rounds, what is the maximum probability that a composite number is incorrectly declared prime?",
+      "options": [
+        "1/k — decreases linearly with the number of rounds",
+        "1/2^k — each round halves the error",
+        "4^(−k) — at most 1/4 of bases are strong liars per round",
+        "1/n — depends on the size of the number being tested"
+      ],
+      "correct": 2,
+      "explanation": "For any composite n, at most 1/4 of bases a in {2, …, n−2} are strong liars that fool the Miller-Rabin test. With k independent random base selections, the probability that all k are liars is at most (1/4)^k = 4^(−k). For k=40, this is ≈ 2^(−80), far below hardware error rates."
+    },
+    {
+      "stage": "post",
+      "question": "Karger’s randomized min-cut algorithm contracts random edges until two vertices remain. What is the probability that a single trial finds the minimum cut in an n-vertex graph?",
+      "options": [
+        "1/n — one chance in n",
+        "2/(n(n−1)) — at least 1/ₒC₂",
+        "1/2^n — exponentially small",
+        "1/(n log n) — depends on the number of edges"
+      ],
+      "correct": 1,
+      "explanation": "The probability that a single run of Karger’s algorithm finds a specific minimum cut is at least 2/(n(n−1)) = 1/C(n,2). This is because the algorithm succeeds if it never contracts an edge crossing the min-cut, and at each of the (n−2) contraction steps at least 2 of the remaining edges must cross the cut. Repeating n² ln n times boosts success to at least 1 − 1/n."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between a Las Vegas and a Monte Carlo algorithm?",
+      "options": [
+        "Las Vegas algorithms are always faster",
+        "Las Vegas always gives the correct answer (random running time); Monte Carlo has bounded running time (may give wrong answer with some probability)",
+        "Monte Carlo algorithms use more memory",
+        "There is no difference — they are synonyms"
+      ],
+      "correct": 1,
+      "explanation": "Las Vegas algorithms (e.g., randomized quicksort) always produce correct results but have random running times. Monte Carlo algorithms (e.g., Miller-Rabin primality) run in fixed time but may err with some probability. The two represent fundamental trade-offs between correctness and runtime guarantees."
+    }
+  ]
+}

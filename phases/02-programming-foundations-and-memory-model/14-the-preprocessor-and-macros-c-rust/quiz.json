@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the C preprocessor's job?",
+      "options": [
+        "Compile C source to machine code",
+        "Run textual transformations BEFORE the compiler: expand #define, paste in #include files, evaluate #if conditions",
+        "Optimize the program",
+        "Link object files"
+      ],
+      "correct": 1,
+      "explanation": "The preprocessor is a separate phase (cpp) that produces a transformed source text the compiler then parses. It has no knowledge of C semantics — only tokens. This is why C macro bugs (multiple evaluation, missing parens) are so easy: the preprocessor doesn't know an expression from a statement; it just pastes text."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is `#define SQ(x) x * x; SQ(3 + 4)` = 19 instead of 49?",
+      "options": [
+        "Compiler bug",
+        "Textual substitution: `SQ(3 + 4)` becomes `3 + 4 * 3 + 4`. Precedence: `*` before `+`, so 3 + 12 + 4 = 19. Fix: parenthesize the macro arg AND the whole expression: `((x) * (x))`.",
+        "C semantics",
+        "Optimization artifact"
+      ],
+      "correct": 1,
+      "explanation": "Classic C macro footgun. Always parenthesize argument uses AND the whole macro body. Even better: prefer `static inline` functions when possible — they have proper argument evaluation and type safety."
+    },
+    {
+      "stage": "post",
+      "question": "What is the X-macro idiom?",
+      "options": [
+        "A debugging tool",
+        "Define a list of items in a single file (e.g., enum items + their string names + extra fields); include it multiple times with different definitions of X to generate parallel data structures from one source of truth.",
+        "A macro starting with X",
+        "A linker trick"
+      ],
+      "correct": 1,
+      "explanation": "X-macros keep parallel arrays in sync. Define each item once (e.g., `X(RED, \"Red\", 0xFF0000)`). Include it three times with different `#define X(...)` expansions: once to generate the enum, once for the name table, once for the rgb table. Adding a color means editing one line; everything updates."
+    },
+    {
+      "stage": "post",
+      "question": "Why is Rust's `macro_rules!` called *hygienic*?",
+      "options": [
+        "It's cleaner code",
+        "Names introduced inside a macro (locals, intermediate bindings) can't accidentally collide with or capture names at the call site. The compiler tracks fresh-renaming per expansion.",
+        "It's case-sensitive",
+        "It's checked at runtime"
+      ],
+      "correct": 1,
+      "explanation": "C macros do pure text substitution, so a `let _t = ...` inside a macro could shadow a caller's `_t`. Rust macros operate on token-trees and rename their internal identifiers per expansion. Result: `let a = $a; let b = $b; if a > b ...` is safe even if the caller has its own `a` and `b`."
+    },
+    {
+      "stage": "post",
+      "question": "In modern C, which is generally better: a function-like macro or a `static inline` function?",
+      "options": [
+        "Always macro — faster",
+        "Static inline function — typesafe, no multiple-evaluation, no paren traps. Use macros only for token paste, conditional compilation, or `__LINE__`-style metadata capture.",
+        "Always macro — more portable",
+        "Doesn't matter"
+      ],
+      "correct": 1,
+      "explanation": "`static inline int sq(int x) { return x * x; }` is safer in every way: x is evaluated exactly once, types are checked, debugging is cleaner. Modern compilers inline freely. Reach for macros only when you need preprocessor-only features (`##`, `#ifdef`, source-location capture, X-macros)."
+    },
+    {
+      "stage": "post",
+      "question": "What does `do { ... } while (0)` in a multi-statement macro accomplish?",
+      "options": [
+        "Loops once",
+        "Forces the macro to behave as a single statement requiring a trailing semicolon, avoiding the dangling-else trap and other surprises when used in `if`/`while` bodies",
+        "Performance trick",
+        "Backwards compatibility"
+      ],
+      "correct": 1,
+      "explanation": "`do { ... } while (0)` is the standard wrapping for multi-statement macros. It ensures the macro is one statement (so `if (cond) MY_MACRO(...);` works as expected) and that the caller writes the `;` themselves (consistent with calling a function). The optimizer eliminates the loop entirely."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 14,
+    "title": "The Preprocessor And Macros C Rust"
+  }
+}

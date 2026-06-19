@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a gossip protocol with fanout K, how many rounds does it take for information to reach all N nodes in the cluster?",
+      "options": [
+        "O(N) rounds",
+        "O(N/K) rounds",
+        "O(log N) rounds",
+        "O(sqrt(N)) rounds"
+      ],
+      "correct": 2,
+      "explanation": "With fanout K, each round multiplies the number of informed nodes by roughly (K+1). After r rounds, approximately (K+1)^r nodes are informed. Solving (K+1)^r = N gives r = log_{K+1}(N) = O(log N). This is the same exponential growth as epidemics."
+    },
+    {
+      "stage": "pre",
+      "question": "In SWIM's failure detection, what happens after a direct ping to a target fails?",
+      "options": [
+        "The target is immediately marked Dead",
+        "The pinger broadcasts a failure alert to all nodes",
+        "The pinger asks K other nodes to ping the target (indirect probe)",
+        "The pinger retries the direct ping with exponential backoff"
+      ],
+      "correct": 2,
+      "explanation": "SWIM uses indirect probing (ping-req) to reduce false positives. If A cannot directly reach B, A asks K other members to ping B on A's behalf. Only if both direct and indirect probes fail does A suspect B. This avoids declaring a node dead just because of a point-to-point network issue between A and B."
+    },
+    {
+      "stage": "post",
+      "question": "In SWIM, a node is wrongly suspected of being dead. How does it refute the suspicion?",
+      "options": [
+        "It sends an emergency broadcast to all nodes saying 'I am alive'",
+        "It increments its incarnation number and gossips {self: alive, inc: new_value}",
+        "It restarts with a new node ID to reset its state",
+        "It waits for the suspicion timeout to expire, which automatically clears the suspicion"
+      ],
+      "correct": 1,
+      "explanation": "When a node hears that it has been suspected, it increments its incarnation number and gossips the updated {self: alive, inc: old+1} entry. Higher incarnation always beats lower incarnation regardless of state, so the cluster updates from Suspect to Alive. Emergency broadcast would violate SWIM's constant-per-node message guarantee, and suspicion never expires on its own."
+    },
+    {
+      "stage": "post",
+      "question": "Why does SWIM piggyback membership updates on ping/ack/ping-req messages instead of using dedicated broadcast messages?",
+      "options": [
+        "Because broadcast messages require a central coordinator",
+        "To keep per-node message cost constant (O(1) per protocol round) regardless of cluster size",
+        "Because UDP doesn't support broadcast in large clusters",
+        "To reduce the total number of membership entries that need to be stored"
+      ],
+      "correct": 1,
+      "explanation": "SWIM's key scalability property is that each node sends a constant number of messages per round (1 ping, plus piggyback metadata). If membership updates required dedicated broadcast messages, a node would need O(N) messages per update. By piggybacking on messages that are already being sent, membership dissemination adds zero additional messages — the information spreads as an 'infection' riding on existing protocol traffic."
+    },
+    {
+      "stage": "post",
+      "question": "What is the difference between rumor mongering and anti-entropy in gossip protocols?",
+      "options": [
+        "Rumor mongering uses TCP; anti-entropy uses UDP",
+        "Rumor mongering spreads new updates to K random peers per round (fast but probabilistic); anti-entropy does periodic full state sync (slower but guarantees convergence)",
+        "Rumor mongering detects failures; anti-entropy disseminates membership changes",
+        "They are two names for the same mechanism"
+      ],
+      "correct": 1,
+      "explanation": "Rumor mongering actively spreads new information to K random peers — it's fast (O(log N) rounds) but probabilistic (a rumor can die out before reaching everyone). Anti-entropy periodically compares full state between two random peers — it's slower per-update but guarantees eventual convergence. Production systems like Cassandra use both: rumor mongering for speed, anti-entropy as a reliable fallback."
+    },
+    {
+      "stage": "post",
+      "question": "A cluster has 1,000 nodes. In the all-to-all heartbeat approach, how many heartbeat messages are sent per round? In SWIM, how many protocol messages (ping + ack) are sent per round?",
+      "options": [
+        "All-to-all: 1,000; SWIM: 1,000",
+        "All-to-all: 1,000,000; SWIM: 2,000",
+        "All-to-all: 500,000; SWIM: 1,000",
+        "All-to-all: 999,000; SWIM: 999"
+      ],
+      "correct": 1,
+      "explanation": "All-to-all heartbeats: each of N nodes sends a heartbeat to every other node, giving N*(N-1) ≈ 1,000,000 messages per round. SWIM: each node sends exactly 1 ping per round (1,000 pings), each generating at most 1 ack (1,000 acks), for approximately 2,000 messages total. This is why SWIM scales to large clusters while all-to-all does not."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 13,
+    "title": "Gossip Protocols Swim"
+  }
+}

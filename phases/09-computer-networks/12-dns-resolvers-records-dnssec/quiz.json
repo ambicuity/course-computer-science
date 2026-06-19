@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 12,
+    "title": "DNS — Resolvers, Records, DNSSEC"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "When you type 'www.google.com' in a browser, what is the correct order of DNS resolution?",
+      "options": [
+        "Authoritative server → TLD server → Root server → Browser cache",
+        "Recursive resolver → Root server → TLD server → Authoritative server",
+        "Browser → /etc/hosts → Root server → Recursive resolver",
+        "Recursive resolver → Authoritative server → TLD server → Root server"
+      ],
+      "correct": 1,
+      "explanation": "The recursive resolver (configured in your OS, e.g., 8.8.8.8) walks the DNS hierarchy: it asks a root server for the .com TLD servers, then asks a TLD server for google.com's authoritative servers, then asks the authoritative server for www.google.com's IP. Each step follows a referral (NS record) to the next level."
+    },
+    {
+      "stage": "pre",
+      "question": "In DNS wire format, how is the domain name 'www.example.com' encoded?",
+      "options": [
+        "As a null-terminated ASCII string: 'www.example.com\\0'",
+        "As length-prefixed labels: '\\x03www\\x07example\\x03com\\x00'",
+        "As a 32-bit hash of the domain name",
+        "As individual characters each prefixed with their ASCII value"
+      ],
+      "correct": 1,
+      "explanation": "DNS names use a length-prefixed label format. Each label (part between dots) is prefixed with its length byte, and the name is terminated with a zero byte. So 'www' (3 chars) becomes \\x03www, 'example' (7 chars) becomes \\x07example, etc."
+    },
+    {
+      "stage": "post",
+      "question": "What does the CNAME record type do?",
+      "options": [
+        "Maps a domain to an IPv6 address",
+        "Creates an alias that points one domain name to another domain name",
+        "Specifies the authoritative nameserver for a zone",
+        "Defines the start-of-authority for a DNS zone"
+      ],
+      "correct": 1,
+      "explanation": "A CNAME (Canonical Name) record creates an alias. When a resolver queries a name that has a CNAME record, it follows the alias to the canonical name and re-queries. For example, 'www.example.com CNAME example.com' means 'look up example.com instead'. CNAMEs cannot coexist with other record types for the same name."
+    },
+    {
+      "stage": "post",
+      "question": "What problem does DNSSEC solve?",
+      "options": [
+        "DNS query latency by caching records closer to the client",
+        "DNS spoofing and cache poisoning by cryptographically signing DNS records",
+        "DNS name conflicts by requiring unique registration",
+        "DNS privacy by encrypting all DNS traffic"
+      ],
+      "correct": 1,
+      "explanation": "DNSSEC adds cryptographic signatures (RRSIG records) to DNS responses, verified against the zone's public key (DNSKEY). This prevents attackers from injecting forged DNS records (cache poisoning). It does NOT provide privacy (that's DoH/DoT). Each zone's key is validated against its parent's DS record, creating a chain of trust up to the root."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of DNS?",
+      "options": [
+        "To encrypt internet traffic",
+        "To translate human-readable domain names (google.com) into IP addresses (142.250.x.x)",
+        "To assign IP addresses to devices on a network",
+        "To route packets between networks"
+      ],
+      "correct": 1,
+      "explanation": "DNS (Domain Name System) is a hierarchical, distributed database that maps domain names to IP addresses. When you visit google.com, your resolver queries root servers, then .com TLD servers, then Google's authoritative servers to get the IP. It's the internet's phone book."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A binary min-heap stored in an array satisfies what invariant?",
+      "options": [
+        "Keys are sorted",
+        "For every index i: A[i] ≤ A[2i+1] AND A[i] ≤ A[2i+2]. Root (A[0]) is the minimum.",
+        "All powers of 2",
+        "It's balanced"
+      ],
+      "correct": 1,
+      "explanation": "Heaps store a complete binary tree in array form: children of index i are at 2i+1 and 2i+2; parent of i is (i-1)/2. The 'parent ≤ children' invariant gives O(log n) push and pop. The array layout is cache-friendly — sibling access is O(1) and adjacent indices, no pointer-chasing per layer."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is Floyd's build_heap O(n) instead of O(n log n)?",
+      "options": [
+        "It uses less memory",
+        "Most nodes are near the leaves; sift_down for a depth-d node costs O(h-d), but there are 2^d such nodes. Σ over depths gives O(n), not O(n log n) like 'insert each' would.",
+        "It's cached",
+        "Different algorithm"
+      ],
+      "correct": 1,
+      "explanation": "Build heap from bottom up: starting at index n/2-1 (last non-leaf), sift_down each node. The cost is bounded by Σ d=0..h (#nodes at depth d) · (h-d). For a complete binary tree this sums to O(n). Inserting each of n elements costs O(log n) each → O(n log n) total, which is worse. Floyd's trick is the only correct O(n) heap construction."
+    },
+    {
+      "stage": "post",
+      "question": "Heapsort is O(n log n) worst case. Why is it usually slower than quicksort in practice?",
+      "options": [
+        "Bigger Big-O",
+        "Worse cache locality: parent-child accesses span across the array as the heap shrinks. Quicksort's partition is contiguous and prefetcher-friendly. ~2× speed difference on large arrays.",
+        "Different complexity",
+        "Bug in implementation"
+      ],
+      "correct": 1,
+      "explanation": "Heapsort accesses index i, then 2i+1, then 2i+2, then descends — these can span the whole array as the heap shrinks. Each access is potentially a cache miss for large arrays. Quicksort partitions in place: linear scan from both ends, beautifully cache-friendly. Heapsort's advantage: GUARANTEED O(n log n) worst-case, no quadratic blowup; useful in real-time systems."
+    },
+    {
+      "stage": "post",
+      "question": "Fibonacci heaps have decrease-key in O(1) amortized. Why are they rarely used in production?",
+      "options": [
+        "Patent issues",
+        "Huge constants and bad cache behavior. In practice, a binary heap or pairing heap beats Fibonacci on wall-clock time despite worse asymptotic bounds. Used in academic proofs, not real Dijkstras.",
+        "Not implementable",
+        "Wrong asymptotics"
+      ],
+      "correct": 1,
+      "explanation": "Fibonacci heap (Fredman-Tarjan 1984) made Dijkstra O(m + n log n) asymptotically optimal — a beautiful theoretical result. But its node structure (parent, child, sibling pointers + marked bit) and lazy reorganization cost ~5-10× the per-op constants of a binary heap. Real Dijkstras use pairing heap (Boost), binary heap, or d-ary heap with the inefficient-but-fast 'lazy decrease-key' trick."
+    },
+    {
+      "stage": "post",
+      "question": "What's the standard 'top-k from a stream' technique using a heap?",
+      "options": [
+        "Sort everything",
+        "Maintain a min-heap of size k. For each element x: if x > heap.peek() (smallest in top-k so far), pop and push x. O(n log k), space O(k) — vs O(n log n) full sort.",
+        "Bloom filter",
+        "Reservoir sampling"
+      ],
+      "correct": 1,
+      "explanation": "The min-heap holds the k largest seen so far. When a new larger value arrives, it kicks out the smallest of the k. Per element: O(log k) work. Total: O(n log k), much better than O(n log n) full sort when k << n. Used in 'top trending hashtags', 'k-nearest neighbors', search-result truncation. Python's heapq.nlargest uses this exactly."
+    },
+    {
+      "stage": "post",
+      "question": "When would you prefer a pairing heap over a binary heap in real code?",
+      "options": [
+        "Random preference",
+        "When you need fast decrease-key (Dijkstra, A*, Prim's MST). Pairing heap's amortized analysis is open but empirically beats binary heap on graphs with many updates per vertex.",
+        "Smaller code",
+        "Crypto"
+      ],
+      "correct": 1,
+      "explanation": "Binary heap's decrease-key requires knowing the index of the node — impossible without an external map. Pairing heap (and Fibonacci) supports O(1)-amortized decrease-key via pointer manipulation: cut the node out, meld it as a new root. The Boost C++ libraries provide pairing_heap precisely for graph algorithms. The simpler binary heap with 'lazy decrease-key' (push a new entry, skip stale ones) is often the right pragmatic choice."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 13,
+    "title": "Heaps Priority Queues Binary Fibonacci Pairing"
+  }
+}

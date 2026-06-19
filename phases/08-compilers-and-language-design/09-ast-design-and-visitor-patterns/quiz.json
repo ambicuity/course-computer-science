@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 9,
+    "title": "Ast Design And Visitor Patterns"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary difference between a concrete syntax tree (parse tree) and an abstract syntax tree (AST)?",
+      "options": [
+        "A concrete tree uses fewer nodes; an AST uses more",
+        "A concrete tree preserves all tokens including whitespace, parentheses, and delimiters; an AST drops syntactic noise and captures only semantic structure",
+        "An AST is used only for interpreted languages; a concrete tree is for compiled languages",
+        "There is no difference — the terms are interchangeable"
+      ],
+      "correct": 1,
+      "explanation": "A concrete syntax tree faithfully represents every token and grammar rule used during parsing — including parentheses, semicolons, whitespace, and intermediate non-terminals. An AST abstracts away this noise: parentheses become implicit in tree structure, delimiters are dropped, and intermediate rules are collapsed. The AST is what the compiler actually works with."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the 'expression problem' in the context of AST visitors?",
+      "options": [
+        "It refers to parsing arithmetic expressions with correct precedence",
+        "It describes the tension between easily adding new operations (easy with visitors) versus easily adding new node types (hard with visitors)",
+        "It is about how to represent expressions vs. statements in the AST",
+        "It refers to the problem of evaluating expressions at compile time"
+      ],
+      "correct": 1,
+      "explanation": "The expression problem (Wadler, 1998) is about extensibility. With ADTs + visitors (Rust style), adding a new operation like an optimizer is easy — implement a new Visitor. But adding a new AST node type (e.g., Switch) requires modifying every existing visitor. The reverse trade-off exists with class hierarchies: new node types are easy (new subclass), but new operations require modifying every class."
+    },
+    {
+      "stage": "post",
+      "question": "In our Rust AST, why are recursive node types like `BinOp { left: Box<Expr>, right: Box<Expr> }` wrapped in `Box`?",
+      "options": [
+        "Box provides thread safety for concurrent parsing",
+        "Box enables heap allocation, which is required because Rust enums have a known size at compile time — recursive types without indirection would be infinite-sized",
+        "Box is needed for serialization of AST nodes",
+        "Box makes pattern matching faster"
+      ],
+      "correct": 1,
+      "explanation": "Rust needs to know the size of every type at compile time. An enum like `Expr` that contains `Expr` directly would be infinite-sized (Expr contains Expr contains Expr...). `Box<T>` is a heap pointer with a fixed size (one pointer), breaking the recursion. Without `Box`, the compiler reports: 'recursive type Expr has infinite size'."
+    },
+    {
+      "stage": "post",
+      "question": "Which compiler pass is best implemented as a Visitor, and why?",
+      "options": [
+        "Lexing — because it scans tokens character by character",
+        "Type checking — because it traverses the AST, inspecting each node and combining results from children, which is exactly what a Visitor does",
+        "Parsing — because it builds the AST from tokens",
+        "Linking — because it combines object files"
+      ],
+      "correct": 1,
+      "explanation": "Type checking is a classic AST visitor: it walks the tree, checks each node's type, and propagates type information from children to parents (e.g., if both children of + are int, the result is int). This fits the Visitor pattern perfectly — the traversal is defined by the AST structure, and the operation (type checking) is defined by the visitor implementation."
+    },
+    {
+      "stage": "pre",
+      "question": "What is an Abstract Syntax Tree (AST)?",
+      "options": [
+        "A tree representation of the program's control flow",
+        "A tree representation of the syntactic structure of source code, omitting unnecessary syntax details",
+        "A binary tree for fast symbol lookup",
+        "The final machine code organized as a tree"
+      ],
+      "correct": 1,
+      "explanation": "An AST represents the program's structure after parsing, stripping away syntax details like parentheses and semicolons (which are implicit in the tree structure). For `2 + 3 * 4`, the AST has a '+' root with '2' left child and a '*' subtree as right child."
+    }
+  ]
+}

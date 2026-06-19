@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 28,
+    "title": "Parallel Algorithms — PRAM, Brent, Map-Reduce style"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the PRAM model, which variant allows multiple processors to read the same memory cell in the same step but requires exclusive writes?",
+      "options": [
+        "EREW (Exclusive-Read Exclusive-Write)",
+        "CREW (Concurrent-Read Exclusive-Write)",
+        "CRCW (Concurrent-Read Concurrent-Write)",
+        "ERCW (Exclusive-Read Concurrent-Write)"
+      ],
+      "correct": 1,
+      "explanation": "CREW allows concurrent reads but enforces exclusive writes — only one processor may write to a given cell per step. EREW restricts both, CRCW allows both, and ERCW is the rare reverse."
+    },
+    {
+      "stage": "pre",
+      "question": "Brent's theorem states that any PRAM computation with work T₁ and depth T∞ can be scheduled on p processors in time at most:",
+      "options": [
+        "T₁ · T∞ / p",
+        "⌈T₁ / p⌉ + T∞",
+        "max(T₁, T∞) / p",
+        "T₁ / p · log T∞"
+      ],
+      "correct": 1,
+      "explanation": "Brent's theorem bounds parallel time as T_p ≤ ⌈T₁/p⌉ + T∞. The first term is the idealized work distribution; the second accounts for the critical path that cannot be parallelized further."
+    },
+    {
+      "stage": "post",
+      "question": "A parallel prefix sum (exclusive scan) on n elements using the up-sweep/down-sweep algorithm has work O(n) and depth:",
+      "options": [
+        "O(n)",
+        "O(n log n)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "correct": 2,
+      "explanation": "The tree has ⌈log n⌉ levels; at each level every active element does O(1) work in parallel. Depth equals the number of levels = O(log n). Total work across all levels sums to O(n)."
+    },
+    {
+      "stage": "post",
+      "question": "In a Map-Reduce framework, what happens during the Shuffle phase?",
+      "options": [
+        "Each worker applies a transformation function to every input record independently",
+        "Intermediate key-value pairs are regrouped so all values for the same key go to the same reducer",
+        "The final aggregation function is applied to each group of values",
+        "Input data is split into fixed-size chunks for distribution"
+      ],
+      "correct": 1,
+      "explanation": "The Shuffle phase redistributes intermediate results so that all pairs sharing the same key arrive at the same reducer. Splitting is the input phase, Map is the parallel transformation, and Reduce is the final aggregation."
+    },
+    {
+      "stage": "pre",
+      "question": "What is Brent's theorem used for in parallel algorithm analysis?",
+      "options": [
+        "Proving that a problem is NP-complete",
+        "Bounding the parallel time given the total work and available processors",
+        "Determining the optimal cache line size",
+        "Computing the speedup of a sequential algorithm"
+      ],
+      "correct": 1,
+      "explanation": "Brent's theorem states that a computation with total work W and depth D can be completed in time at most W/p + D using p processors. This captures the idea that parallelism is limited by both the amount of work to distribute and the longest sequential dependency chain."
+    }
+  ]
+}

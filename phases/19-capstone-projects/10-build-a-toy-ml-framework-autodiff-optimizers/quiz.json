@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why start an ML framework capstone with scalar autodiff?",
+      "options": ["To avoid gradients entirely", "To validate graph and backward mechanics before tensor complexity", "To remove optimizers from scope", "To skip testing"],
+      "correct": 1,
+      "explanation": "Scalar autodiff isolates the differentiation logic. You can verify every gradient with finite differences. Once the scalar version works, the same graph structure extends to tensors: the backward pass is identical, just applied to arrays."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the chain rule's role in automatic differentiation?",
+      "options": ["It computes the loss function", "It composes gradients along the computation graph to compute derivatives of nested functions", "It initializes weights", "It selects the learning rate"],
+      "correct": 1,
+      "explanation": "The chain rule says d/dx f(g(x)) = f'(g(x)) * g'(x). In autodiff, each operation stores its local derivative. The backward pass multiplies these local derivatives along the path from the loss to each parameter."
+    },
+    {
+      "stage": "post",
+      "question": "What does SGD update use directly?",
+      "options": ["Random noise only", "Current gradient and learning rate to move parameters opposite the gradient direction", "Only batch size", "Only the activation function type"],
+      "correct": 1,
+      "explanation": "SGD (Stochastic Gradient Descent) updates each parameter as: `p = p - learning_rate * gradient`. The gradient points in the direction of steepest increase; subtracting it moves the parameters toward lower loss."
+    },
+    {
+      "stage": "post",
+      "question": "Why include numerical gradient checks early in framework development?",
+      "options": ["To speed up GPU kernels", "To detect autodiff rule bugs by comparing analytic gradients against finite-difference approximations", "To avoid defining loss functions", "To remove the need for backpropagation"],
+      "correct": 1,
+      "explanation": "Numerical gradients (finite differences) are an independent check on analytic gradients. If they disagree, the backward pass has a bug. This catches errors in custom operation backward passes before they corrupt training."
+    },
+    {
+      "stage": "post",
+      "question": "How does Adam optimizer differ from basic SGD?",
+      "options": ["Adam uses no gradients", "Adam adapts per-parameter learning rates using first and second moment estimates with bias correction", "Adam only works for classification", "Adam requires no hyperparameters"],
+      "correct": 1,
+      "explanation": "Adam tracks an exponential moving average of past gradients (first moment) and past squared gradients (second moment). It adapts the learning rate per-parameter: parameters with large consistent gradients get smaller updates; parameters with noisy gradients get larger updates."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 10, "title": "Build a Toy ML Framework (autodiff, optimizers)" }
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is χ(G), the chromatic number of a graph?",
+      "options": [
+        "The number of edges",
+        "The smallest k such that G has a proper k-coloring",
+        "The number of vertices with maximum degree",
+        "The graph's average degree"
+      ],
+      "correct": 1,
+      "explanation": "χ(G) is the minimum number of colors needed so that no edge connects two same-colored vertices. Computing χ is NP-hard in general; bounded above by Δ + 1 (Brooks' theorem), and exactly 2 for bipartite graphs."
+    },
+    {
+      "stage": "pre",
+      "question": "A graph is bipartite iff:",
+      "options": [
+        "It has no edges",
+        "It has no odd cycles (equivalently, χ ≤ 2; vertices partition into two color classes with all edges between them)",
+        "It is connected",
+        "It has 2 vertices"
+      ],
+      "correct": 1,
+      "explanation": "Bipartite ⇔ 2-colorable ⇔ no odd cycle. The BFS test colors alternately along a tree; conflicts (a non-tree edge connecting two same-color vertices) reveal an odd cycle. Crucial: many CS structures (e.g., interns-projects matching) live in bipartite graphs."
+    },
+    {
+      "stage": "post",
+      "question": "Why is bipartite max-matching polynomial while general (non-bipartite) max-matching needs Edmonds' blossom algorithm?",
+      "options": [
+        "Bipartite graphs have fewer edges",
+        "Augmenting paths in bipartite graphs are well-behaved (alternating edges always work). In non-bipartite graphs, odd cycles ('blossoms') break naive augmenting-path search; Edmonds shrinks them and recurses.",
+        "It's not — both are O(V³)",
+        "Bipartite matching is exponential"
+      ],
+      "correct": 1,
+      "explanation": "Augmenting paths in bipartite graphs alternate side-A and side-B vertices naturally. Non-bipartite graphs can have odd cycles where the alternation fails. Edmonds' breakthrough was the 'blossom contraction' trick — shrink the odd cycle, find an augmenting path in the contracted graph, then expand. Bipartite avoids that entirely → Kuhn / Hopcroft-Karp are linear-time elegant."
+    },
+    {
+      "stage": "post",
+      "question": "Euler's formula for a connected planar graph states:",
+      "options": [
+        "V + E + F = 0",
+        "V - E + F = 2",
+        "V · E · F = const",
+        "V = E + F"
+      ],
+      "correct": 1,
+      "explanation": "V - E + F = 2 for any planar embedding of a connected graph (counting one outer face). Beautiful constraint: lets you prove K₅ and K₃,₃ are non-planar by deriving impossible F counts. Generalizes to surfaces via Euler characteristic."
+    },
+    {
+      "stage": "post",
+      "question": "Greedy coloring with the wrong vertex order on a 'bipartite double star' can use how many colors?",
+      "options": [
+        "Always χ = 2",
+        "Up to (1/2) · n in the worst case — the bad ordering pairs each side's vertex with the previously-colored side's vertex sequentially, forcing one new color per step",
+        "Always 4",
+        "Always 1"
+      ],
+      "correct": 1,
+      "explanation": "Greedy coloring is O(V + E) but its quality depends on vertex order. Best ordering achieves χ; worst can be much worse — on a bipartite graph (χ = 2), pathological orderings have been constructed to require Ω(n) colors. In practice, ordering vertices by descending degree (Welsh-Powell) works well."
+    },
+    {
+      "stage": "post",
+      "question": "How is register allocation in a compiler reduced to graph coloring?",
+      "options": [
+        "It isn't",
+        "Variables are vertices; an edge connects two variables that are 'live' at the same program point (so they can't share a register). A k-coloring corresponds to a register assignment using k registers; we want χ ≤ available_registers.",
+        "Variables are colors",
+        "Edges are registers"
+      ],
+      "correct": 1,
+      "explanation": "The interference graph: vertex per variable, edge for 'simultaneously live.' χ(interference) ≤ k means k registers suffice for that function. When χ > k, the compiler must spill — store some variable to memory. Phase 08 Lesson 16 implements this with Chaitin-Briggs heuristic."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 18,
+    "title": "Graph Theory Ii Coloring Matching Planarity"
+  }
+}

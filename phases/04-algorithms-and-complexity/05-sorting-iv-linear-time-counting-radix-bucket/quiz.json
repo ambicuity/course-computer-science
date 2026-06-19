@@ -1,0 +1,78 @@
+{
+  "title": "Sorting IV — Linear-Time: Counting, Radix, Bucket",
+  "questions": [
+    {
+      "id": 1,
+      "type": "multiple_choice",
+      "question": "Why does counting sort break the Ω(n log n) comparison-sort lower bound?",
+      "options": [
+        "It uses a more efficient divide-and-conquer strategy.",
+        "It compares elements in groups rather than pairwise.",
+        "It never performs pairwise comparisons — it uses arithmetic to compute positions directly.",
+        "The lower bound only applies to unstable sorts; counting sort is stable."
+      ],
+      "correct": 2,
+      "explanation": "The Ω(n log n) bound applies to algorithms that determine order exclusively through pairwise comparisons. Counting sort computes output positions using counting arithmetic, bypassing the comparison model entirely.",
+      "stage": "pre"
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice",
+      "question": "Which property is essential for radix sort to produce correct results across multiple digit passes?",
+      "options": [
+        "Each pass must use a comparison-based sort (e.g., merge sort).",
+        "Each pass must sort stably, preserving the relative order established by previous passes.",
+        "The number of digits must be at most log₂(n).",
+        "All input elements must have exactly the same number of digits."
+      ],
+      "correct": 1,
+      "explanation": "LSD radix sort processes digits from least to most significant. Each pass must be stable so that when a later pass encounters equal digits, the ordering from earlier (more significant) passes is preserved.",
+      "stage": "pre"
+    },
+    {
+      "id": 3,
+      "type": "multiple_choice",
+      "question": "Under what input condition does bucket sort achieve O(n) expected time?",
+      "options": [
+        "When the input array contains no duplicate values.",
+        "When the input elements are uniformly distributed over the interval.",
+        "When the input is already sorted or nearly sorted.",
+        "When the number of buckets equals the maximum element value."
+      ],
+      "correct": 1,
+      "explanation": "Bucket sort's O(n) expected time relies on the uniformity assumption: each bucket receives an expected constant number of elements, so sorting each bucket is O(1) on average. Without uniformity, buckets can overflow, degrading performance.",
+      "stage": "post"
+    },
+    {
+      "id": 4,
+      "type": "multiple_choice",
+      "question": "You need to sort 10 million 32-bit integers with known range [0, 999]. Which approach is most efficient?",
+      "options": [
+        "Quicksort — O(n log n) average, cache-friendly.",
+        "Counting sort — O(n + k) where k = 1000, well within linear time.",
+        "Bucket sort — requires uniform distribution which isn't guaranteed.",
+        "Merge sort — O(n log n) worst-case, stable."
+      ],
+      "correct": 1,
+      "explanation": "With k = 1000 and n = 10,000,000, counting sort runs in O(n + k) ≈ O(n). The small key range makes it dramatically faster than any O(n log n) comparison sort. Radix sort would also work but counting sort alone suffices here.",
+      "stage": "post"
+    },
+    {
+      "stage": "pre",
+      "question": "Why can't comparison-based sorting beat O(n log n) in the worst case?",
+      "options": [
+        "Because no algorithm has ever achieved it",
+        "Because the decision tree for n elements has at least n! leaves, requiring Omega(n log n) height",
+        "Because memory access is the bottleneck",
+        "Because it would violate the Church-Turing thesis"
+      ],
+      "correct": 1,
+      "explanation": "Any comparison sort can be modeled as a binary decision tree. With n! possible permutations, the tree must have at least n! leaves, giving a minimum height of log2(n!) = Theta(n log n). This is an information-theoretic lower bound."
+    }
+  ],
+  "_meta": {
+    "phase": 4,
+    "lesson": 5,
+    "title": "Sorting Iv Linear Time Counting Radix Bucket"
+  }
+}

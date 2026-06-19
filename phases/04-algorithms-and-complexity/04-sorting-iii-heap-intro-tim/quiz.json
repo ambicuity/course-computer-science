@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 4,
+    "title": "Sorting III — Heap, Intro, Tim"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the time complexity of building a max-heap using bottom-up heapify on n elements?",
+      "options": [
+        "O(n log n)",
+        "O(n)",
+        "O(n²)",
+        "O(log n)"
+      ],
+      "correct": 1,
+      "explanation": "Bottom-up heapify sifts down internal nodes from the middle to the root. Most nodes are near the bottom where sift-down is cheap. Summing across all levels gives a geometric series that converges to ≤ 2n, making it O(n)."
+    },
+    {
+      "stage": "post",
+      "question": "Intro sort starts with quicksort and switches to heap sort when the recursion depth exceeds 2 log n. Why?",
+      "options": [
+        "Heap sort uses less memory than quicksort at that depth",
+        "Excessive depth signals adversarial input where quicksort would degrade to O(n²)",
+        "Heap sort is always faster than quicksort for small inputs",
+        "The switch ensures the algorithm becomes stable"
+      ],
+      "correct": 1,
+      "explanation": "If quicksort recurses deeper than 2 log n, the pivot selection is consistently poor — the input is adversarial or structured. Switching to heap sort guarantees O(n log n) from that point onward, eliminating the O(n²) worst case."
+    },
+    {
+      "stage": "post",
+      "question": "In Tim sort, what happens when a naturally detected run is shorter than min_run?",
+      "options": [
+        "The run is discarded and re-sorted from scratch",
+        "The run is extended to min_run length using insertion sort",
+        "Two adjacent short runs are immediately merged",
+        "The run is left as-is and merged later with galloping mode"
+      ],
+      "correct": 1,
+      "explanation": "Tim sort extends short natural runs to at least min_run (typically 32–64) elements using binary insertion sort. This ensures every run is large enough that the subsequent merge phase uses a balanced number of passes, avoiding O(n²) from merging many tiny runs."
+    },
+    {
+      "stage": "post",
+      "question": "Which property distinguishes heap sort from both intro sort and Tim sort?",
+      "options": [
+        "Heap sort is stable while the others are not",
+        "Heap sort is O(n log n) worst case while the others can be O(n²)",
+        "Heap sort uses O(1) extra space while the others require O(log n) to O(n)",
+        "Heap sort is cache-friendly while the others have poor locality"
+      ],
+      "correct": 2,
+      "explanation": "Heap sort is strictly in-place with O(1) extra space. Intro sort uses O(log n) for the quicksort call stack. Tim sort uses O(n) for merge buffers and the run stack. However, heap sort has poor cache locality due to parent-child jumps, while quicksort (used in intro sort) has excellent cache behavior."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is TimSort the default sorting algorithm in Python and Java?",
+      "options": [
+        "It has the lowest memory usage of any sorting algorithm",
+        "It exploits existing sorted runs in real-world data, giving O(n) best-case",
+        "It is the simplest sorting algorithm to implement",
+        "It uses randomization to guarantee O(n log n) always"
+      ],
+      "correct": 1,
+      "explanation": "TimSort is a hybrid merge-insertion sort that detects naturally occurring sorted subsequences (runs) in the data. Real-world data often has such structure, making TimSort approach O(n) on partially sorted inputs while maintaining O(n log n) worst-case."
+    }
+  ]
+}

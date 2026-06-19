@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 7,
+    "title": "Branch Prediction and Layout Tricks"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What happens inside the CPU when a branch is mispredicted on a modern x86 core?",
+      "options": [
+        "The CPU retries the instruction with different operands",
+        "The pipeline is flushed and all speculative work since the branch is discarded, costing ~15-20 cycles",
+        "The CPU switches to a backup execution unit and continues without delay",
+        "The branch predictor is permanently updated and the instruction runs in 1 cycle"
+      ],
+      "correct": 1,
+      "explanation": "On a misprediction, the CPU must flush its pipeline, discard all speculatively executed instructions after the branch, and re-fetch from the correct path. This costs approximately 15-20 cycles on modern x86."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does sorting data often make a simple if/else loop run significantly faster?",
+      "options": [
+        "Sorting reduces the total number of iterations needed",
+        "Sorting enables the compiler to vectorize the loop",
+        "Sorting makes the branch pattern regular so the predictor achieves near-100% accuracy",
+        "Sorting eliminates data dependencies between iterations"
+      ],
+      "correct": 2,
+      "explanation": "With sorted data, the branch outcome transitions from 'always not taken' to 'always taken' at one point, creating a pattern the predictor learns almost instantly. With random data, each branch is ~50/50 and the predictor fails half the time."
+    },
+    {
+      "stage": "post",
+      "question": "Which pattern is a valid branchless replacement for `if (x > threshold) result = a; else result = b;`?",
+      "options": [
+        "result = (x > threshold) * a + !(x > threshold) * b;",
+        "result = (x > threshold) ? a : b;  // compiled to cmov with -O2",
+        "switch(x > threshold) { case 1: result = a; case 0: result = b; }",
+        "Both A and B produce branchless code with -O2"
+      ],
+      "correct": 3,
+      "explanation": "With -O2, the ternary in option B compiles to a cmov instruction (branchless). The arithmetic in option A also produces branchless code. Both are valid branchless patterns, though the ternary/cmov approach is more idiomatic."
+    },
+    {
+      "stage": "post",
+      "question": "When should you use [[unlikely]] on a branch condition?",
+      "options": [
+        "When the branch is in a tight loop and the condition is unpredictable (~50/50)",
+        "When the branch body is expensive regardless of probability",
+        "When the branch is taken less than ~10% of the time, such as error paths or rare cases",
+        "When you want to force the compiler to use cmov instead of a branch"
+      ],
+      "correct": 2,
+      "explanation": "[[unlikely]] tells the compiler and static branch predictor that a path is rarely taken, which affects code layout (cold path placed out-of-line) and static predictor initialization. It does NOT help with unpredictable branches or force cmov generation."
+    },
+    {
+      "stage": "post",
+      "question": "A struct has 4 bytes of hot fields (updated every frame) and 400 bytes of cold fields (rarely accessed). What is the primary benefit of splitting it into EntityHot (4 bytes) and EntityCold (400 bytes)?",
+      "options": [
+        "It reduces total memory usage",
+        "It reduces the number of cache lines fetched per entity in the hot loop from ~7 to ~1, improving cache utilization from <1% to ~67%",
+        "It eliminates branch mispredictions in the update loop",
+        "It enables SIMD vectorization of the update loop"
+      ],
+      "correct": 1,
+      "explanation": "With the naive 404-byte struct, each hot-loop iteration pulls ~7 cache lines but only touches 4 bytes (~1% utilization). After splitting, EntityHot is 4 bytes, fitting ~16 entities per cache line (~67% utilization). The hot loop runs 4-7x faster due to reduced cache pressure."
+    },
+    {
+      "stage": "post",
+      "question": "When is going branchless a BAD idea?",
+      "options": [
+        "When the branch condition is unpredictable and the loop body is small",
+        "When the branch is highly predictable (>95%) and you're in a hot loop",
+        "When sorting the data before processing would make the branch predictable",
+        "All of the above are good situations for branchless code"
+      ],
+      "correct": 1,
+      "explanation": "A correctly predicted branch costs ~1 cycle — same as a cmov. Branchless code doesn't help when branches are predictable. It can even hurt because cmov introduces a data dependency on both paths. Always profile first: go branchless only for unpredictable branches in hot loops."
+    }
+  ]
+}

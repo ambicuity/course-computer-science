@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 13: SSA Form — Construction and Dominance",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the defining property of SSA (Static Single Assignment) form?",
+      "options": [
+        "Every variable is used exactly once",
+        "Every variable is assigned exactly once",
+        "Every basic block has exactly one predecessor",
+        "Every instruction has exactly one operand"
+      ],
+      "explanation": "In SSA form, every variable name receives exactly one assignment in the program text. If a variable has multiple assignments in the original code, each gets a distinct version number (x1, x2, ...). This property makes reaching-definition analysis trivial.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "Where are φ-functions (phi nodes) inserted during SSA construction?",
+      "options": [
+        "At every instruction that uses a variable",
+        "Only in the entry block of the CFG",
+        "At dominance frontier nodes — join points where a definition stops dominating",
+        "At every basic block unconditionally"
+      ],
+      "explanation": "φ-functions are placed at nodes in the iterated dominance frontier (IDF) of the definition sites of each variable. These are exactly the join points where two or more definitions reach without one dominating the others, so the compiler needs a φ to select the correct value at runtime.",
+      "stage": "pre",
+      "correct": 2
+    },
+    {
+      "id": 3,
+      "question": "Node A dominates node B. What must be true about every path from the entry to B?",
+      "options": [
+        "Every path must pass through B before reaching A",
+        "Every path must contain at least one other node besides A and B",
+        "Every path from entry to B must pass through A",
+        "There is exactly one path from entry to B"
+      ],
+      "explanation": "A dominates B if and only if every path from the entry node to B includes A. This is the standard definition of the dominance relation. A always dominates itself (the trivial case).",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "id": 4,
+      "question": "Why does SSA form make optimization passes simpler?",
+      "options": [
+        "It eliminates all branches from the program",
+        "It guarantees the program has no loops",
+        "Each definition is independent — reaching definitions are trivially known from the variable name",
+        "It removes the need for a register allocator"
+      ],
+      "explanation": "Because each variable is assigned exactly once, the definition that reaches any use is immediately identifiable by the variable version name. Optimizations like CSE, DCE, and constant propagation become local operations that don't require expensive global dataflow analysis.",
+      "stage": "post",
+      "correct": 2
+    },
+    {
+      "stage": "pre",
+      "question": "What is SSA (Static Single Assignment) form?",
+      "options": [
+        "A form where each variable is assigned exactly once in the entire program",
+        "A form where each variable is assigned exactly once, with new versions for each assignment using phi-functions at control flow merges",
+        "A form where all variables are global",
+        "A form where variables can only hold integer values"
+      ],
+      "correct": 1,
+      "explanation": "In SSA, every variable is assigned exactly once. When control flow paths merge (e.g., after an if-else), a phi-function selects which version to use: x3 = phi(x1, x2). This simplifies many optimizations (constant propagation, dead code elimination) because use-def chains become trivial."
+    }
+  ],
+  "_meta": {
+    "phase": 8,
+    "lesson": 13,
+    "title": "Ssa Form Construction And Dominance"
+  }
+}

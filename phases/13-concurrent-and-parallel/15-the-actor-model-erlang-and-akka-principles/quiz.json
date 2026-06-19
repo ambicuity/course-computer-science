@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 15,
+    "title": "The Actor Model — Erlang and Akka principles"
+  },
+  "questions": [
+    {
+      "id": 1,
+      "stage": "pre",
+      "question": "What fundamental property distinguishes the actor model from shared-memory concurrency?",
+      "options": [
+        "Actors use locks to protect critical sections",
+        "Actors communicate exclusively through asynchronous message passing and never share memory",
+        "Actors must run on separate physical cores to be considered concurrent",
+        "Actors share a global mailbox that all actors read from"
+      ],
+      "correct": 1,
+      "explanation": "The actor model forbids shared memory entirely. Each actor owns its state, and communication happens only through asynchronous messages sent to a per-actor mailbox. No locks are needed because there is no shared state to protect."
+    },
+    {
+      "id": 2,
+      "stage": "post",
+      "question": "In Erlang/OTP, what does the 'let it crash' philosophy mean in practice?",
+      "options": [
+        "Developers should write code that never raises exceptions",
+        "If a process encounters an error, it should catch it and continue silently",
+        "Processes should fail fast on unexpected errors; supervisors detect the crash and restart the process to a known good state",
+        "The entire system should crash immediately when any single process dies"
+      ],
+      "correct": 2,
+      "explanation": "'Let it crash' means you avoid defensive error-handling code. Instead, you let the process fail and rely on a supervisor to detect the failure (via linked processes or monitors) and restart the process to a clean initial state. This produces simpler, more robust systems."
+    },
+    {
+      "id": 3,
+      "stage": "post",
+      "question": "How does the Erlang counter actor maintain state across messages?",
+      "options": [
+        "It writes state to a global ETS table after each message",
+        "It stores state in a process dictionary",
+        "It passes the state as a parameter in a tail-recursive function call",
+        "It writes state to disk after every message"
+      ],
+      "correct": 2,
+      "explanation": "An Erlang actor's state is a function parameter passed via tail recursion. For example, `counter(Count) -> receive {increment, N} -> counter(Count + N) end.` The actor loops by tail-calling itself with the updated count. This keeps the state entirely encapsulated within the actor's own call stack."
+    },
+    {
+      "id": 4,
+      "stage": "post",
+      "question": "What does 'location transparency' mean in the context of actor systems like Erlang and Akka?",
+      "options": [
+        "Actors can only run on the local machine for security reasons",
+        "The address of an actor (pid or ActorRef) works the same whether the actor is on the local node or a remote node",
+        "Actors are automatically migrated to the nearest geographical location",
+        "Actors must know the physical IP address of every other actor they communicate with"
+      ],
+      "correct": 1,
+      "explanation": "Location transparency means that sending a message to an actor looks the same regardless of where that actor lives — on the same node or across a network. Erlang's `Pid ! Msg` syntax works across nodes transparently. Akka achieves this with `ActorRef`, which resolves to a local or remote actor behind the same API."
+    },
+    {
+      "stage": "pre",
+      "question": "How does the Actor model handle concurrency?",
+      "options": [
+        "By sharing a global lock across all actors",
+        "Each actor has private state and communicates only by sending immutable messages to other actors' mailboxes",
+        "By using shared memory with fine-grained locking",
+        "By executing all actors on a single thread"
+      ],
+      "correct": 1,
+      "explanation": "In the Actor model (Hewitt, 1973), actors are the universal primitives: each actor has a mailbox, private state, and behavior. They communicate exclusively via asynchronous messages. No shared state means no locks, no data races. Erlang/OTP and Akka implement this model at scale."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 18,
+    "title": "Linkers And Loaders"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In an ELF object file, the .bss section is different from .data because:",
+      "options": [
+        ".bss contains read-only constants, .data contains writable variables",
+        ".bss occupies no space in the file — it is zero-filled at load time",
+        ".bss stores machine code, .data stores string literals",
+        ".bss is used for dynamic linking, .data is used for static linking"
+      ],
+      "correct": 1,
+      "explanation": "The .bss section holds uninitialized (or zero-initialized) data. It has a size recorded in the section header but occupies no bytes in the file itself. The loader allocates and zeroes the memory at runtime."
+    },
+    {
+      "stage": "pre",
+      "question": "The PLT (Procedure Linkage Table) and GOT (Global Offset Table) exist to support:",
+      "options": [
+        "Static linking of object files at compile time",
+        "Inlining small functions for performance",
+        "Lazy symbol resolution for dynamically linked shared libraries",
+        "Debugging information in optimized binaries"
+      ],
+      "correct": 2,
+      "explanation": "The PLT is a stub that indirects through the GOT. On the first call to a shared library function, the dynamic linker resolves the symbol and patches the GOT entry. Subsequent calls jump directly — this is lazy binding."
+    },
+    {
+      "stage": "post",
+      "question": "A PC-relative relocation (like R_X86_64_PC32) stores which value at the patch site?",
+      "options": [
+        "The absolute virtual address of the target symbol",
+        "The offset from the current section's start to the target symbol",
+        "The difference between the target address and the address of the next instruction",
+        "The index of the symbol in the global symbol table"
+      ],
+      "correct": 2,
+      "explanation": "PC-relative relocations encode target - (patch_location + instruction_size). This makes the code position-independent — the same displacement works regardless of where the code is loaded in memory."
+    },
+    {
+      "stage": "post",
+      "question": "When the loader starts a process, the correct order of operations is:",
+      "options": [
+        "Jump to entry point, map segments, load dynamic linker, set up stack",
+        "Map segments, load dynamic linker, set up stack, jump to entry point",
+        "Set up stack, map segments, jump to entry point, load dynamic linker",
+        "Load dynamic linker, jump to entry point, set up stack, map segments"
+      ],
+      "correct": 1,
+      "explanation": "The loader (1) reads the ELF header and program headers, (2) maps code and data segments into the address space, (3) loads the dynamic linker if needed, (4) sets up the stack with argc/argv/envp, and (5) jumps to the entry point (_start)."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does a linker solve?",
+      "options": [
+        "It compiles source code into object files",
+        "It combines multiple object files, resolving symbol references between them into a single executable",
+        "It loads the executable into memory",
+        "It optimizes the machine code"
+      ],
+      "correct": 1,
+      "explanation": "When you compile multiple .c files, each produces an object file with unresolved references (e.g., main.o calls printf defined in libc). The linker resolves these references by matching symbol definitions to uses, relocates addresses, and produces a single executable or library."
+    }
+  ]
+}

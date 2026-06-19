@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 1,
+    "title": "The Stack Why Layers Osi Vs Tcp Ip"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which OSI layer is responsible for logical addressing and routing?",
+      "options": [
+        "Data Link (Layer 2)",
+        "Network (Layer 3)",
+        "Transport (Layer 4)",
+        "Session (Layer 5)"
+      ],
+      "correct": 1,
+      "explanation": "The Network layer (Layer 3) handles logical addressing (IP addresses) and routing packets between networks."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the Protocol Data Unit (PDU) at the Transport layer called?",
+      "options": [
+        "Frame",
+        "Packet",
+        "Segment or Datagram",
+        "Bits"
+      ],
+      "correct": 2,
+      "explanation": "At the Transport layer, TCP produces segments and UDP produces datagrams. Packets belong to Layer 3, frames to Layer 2."
+    },
+    {
+      "stage": "post",
+      "question": "In the TCP/IP model, which OSI layers are merged into a single Application layer?",
+      "options": [
+        "Layers 4–6",
+        "Layers 5–7",
+        "Layers 6–7",
+        "Layers 4–7"
+      ],
+      "correct": 1,
+      "explanation": "The TCP/IP Application layer combines OSI layers 5 (Session), 6 (Presentation), and 7 (Application) into one."
+    },
+    {
+      "stage": "post",
+      "question": "When a packet moves down the protocol stack, each layer adds its own header. This process is called:",
+      "options": [
+        "Multiplexing",
+        "Encapsulation",
+        "Fragmentation",
+        "Serialization"
+      ],
+      "correct": 1,
+      "explanation": "Encapsulation is the process where each layer wraps the data from the layer above in its own header (and sometimes trailer)."
+    },
+    {
+      "stage": "pre",
+      "question": "Why do network protocols use a layered architecture?",
+      "options": [
+        "To make networks slower but more reliable",
+        "To separate concerns so each layer can evolve independently without affecting others",
+        "To ensure all data is encrypted",
+        "To reduce the number of protocols needed"
+      ],
+      "correct": 1,
+      "explanation": "Layering separates concerns: the physical layer handles bits on wire, the transport layer handles reliable delivery, the application layer handles HTTP. Each layer provides services to the layer above and uses services from below. You can swap Ethernet for Wi-Fi without changing HTTP."
+    }
+  ]
+}

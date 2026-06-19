@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Lamport clocks assign each event a single integer. If LC(a) = 3 and LC(b) = 5, what can you conclude?",
+      "options": [
+        "Event a definitely happened before event b",
+        "Event b definitely happened before event a",
+        "Event a may or may not have happened before event b — the relationship is inconclusive",
+        "Events a and b are concurrent"
+      ],
+      "correct": 2,
+      "explanation": "LC(a) < LC(b) only tells you that a → b is *possible*, not that it *did* happen. Two independent events can have LC values 3 and 5. The single integer collapses all causal information — you lose the structure that distinguishes 'a caused b' from 'they happened independently'."
+    },
+    {
+      "stage": "pre",
+      "question": "When a process receives a message, how should it update its vector clock?",
+      "options": [
+        "Set its own counter to the received vector's value plus one",
+        "Take the element-wise maximum of local and received vectors, then increment the sender's counter",
+        "Take the element-wise maximum of local and received vectors, then increment its own counter",
+        "Increment only its own counter by one; ignore the received vector"
+      ],
+      "correct": 2,
+      "explanation": "On receive: merge (element-wise max) to incorporate all causal knowledge from the sender, then increment *your own* counter to record this receive event. This is the key difference from Lamport clocks — you preserve per-process information instead of collapsing to a single counter."
+    },
+    {
+      "stage": "post",
+      "question": "Two versions of a key have vector clocks VC₁ = [2, 0, 1] and VC₂ = [0, 3, 1]. What is their relationship and what should a conflict detector conclude?",
+      "options": [
+        "VC₁ < VC₂: version 1 causally precedes version 2; no conflict",
+        "VC₁ || VC₂ (concurrent): neither caused the other; this is a conflict requiring resolution",
+        "VC₁ > VC₂: version 1 causally supersedes version 2; no conflict",
+        "They are identical: both describe the same causal state"
+      ],
+      "correct": 1,
+      "explanation": "VC₁[0]=2 > VC₂[0]=0 but VC₁[1]=0 < VC₂[1]=3. Neither vector dominates the other element-wise, so they are incomparable (concurrent). This means the two updates happened independently — neither caused the other — and a conflict detector must flag this for resolution."
+    },
+    {
+      "stage": "post",
+      "question": "In causal broadcast (CBCAST), when does a process deliver a received message to the application?",
+      "options": [
+        "Immediately upon receiving it, then update its vector clock",
+        "After incrementing its own vector clock counter once for the receive",
+        "Only after all causally preceding messages (tracked via vector clock comparison) have been delivered",
+        "After confirming with the sender that the message was not a duplicate"
+      ],
+      "correct": 2,
+      "explanation": "CBCAST buffers messages whose causal predecessors haven't arrived yet. A message m from process Pᵢ with VC[m] = [v₁, v₂, …, vₙ] can be delivered only when the recipient has seen at least vⱼ messages from every Pⱼ where j ≠ i, and exactly vᵢ − 1 messages from Pᵢ. This ensures that all of m's causal predecessors are delivered first."
+    },
+    {
+      "stage": "post",
+      "question": "Why do dotted version vectors (DVVs) add a single (replica_id, counter) pair on top of a regular vector clock?",
+      "options": [
+        "To reduce the size of the vector clock in messages",
+        "To distinguish which specific event created a version when the same replica makes multiple updates between merges — plain VCs lose this information",
+        "To enforce a total ordering on all events across all replicas",
+        "To detect Byzantine failures by cross-checking the dot against the vector"
+      ],
+      "correct": 1,
+      "explanation": "Consider replica R that writes twice between merges. Both writes extend R's counter in the VC. If another replica merges these versions, the VC only shows 'R has count ≥ 2' — it can't tell which of the two events created a particular version. The dot (R, 2) in a DVV says 'this version was specifically R's 2nd event,' disambiguating cases where plain VCs would conflate distinct events."
+    },
+    {
+      "stage": "post",
+      "question": "Which conflict resolution strategy provides mathematically guaranteed convergence without data loss, but restricts you to specific data types?",
+      "options": [
+        "Last-writer-wins (LWW) with a global clock",
+        "Application-specific merge functions",
+        "Conflict-free replicated data types (CRDTs)",
+        "Manual resolution by exposing both versions to the user"
+      ],
+      "correct": 2,
+      "explanation": "CRDTs are data structures (counters, sets, registers) whose merge operation is commutative, associative, and idempotent. This guarantees convergence regardless of message ordering. The trade-off is that you can only perform operations the CRDT supports — you can't write arbitrary merge logic. LWW loses data; application merge is correct but ad-hoc; manual resolution is flexible but poor UX."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 4,
+    "title": "Vector Clocks And Causal Order"
+  }
+}

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Course: Computer Science">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFF7EC"/>
+      <stop offset="100%" stop-color="#F4E3D5"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#E2557A" stroke-opacity="0.15" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E2557A"/>
+      <stop offset="100%" stop-color="#A0335C"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="360" fill="url(#bg)"/>
+  <rect width="1200" height="360" fill="url(#grid)"/>
+  <!-- Diagonal accent strip -->
+  <polygon points="0,360 1200,200 1200,360" fill="#E2557A" fill-opacity="0.1"/>
+  <!-- Title -->
+  <g font-family="Inter, ui-sans-serif, system-ui, sans-serif" fill="#2A1A2E">
+    <text x="80" y="120" font-size="32" font-weight="500" letter-spacing="6" fill="#A0335C">COURSE</text>
+    <text x="80" y="200" font-size="86" font-weight="800" letter-spacing="-2">Computer Science</text>
+    <text x="80" y="248" font-size="22" font-weight="400" fill="#6B4A55">414 lessons · 20 phases · ~444 hours · from transistors to distributed systems</text>
+    <text x="80" y="312" font-size="16" font-weight="500" fill="#A0335C">by Ritesh Rana &#x2002;·&#x2002; MIT</text>
+  </g>
+  <!-- Decorative motif: stylized chip lines -->
+  <g stroke="url(#accent)" stroke-width="2" fill="none" opacity="0.7">
+    <path d="M 900 60 L 1100 60 L 1100 100 L 1160 100"/>
+    <path d="M 900 100 L 1060 100 L 1060 140 L 1160 140"/>
+    <path d="M 900 140 L 1020 140 L 1020 180 L 1160 180"/>
+    <path d="M 900 180 L 980 180 L 980 220 L 1160 220"/>
+  </g>
+  <g fill="#E2557A" opacity="0.9">
+    <circle cx="900" cy="60" r="4"/>
+    <circle cx="900" cy="100" r="4"/>
+    <circle cx="900" cy="140" r="4"/>
+    <circle cx="900" cy="180" r="4"/>
+    <circle cx="1160" cy="100" r="4"/>
+    <circle cx="1160" cy="140" r="4"/>
+    <circle cx="1160" cy="180" r="4"/>
+    <circle cx="1160" cy="220" r="4"/>
+  </g>
+</svg>

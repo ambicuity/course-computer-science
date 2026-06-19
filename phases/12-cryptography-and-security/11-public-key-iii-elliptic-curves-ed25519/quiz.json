@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 11,
+    "title": "Public Key III — Elliptic Curves & Ed25519"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental hard problem underlying elliptic curve cryptography?",
+      "options": [
+        "Integer factorization",
+        "Discrete logarithm in finite fields",
+        "Elliptic curve discrete logarithm problem (ECDLP)",
+        "The subset sum problem"
+      ],
+      "correct": 2,
+      "explanation": "ECDLP: given points P and k*P on an elliptic curve, find the scalar k. This is believed to be harder than integer factorization (RSA) or finite-field discrete log (DH) for the same key size, which is why ECC keys can be much smaller than RSA keys for equivalent security."
+    },
+    {
+      "stage": "pre",
+      "question": "What is Ed25519?",
+      "options": [
+        "A symmetric cipher based on elliptic curves",
+        "A digital signature scheme using the Edwards form of Curve25519",
+        "A key exchange protocol using Montgomery curves",
+        "A hash function with 255-bit output"
+      ],
+      "correct": 1,
+      "explanation": "Ed25519 is a digital signature scheme (EdDSA) that uses the twisted Edwards form of Curve25519. It is distinct from X25519, which uses the Montgomery form of the same curve for key exchange. Ed25519 signatures are deterministic (no RNG needed), fast, and produce 64-byte signatures."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Ed25519 not need a random number generator for signing, and why does that matter?",
+      "options": [
+        "Ed25519 uses pre-computed random values from the key generation step",
+        "Ed25519 derives the nonce deterministically from the private key and message hash using SHA-512",
+        "Ed25519 doesn't use nonces in its signing algorithm",
+        "Ed25519 relies on the operating system's entropy pool being seeded at boot"
+      ],
+      "correct": 1,
+      "explanation": "Ed25519 computes the nonce as SHA-512(private_key_seed || message_hash), making every signature deterministic. This eliminates the risk of catastrophic RNG failures that plagued ECDSA — like the Sony PS3 hack where a fixed nonce leaked the private key, or the Android Bitcoin wallet where weak RNG caused nonce reuse. Deterministic signatures also make it possible to verify that the same message always produces the same signature from a given key."
+    },
+    {
+      "stage": "post",
+      "question": "What key size does Ed25519 use and what equivalent security level does it provide compared to RSA?",
+      "options": [
+        "128-bit Ed25519 — roughly equivalent to RSA-2048",
+        "256-bit Ed25519 (32 bytes) — roughly equivalent to RSA-3072",
+        "512-bit Ed25519 — roughly equivalent to RSA-15360",
+        "192-bit Ed25519 — roughly equivalent to RSA-2048"
+      ],
+      "correct": 1,
+      "explanation": "Ed25519 uses 256-bit keys (32 bytes for the public key, 32 bytes for the seed) and provides approximately 128 bits of security, which is equivalent to RSA with a 3072-bit key (384 bytes). The dramatic reduction in key and signature size (64-byte signatures vs 256–512 bytes for RSA) is the primary advantage of ECC — less bandwidth, less storage, and faster operations, especially on constrained devices."
+    },
+    {
+      "stage": "pre",
+      "question": "Why are elliptic curve cryptosystems preferred over RSA for the same security level?",
+      "options": [
+        "ECC is easier to implement",
+        "ECC achieves equivalent security with much smaller key sizes (256-bit ECC ≈ 3072-bit RSA), resulting in faster operations",
+        "ECC is quantum-resistant",
+        "RSA has been broken by modern computers"
+      ],
+      "correct": 1,
+      "explanation": "Elliptic curve cryptography provides the same security as RSA with far smaller keys. A 256-bit ECC key offers similar security to a 3072-bit RSA key. This means faster key generation, signing, and verification, plus smaller certificates — critical for mobile and IoT devices."
+    }
+  ]
+}

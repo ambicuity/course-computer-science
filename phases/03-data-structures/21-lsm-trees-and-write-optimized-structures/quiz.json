@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why are LSM trees called 'write-optimized'?",
+      "options": [
+        "Faster CPUs",
+        "Writes go to an in-memory memtable then are flushed to disk as SORTED FILES (SSTables) — sequential writes only. B+ trees do random page writes per update. On disk, sequential is 10-100× faster than random.",
+        "More memory",
+        "Compression"
+      ],
+      "correct": 1,
+      "explanation": "B+ trees update a leaf page in place per insert → random write per leaf. Disks (HDD especially, SSDs too) are 10-100× faster at sequential than random writes. LSM trees never modify on-disk data; they only append new SSTables. Compaction merges them in the background — sequential reads + sequential writes. This is why every write-heavy database (Cassandra, RocksDB, BigTable) uses LSM."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the role of a Bloom filter PER SSTable in an LSM read?",
+      "options": [
+        "Compression",
+        "Each SSTable has its own Bloom of all keys it contains. Reads check Bloom before opening the file — 99% of negative queries skip the file entirely. Without Bloom: ~10 file opens per read; with Bloom: ~1.",
+        "Replication",
+        "Sorting"
+      ],
+      "correct": 1,
+      "explanation": "LSM read walks newest-to-oldest SSTable. Without filtering: each requires a disk seek to find the key (or to determine it's absent). With per-SSTable Bloom (kept in RAM): you skip ~99% of files immediately. RocksDB defaults to ~10 bits/key Bloom → 1% FPR → 100× fewer disk seeks on misses. This is the killer reason LSM is competitive on reads despite scattered data."
+    },
+    {
+      "stage": "post",
+      "question": "What does 'compaction' do in an LSM tree?",
+      "options": [
+        "Compresses files",
+        "Background merge of multiple SSTables into fewer, larger ones. Resolves duplicates (newer overrides older), drops tombstones, reorganizes to maintain read-amplification bounds. Trades CPU + I/O for fewer files.",
+        "Sorting RAM",
+        "Hashing"
+      ],
+      "correct": 1,
+      "explanation": "Without compaction, the number of SSTables grows unboundedly with writes → unbounded read amplification. Compaction merges k same-size SSTables into one larger one. Two main strategies: SIZE-TIERED (Cassandra default — merge when k of similar size; fewer compactions, more space amp) and LEVELED (LevelDB/RocksDB — bounded files per level; more write amp, lower read amp). Operating an LSM is largely about tuning compaction."
+    },
+    {
+      "stage": "post",
+      "question": "What are the three 'amplifications' that LSM tuning trades off?",
+      "options": [
+        "Time, space, CPU",
+        "WRITE amp (bytes written / user bytes), READ amp (files checked per read), SPACE amp (disk used / live data). Tuning compaction is choosing which to favor.",
+        "RAM, CPU, network",
+        "P50, P99, p999"
+      ],
+      "correct": 1,
+      "explanation": "Leveled: low read amp (~1 file per level), high write amp (~10-30× — keys rewritten through levels). Size-tiered: low write amp (~5×), high read amp (~10 files), high space amp (duplicate older versions). Universal in RocksDB: hybrid. There's no universal best; pick based on workload. Cassandra picked size-tiered for write-heavy; LevelDB picked leveled for predictable reads."
+    },
+    {
+      "stage": "post",
+      "question": "How does deletion work in an LSM tree?",
+      "options": [
+        "Locate and remove",
+        "Write a TOMBSTONE entry (special marker) at the new memtable. Reads return 'not found' on hitting a tombstone before an actual value. Compaction eventually drops the tombstone + the older entries it shadows.",
+        "Mark key as void",
+        "Recompact immediately"
+      ],
+      "correct": 1,
+      "explanation": "LSM never modifies existing SSTables — they're immutable. A delete becomes a write of a special 'tombstone' entry. The newer-overrides-older rule means readers see the tombstone before the underlying value → reports not found. Compaction can drop a tombstone when ALL older SSTables are merged with it. Tombstone GC is a major LSM operational concern (long-lived tombstones bloat read amp)."
+    },
+    {
+      "stage": "post",
+      "question": "When would you NOT use an LSM tree?",
+      "options": [
+        "Always use LSM",
+        "Read-mostly workloads: B+ trees give lower read amp and simpler operational profile. LSM wins when writes >> reads or writes are sequential by key. Postgres uses B+ trees; Cassandra uses LSM — different design points.",
+        "Small data only",
+        "Never use LSM"
+      ],
+      "correct": 1,
+      "explanation": "LSM optimizes writes at the cost of writes-amp and reads-amp. B+ tree has stable ops cost (O(log n) per read, per write). For OLTP-like workloads (1000s reads per write), B+ tree wins. For OLAP-style ingest (millions of writes per second), LSM wins. Modern systems sometimes use both: PostgreSQL is B+ tree by default; Cassandra is LSM by default; CockroachDB layers SQL semantics over LSM (RocksDB → now Pebble)."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 21,
+    "title": "Lsm Trees And Write Optimized Structures"
+  }
+}

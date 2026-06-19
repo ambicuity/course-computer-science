@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 12,
+    "title": "Reactor and Proactor Patterns — epoll, kqueue, io_uring"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between a Reactor and a Proactor?",
+      "options": [
+        "A Reactor uses threads; a Proactor uses processes",
+        "A Reactor notifies readiness to perform I/O; a Proactor notifies when I/O has completed with data in the buffer",
+        "A Reactor is synchronous; a Proactor is asynchronous",
+        "A Reactor works on files; a Proactor works on sockets"
+      ],
+      "correct": 1,
+      "explanation": "The Reactor pattern tells you a file descriptor is 'ready to read' — you still call read() yourself. The Proactor pattern tells you the data is already in your buffer because the kernel performed the I/O asynchronously. Both can be asynchronous, but they differ in what they notify: readiness vs completion."
+    },
+    {
+      "stage": "post",
+      "question": "How does io_uring achieve lower syscall overhead compared to epoll?",
+      "options": [
+        "io_uring uses kernel threads to perform I/O in the background",
+        "io_uring uses shared ring buffers (SQ and CQ) between userspace and kernel, allowing batch submission and completion without per-operation syscalls",
+        "io_uring bypasses the kernel entirely using userspace drivers",
+        "io_uring coalesces multiple read() calls into a single syscall using splice()"
+      ],
+      "correct": 1,
+      "explanation": "io_uring's key innovation is two ring buffers (Submission Queue and Completion Queue) shared between userspace and kernel. Userspace writes SQEs directly into the SQ, the kernel reads them asynchronously, and writes results into the CQ. With SQPOLL mode, even the io_uring_enter() syscall is eliminated in the fast path."
+    },
+    {
+      "stage": "post",
+      "question": "In an epoll edge-triggered (ET) server, what must you do when epoll_wait reports a socket as readable?",
+      "options": [
+        "Read exactly one byte and re-arm",
+        "Close the socket and re-accept",
+        "Read until read() returns EAGAIN, otherwise you may miss data",
+        "Switch to level-triggered mode after the first read"
+      ],
+      "correct": 2,
+      "explanation": "In edge-triggered mode, epoll only notifies on state changes (new data arrival). If you read 100 bytes out of 1024 available, epoll will NOT fire again for the remaining 924 bytes. You must read in a loop until read() returns EAGAIN (no more data available) to avoid data loss."
+    },
+    {
+      "stage": "post",
+      "question": "Tokio's async I/O model is fundamentally a Reactor. How does it differ from a raw epoll-based event loop written in C?",
+      "options": [
+        "Tokio cannot handle edge-triggered events",
+        "Tokio wraps epoll/kqueue in a task scheduler: the reactor notifies readiness, which wakes a task that performs the I/O. This adds task scheduling overhead but provides async/await ergonomics and memory safety",
+        "Tokio uses io_uring internally and is strictly a Proactor",
+        "Tokio bypasses epoll entirely and uses userspace context switching"
+      ],
+      "correct": 1,
+      "explanation": "Tokio's reactor (the I/O driver) calls epoll_wait (Linux) or kevent (macOS) to discover readiness. When an fd is ready, the reactor looks up the associated Waker and schedules the corresponding task. This adds ~2-3 µs of task scheduling overhead per wakeup compared to a raw C event loop, but provides Rust's async/await ergonomics, memory safety, and work-stealing across threads."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the reactor pattern in event-driven I/O?",
+      "options": [
+        "A pattern where threads block on each I/O operation",
+        "An event loop that demultiplexes I/O events and dispatches them to registered handlers synchronously",
+        "A pattern for creating new threads per connection",
+        "A load balancing algorithm"
+      ],
+      "correct": 1,
+      "explanation": "The reactor pattern uses a single-threaded event loop with non-blocking I/O. When I/O is ready (detected via epoll/kqueue/select), the reactor dispatches the event to the appropriate handler. This handles thousands of connections on a single thread without the overhead of thread-per-connection."
+    }
+  ]
+}

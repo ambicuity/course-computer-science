@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What makes time-series workloads different from general OLTP workloads?",
+      "options": [
+        "Time-series data has frequent updates and deletes",
+        "Writes are append-heavy and arrive in near-time order; reads are range scans over time windows",
+        "Time-series databases use B-Trees optimized for random writes",
+        "Time-series data has no schema or data types"
+      ],
+      "correct": 1,
+      "explanation": "Time-series workloads are append-heavy (new data always has the most recent timestamp), writes arrive in time order, and the dominant read pattern is range queries over a time window. This makes B-Trees suboptimal — time-windowed block storage with purpose-built compression is far more efficient."
+    },
+    {
+      "stage": "pre",
+      "question": "In event sourcing, how do you obtain the current state of an entity?",
+      "options": [
+        "Read the latest row from a state table",
+        "Fold/replay the event stream through a deterministic apply function",
+        "Query a materialized view that is always up to date",
+        "Run an UPDATE statement on the events table"
+      ],
+      "correct": 1,
+      "explanation": "Current state = fold(event_stream, initial_state, apply_fn). Every event is replayed in order through a pure function. This is fundamentally different from CRUD, where you mutate state in place and lose history."
+    },
+    {
+      "stage": "pre",
+      "question": "The Gorilla compression scheme compresses float values in a time-series by:",
+      "options": [
+        "Rounding all values to integers",
+        "Storing deltas between consecutive values as variable-length integers",
+        "XORing each value with the previous value and storing only the bits that changed",
+        "Using run-length encoding on repeated values"
+      ],
+      "correct": 2,
+      "explanation": "Gorilla XOR compression exploits the fact that consecutive float measurements in a time-series are close in value. XORing adjacent values produces long runs of leading and trailing zeros, which compress very efficiently (often 1-4 bits per value instead of 64)."
+    },
+    {
+      "stage": "post",
+      "question": "A time-series database stores raw 1-second sensor readings. A user queries the weekly average over the past year. Without downsampling, this query requires scanning ~31 million points. The most efficient storage-level optimization is:",
+      "options": [
+        "Add a B-Tree index on the timestamp column",
+        "Pre-compute and store downsampled rollups (e.g., 1-hour buckets) and expire old raw data per retention policy",
+        "Store all data in a single file for sequential scanning",
+        "Use a hash index on the value column"
+      ],
+      "correct": 1,
+      "explanation": "Downsampling creates pre-aggregated rollups at coarser time granularities (5m, 1h, 1d). A query for weekly averages over a year uses ~52 1-hour-bucket points instead of 31M raw points. Retention policies delete the raw data after it has been rolled up, keeping storage bounded."
+    },
+    {
+      "stage": "post",
+      "question": "CQRS (Command Query Responsibility Segregation) is often paired with event sourcing. What is the primary benefit of this pairing?",
+      "options": [
+        "It reduces the total storage required for events",
+        "It allows the write model (event log) and read model (materialized views) to be independently optimized for their access patterns",
+        "It eliminates the need for database indexes",
+        "It guarantees that events are always processed in parallel"
+      ],
+      "correct": 1,
+      "explanation": "CQRS separates the write path (commands that produce events) from the read path (queries against pre-built views). The event log is optimized for append-only writes; the read model can use any structure (denormalized tables, aggregations, caches) for fast queries. If the read model gets stale or corrupted, you can rebuild it by replaying events — the event log is the single source of truth."
+    },
+    {
+      "stage": "post",
+      "question": "In the time-series block storage model (e.g., Prometheus 2-hour blocks, our Block class), a block is immutable once closed. What problem does this immutability create, and how is it solved?",
+      "options": [
+        "New data cannot be inserted into closed blocks — the engine must create new blocks, and old blocks are eventually compacted/merged into larger blocks via background compaction",
+        "Immutability causes write amplification because every write creates a new file — solved by switching to in-place updates",
+        "Closed blocks cannot be read — solved by keeping all data in memory",
+        "Immutability is a problem only for event sourcing, not for time-series"
+      ],
+      "correct": 0,
+      "explanation": "Once a block is closed (because its time window has passed), no new data is written to it. The engine creates a new block for the current time window. Old blocks are compacted in the background — merged into larger blocks and optionally downsampled. This is exactly how Prometheus's TSDB works: 2-hour blocks are written once, then compacted into larger blocks."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 21,
+    "title": "Time Series And Event Sourced Stores"
+  }
+}

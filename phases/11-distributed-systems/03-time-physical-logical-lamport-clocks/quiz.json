@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Two servers each log an event at 'exactly' 14:00:00.000 UTC. In a distributed system, can you conclude these events happened simultaneously?",
+      "options": [
+        "Yes — identical UTC timestamps mean simultaneous occurrence",
+        "No — clock skew means the timestamps may differ by milliseconds or more, so you cannot determine actual simultaneity from wall clocks",
+        "Only if both servers use NTP",
+        "Only if both servers use GPS time"
+      ],
+      "correct": 1,
+      "explanation": "Physical clocks drift 10-100μs/minute. Even with NTP (±1-10ms over WAN) or GPS (±50-100ns), you get probabilistic bounds, not guarantees. Two servers reporting the same timestamp could have actual times that differ by milliseconds. Distributed ordering requires logical time, not wall-clock agreement."
+    },
+    {
+      "stage": "pre",
+      "question": "In the happens-before relation (→), which of the following is NOT a valid rule?",
+      "options": [
+        "Within a process, if event a occurs before event b, then a → b",
+        "If a is a message send and b is the corresponding receive, then a → b",
+        "If a → b and b → c, then a → c (transitivity)",
+        "If LC(a) < LC(b), then a → b"
+      ],
+      "correct": 3,
+      "explanation": "LC(a) < LC(b) does NOT imply a → b. Lamport clocks guarantee only the forward direction: a → b ⟹ LC(a) < LC(b). Two concurrent events (neither a → b nor b → a) can have timestamps in either order. This is a fundamental limitation of scalar logical clocks — detecting causality requires vector clocks."
+    },
+    {
+      "stage": "post",
+      "question": "Process P has Lamport clock LC = 5. It receives a message with timestamp 8. What is P's Lamport clock value after processing this receive?",
+      "options": [
+        "6 (increment from current value 5)",
+        "9 (max(5, 8) + 1)",
+        "8 (adopt the received timestamp)",
+        "13 (5 + 8)"
+      ],
+      "correct": 1,
+      "explanation": "The Lamport clock receive rule is: LC := max(local_lc, received_lc) + 1. Here, max(5, 8) = 8, so the new LC is 8 + 1 = 9. This ensures the receive event's timestamp is strictly greater than both the sender's timestamp at send time and any local events, preserving the happens-before guarantee."
+    },
+    {
+      "stage": "post",
+      "question": "Three processes P1, P2, P3 all request a shared resource. Their Lamport timestamps are (3, P1), (2, P3), (3, P2). According to Lamport's mutual exclusion algorithm, which process enters the critical section first?",
+      "options": [
+        "P2 (lower PID among timestamp ties)",
+        "P3 (lowest timestamp takes priority)",
+        "P1 (first to request)",
+        "P3, then P2, then P1 (ordered by timestamp then PID)"
+      ],
+      "correct": 1,
+      "explanation": "Lamport's total order sorts by (LC, PID). P3 has timestamp (2, P3) which is smallest, so P3 enters first. After P3 releases, P1 has (3, P1) and P2 has (3, P2) — same LC, so PID breaks the tie: P1 enters before P2. The full order is P3 → P1 → P2."
+    },
+    {
+      "stage": "post",
+      "question": "Events a and b occur on different processes with no messages between them. LC(a) = 3 and LC(b) = 7. What can you conclude?",
+      "options": [
+        "a → b because LC(a) < LC(b)",
+        "b → a is impossible because LC(b) > LC(a)",
+        "a and b are concurrent — the LC comparison is meaningless for causality",
+        "a happened at an earlier physical time than b"
+      ],
+      "correct": 2,
+      "explanation": "With no messages connecting a and b and no causal chain, a and b are concurrent (a ‖ b). Lamport clocks guarantee that a → b ⟹ LC(a) < LC(b), but NOT the converse. LC(a) < LC(b) tells you nothing about causality — it just means a's process happened to have a lower counter. Detecting concurrency requires vector clocks, which track per-process counters."
+    },
+    {
+      "stage": "post",
+      "question": "A distributed system uses PTP (IEEE 1588) for clock synchronization, achieving ±0.5μs accuracy. Is this sufficient to determine a total order of all events using physical timestamps alone?",
+      "options": [
+        "Yes — sub-microsecond accuracy is sufficient for any practical ordering",
+        "No — two events within the ±0.5μs uncertainty window could be in either order, so physical timestamps cannot provide a guaranteed total order",
+        "Yes, but only if all machines are in the same rack",
+        "No — PTP is only for financial trading, not general distributed systems"
+      ],
+      "correct": 1,
+      "explanation": "Even with PTP's sub-microsecond accuracy, two events within the ±0.5μs uncertainty interval cannot be reliably ordered by physical timestamp. Spanner's TrueTime uses a similar approach but explicitly represents this uncertainty as an interval [earliest, latest] and waits for the interval to pass before committing. Physical timestamps alone cannot give guaranteed ordering — logical time is still required for deterministic total order."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 3,
+    "title": "Time Physical Logical Lamport Clocks"
+  }
+}

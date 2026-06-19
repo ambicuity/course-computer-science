@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does `{P} C {Q}` mean in Hoare logic?",
+      "options": ["C always terminates", "If P holds before C and C terminates, Q holds after", "Q implies P", "P and Q are runtime logs"],
+      "correct": 1,
+      "explanation": "Hoare triples express partial correctness: postcondition holds after terminating execution from valid preconditions."
+    },
+    {
+      "stage": "pre",
+      "question": "What role does the rule of composition play in Hoare logic?",
+      "options": ["It merges two programs into one", "It chains proofs: if {P} C1 {Q} and {Q} C2 {R}, then {P} C1;C2 {R}", "It eliminates preconditions", "It proves termination automatically"],
+      "correct": 1,
+      "explanation": "The composition rule lets you build correctness proofs for sequential programs by matching the postcondition of one statement to the precondition of the next."
+    },
+    {
+      "stage": "post",
+      "question": "Why is a loop invariant necessary?",
+      "options": ["To speed execution", "To connect each iteration to the final postcondition", "To remove preconditions", "To avoid testing"],
+      "correct": 1,
+      "explanation": "Invariant preservation is the key bridge from loop body behavior to whole-loop correctness."
+    },
+    {
+      "stage": "post",
+      "question": "What does partial correctness omit?",
+      "options": ["Input constraints", "Termination guarantee", "State updates", "Postconditions"],
+      "correct": 1,
+      "explanation": "Partial correctness assumes termination; proving total correctness also requires a termination argument."
+    },
+    {
+      "stage": "post",
+      "question": "What is the weakest precondition of `x := x + 1` with postcondition `x > 5`?",
+      "options": ["x > 5", "x >= 5", "x > 4", "x >= 4"],
+      "correct": 2,
+      "explanation": "Working backwards, if `x + 1 > 5` must hold after assignment, then `x > 4` must hold before — this is the weakest precondition that guarantees the postcondition."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 9, "title": "Hoare Logic - Pre/Post/Invariant" }
+}

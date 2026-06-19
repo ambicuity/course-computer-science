@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the central idea of property-based testing?",
+      "options": [
+        "Write many UI snapshots",
+        "Specify general invariants and search for counterexamples",
+        "Replace all unit tests with fuzzing",
+        "Use only deterministic fixed examples"
+      ],
+      "correct": 1,
+      "explanation": "Property-based testing defines broad truths and generates many inputs to try to falsify them, rather than relying only on handpicked examples."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is shrinking valuable after a property failure?",
+      "options": [
+        "It speeds up code execution",
+        "It turns random tests into deterministic ones",
+        "It reduces a failing input to a simpler counterexample for debugging",
+        "It increases coverage percentage"
+      ],
+      "correct": 2,
+      "explanation": "Shrinking helps isolate the smallest failing case, which makes root-cause analysis much faster and clearer."
+    },
+    {
+      "stage": "post",
+      "question": "Which property set is strongest for validating a sort function?",
+      "options": [
+        "Output is a list",
+        "Output length equals input length only",
+        "Sortedness + permutation preservation + idempotence",
+        "Output starts with the minimum element"
+      ],
+      "correct": 2,
+      "explanation": "Sortedness ensures order, permutation ensures element preservation, and idempotence adds stability; together they constrain behavior far better than any single weak property."
+    },
+    {
+      "stage": "post",
+      "question": "A property suite passes but production still fails for large duplicated inputs. What is the most likely gap?",
+      "options": [
+        "Property-based testing is useless",
+        "Generator distribution did not sufficiently cover that region",
+        "Shrinking caused the failure",
+        "Need to remove all example-based tests"
+      ],
+      "correct": 1,
+      "explanation": "Poor generator design can leave high-risk regions underexplored, so the property is fine but the search space coverage is inadequate."
+    },
+    {
+      "stage": "post",
+      "question": "How should property-based tests usually fit into a larger strategy?",
+      "options": [
+        "As the only test type",
+        "Alongside example tests, integration checks, and other verification methods",
+        "Only for frontend CSS testing",
+        "Only in nightly manual runs"
+      ],
+      "correct": 1,
+      "explanation": "Property testing is high-value but complementary; it works best as part of a layered evidence strategy."
+    }
+  ],
+  "_meta": {
+    "phase": 17,
+    "lesson": 4,
+    "title": "Property-Based Testing - QuickCheck, Hypothesis"
+  }
+}

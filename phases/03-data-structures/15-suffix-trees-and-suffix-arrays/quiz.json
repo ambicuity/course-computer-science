@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a suffix array?",
+      "options": [
+        "Array of substrings",
+        "Array of starting indices of all suffixes of T, sorted lexicographically. Enables O(|P| log n) substring search after O(n log n) build.",
+        "Hash of suffixes",
+        "Indices of word boundaries"
+      ],
+      "correct": 1,
+      "explanation": "For T=\"banana$\", suffixes are 'banana$', 'anana$', 'nana$', 'ana$', 'na$', 'a$', '$'. Sort them: $, a$, ana$, anana$, banana$, na$, nana$ → SA=[6, 5, 3, 1, 0, 4, 2]. To find pattern P in T: binary search SA. The suffix array is O(n) space — vs O(n²) for the literal list of suffixes."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is the LCP array useful?",
+      "options": [
+        "Compresses the SA",
+        "LCP[i] = length of longest common prefix between SA[i] and SA[i-1]. With LCP, you can answer 'longest repeated substring', 'longest common substring of two strings', 'number of distinct substrings' in O(n).",
+        "Removes duplicates",
+        "Just a debug aid"
+      ],
+      "correct": 1,
+      "explanation": "Adjacent suffixes in the sorted order share their longest common prefix with each other (anything farther is smaller). So the maximum LCP value is the length of the longest repeated substring of T. Kasai's algorithm computes LCP from SA in O(n) — fast enough for any text. Bioinformatics, genomics, plagiarism detection all use SA+LCP."
+    },
+    {
+      "stage": "post",
+      "question": "Why are suffix arrays preferred over suffix trees in production?",
+      "options": [
+        "Easier to draw",
+        "5-20× less memory. Suffix tree: ~20 bytes per character. Suffix array + LCP: ~8 bytes. With FM-index compression: 1-2 bytes. Bioinformatics (3 GB genomes) makes this difference 60 GB vs 6 GB.",
+        "Simpler algorithms",
+        "License"
+      ],
+      "correct": 1,
+      "explanation": "Suffix tree (Ukkonen) is O(n) space but with huge constants — typically 15-25× the input size in pointers and overhead. Suffix array is two int arrays per text → 8 bytes/char. For a 3 GB human genome, that's 24 GB vs 60 GB. With FM-index (BWT compression), it drops to 4-6 GB. This is why BWA, Bowtie, Bowtie2, MUMmer all use SA, not suffix tree."
+    },
+    {
+      "stage": "post",
+      "question": "What does Kasai's algorithm compute, and in what time?",
+      "options": [
+        "Sort the SA in O(n log n)",
+        "The LCP array in O(n), given the SA and the inverse SA (ISA). Walks suffixes in input order, exploiting that LCP can only decrease by 1 per step.",
+        "BWT in O(n)",
+        "Hash of the text"
+      ],
+      "correct": 1,
+      "explanation": "Naïve LCP: compare each adjacent pair in SA char-by-char → O(n²). Kasai: walk i from 0 to n-1 (input order); the relevant rank in SA is ISA[i]; reuse the previous LCP value, decrementing by 1 each step. The total work is O(n) by amortization — h can only increase by at most n across all iterations. Published 2001; now standard in every SA library."
+    },
+    {
+      "stage": "post",
+      "question": "FM-index combines SA and what to enable O(|P|) substring counting on compressed text?",
+      "options": [
+        "Hash table",
+        "BWT (Burrows-Wheeler Transform). BWT permutes the text so similar characters cluster — then bzip2-style compression works well. FM-index adds rank/select bitmaps for O(|P|) backward search inside the compressed text. Used by BWA, Bowtie.",
+        "Linked list",
+        "Tries"
+      ],
+      "correct": 1,
+      "explanation": "BWT (1994): output is the last column of the lexicographically-sorted cyclic rotations of T$. It's reversible (you can recover T) and compresses well. FM-index (Ferragina-Manzini, 2000) augments BWT with rank arrays so you can count occurrences of any pattern in O(|P|) — INSIDE the compressed text, no decompression. This is the foundational data structure of modern read aligners (BWA, Bowtie). The complete FM-index for a human genome is 4-6 GB and answers substring queries in microseconds."
+    },
+    {
+      "stage": "post",
+      "question": "Is SA-IS construction's O(n) running time practically faster than the O(n log² n) doubling method?",
+      "options": [
+        "Always 100× faster",
+        "Yes for large inputs (>1 MB), typically 2-5× faster. For small inputs (<100 KB), the constants of SA-IS dominate and doubling-sort can be competitive. Mature SA-IS libraries (divsufsort, sais) achieve 10-100 MB/s on commodity hardware.",
+        "Slower in practice",
+        "Same speed"
+      ],
+      "correct": 1,
+      "explanation": "Big-O matters at scale but not always at small input. SA-IS (Nong-Zhang-Chan 2009) has a beautiful O(n) bound but a complex recursive structure. For inputs >1 MB, it wins; for <100 KB, doubling sort with good cache behavior often wins. Production: pydivsufsort (Python binding) and libdivsufsort (C) for big jobs; trivial doubling sort for small strings. Yuta Mori's sais is ~500 lines of C."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 15,
+    "title": "Suffix Trees And Suffix Arrays"
+  }
+}

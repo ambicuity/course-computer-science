@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 23,
+    "title": "Linux Internals Tour — The Source Tree"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Approximately what fraction of the Linux kernel source tree is device driver code?",
+      "options": [
+        "10%",
+        "30%",
+        "60%",
+        "85%"
+      ],
+      "correct": 2,
+      "explanation": "The drivers/ directory contains roughly 60% of the kernel's source code. This reflects the reality that the kernel's primary job is managing hardware, and there are thousands of device drivers for different hardware components."
+    },
+    {
+      "stage": "post",
+      "question": "In the CFS scheduler, tasks are organized in a red-black tree keyed by `vruntime`. What determines which task runs next?",
+      "options": [
+        "The task with the highest priority number",
+        "The leftmost node in the tree — the task with the smallest vruntime",
+        "The task that has been on the runqueue the longest",
+        "A round-robin selection from the tree"
+      ],
+      "correct": 1,
+      "explanation": "CFS always picks the leftmost node in the red-black tree, which has the smallest virtual runtime. This ensures the task that has received the least CPU time runs next, providing fairness. Finding the leftmost node is O(log n) to maintain but O(1) to query."
+    },
+    {
+      "stage": "post",
+      "question": "The function `start_kernel()` in `init/main.c` is the kernel's C entry point. Which of these is NOT one of its direct responsibilities?",
+      "options": [
+        "Calling `mm_init()` to set up memory management",
+        "Calling `sched_init()` to initialize the scheduler",
+        "Loading the initial RAM disk into a filesystem",
+        "Calling `rest_init()` which creates PID 1 (init)"
+      ],
+      "correct": 2,
+      "explanation": "start_kernel() initializes core subsystems (memory, scheduler, VFS, etc.) and then calls rest_init() to create the init process. Loading the initramfs happens during setup_arch() or early init, not as a direct responsibility of start_kernel(). The initramfs is embedded in the kernel image or loaded by the bootloader."
+    },
+    {
+      "stage": "post",
+      "question": "When tracing the `read()` syscall from user space into the kernel, which assembly entry point handles the transition?",
+      "options": [
+        "entry_SYSCALL_64 in arch/x86/entry/entry_64.S",
+        "do_syscall_64 in kernel/sys.c",
+        "start_kernel in init/main.c",
+        "ret_from_fork in arch/x86/entry/entry_64.S"
+      ],
+      "correct": 0,
+      "explanation": "When user code executes the SYSCALL instruction, the CPU jumps to entry_SYSCALL_64. This assembly stub swaps to the kernel stack, saves registers, and calls do_syscall_64() which dispatches to the appropriate syscall handler (sys_read in this case)."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the 'system.map' or 'vmlinux' file in a Linux kernel build?",
+      "options": [
+        "A map of the physical memory layout",
+        "A symbol table mapping kernel function names to their addresses, used for debugging",
+        "A file system image for the root partition",
+        "A configuration file for the bootloader"
+      ],
+      "correct": 1,
+      "explanation": "System.map (or the symbols in vmlinux) is a symbol table produced during kernel compilation. It maps every kernel function and variable to its virtual address. Debuggers (like crash or gdb) use it to translate addresses to function names when analyzing kernel crashes."
+    }
+  ]
+}

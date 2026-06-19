@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why combine an arena AND a pool in the same library?",
+      "options": [
+        "More code is better",
+        "They cover complementary patterns: arena = many objects share a lifetime (batch free); pool = fixed-size objects created and destroyed independently. Most apps need both.",
+        "Pools are deprecated",
+        "Arenas can't allocate"
+      ],
+      "correct": 1,
+      "explanation": "Real systems mix patterns. A web server uses an arena per request (one batch free at response time) and a pool for connection state (fixed-size, long-lived, recycled). Production allocators (jemalloc, mimalloc) combine size-class pools with per-thread arenas. The capstone gives you both primitives so you reach for the right one."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the failure-mode contract this library follows?",
+      "options": [
+        "All errors return -1",
+        "Out-of-memory returns NULL (caller checks). Misuse (NULL arg, bogus pointer, double-free in debug) aborts via assertion. NULL = 'I ran out'; abort = 'you broke me.'",
+        "Everything aborts",
+        "Errors are silently ignored"
+      ],
+      "correct": 1,
+      "explanation": "Capacity errors are expected — caller decides what to do. Programmer errors are bugs — loud abort lets you find them in dev. Mixing the two (e.g., aborting on OOM) makes the library unusable in low-memory contexts; silently failing on misuse makes bugs invisible. This is the C/Rust convention used by jemalloc, mimalloc, etc."
+    },
+    {
+      "stage": "post",
+      "question": "Why does `pool_free` check that the freed pointer lies inside the slab AND is slot-aligned?",
+      "options": [
+        "Performance",
+        "Catches double-free, wrong-pool free, free-of-non-pool-pointer, and free-of-pointer-into-middle-of-slot. All four would silently corrupt the free-list otherwise.",
+        "Required by C standard",
+        "Looks professional"
+      ],
+      "correct": 1,
+      "explanation": "The pool's free-list lives INSIDE the slab. If you pool_free a pointer that isn't a slot start, you'll write the next-pointer into the middle of someone else's slot — slow, mysterious corruption. The bounds + alignment check catches the misuse the moment it happens. Free in release; cheap in debug."
+    },
+    {
+      "stage": "post",
+      "question": "The Rust mirror uses `MaybeUninit<T>` for pool slots. Why not just `T`?",
+      "options": [
+        "Rust requires it",
+        "MaybeUninit<T> doesn't run T's Drop when overwritten and doesn't require a valid T to exist. A plain `Vec<T>` would require every slot to be a valid T at all times — impossible for an alloc/free pool.",
+        "Better performance",
+        "It's the same"
+      ],
+      "correct": 1,
+      "explanation": "A pool slot is sometimes 'allocated' (holds a valid T) and sometimes 'free' (holds garbage on the free-list). Rust's safety guarantee that &T always refers to a valid T forbids using plain T here — we'd UB on read. MaybeUninit<T> opts out: 'I'll tell you when it's initialized.' We use unsafe to write/read precisely when the bookkeeping says it's safe."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the C library ship as a single header with `MEMLIB_IMPLEMENTATION` define guard?",
+      "options": [
+        "It's prettier",
+        "stb-style single-header: include the header anywhere for declarations; define MEMLIB_IMPLEMENTATION once in a single .c file to compile the body. Zero linker / build-system fuss for users.",
+        "C requires it",
+        "Inlining"
+      ],
+      "correct": 1,
+      "explanation": "Single-header libraries (stb_image.h, dr_libs, cgltf) are the C ecosystem's answer to 'pip install': drop in one file, no Makefile changes, no library to link. The MEMLIB_IMPLEMENTATION guard ensures the function bodies compile exactly once even if the header is included in many TUs. Perfect for small utilities like memlib."
+    },
+    {
+      "stage": "post",
+      "question": "After all of Phase 02, what's the difference between MANAGING memory and OWNING memory?",
+      "options": [
+        "No difference",
+        "Managing = explicit malloc/free; lifetime is documentation. Owning = a value's type encodes its lifetime; release happens automatically when the owner goes out of scope. Rust collapses both into one model; C requires you to be the model.",
+        "Managing is faster",
+        "Owning is just GC"
+      ],
+      "correct": 1,
+      "explanation": "Phase 02's punchline. In C, every allocation creates a maintenance burden — every code path must free it. In Rust, the type system tracks owners; you can't forget. Both run on the same hardware (no GC, identical perf) — the difference is who keeps the schedule. Production C teams encode ownership in conventions (callee_owns vs caller_owns naming); Rust encodes it in the language."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 18,
+    "title": "Phase Capstone A Tiny Manual Memory Library"
+  }
+}

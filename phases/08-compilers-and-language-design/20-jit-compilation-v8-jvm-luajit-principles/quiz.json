@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 20,
+    "title": "Jit Compilation V8 Jvm Luajit Principles"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of tiered compilation in a JIT system?",
+      "options": [
+        "To compile all code to native machine code before execution",
+        "To spend compile time only on frequently-executed (hot) functions, keeping cold code cheap to interpret",
+        "To distribute compilation across multiple CPU cores",
+        "To cache compiled code to disk for faster startup on subsequent runs"
+      ],
+      "correct": 1,
+      "explanation": "Tiered compilation starts with fast interpretation, then compiles only hot functions through progressively more aggressive optimization tiers. This avoids wasting time compiling code that runs infrequently."
+    },
+    {
+      "stage": "pre",
+      "question": "What happens when a monomorphic inline cache encounters a new object shape that it has not seen before?",
+      "options": [
+        "The cache is cleared and the property lookup is performed from scratch",
+        "The cache is upgraded to polymorphic, storing the new shape-offset pair alongside the existing one",
+        "The JIT compiler deoptimizes the function and returns to the interpreter",
+        "A runtime exception is thrown because the shape is unexpected"
+      ],
+      "correct": 1,
+      "explanation": "A monomorphic inline cache stores one shape. When a new shape is encountered, the cache upgrades to polymorphic (up to ~4 entries), allowing multiple shapes to share the call site without a full hash lookup."
+    },
+    {
+      "stage": "post",
+      "question": "What problem do hidden classes (shapes) solve in V8?",
+      "options": [
+        "They hide private properties from external code access",
+        "They allow objects with the same property layout to share property offsets, enabling fast inline-cached access",
+        "They compress object memory by removing unused property slots",
+        "They prevent prototype pollution attacks in JavaScript"
+      ],
+      "correct": 1,
+      "explanation": "JavaScript objects are dynamic and can have arbitrary properties. Hidden classes assign a shared shape to objects with the same property names in the same order, so inline caches can compare a single shape pointer rather than inspecting each object's structure."
+    },
+    {
+      "stage": "post",
+      "question": "What is on-stack replacement (OSR) and when is it useful?",
+      "options": [
+        "A technique to replace the JIT compiler's intermediate representation with native code during compilation",
+        "Replacing an interpreted stack frame with a compiled one while a hot loop is executing, useful when the containing function is rarely called",
+        "Swapping the call stack between threads to balance load across CPU cores",
+        "A debugging technique that replaces optimized code with unoptimized code to preserve variable values"
+      ],
+      "correct": 1,
+      "explanation": "OSR handles the case where a hot loop runs inside a function that has been called only once. Since invocation-based triggering would never fire, OSR detects hot back-edges and replaces the interpreted frame with a compiled frame mid-execution."
+    },
+    {
+      "stage": "pre",
+      "question": "What is Just-In-Time (JIT) compilation?",
+      "options": [
+        "Compiling code before distribution",
+        "Compiling code to machine code at runtime, often after interpreting it and identifying hot paths",
+        "Compiling code incrementally during editing",
+        "Compiling code using multiple threads"
+      ],
+      "correct": 1,
+      "explanation": "JIT compilation starts with interpretation, profiles which code runs frequently (hot paths), then compiles those to optimized machine code at runtime. This combines interpreter startup speed with compiled code performance. V8, JVM HotSpot, and LuaJIT all use this approach."
+    }
+  ]
+}

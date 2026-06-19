@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 9,
+    "title": "Wait-Free Algorithms and Their Limits",
+    "type": "Learn + Build",
+    "languages": [
+      "Rust"
+    ]
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which statement best describes the difference between lock-freedom and wait-freedom?",
+      "options": [
+        "Lock-freedom guarantees every thread completes in bounded steps; wait-freedom guarantees only system-wide progress.",
+        "Lock-freedom guarantees system-wide progress (at least one thread completes); wait-freedom guarantees every thread completes in bounded steps.",
+        "Lock-freedom uses locks; wait-freedom uses CAS.",
+        "There is no difference; the terms are synonyms."
+      ],
+      "correct": 1,
+      "explanation": "Lock-freedom ensures that at least one thread makes progress on every operation, but individual threads can starve. Wait-freedom strengthens this to guarantee that every thread completes in a bounded number of steps, regardless of contention."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the consensus number of a plain atomic read/write register?",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "Infinity"
+      ],
+      "correct": 1,
+      "explanation": "Plain read/write registers have consensus number 1: they can solve consensus for at most 1 thread. To solve 2-thread wait-free consensus, you need a primitive with consensus number ≥ 2, such as test&set, fetch&add, or CAS."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the double-collect snapshot algorithm considered wait-free?",
+      "options": [
+        "Because it uses CAS in a loop, and CAS is wait-free.",
+        "Because the retry loop is bounded by the number of registers, not by contention.",
+        "Because it never loops — it always succeeds on the first try.",
+        "Because it uses locks internally to prevent concurrent writes."
+      ],
+      "correct": 1,
+      "explanation": "The double-collect loop can iterate at most N+1 times (where N is the number of registers), because each iteration between two collects requires at least one writer to increment a sequence number. After all writers have been observed, the scanner must succeed. This bounded-retry property makes it wait-free."
+    },
+    {
+      "stage": "post",
+      "question": "According to Herlihy's consensus hierarchy, which of the following is true?",
+      "options": [
+        "CAS has consensus number 2, same as fetch&add.",
+        "Read/write registers can implement wait-free consensus for any number of threads.",
+        "CAS has consensus number ∞, meaning it can solve wait-free consensus for any number of threads in shared memory, but universal wait-free construction for arbitrary objects remains impossible.",
+        "fetch&add has a higher consensus number than CAS."
+      ],
+      "correct": 2,
+      "explanation": "CAS has consensus number ∞ — it can solve wait-free consensus for arbitrarily many threads in shared memory. However, this does not mean any object can be made wait-free: universal wait-free construction for arbitrary objects is impossible because it would require infinite memory to handle all possible proposals."
+    },
+    {
+      "stage": "pre",
+      "question": "What guarantee does a wait-free algorithm provide?",
+      "options": [
+        "No thread ever waits for a lock",
+        "Every thread completes its operation in a bounded number of steps, regardless of other threads' behavior",
+        "Operations complete in O(1) time",
+        "No memory is allocated during the operation"
+      ],
+      "correct": 1,
+      "explanation": "Wait-freedom is the strongest non-blocking guarantee: every thread finishes in a bounded number of steps, even if other threads halt. This prevents starvation but is often expensive to implement. Most practical lock-free algorithms only guarantee that some thread makes progress."
+    }
+  ]
+}

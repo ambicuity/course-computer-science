@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 19
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A web server receives 400 requests/sec and each request takes 25 ms on average. Using Little's Law (L = λW), how many requests are in the system on average?",
+      "options": [
+        "10",
+        "16",
+        "25",
+        "40"
+      ],
+      "correct": 0,
+      "explanation": "L = λ × W = 400 × 0.025 = 10. You need at least 10 concurrent processing slots for this load."
+    },
+    {
+      "stage": "pre",
+      "question": "For an M/M/1 queue with service rate μ = 200 and arrival rate λ = 160, what is the average latency multiplier compared to idle service time?",
+      "options": [
+        "1.6×",
+        "2.5×",
+        "5.0×",
+        "8.0×"
+      ],
+      "correct": 2,
+      "explanation": "Utilization ρ = λ/μ = 160/200 = 0.8. Latency multiplier = 1/(1-ρ) = 1/0.2 = 5.0×. An 80% utilized server has 5× the latency of an idle one."
+    },
+    {
+      "stage": "post",
+      "question": "You have 8 CPU cores. Tasks use 5 ms of CPU time and 45 ms of I/O wait time each. Using the thread pool sizing formula, approximately how many threads should you run?",
+      "options": [
+        "8 (one per core)",
+        "16",
+        "80",
+        "400"
+      ],
+      "correct": 2,
+      "explanation": "I/O-bound formula: threads = N_cores × (1 + W_io/C_cpu) = 8 × (1 + 45/5) = 8 × 10 = 80. Since the task is heavily I/O-bound, threads should far exceed core count."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the industry target ~70% utilization for steady-state workloads instead of 90% or 95%?",
+      "options": [
+        "70% is the point where the utilization law breaks down mathematically",
+        "Above 70%, the latency multiplier grows rapidly — at 90% utilization, latency is 10× idle time",
+        "Hardware cannot operate above 70% utilization without thermal throttling",
+        "Little's Law only holds below 70% utilization"
+      ],
+      "correct": 1,
+      "explanation": "The M/M/1 latency formula W = S/(1-ρ) is nonlinear. At 70%, latency is 3.3× idle; at 90%, it's 10× idle. The curve steepens dramatically past 70%, so you need headroom for traffic variance."
+    },
+    {
+      "stage": "post",
+      "question": "Your database handles 300 queries/sec with average query time of 15 ms. How many connections should the pool have (with 20% headroom)?",
+      "options": [
+        "5",
+        "6",
+        "8",
+        "15"
+      ],
+      "correct": 1,
+      "explanation": "Little's Law: L = 300 × 0.015 = 4.5, round up to 5. With 20% headroom: 5 × 1.2 = 6 connections."
+    },
+    {
+      "stage": "post",
+      "question": "Which statement correctly distinguishes Amdahl's Law from Little's Law?",
+      "options": [
+        "Amdahl's Law predicts throughput; Little's Law predicts parallel speedup",
+        "Amdahl's Law tells you maximum speedup from parallelization; Little's Law tells you how much capacity you need",
+        "They are the same formula expressed differently",
+        "Little's Law is for CPU-bound work; Amdahl's Law is for I/O-bound work"
+      ],
+      "correct": 1,
+      "explanation": "Amdahl's Law: given a serial fraction f, max speedup = 1/f. It answers 'how much faster?' Little's Law (L=λW) answers 'how many resources?' They solve different problems."
+    }
+  ]
+}

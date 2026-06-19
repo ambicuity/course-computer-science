@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 05: Processes — fork, exec, wait",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What does fork() return in the child process?",
+      "options": [
+        "The parent's PID",
+        "0",
+        "-1",
+        "The child's PID"
+      ],
+      "explanation": "fork() returns 0 in the child process. In the parent process, it returns the child's PID. On error, it returns -1.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "What happens when exec() succeeds?",
+      "options": [
+        "A new process is created with a new PID",
+        "The current process image is replaced but the PID stays the same",
+        "The process is terminated",
+        "The process enters the zombie state"
+      ],
+      "explanation": "exec() replaces the current process's code, data, and stack with a new program. The PID, open file descriptors, and signal handlers are preserved.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "A zombie process is created when:",
+      "options": [
+        "A process runs out of memory",
+        "A child exits but the parent hasn't called wait()",
+        "A parent exits before its child",
+        "A process is killed with SIGKILL"
+      ],
+      "explanation": "A zombie is a terminated process whose exit status hasn't been collected by its parent via wait(). The PCB remains until the parent calls wait().",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "What is copy-on-write (COW) in the context of fork()?",
+      "options": [
+        "The parent's memory is copied to the child immediately",
+        "Parent and child share memory pages; a copy is made only when one writes",
+        "The child runs the parent's code but has no data",
+        "Memory is copied in the background while the child runs"
+      ],
+      "explanation": "COW means parent and child share the same physical pages initially. Only when one process writes to a page does the kernel create a private copy, making fork() fast.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What does the fork() system call do?",
+      "options": [
+        "Creates a new program from scratch",
+        "Creates a child process that is an almost-exact copy of the calling process",
+        "Terminates the current process",
+        "Loads a new executable into the current process"
+      ],
+      "correct": 1,
+      "explanation": "fork() creates a new child process with a copy of the parent's memory, file descriptors, and execution state. The child gets a different PID and fork() returns 0 to the child and the child's PID to the parent. Typically followed by exec() to replace the child's image with a new program."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 5,
+    "title": "Processes Fork Exec Wait"
+  }
+}

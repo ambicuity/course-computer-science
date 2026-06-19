@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 16,
+    "title": "Register Allocation Linear Scan Vs Graph Coloring"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Two virtual registers 'interfere' in register allocation when:",
+      "options": [
+        "They are defined in the same basic block",
+        "They are both live at the same program point",
+        "They are used by the same instruction",
+        "They have the same type"
+      ],
+      "correct": 1,
+      "explanation": "Two variables interfere if they are both live at the same time — meaning both hold values that will be used later. They cannot share the same physical register."
+    },
+    {
+      "stage": "pre",
+      "question": "In the Chaitin-Briggs graph coloring algorithm, a node is 'simplify-safe' (guaranteed to be colorable) when it has:",
+      "options": [
+        "Zero neighbors",
+        "Fewer than K neighbors (where K = number of registers)",
+        "An even number of neighbors",
+        "At least one spill candidate as a neighbor"
+      ],
+      "correct": 1,
+      "explanation": "A node with fewer than K neighbors can always be assigned a color — there are at most K-1 colors used by neighbors, so at least one of the K colors is free."
+    },
+    {
+      "stage": "post",
+      "question": "Why do JIT compilers (like HotSpot and V8) prefer linear scan over graph coloring for register allocation?",
+      "options": [
+        "Linear scan produces better code quality",
+        "Linear scan handles more register architectures",
+        "Linear scan is significantly faster (O(V log V) vs O(V²))",
+        "Linear scan does not require liveness analysis"
+      ],
+      "correct": 2,
+      "explanation": "Linear scan runs in O(V log V) time compared to O(V²) for graph coloring. In JIT compilation, compilation speed matters because it happens at runtime. The slightly worse code quality is an acceptable trade-off."
+    },
+    {
+      "stage": "post",
+      "question": "During the 'simplify' phase of Chaitin-Briggs, what happens if every remaining node has degree ≥ K?",
+      "options": [
+        "The algorithm terminates with an error",
+        "A spill candidate is selected and removed from the graph",
+        "Additional registers are allocated from the stack",
+        "Nodes are merged through coalescing"
+      ],
+      "correct": 1,
+      "explanation": "When no node has fewer than K neighbors, the algorithm selects one node as a spill candidate (typically the one with the highest degree or highest spill cost), marks it, and removes it to continue simplifying."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is register allocation an important compiler optimization?",
+      "options": [
+        "It reduces the number of instructions in the program",
+        "It maps virtual registers to physical registers, minimizing costly spills to memory",
+        "It eliminates all memory accesses",
+        "It ensures every variable has a unique register"
+      ],
+      "correct": 1,
+      "explanation": "CPUs have a limited number of physical registers (16 on x86-64, 32 on RISC-V). Register allocation assigns virtual registers to physical ones, spilling excess values to the stack. Good allocation reduces memory traffic; spilling is often the single biggest performance bottleneck."
+    }
+  ]
+}

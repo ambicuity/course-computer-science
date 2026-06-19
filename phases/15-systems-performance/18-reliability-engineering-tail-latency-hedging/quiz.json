@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 18,
+    "title": "Reliability Engineering — Tail Latency, Hedging"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A service has a median latency of 10 ms and a p99 of 1 second. A client makes 100 parallel requests to this service. What is the approximate probability that at least one request experiences p99-level latency?",
+      "options": [
+        "~1%",
+        "~10%",
+        "~63%",
+        "~99%"
+      ],
+      "correct": 2,
+      "explanation": "The probability that at least one of 100 independent calls hits p99 is 1 - (0.99)^100 ≈ 0.634 = 63%. This is the 'latency lottery' — tails compound in fan-out architectures."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is average latency a poor metric for SLAs in distributed systems?",
+      "options": [
+        "It's too expensive to compute averages at scale",
+        "A single slow request can dominate the average but still hides the tail experience",
+        "Averages are only useful for batch processing, not interactive requests",
+        "Network protocols don't support reporting averages"
+      ],
+      "correct": 1,
+      "explanation": "Average latency hides the right tail. One request taking 10 seconds among 99 taking 1 ms gives an average of ~100 ms, but the slow user's experience is 10 seconds. Percentiles (p99, p999) reveal what real users experience."
+    },
+    {
+      "stage": "post",
+      "question": "In a hedged request pattern, after sending a primary request, when should you send the hedged (backup) request?",
+      "options": [
+        "Immediately, to minimize latency",
+        "After waiting a 'hedge delay' (typically around p95 latency) for the primary to respond",
+        "Only after the primary request fails",
+        "After a fixed timeout equal to the p99 latency"
+      ],
+      "correct": 1,
+      "explanation": "Sending the hedge after a delay (around p95) minimizes unnecessary load: if the primary responds faster than p95, no hedge is sent. This typically adds only 5-15% load while cutting p99 latency significantly. Sending immediately doubles load; waiting for failure loses the latency benefit."
+    },
+    {
+      "stage": "post",
+      "question": "What state transition does a circuit breaker make when it has been Open for longer than its timeout duration and receives a successful probe request?",
+      "options": [
+        "Open → Closed",
+        "Open → Half-Open → Open",
+        "Half-Open → Closed",
+        "Closed → Half-Open"
+      ],
+      "correct": 2,
+      "explanation": "After the open timeout expires, the circuit breaker transitions to Half-Open. In Half-Open, it allows a limited number of probe requests. If a probe succeeds, it transitions from Half-Open → Closed. If the probe fails, it goes back to Open."
+    },
+    {
+      "stage": "post",
+      "question": "Why are latency distributions typically heavy-tailed rather than normally distributed?",
+      "options": [
+        "Because servers only have finite CPU cores",
+        "Because latency has a hard floor (zero) but no ceiling, and discrete events like GC pauses, cache misses, and retransmissions add large, unpredictable delays",
+        "Because network latency follows a Poisson distribution",
+        "Because normal distributions only apply to batch systems"
+      ],
+      "correct": 1,
+      "explanation": "Latency can't be negative (hard floor) but has no upper bound. Discrete events like GC pauses (hundreds of ms), cache misses (orders of magnitude slower than hits), and TCP retransmissions (200ms+ timeouts) create a heavy right tail. This structural asymmetry makes the distribution fundamentally different from a normal distribution."
+    },
+    {
+      "stage": "post",
+      "question": "When does hedging requests NOT help (and may hurt) tail latency?",
+      "options": [
+        "When the system has a high fan-out ratio (many parallel calls)",
+        "When all backends share the same resource pool and fail together (correlated failures)",
+        "When latency is bimodal (fast path + slow path)",
+        "When the p99 is much higher than the p50"
+      ],
+      "correct": 1,
+      "explanation": "Hedging adds load to backends. When backends share failure domains (same resource pool, same network, same storage), a slow-down affects all of them. The hedged request goes to another slow backend, doubling load without improving latency. Hedging works best when backends are independent and failures are uncorrelated."
+    }
+  ]
+}

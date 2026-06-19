@@ -1,0 +1,3 @@
+main;compress;lz4 2
+main;parse;tokenize 2
+main;parse;validate 1

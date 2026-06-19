@@ -1,0 +1,5 @@
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/00-setup-and-tooling/06-build-systems-make-cmake-bazel-cargo/code/build/CMakeFiles/greet.dir
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/00-setup-and-tooling/06-build-systems-make-cmake-bazel-cargo/code/build/CMakeFiles/hello.dir
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/00-setup-and-tooling/06-build-systems-make-cmake-bazel-cargo/code/build/CMakeFiles/test.dir
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/00-setup-and-tooling/06-build-systems-make-cmake-bazel-cargo/code/build/CMakeFiles/edit_cache.dir
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/00-setup-and-tooling/06-build-systems-make-cmake-bazel-cargo/code/build/CMakeFiles/rebuild_cache.dir

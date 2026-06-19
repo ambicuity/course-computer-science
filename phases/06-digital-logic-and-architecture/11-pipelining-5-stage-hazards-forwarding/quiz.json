@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 11,
+    "title": "Pipelining 5 Stage Hazards Forwarding"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a classic 5-stage RISC pipeline, in which stage is the branch target address computed?",
+      "options": [
+        "IF (Instruction Fetch)",
+        "ID (Instruction Decode)",
+        "EX (Execute)",
+        "MEM (Memory Access)"
+      ],
+      "correct": 2,
+      "explanation": "The ALU computes the branch target address (PC + offset) during the EX stage. Some designs resolve branches earlier in ID, but in the classic pipeline the comparison and address computation happen in EX."
+    },
+    {
+      "stage": "pre",
+      "question": "A load-use hazard cannot be resolved by forwarding alone because:",
+      "options": [
+        "The forwarding paths are too slow",
+        "The load result is not available until the end of the MEM stage, but the dependent instruction needs it at the start of EX",
+        "The register file cannot be written and read simultaneously",
+        "The ALU is occupied by the load address calculation"
+      ],
+      "correct": 1,
+      "explanation": "The load data exits the MEM stage at the end of a cycle, but the next instruction that depends on it enters EX at the beginning of that same cycle. No forwarding path bridges this timing gap, so a one-cycle stall (bubble) is required."
+    },
+    {
+      "stage": "post",
+      "question": "What does the forwarding unit do when EX/MEM.reg_write is 1, EX/MEM.rd equals ID/EX.rs1, and MEM/WB.rd also equals ID/EX.rs1?",
+      "options": [
+        "Forwards from MEM/WB because it is two stages ahead",
+        "Forwards from EX/MEM because the result is fresher (higher priority)",
+        "Stalls the pipeline for one cycle",
+        "Signals a structural hazard"
+      ],
+      "correct": 1,
+      "explanation": "The EX/MEM result is one cycle newer than MEM/WB, so the forwarding unit gives EX/MEM priority. The forwarding equations explicitly check for EX hazards first and only fall back to MEM forwarding if the EX match does not apply."
+    },
+    {
+      "stage": "post",
+      "question": "What is the ideal CPI (cycles per instruction) of a fully pipelined processor with no hazards?",
+      "options": [
+        "0.5",
+        "1",
+        "5",
+        "Depends on the instruction mix"
+      ],
+      "correct": 1,
+      "explanation": "In a perfectly balanced pipeline with no hazards, one instruction completes every cycle, giving CPI = 1. Actual CPI is higher due to stalls and branch penalties: CPI = 1 + stall_penalty + branch_penalty."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does data forwarding (bypassing) solve in a pipelined CPU?",
+      "options": [
+        "Instruction cache misses",
+        "Data dependencies that would otherwise require pipeline stalls",
+        "Branch mispredictions",
+        "Memory alignment faults"
+      ],
+      "correct": 1,
+      "explanation": "Without forwarding, an instruction reading a register must wait until a previous instruction's write-back completes (a stall). Forwarding routes the result directly from the ALU output or memory stage to the ALU input of the next instruction, resolving many data hazards without stalling."
+    }
+  ]
+}

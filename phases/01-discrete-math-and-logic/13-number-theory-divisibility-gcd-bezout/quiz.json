@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the Euclidean identity that drives `gcd(a, b)` computation?",
+      "options": [
+        "gcd(a, b) = gcd(a + b, b)",
+        "gcd(a, b) = gcd(b, a mod b) for b > 0",
+        "gcd(a, b) = a + b",
+        "gcd(a, b) = a · b / lcm(a, b)"
+      ],
+      "correct": 1,
+      "explanation": "Euclid's key identity: replace (a, b) by (b, a mod b). The set of common divisors is preserved (any common divisor of a, b also divides a - q·b = a mod b, and vice versa). Iterating this until b = 0 yields gcd. O(log min(a, b)) iterations."
+    },
+    {
+      "stage": "pre",
+      "question": "Bezout's identity says: for any integers a, b, there exist integers x, y with what?",
+      "options": [
+        "ax + by = 0",
+        "ax + by = gcd(a, b)",
+        "ax + by = lcm(a, b)",
+        "ax · by = a · b"
+      ],
+      "correct": 1,
+      "explanation": "Bezout: ax + by = gcd(a, b) has integer solutions. The extended Euclidean algorithm computes the coefficients x, y alongside the GCD. Corollary: gcd(a, b) = 1 iff there exist x, y with ax + by = 1 — coprimality has a witness."
+    },
+    {
+      "stage": "post",
+      "question": "When does the modular inverse of a mod m exist?",
+      "options": [
+        "Always",
+        "iff gcd(a, m) = 1 (a and m are coprime)",
+        "iff m is prime",
+        "iff a < m"
+      ],
+      "correct": 1,
+      "explanation": "Modular inverse `a⁻¹` exists iff gcd(a, m) = 1. If m is prime, every a in 1..m-1 has an inverse. If m is composite, only a's coprime to m do. Compute it via extended_gcd(a, m): the x coefficient (mod m) is the inverse."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the Euclidean algorithm run in O(log min(a, b))?",
+      "options": [
+        "By definition",
+        "Because each two consecutive steps at least halve the smaller argument; with Fibonacci pairs achieving the worst case, n steps need inputs of magnitude φⁿ — so n = O(log input)",
+        "Because of memoization",
+        "It runs in O(√n)"
+      ],
+      "correct": 1,
+      "explanation": "Two-step halving: if b > a/2, then a mod b = a - b < a/2, so after the next step the new pair's smaller is < a/2. After 2k steps, the smaller argument is < initial/2^k. So #steps = O(log). Worst case is Fibonacci pairs, where the bound is exactly tight."
+    },
+    {
+      "stage": "post",
+      "question": "Does `7x + 11y = 100` have integer solutions?",
+      "options": [
+        "No",
+        "Yes — gcd(7, 11) = 1, which divides 100; one solution is (x₀, y₀) = (-300, 200), and the general form is (x, y) = (-300 + 11k, 200 - 7k)",
+        "Only one solution",
+        "Yes, but no formula"
+      ],
+      "correct": 1,
+      "explanation": "Linear Diophantine ax + by = c has integer solutions iff gcd(a, b) | c. Here gcd(7, 11) = 1, so yes. Find a base solution via extended_gcd (7·8 + 11·(-5) = 1, multiply by 100), then all solutions differ by (b/g, -a/g) = (11, -7). Sweep k to find non-negative solutions."
+    },
+    {
+      "stage": "post",
+      "question": "In RSA key generation, why is `gcd(e, (p-1)(q-1)) = 1` required for the public exponent e?",
+      "options": [
+        "Performance",
+        "Without coprimality, e has no modular inverse mod (p-1)(q-1), so the private exponent d cannot be computed — and the whole scheme breaks.",
+        "Required by NIST",
+        "It's optional"
+      ],
+      "correct": 1,
+      "explanation": "The private exponent d is the modular inverse of e modulo φ(n) = (p-1)(q-1). Modinv exists iff gcd(e, φ(n)) = 1. Standard RSA uses e = 65537, which is prime and coprime to φ(n) as long as p, q ≠ 65537 — typical. The whole correctness of decryption (m^(ed) ≡ m mod n) hinges on this."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 13,
+    "title": "Number Theory Divisibility Gcd Bezout"
+  }
+}

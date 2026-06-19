@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 12,
+    "title": "Digital Signatures — ECDSA, EdDSA, BLS"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the single most important difference between ECDSA and EdDSA (Ed25519) regarding the nonce?",
+      "options": [
+        "ECDSA uses a larger nonce than EdDSA",
+        "ECDSA requires a random nonce for each signature; EdDSA derives the nonce deterministically from the private key and message",
+        "EdDSA does not use a nonce at all",
+        "ECDSA derives the nonce from the public key, EdDSA from the private key"
+      ],
+      "correct": 1,
+      "explanation": "ECDSA's security depends on a fresh random nonce k for every signature. If k is ever reused (even twice), anyone who sees both signatures can compute k and then the private key d. EdDSA eliminates this vulnerability by deriving the nonce as SHA-512(seed || message), making every signature a deterministic function of the key and message — no randomness needed, no nonce reuse possible. This is why Ed25519 is preferred over ECDSA in modern protocols."
+    },
+    {
+      "stage": "pre",
+      "question": "What does BLS signature aggregation allow that ECDSA and EdDSA cannot do?",
+      "options": [
+        "Encrypt messages using the signature",
+        "Compress multiple signatures from different signers into a single short group element",
+        "Recover the private key from the public key",
+        "Sign messages without a hash function"
+      ],
+      "correct": 1,
+      "explanation": "BLS signatures use bilinear pairings (e: G1 x G2 -> GT) to enable aggregation: given signatures sigma_1, ..., sigma_n from n different signers, anyone can compute sigma_agg = sigma_1 + ... + sigma_n, a single group element (48 or 96 bytes). Neither ECDSA nor EdDSA supports this property. For a blockchain with 1000 validators, BLS aggregation reduces signature data from ~64 KB to 96 bytes."
+    },
+    {
+      "stage": "post",
+      "question": "An attacker observes two ECDSA signatures (r1, s1) and (r2, s2) from the same signer, and notices that r1 == r2. Which of the following is true?",
+      "options": [
+        "The signer is using a strong RNG, which is good",
+        "The attacker can compute the private key because the same nonce k was used in both signatures",
+        "The signatures are invalid and will be rejected by all verifiers",
+        "The attacker learns the message contents but not the key"
+      ],
+      "correct": 1,
+      "explanation": "When r1 == r2, it means the same nonce k was used in both signatures, because r = (k*G).x mod n depends only on k. Given two signatures with identical r and known messages, the attacker computes k = (e1 - e2) / (s1 - s2) mod n and then d = (s1*k - e1) / r mod n. This is exactly the attack that leaked Sony's PS3 private key in 2010 and Bitcoin wallet keys in 2013."
+    },
+    {
+      "stage": "post",
+      "question": "Which statement correctly compares BLS signatures with Ed25519?",
+      "options": [
+        "Ed25519 signatures are smaller than BLS signatures for a single signer, but BLS supports aggregation that Ed25519 does not",
+        "BLS signatures are always faster to verify than Ed25519",
+        "Ed25519 supports aggregation but BLS does not",
+        "Both schemes use the same elliptic curve"
+      ],
+      "correct": 0,
+      "explanation": "For a single signer, Ed25519 produces a 64-byte signature, while BLS12-381 produces a 96-byte signature (min-pk) or 48-byte (min-sig). So Ed25519 has smaller individual signatures. However, Ed25519 has no aggregation capability — verifying 1000 signatures requires storing and processing 1000 × 64 = 64 KB of signature data. BLS compresses those same 1000 signatures into a single 96-byte (or 48-byte) group element, critical for blockchain scalability. BLS verification is slower than Ed25519 verification for individual signatures because pairings are expensive, but batch verification with multi-pairing techniques can make BLS competitive for many signatures."
+    },
+    {
+      "stage": "pre",
+      "question": "What properties does a digital signature provide?",
+      "options": [
+        "Encryption and compression",
+        "Authentication (proves who signed), integrity (message wasn't altered), and non-repudiation (signer can't deny signing)",
+        "Anonymity for the signer",
+        "Forward secrecy for future messages"
+      ],
+      "correct": 1,
+      "explanation": "Digital signatures provide three guarantees: (1) Authentication — only the private key holder could have signed. (2) Integrity — any modification invalidates the signature. (3) Non-repudiation — the signer cannot later deny having signed. These are essential for software updates, contracts, and certificates."
+    }
+  ]
+}

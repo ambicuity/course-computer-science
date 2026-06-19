@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does `P * Q` assert in separation logic?",
+      "options": ["P or Q", "P and Q over disjoint heaps", "P implies Q", "Q replaces P"],
+      "correct": 1,
+      "explanation": "Separating conjunction requires disjoint memory regions satisfying each predicate."
+    },
+    {
+      "stage": "pre",
+      "question": "Why was separation logic invented?",
+      "options": ["To replace C with a new language", "To enable local reasoning about heap-manipulating programs", "To speed up garbage collection", "To eliminate the need for pointers"],
+      "correct": 1,
+      "explanation": "Classical logic could not express disjoint ownership of memory, making frame-condition reasoning intractable for pointer programs."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the frame rule powerful?",
+      "options": ["It removes all invariants", "It allows local reasoning while preserving untouched owned state", "It proves termination", "It replaces testing"],
+      "correct": 1,
+      "explanation": "Frame rule avoids re-proving unrelated heap regions for local updates."
+    },
+    {
+      "stage": "post",
+      "question": "If two pointers alias, what happens to assumption `x |-> a * y |-> b`?",
+      "options": ["Always true", "Unsatisfiable under disjointness", "Equivalent to emp", "Only false in Rust"],
+      "correct": 1,
+      "explanation": "`*` enforces disjointness; aliasing violates that assumption."
+    },
+    {
+      "stage": "post",
+      "question": "What does `emp` denote in separation logic?",
+      "options": ["An uninitialized pointer", "An empty heap with no allocated cells", "A dangling reference", "Any heap at all"],
+      "correct": 1,
+      "explanation": "`emp` is the unit of separating conjunction — it holds only when the heap is completely empty."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 10, "title": "Separation Logic Primer" }
+}

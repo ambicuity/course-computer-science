@@ -1,0 +1,38 @@
+{
+  "name": "course-computer-science",
+  "build": {
+    "dockerfile": "../phases/00-setup-and-tooling/11-docker-devcontainers-for-cs-work/code/Dockerfile",
+    "context": "../"
+  },
+
+  "remoteUser": "student",
+  "workspaceFolder": "/home/student/course",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/student/course,type=bind,consistency=cached",
+
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.12" },
+    "ghcr.io/devcontainers/features/node:1": { "version": "lts" },
+    "ghcr.io/devcontainers/features/go:1": { "version": "1.22" }
+  },
+
+  "postCreateCommand": "bash phases/00-setup-and-tooling/09-editor-setup-neovim-vs-code-with-lsp-dap/outputs/install-lsp-servers.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "llvm-vs-code-extensions.vscode-clangd",
+        "rust-lang.rust-analyzer",
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "golang.go",
+        "vadimcn.vscode-lldb",
+        "ms-azuretools.vscode-docker",
+        "tamasfe.even-better-toml",
+        "bierner.markdown-mermaid"
+      ],
+      "settings": {
+        "C_Cpp.intelliSenseEngine": "disabled"
+      }
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 19,
+    "title": "Technical Debt — Measure, Pay Down, Negotiate"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A team decides to skip writing integration tests to hit a release deadline. They plan to add the tests in the next sprint. Which quadrant of technical debt does this represent?",
+      "options": [
+        "Prudent and Deliberate",
+        "Reckless and Deliberate",
+        "Prudent and Inadvertent",
+        "Reckless and Inadvertent"
+      ],
+      "correct": 0,
+      "explanation": "This is deliberate (the team consciously chose the shortcut) and prudent (they have a plan to pay it down next sprint). The debt is strategic, not negligent."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary difference between technical debt and simply 'bad code'?",
+      "options": [
+        "Bad code is always accidental, while debt is always deliberate",
+        "Debt implies a tradeoff with consequences (interest) that can be measured and managed, while bad code is a quality judgment without the financial metaphor",
+        "Technical debt only applies to legacy systems, while bad code applies to new systems",
+        "There is no difference; they are synonyms"
+      ],
+      "correct": 1,
+      "explanation": "Ward Cunningham's metaphor specifically frames debt as a tradeoff: you gain short-term speed at the cost of long-term interest. The key insight is that debt can be measured (interest and principal) and managed (tracked, prioritized, paid down). Simply calling code 'bad' doesn't give you that framework."
+    },
+    {
+      "stage": "post",
+      "question": "A module has accumulated debt with an estimated interest cost of 4 extra hours per sprint and a principal (paydown cost) of 40 hours. The module is touched once per month. Should you pay down the debt now?",
+      "options": [
+        "Yes — the interest is 4h/sprint, so it pays for itself in 10 sprints",
+        "No — the module is rarely touched, so the actual interest realized per month is much lower than 4h/sprint, and the 40h principal is not justified",
+        "Yes — any debt with measurable interest should be paid down immediately",
+        "No — you should wait until the module needs a feature change, then pay it down as part of that work"
+      ],
+      "correct": 1,
+      "explanation": "The key question is whether interest > principal in terms of actual realized cost. If the module is touched once per month, the 4h/sprint interest estimate is for a team that works in that module regularly, not for a rarely-touched module. For rarely-touched code, the realized interest is minimal, and spending 40 hours on paydown is not justified unless there's a blocking reason (security, blocks other work)."
+    },
+    {
+      "stage": "post",
+      "question": "When negotiating with stakeholders for time to pay down technical debt, which approach is most effective?",
+      "options": [
+        "Explain that the code is messy and needs refactoring",
+        "Argue that engineers created the problem and need time to fix it",
+        "Frame the debt in business terms: quantify the risk, velocity loss, or dollar cost of not paying it down",
+        "Show stakeholders the code complexity metrics and ask them to prioritize"
+      ],
+      "correct": 2,
+      "explanation": "Stakeholders respond to business outcomes, not code quality metrics. Saying 'the code is messy' sounds like an aesthetic complaint. Showing that debt causes specific business harm — a 40% velocity loss, a $60K/year cost, or a risk of customer-facing outages — makes the case in language stakeholders understand and can act on."
+    },
+    {
+      "stage": "post",
+      "question": "A codebase has a god class with 600 lines and 25 methods that touches 8 other modules. The team has good test coverage. Which paydown strategy is most appropriate?",
+      "options": [
+        "Rewrite — the class is too large to refactor incrementally",
+        "Encapsulate — wrap the class in a clean interface and defer the internal mess",
+        "Refactor — extract focused classes from the god class in small, testable steps",
+        "Extract — move the class into its own service to contain the damage"
+      ],
+      "correct": 2,
+      "explanation": "With good test coverage, the safest and most incremental approach is to refactor by extracting classes. The god class can be broken down methodically: identify a cohesive group of methods, extract them into a new class, run tests, repeat. Rewrite is riskier (loses accumulated bug fixes). Encapsulation doesn't actually reduce the debt. Extraction into a service adds operational complexity without solving the design problem."
+    },
+    {
+      "stage": "post",
+      "question": "Which of these is a symptom of technical debt bankruptcy?",
+      "options": [
+        "The team uses code review",
+        "Bug fix introductions exceed bug fix closures (net negative progress)",
+        "The codebase has 80% test coverage",
+        "The team allocates 10% of each sprint to debt paydown"
+      ],
+      "correct": 1,
+      "explanation": "When fixing one bug introduces more bugs than it fixes, the system is in a debt spiral. The interest payments exceed the team's capacity to make progress. This is one of the clearest signs of technical debt bankruptcy — the codebase is so fragile that any change causes regressions."
+    }
+  ]
+}

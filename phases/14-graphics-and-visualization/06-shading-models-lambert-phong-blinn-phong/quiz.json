@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 6,
+    "title": "Shading Models — Lambert, Phong, Blinn-Phong"
+  },
+  "questions": [
+    {
+      "question": "Lambert's cosine law states that the intensity of diffuse light falling on a surface is proportional to which quantity?",
+      "options": [
+        "The sine of the angle between the surface normal and the light direction",
+        "The cosine of the angle between the surface normal and the light direction (N · L)",
+        "The squared distance between the surface and the light source",
+        "The reflection of the view vector about the normal"
+      ],
+      "correct": 1,
+      "explanation": "Lambert's cosine law says irradiance is proportional to cos(θ) = N · L. This means surfaces tilted away from the light receive less light per unit area, producing the characteristic diffuse shading gradient on curved surfaces.",
+      "stage": "pre"
+    },
+    {
+      "question": "What is the key advantage of Blinn-Phong's half-vector H = normalize(L + V) over Phong's reflected vector R = reflect(-L, N)?",
+      "options": [
+        "H is always a unit vector while R requires normalization",
+        "Computing H avoids the expensive reflect() call and produces more correct highlights at grazing angles",
+        "H allows the use of lower-precision floating point",
+        "H makes the ambient term unnecessary"
+      ],
+      "correct": 1,
+      "explanation": "Blinn-Phong replaces R · V with N · H. This avoids the reflect() computation (which involves multiple multiplications and additions) and produces highlights that better match physical reality at grazing angles. Phong's R · V can produce elongated highlights near silhouette edges; N · H does not.",
+      "stage": "pre"
+    },
+    {
+      "question": "A triangle is rendered with one vertex bright and two vertices dark. Which shading method would produce a smooth gradient across the triangle, and which would assign one uniform color?",
+      "options": [
+        "Flat shading produces the gradient; Phong shading produces uniform color",
+        "Gouraud shading produces the gradient (interpolates vertex colors); Flat shading produces uniform color (one normal per face)",
+        "Phong shading produces uniform color; Gouraud shading produces the gradient but only for diffuse light",
+        "Both Gouraud and Phong shading produce uniform color; only flat shading shows gradients"
+      ],
+      "correct": 1,
+      "explanation": "Flat shading uses one normal per face → one color. Gouraud shading computes color per vertex and interpolates across the face → gradient. Phong shading interpolates normals per pixel and recomputes shading → best quality gradient. Gouraud's gradient can miss specular highlights that fall between vertices.",
+      "stage": "pre"
+    },
+    {
+      "question": "For energy conservation, a perfectly white Lambert surface (albedo = 1.0) must not reflect more energy than it receives. What normalization constant ensures this?",
+      "options": [
+        "2π",
+        "π",
+        "1/π",
+        "The cosine term N · L is already sufficient for energy conservation"
+      ],
+      "correct": 2,
+      "explanation": "The hemisphere integral of cos(θ) dΩ = π, so dividing by π normalizes the total reflected energy to at most the incoming energy. The formula is: outgoing = (albedo / π) × N · L × incoming. Without 1/π, a white surface would reflect π times too much energy.",
+      "stage": "post"
+    },
+    {
+      "question": "When rendering a smooth sphere, Phong's R · V can produce visible highlight artifacts near silhouette edges (where the view direction is nearly parallel to the surface). Why does Blinn-Phong's N · H avoid this?",
+      "options": [
+        "N · H clamps to zero at grazing angles automatically",
+        "The half-vector H stays well-behaved near silhouettes, and N · H stays in the [0, 1] range without producing the elongated highlights that R · V creates",
+        "Blinn-Phong uses a higher shininess exponent by default, hiding artifacts",
+        "H is computed per-vertex while R is computed per-pixel, reducing numerical error"
+      ],
+      "correct": 1,
+      "explanation": "At grazing angles, R becomes nearly perpendicular to V, but the specular power amplifies even small positive R · V values into noticeable streaks. The half-vector H remains robust because it bisects L and V; N · H transitions smoothly without the elongation artifact.",
+      "stage": "post"
+    },
+    {
+      "question": "If you use a Phong shininess exponent of n = 25, approximately what Blinn-Phong exponent would produce a similarly-sized specular highlight?",
+      "options": [
+        "n = 25 (same exponent for both)",
+        "n = 6 (roughly n / 4)",
+        "n = 100 (roughly 4 × n)",
+        "n = 25² = 625 (squared)"
+      ],
+      "correct": 2,
+      "explanation": "Blinn-Phong's N · H angle is roughly half the Phong R · V angle, so the same highlight size requires approximately 4× the exponent. Phong n = 25 corresponds roughly to Blinn-Phong n = 100. This is a rule of thumb; the exact mapping depends on geometry.",
+      "stage": "post"
+    }
+  ]
+}

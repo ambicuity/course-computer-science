@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 12
+  },
+  "questions": [
+    {
+      "question": "At 10 Gbps line rate with minimum-sized packets (~14.88 Mpps), approximately how much time budget do you have per packet?",
+      "options": [
+        "~670 ns",
+        "~67 ns",
+        "~6.7 µs",
+        "~6.7 ms"
+      ],
+      "correct": 1,
+      "explanation": "1 second / 14.88 million packets = ~67 ns per packet. A single context switch at 1-5 µs consumes 15-75x this entire budget, making kernel involvement impossible at these rates.",
+      "stage": "pre"
+    },
+    {
+      "question": "What is the primary architectural difference between DPDK and AF_XDP?",
+      "options": [
+        "DPDK uses interrupts while AF_XDP uses polling",
+        "DPDK takes over the NIC entirely (no kernel involvement) while AF_XDP uses XDP BPF programs that remain under kernel control",
+        "AF_XDP only works with TCP while DPDK works with any protocol",
+        "DPDK is for storage while AF_XDP is for networking"
+      ],
+      "correct": 1,
+      "explanation": "DPDK completely bypasses the kernel — it takes exclusive control of the NIC via VFIO/userspace driver. AF_XDP uses BPF programs running at the kernel's XDP hook point, so the kernel retains control and can verify the programs for safety. This makes AF_XDP cooperative bypass rather than full bypass.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why do DPDK and SPDK require huge pages (2 MB or 1 GB)?",
+      "options": [
+        "Huge pages increase available virtual memory for applications",
+        "Huge pages reduce TLB miss rate by mapping more memory with fewer TLB entries, and enable DMA-contiguous allocations for NIC/NVMe devices",
+        "Huge pages are required by POSIX for mmap'd buffers",
+        "Huge pages reduce the number of page faults during I/O operations"
+      ],
+      "correct": 1,
+      "explanation": "With 4 KB pages, 1 GB of memory requires 262,144 TLB entries — far exceeding hardware capacity (~64-128 entries). Huge pages (2 MB) reduce this to 512 entries, dramatically reducing TLB misses. They're also needed for DMA because NICs and NVMe devices require physically contiguous memory for DMA operations.",
+      "stage": "pre"
+    },
+    {
+      "question": "Which scenario is kernel bypass LEAST appropriate for?",
+      "options": [
+        "A high-frequency trading platform requiring sub-microsecond latency",
+        "An NVMe-oF storage target serving 800K+ IOPS",
+        "A general-purpose web server handling API requests with variable traffic patterns",
+        "A software-defined networking appliance processing packets at 40 Gbps"
+      ],
+      "correct": 2,
+      "explanation": "General-purpose web servers benefit from the kernel's battle-tested TCP/IP stack, standard tooling (tcpdump, ss), security features (SELinux, cgroups), and connection management. Kernel bypass sacrifices all of these for raw throughput — a tradeoff that only makes sense at extreme packet rates or latency requirements.",
+      "stage": "post"
+    },
+    {
+      "question": "How does io_uring reduce kernel overhead compared to traditional read()/write() syscalls without fully bypassing the kernel?",
+      "options": [
+        "io_uring eliminates the kernel's TCP/IP stack entirely",
+        "io_uring uses shared ring buffers so the application can submit multiple I/O operations with a single syscall (or none with SQPOLL), amortizing the context-switch cost across a batch",
+        "io_uring uses interrupt-driven I/O instead of polling",
+        "io_uring requires DPDK to function"
+      ],
+      "correct": 1,
+      "explanation": "io_uring maps two ring buffers (submission and completion) into userspace. Instead of one syscall per I/O operation, the application fills the submission ring and calls io_uring_enter() once — the kernel processes the entire batch. With SQPOLL mode, even that syscall is eliminated: a kernel thread polls the ring. This gives 80-90% of DPDK's throughput while keeping all kernel features.",
+      "stage": "post"
+    },
+    {
+      "question": "In a DPDK application, what happens to a CPU core that runs a poll-mode driver (PMD)?",
+      "options": [
+        "It sleeps between packets to conserve power",
+        "It processes interrupts from the NIC and hands packets to the kernel",
+        "It continuously spins checking the NIC's receive ring buffer — it never yields, never context-switches, and shows 100% CPU utilization",
+        "It alternates between kernel mode and user mode for each packet"
+      ],
+      "correct": 2,
+      "explanation": "A PMD core spins in a tight loop checking 'is there a new packet?' (rte_eth_rx_burst()). It never sleeps, never yields the CPU, and never context-switches. This is the fundamental tradeoff: you dedicate a core's entire capacity to ensure zero-scheduling-jitter latency. The core appears 100% busy in top/htop.",
+      "stage": "post"
+    }
+  ]
+}

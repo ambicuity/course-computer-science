@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 2,
+    "title": "The Boot Process Bios Uefi Grub"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is stored in the first 512 bytes of a BIOS-booted disk?",
+      "options": [
+        "The kernel image compressed with gzip",
+        "The Master Boot Record containing boot code, partition table, and 0x55AA magic number",
+        "A UEFI variable store with boot configuration",
+        "The GRUB configuration file grub.cfg"
+      ],
+      "correct": 1,
+      "explanation": "The MBR is exactly 512 bytes: 440 bytes of boot code, 4 bytes disk signature, 2 bytes null, 64 bytes partition table (4 entries), and 2 bytes for the 0x55AA magic number. BIOS reads this sector and jumps to the boot code."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the EFI System Partition (ESP)?",
+      "options": [
+        "A swap partition used for hibernation",
+        "A FAT32 partition containing UEFI boot manager and bootloader EFI binaries",
+        "An encrypted partition for Secure Boot keys",
+        "A partition that stores the kernel and initramfs images"
+      ],
+      "correct": 1,
+      "explanation": "The ESP is a FAT32-formatted partition (usually mounted at /boot/efi) that stores .efi bootloader binaries. UEFI firmware reads NVRAM boot variables to find which .efi file to execute. This replaces the MBR-based approach of BIOS."
+    },
+    {
+      "stage": "post",
+      "question": "What happens immediately after the bootloader jumps to the kernel entry point?",
+      "options": [
+        "The init system (systemd) starts all services",
+        "The kernel decompresses itself, sets up GDT/IDT, enables paging, then calls start_kernel()",
+        "GRUB displays the boot menu and waits for user selection",
+        "The POST routine tests all hardware components"
+      ],
+      "correct": 1,
+      "explanation": "The kernel image (vmlinuz) is compressed. The first thing it does is decompress itself, then set up essential CPU structures (GDT for memory segments, IDT for interrupts), enable virtual memory (paging), and call start_kernel() which is the C code entry point that initializes all kernel subsystems."
+    },
+    {
+      "stage": "post",
+      "question": "Which GRUB rescue command sequence correctly boots a kernel manually from partition 2?",
+      "options": [
+        "set root=(hd0,1); linux /boot/vmlinuz; boot",
+        "set root=(hd0,gpt2); linux /vmlinuz root=/dev/sda3; initrd /initrd.img; boot",
+        "load /grub.cfg; boot",
+        "grub> mount /dev/sda3; grub> exec /vmlinuz"
+      ],
+      "correct": 1,
+      "explanation": "In GRUB rescue mode, you must set the root partition, load the kernel with the root= parameter specifying where the actual root filesystem is, load the initrd/initramfs, then type boot. The (hd0,gpt2) syntax specifies the second GPT partition on the first disk."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the sequence of events when a computer boots?",
+      "options": [
+        "OS loads, then firmware runs, then bootloader starts",
+        "Firmware (BIOS/UEFI) runs, then bootloader loads, then OS kernel starts",
+        "The kernel is loaded directly from disk by the CPU",
+        "The bootloader runs before the firmware"
+      ],
+      "correct": 1,
+      "explanation": "Boot sequence: (1) Firmware (BIOS/UEFI) initializes hardware and runs POST. (2) Firmware loads the bootloader (GRUB) from disk. (3) The bootloader loads the OS kernel into memory and transfers control to it. (4) The kernel initializes subsystems and starts the init process."
+    }
+  ]
+}

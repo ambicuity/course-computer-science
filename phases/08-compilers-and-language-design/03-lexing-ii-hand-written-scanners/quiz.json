@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 3,
+    "title": "Lexing Ii Hand Written Scanners"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why do most production compilers (GCC, Clang, Go) hand-write their lexers instead of using a generator like flex?",
+      "options": [
+        "Generated lexers are always faster than hand-written ones",
+        "Hand-written lexers provide better error messages, easier handling of context-sensitive tokens, and no build-time dependency on a code generator",
+        "Lexer generators cannot produce working lexers",
+        "Hand-written lexers require fewer lines of code"
+      ],
+      "correct": 1,
+      "explanation": "Production compilers hand-write lexers for better error messages, context-sensitive handling (e.g., Python indentation, C preprocessor directives), tighter performance, and independence from external code-generation tools."
+    },
+    {
+      "stage": "pre",
+      "question": "In a hand-written scanner, what is the standard technique for distinguishing keywords from identifiers?",
+      "options": [
+        "Hard-code a separate branch for each keyword in the scanner's main loop",
+        "Scan the full alphanumeric sequence, then look it up in a keyword table; if found, emit a keyword token, otherwise emit an identifier token",
+        "Use a separate DFA for each keyword",
+        "Require keywords to be quoted in source code"
+      ],
+      "correct": 1,
+      "explanation": "The standard approach is to scan the full identifier-like sequence first, then check it against a keyword table. This is simpler than branching on every keyword in the main dispatch and makes adding new keywords trivial."
+    },
+    {
+      "stage": "post",
+      "question": "When scanning a number literal, what must the scanner check to distinguish between hex (0xFF), binary (0b101), and decimal (42) integers?",
+      "options": [
+        "The number of digits in the literal",
+        "Whether the literal starts with '0' and what the next character is ('x', 'b', or 'o')",
+        "Whether the literal contains a decimal point",
+        "The sign of the number"
+      ],
+      "correct": 1,
+      "explanation": "The scanner peeks at the character after a leading '0'. If it is 'x' or 'X', it scans hex digits. If 'b' or 'B', binary digits. If 'o' or 'O', octal digits. Otherwise, it continues as a decimal integer."
+    },
+    {
+      "stage": "post",
+      "question": "What is the advantage of accumulating errors rather than stopping at the first error during scanning?",
+      "options": [
+        "It makes the scanner faster",
+        "It allows the compiler to report multiple errors in a single pass, giving the programmer a more complete picture of what needs fixing",
+        "It eliminates the need for a parser",
+        "It removes the need for error tokens"
+      ],
+      "correct": 1,
+      "explanation": "By recording errors and continuing to scan, the compiler can report all lexical errors in one compilation run. This saves the programmer from fixing one error at a time and recompiling repeatedly."
+    },
+    {
+      "stage": "pre",
+      "question": "Why might a compiler developer choose a hand-written lexer over a generated one (like flex)?",
+      "options": [
+        "Generated lexers are always faster",
+        "Hand-written lexers offer better error recovery, easier keyword handling, and more control over performance",
+        "Generated lexers can't handle all languages",
+        "Hand-written lexers require less code"
+      ],
+      "correct": 1,
+      "explanation": "Hand-written scanners give full control: better error messages (showing exact position), ability to handle context-sensitive tokens (like distinguishing keywords from identifiers), and often better performance due to optimized switch statements rather than DFA table lookups."
+    }
+  ]
+}

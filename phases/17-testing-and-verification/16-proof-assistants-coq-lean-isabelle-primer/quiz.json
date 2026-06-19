@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does a proof assistant primarily provide?",
+      "options": ["Faster runtime", "Machine-checked proof correctness", "Automatic UI testing", "Code obfuscation"],
+      "correct": 1,
+      "explanation": "Proof assistants verify proof steps against formal logic, providing strong assurance."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the Curry-Howard correspondence?",
+      "options": ["A networking protocol", "The duality between proofs and programs, and propositions and types", "A sorting algorithm", "A CPU scheduling policy"],
+      "correct": 1,
+      "explanation": "Curry-Howard establishes that propositions correspond to types and proofs correspond to programs, unifying logic and computation."
+    },
+    {
+      "stage": "post",
+      "question": "Why can proof maintenance be expensive?",
+      "options": ["Proofs depend on exact formal definitions and lemmas that may change", "Compilers ignore proofs", "Proofs cannot be versioned", "There are no libraries"],
+      "correct": 0,
+      "explanation": "Refactors can invalidate proof scripts or assumptions, requiring updates."
+    },
+    {
+      "stage": "post",
+      "question": "Where do proof assistants fit best?",
+      "options": ["Every feature by default", "High-assurance critical components", "Only frontend styling", "Only logging paths"],
+      "correct": 1,
+      "explanation": "Their cost is justified most in components needing very strong formal guarantees."
+    },
+    {
+      "stage": "post",
+      "question": "What is 'tactic mode' in a proof assistant like Coq or Lean?",
+      "options": ["A debugging tool", "A way to construct proofs by applying tactics that transform proof goals", "A runtime optimization", "A syntax highlighter"],
+      "correct": 1,
+      "explanation": "Tactics are commands that decompose proof goals step by step — e.g., induction, simplification, rewriting — until all goals are discharged."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 16, "title": "Proof Assistants - Coq/Lean/Isabelle Primer" }
+}

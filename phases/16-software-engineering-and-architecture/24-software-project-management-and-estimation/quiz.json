@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the 'Cone of Uncertainty' in software estimation?",
+      "options": [
+        "A physical shape used in 3D modeling",
+        "The accuracy range of estimates narrows as the project progresses; early estimates have a 16:1 range while late estimates have a 1.2:1 range",
+        "A way to visualize team communication",
+        "A testing methodology"
+      ],
+      "correct": 1,
+      "explanation": "The Cone of Uncertainty shows that estimates at project inception can be off by 4× in either direction (0.25× to 4×). As you complete requirements, design, and implementation, the range narrows. This is why asking 'when will it be done?' at the start is unanswerable with precision — the honest answer is a wide range."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does Brooks's Law say 'adding manpower to a late project makes it later'?",
+      "options": [
+        "New people are always slower",
+        "Communication overhead grows quadratically (n(n-1)/2 channels), and new people need ramp-up time from existing team members",
+        "The project is already doomed",
+        "More people create more bugs"
+      ],
+      "correct": 1,
+      "explanation": "With n people, there are n(n-1)/2 communication channels. Going from 5 to 8 people adds 13 new channels. New hires need weeks to become productive, and existing team members spend time teaching instead of building. Some tasks also can't be parallelized — nine women can't make a baby in one month."
+    },
+    {
+      "stage": "post",
+      "question": "Why does planning poker use Fibonacci numbers (1, 2, 3, 5, 8, 13) instead of linear numbers (1, 2, 3, 4, 5)?",
+      "options": [
+        "It's arbitrary and has no reason",
+        "Human perception is logarithmic; the difference between 17 and 18 days is noise, but between 1 and 2 is significant. Fibonacci forces categorical thinking",
+        "Fibonacci numbers are easier to add",
+        "It's a tradition from manufacturing"
+      ],
+      "correct": 1,
+      "explanation": "Humans perceive magnitude logarithmically, not linearly. The difference between 1 and 2 days (100% increase) is meaningful; the difference between 17 and 18 days (6% increase) is noise. Fibonacci numbers space out at higher values, forcing estimators to choose between categories (small/medium/large) rather than false precision. This is the same reason decibels use a logarithmic scale."
+    },
+    {
+      "stage": "post",
+      "question": "What is the critical path in a project schedule?",
+      "options": [
+        "The shortest path through the dependency graph",
+        "The longest sequence of dependent tasks; it determines the minimum project duration",
+        "The path with the most tasks",
+        "The path with the highest risk"
+      ],
+      "correct": 1,
+      "explanation": "The critical path is the longest chain of dependent tasks. Any delay on the critical path delays the entire project. Non-critical tasks have 'slack' — they can be delayed without affecting the deadline. Project managers focus attention on critical path tasks because they're the bottleneck. Crashing (adding resources to) critical path tasks is the only way to shorten a project."
+    },
+    {
+      "stage": "post",
+      "question": "How should teams handle technical debt?",
+      "options": [
+        "Never take on debt",
+        "Track it explicitly as a business decision; negotiate repayment with stakeholders based on velocity impact",
+        "Always fix it immediately",
+        "Ignore it until it becomes critical"
+      ],
+      "correct": 1,
+      "explanation": "Technical debt is a business decision, not a technical one. Sometimes shipping fast with debt is the right call (startup, competitive pressure). The key is tracking it explicitly and negotiating repayment: 'We can ship this in 2 weeks with debt, or 3 weeks without. The debt will cost ~1 week/quarter in maintenance.' Unmanaged debt collapses velocity over time."
+    }
+  ],
+  "_meta": {
+    "phase": 16,
+    "lesson": 24,
+    "title": "Software Project Management And Estimation"
+  }
+}

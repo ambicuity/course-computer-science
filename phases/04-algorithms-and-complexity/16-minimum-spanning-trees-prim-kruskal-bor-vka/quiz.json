@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 16,
+    "title": "Minimum Spanning Trees — Prim, Kruskal, Borůvka"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "According to the cut property, which statement is true for any cut (S, V\\S) in a connected weighted graph?",
+      "options": [
+        "The heaviest edge crossing the cut can never be in any MST",
+        "The lightest edge crossing the cut belongs to every MST",
+        "Exactly half the crossing edges belong to some MST",
+        "No edge crossing the cut belongs to the MST"
+      ],
+      "correct": 1,
+      "explanation": "The cut property states that for any partition of vertices, the minimum-weight edge crossing the cut is a safe edge — it belongs to every MST. This is proved by contradiction: if a lighter crossing edge existed outside some MST T, adding it creates a cycle, and removing the heavier crossing edge from that cycle yields a lighter spanning tree."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the amortized time complexity per operation for Union-Find with both path compression and union by rank?",
+      "options": [
+        "O(log n)",
+        "O(1) worst case",
+        "O(α(n)) where α is the inverse Ackermann function",
+        "O(n)"
+      ],
+      "correct": 2,
+      "explanation": "Tarjan proved (1975) that Union-Find with path compression and union by rank achieves O(α(n)) amortized time per operation. The inverse Ackermann function grows so slowly that it is ≤ 4 for any practical n (< 10^80 atoms in the universe). This is why Kruskal's sorting step — not the Union-Find — dominates the runtime."
+    },
+    {
+      "stage": "post",
+      "question": "For a sparse graph with |E| ≈ |V|, which algorithm is typically faster in practice and why?",
+      "options": [
+        "Kruskal's, because O(E log E) ≈ O(V log V) with very small constants",
+        "Prim's with a binary heap, because O(E log V) ≈ O(V log V) with lower constant overhead",
+        "Borůvka's, because it needs only O(log V) phases with no sorting step",
+        "All three are identical in this regime"
+      ],
+      "correct": 0,
+      "explanation": "When |E| ≈ |V|, Kruskal's sorts only ~V edges (O(V log V)) and then does ~V nearly-O(1) Union-Find operations. Prim's does ~V heap operations (also O(V log V)) but with higher constant factors from heap maintenance. For very sparse graphs, Kruskal's simplicity and cache-friendly sorted-edge scan make it the practical winner. Prim's shines on dense graphs where |E| ≈ |V|², especially with an adjacency matrix and O(V²) scan instead of a heap."
+    },
+    {
+      "stage": "post",
+      "question": "Why is Borůvka's algorithm particularly well-suited for parallel and distributed MST computation?",
+      "options": [
+        "It uses a randomized pivot that can be sampled independently",
+        "Each component finds its lightest outgoing edge independently in a single phase — no global coordination needed",
+        "It avoids Union-Find entirely, making thread synchronization trivial",
+        "It only needs O(V) total work regardless of edge count"
+      ],
+      "correct": 1,
+      "explanation": "In each Borůvka phase, every connected component independently scans its edges to find the lightest outgoing one. These searches have no data dependencies between components, so they can run in parallel across threads or machines. After the phase, components merge — a global synchronization barrier. Each phase at least halves the number of components, giving O(log V) phases and O(E log V) total work with high parallelism."
+    },
+    {
+      "stage": "pre",
+      "question": "What cut property do MST algorithms exploit?",
+      "options": [
+        "The cheapest edge crossing any cut must be in some MST",
+        "The most expensive edge in any cycle must be in some MST",
+        "Every vertex must have exactly one incoming edge",
+        "The graph must be bipartite"
+      ],
+      "correct": 0,
+      "explanation": "The cut property states that for any partition (cut) of vertices, the minimum-weight edge crossing the cut belongs to some MST. Both Kruskal's and Prim's algorithms are built on this property — Kruskal implicitly considers cuts defined by growing components."
+    }
+  ]
+}

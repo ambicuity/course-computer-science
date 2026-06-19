@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 13,
+    "lesson": 13,
+    "title": "Tokio and the Async Runtime in Rust",
+    "note": "Two pre-lesson and two post-lesson questions."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What distinguishes a Tokio task from an OS thread?",
+      "options": [
+        "A Tokio task is a kernel-scheduled unit of execution with its own stack.",
+        "A Tokio task is a lightweight, user-space unit of execution scheduled cooperatively by the runtime on a shared thread pool.",
+        "A Tokio task is identical to an OS thread but uses less memory.",
+        "A Tokio task runs only on a single dedicated core and cannot be migrated."
+      ],
+      "correct": 1,
+      "explanation": "Tokio tasks are user-space coroutines multiplexed onto a pool of OS threads. They have minimal per-task overhead (~tens of bytes vs ~MB per thread) and are scheduled cooperatively at .await points, not preemptively by the kernel. They can migrate between OS threads via work-stealing."
+    },
+    {
+      "stage": "pre",
+      "question": "What happens when a Tokio task calls tokio::task::yield_now().await?",
+      "options": [
+        "The OS suspends the entire thread.",
+        "The task voluntarily returns Pending to the scheduler, allowing another task to run on the same worker thread.",
+        "The task is immediately moved to a different worker thread.",
+        "The task yields the CPU for exactly one scheduler tick and then resumes."
+      ],
+      "correct": 1,
+      "explanation": "yield_now() returns Pending from the current poll, which tells the scheduler to run another task. The yielding task is re-queued and will be polled again when the scheduler gets to it. This is cooperative scheduling: tasks must yield explicitly to share the worker thread."
+    },
+    {
+      "stage": "post",
+      "question": "In Tokio's work-stealing scheduler, why is work-stealing important for performance?",
+      "options": [
+        "It allows the runtime to disable the operating system's scheduler for better throughput.",
+        "It prevents thread starvation by letting idle workers steal tasks from busy workers, keeping all cores utilized.",
+        "It eliminates the need for any synchronization primitives in the runtime.",
+        "It automatically parallelizes CPU-bound tasks across GPU cores."
+      ],
+      "correct": 1,
+      "explanation": "In a multi-threaded Tokio runtime, each worker thread has its own local task queue. Under uneven load, a thread with an empty queue can \"steal\" tasks from another thread's queue. This keeps all worker threads busy and prevents scenarios where one thread is overloaded while others sit idle."
+    },
+    {
+      "stage": "post",
+      "question": "When should you prefer tokio::sync::Mutex over std::sync::Mutex in an async context?",
+      "options": [
+        "Always, because tokio::sync::Mutex is always faster.",
+        "When the lock guard must be held across an .await point, because std::sync::MutexGuard cannot cross .await.",
+        "Only when protecting data smaller than 64 bytes.",
+        "std::sync::Mutex should never be used in any Tokio program."
+      ],
+      "correct": 1,
+      "explanation": "std::sync::MutexGuard is not Send, so holding it across an .await would be a compile error (the guard would be held while the future is polled by a different thread). tokio::sync::Mutex's lock() is async, so it releases the lock before the .await if contention is detected, and re-acquires afterward. For short, non-.await-guarded critical sections, std::sync::Mutex is fine and faster."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does an async runtime like Tokio solve?",
+      "options": [
+        "It provides garbage collection for Rust",
+        "It provides a scheduler for async tasks, an event loop for I/O, and a thread pool for CPU-bound work",
+        "It makes Rust code run on GPUs",
+        "It eliminates the need for ownership and borrowing"
+      ],
+      "correct": 1,
+      "explanation": "Rust's async/await produces state machines (Futures), but something must poll them. Tokio provides: (1) a multi-threaded scheduler for tasks, (2) an I/O reactor (epoll/kqueue) for async I/O, (3) timers, (4) synchronization primitives. It's the de facto standard async runtime for Rust."
+    }
+  ]
+}

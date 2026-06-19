@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 9,
+    "title": "Chomsky and Greibach Normal Forms"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In Chomsky Normal Form, every production rule must have which form?",
+      "options": [
+        "A → aα (terminal followed by variables)",
+        "A → BC or A → a (two variables or a single terminal)",
+        "A → B or A → a (a single symbol)",
+        "A → any string of terminals and variables"
+      ],
+      "correct": 1,
+      "explanation": "CNF restricts every rule to exactly two forms: A → BC (two variables) or A → a (one terminal). The only exception is S → ε when ε is in the language. This binary structure is what enables the CYK parsing algorithm."
+    },
+    {
+      "stage": "post",
+      "question": "What is the first step in converting an arbitrary CFG to CNF?",
+      "options": [
+        "Add new terminal symbols",
+        "Eliminate epsilon productions by finding all nullable variables and creating variants of rules",
+        "Remove all variables",
+        "Reverse all production rules"
+      ],
+      "correct": 1,
+      "explanation": "The standard CNF conversion begins by identifying nullable variables (those that can derive ε), then for each rule containing nullable variables, adding new rules with those variables optionally removed. Only then can epsilon rules be safely deleted."
+    },
+    {
+      "stage": "post",
+      "question": "What is the primary advantage of Greibach Normal Form over Chomsky Normal Form?",
+      "options": [
+        "GNF grammars have fewer rules",
+        "Every derivation step produces at least one terminal, enabling top-down parsing without left recursion",
+        "GNF is required for the CYK algorithm",
+        "GNF grammars are always unambiguous"
+      ],
+      "correct": 1,
+      "explanation": "In GNF, every rule starts with a terminal (A → aα), so each derivation step consumes input. This makes top-down parsing trivial (predict by matching the terminal) and eliminates left recursion, which would cause recursive-descent parsers to loop infinitely."
+    },
+    {
+      "stage": "post",
+      "question": "Why is CNF conversion important for parsing?",
+      "options": [
+        "It makes the grammar easier to read",
+        "The CYK algorithm requires CNF because it uses dynamic programming over binary rule splits",
+        "It reduces the number of variables",
+        "It removes all ambiguity from the grammar"
+      ],
+      "correct": 1,
+      "explanation": "The CYK algorithm is a bottom-up parser that works by trying all ways to split a substring into two parts, matching against rules of the form A → BC. CNF guarantees every rule is binary (or terminal), which is exactly what CYK needs for its O(n³) dynamic programming table."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the Chomsky Normal Form (CNF) restriction on grammar productions?",
+      "options": [
+        "Every rule must produce exactly one terminal",
+        "Every rule is either A → BC (two nonterminals) or A → a (one terminal)",
+        "Every rule must have at least three symbols on the right",
+        "No rule can have epsilon on the right side"
+      ],
+      "correct": 1,
+      "explanation": "CNF requires every production to be either A → BC (two nonterminals) or A → a (single terminal), plus S → ε if the empty string is in the language. This normal form is essential for the CYK parsing algorithm, which runs in O(n^3)."
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is the trait `OrderedCollection<T: Ord>` instead of just `OrderedCollection<T>`?",
+      "options": [
+        "Tradition",
+        "Trait bounds enforce that T supports comparison at the type level. The compiler rejects `OrderedCollection<MyStruct>` if MyStruct doesn't implement `Ord`. The impl can then use < and > freely.",
+        "Memory layout",
+        "Faster runtime"
+      ],
+      "correct": 1,
+      "explanation": "Rust generics need bounds to know what operations are available on T. `T: Ord` says 'T must implement Ord' — gives access to <, >, ==, cmp. Without it, the compiler doesn't know if T can be compared. Bound at the trait level means every impl AND every consumer of OrderedCollection sees this requirement uniformly."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the role of `debug_assert!` in the capstone library?",
+      "options": [
+        "Slows things down",
+        "Encodes invariants that are checked in DEBUG builds (cargo build) but compiled away in RELEASE builds (cargo build --release). Free in production; loud during testing.",
+        "Adds documentation",
+        "Required by Rust"
+      ],
+      "correct": 1,
+      "explanation": "After every push/pop, the MinHeap's heap invariant is verified — O(n) per operation. In debug this catches bugs immediately (corrupted heap → instant panic). In release it's compiled away, so production performance is the same as without the check. This is the canonical 'invariant-driven development' pattern from Phase 2 L17."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the capstone use `Option<Box<Node<T>>>` for linked-list nodes?",
+      "options": [
+        "Memory savings",
+        "Owned, nullable, heap-allocated. `Option` encodes the maybe-null in the type system. `Box` is the heap pointer. `Node<T>` is the payload. Together: safe Rust's idiomatic linked-list cell.",
+        "Required by std",
+        "Cache locality"
+      ],
+      "correct": 1,
+      "explanation": "Rust doesn't allow raw nullable pointers in safe code. `Option<T>` carries the 'has value or not' bit at the type level — no null-deref bugs possible. `Box<T>` is owned heap memory. Together, `Option<Box<T>>` is precisely 'a pointer that might be null'. Drop semantics free the whole chain when the head is dropped — no manual memory management."
+    },
+    {
+      "stage": "post",
+      "question": "After 10K random inserts, why is the AVL set's height ~17-18?",
+      "options": [
+        "Random luck",
+        "AVL keeps height ≤ 1.44 × log₂(n+2). For n=10000, this is ~19.4. The observed height stays under this bound — that's the AVL guarantee.",
+        "Memory limit",
+        "Random hash"
+      ],
+      "correct": 1,
+      "explanation": "AVL's strict height-balanced invariant (bf in {-1, 0, +1}) bounds height at 1.44 log₂(n+2). For n=10K: ~19.4. Random inserts produce trees near this bound (~17-18). Compare with a plain BST: height could be 10K (degenerate chain) on adversarial input. AVL's `debug_assert!(verify_rec(...).0)` confirms the invariant after every insert."
+    },
+    {
+      "stage": "post",
+      "question": "What does Phase 3 build culminate in (across all 25 lessons)?",
+      "options": [
+        "A textbook",
+        "A complete data-structure toolkit: linear (Vec, list, queue), tabular (hash map), tree (BST, AVL, RB, B-tree), graph, probabilistic (Bloom, CM), concurrent (Treiber). The capstone integrates the core into one library; Phase 4 algorithms USE these structures.",
+        "Just a heap",
+        "Just a hash table"
+      ],
+      "correct": 1,
+      "explanation": "Phase 3's 25 lessons sweep the data-structure design space. Every algorithm in Phase 4 (sorting, searching, DP, graph algos) reaches for one of these primitives. Every system in Phase 7-11 (OS, compilers, networks, DBs, distributed) uses many. The capstone library is the minimum-viable distillation: 5 structures, generic, invariant-checked, ~400 lines of safe Rust."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the capstone include only Vec, list, heap, AVL, hash map — not all 24 structures?",
+      "options": [
+        "Time pressure",
+        "These are the 'load-bearing' structures: every system you'll build needs at least one. Trees (B-tree, RB), specialized structures (suffix tree, segment tree, Bloom) are domain-specific; learning them is valuable but they're not core to every project.",
+        "Random choice",
+        "License"
+      ],
+      "correct": 1,
+      "explanation": "There's a power-law of which DS you actually use. ~80% of programs use Vec, hash map, and one ordered structure. ~15% need a heap (priority queue) somewhere. ~5% reach for B-trees, tries, suffix arrays, etc. The capstone reflects this: build the bread-and-butter rigorously, leave the specialized to per-domain implementations."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 25,
+    "title": "Phase Capstone A Generic Ds Library In Rust With Invariants"
+  }
+}

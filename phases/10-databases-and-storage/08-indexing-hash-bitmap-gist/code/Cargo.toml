@@ -1,0 +1,10 @@
+[workspace]
+
+[package]
+name = "hash-bitmap-gist"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "hash-bitmap-gist"
+path = "main.rs"

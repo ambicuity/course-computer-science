@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What axiom distinguishes a partial order from an equivalence relation?",
+      "options": [
+        "Reflexivity",
+        "Transitivity",
+        "Antisymmetry — partial orders require `a ≤ b ∧ b ≤ a ⇒ a = b`, while equivalences require symmetry (`a ~ b ⇒ b ~ a`)",
+        "Totality"
+      ],
+      "correct": 2,
+      "explanation": "Both are reflexive and transitive. The third axiom flips: equivalences are symmetric (`a~b ⇒ b~a`), partial orders are antisymmetric (`a≤b ∧ b≤a ⇒ a=b`). Symmetry says related-in-both-directions is always OK; antisymmetry says it forces equality."
+    },
+    {
+      "stage": "pre",
+      "question": "On a Hasse diagram of the subset poset 𝒫({a,b,c}), which edges are drawn?",
+      "options": [
+        "All `A ⊆ B` pairs",
+        "Only the *cover* pairs: each A is connected to B iff A ⊂ B and no strict intermediate set exists",
+        "Only the reflexive ones",
+        "Only pairs where B \\ A is a singleton"
+      ],
+      "correct": 1,
+      "explanation": "Hasse diagrams omit implied edges (transitivity) and self-loops (reflexivity). For subsets, the cover pairs are exactly those where B has exactly one more element than A — which happens to coincide with option D for THIS poset, but generally the definition is 'no strict intermediate.' Both descriptions yield the same picture for 𝒫({a,b,c})."
+    },
+    {
+      "stage": "post",
+      "question": "What does `join(x, y)` in a poset mean?",
+      "options": [
+        "x ∪ y",
+        "The least upper bound of {x, y} — the smallest z with both x ≤ z and y ≤ z",
+        "x · y",
+        "The maximum of x and y"
+      ],
+      "correct": 1,
+      "explanation": "Join is the LUB: smallest element above both. For subsets, that's ∪. For divisibility, that's lcm. For an arbitrary poset, the join may not exist (no UB at all, or multiple incomparable least UBs). A *lattice* is a poset where joins and meets always exist for pairs."
+    },
+    {
+      "stage": "post",
+      "question": "Kahn's topological sort produces what, and how fast?",
+      "options": [
+        "A total ordering of any set, in O(n log n)",
+        "A linear extension of a DAG (one of possibly many) in O(V + E); fails iff a cycle exists",
+        "A spanning tree in O(V + E)",
+        "A topological invariant of the graph"
+      ],
+      "correct": 1,
+      "explanation": "Kahn's algorithm produces a valid linear extension (a total order extending the partial order) of any DAG in O(V + E). If it can't drain all nodes, there's a cycle — that's the standard cycle-detection algorithm for directed graphs. Make/Bazel/Cargo run a version of this on every build."
+    },
+    {
+      "stage": "post",
+      "question": "ℕ under divisibility (`a | b ⇔ a divides b`): is it a lattice?",
+      "options": [
+        "No — not even a partial order",
+        "Yes — join = lcm, meet = gcd",
+        "Yes — but only on prime numbers",
+        "Only finite subsets are lattices"
+      ],
+      "correct": 1,
+      "explanation": "ℕ with divisibility is a classic lattice example. Join is lcm (least common multiple — smallest above both), meet is gcd (greatest common divisor — largest below both). 1 is the bottom (divides everything). It's an unbounded lattice — no top — but every pair has a join."
+    },
+    {
+      "stage": "post",
+      "question": "Why do dataflow analyses in compilers (constant propagation, available expressions) use lattices?",
+      "options": [
+        "Tradition",
+        "The analysis iterates by taking joins of incoming abstract values at merge points; the lattice structure guarantees the iteration reaches a fixed point (and bounds its size)",
+        "Lattices are fast to evaluate",
+        "They aren't related to lattices"
+      ],
+      "correct": 1,
+      "explanation": "Dataflow analyses are fixed-point computations over abstract value lattices. At every CFG merge point, take the join of incoming abstract values; iterate until nothing changes. The lattice's *height* (longest ascending chain) bounds the number of iterations. This framework (Cousot's abstract interpretation) is the foundation of static analysis."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 6,
+    "title": "Partial Orders Lattices Hasse Diagrams"
+  }
+}

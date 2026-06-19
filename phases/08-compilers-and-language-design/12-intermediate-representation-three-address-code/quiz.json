@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 12,
+    "title": "Intermediate Representation — Three-Address Code"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why do compilers use an intermediate representation instead of going directly from AST to machine code?",
+      "options": [
+        "IR is smaller than the AST so it saves memory",
+        "IR enables machine-independent optimization and supports multiple backends",
+        "IR is required by the C standard for portability",
+        "ASTs cannot represent control flow"
+      ],
+      "correct": 1,
+      "explanation": "IR decouples the front-end (parsing, type checking) from the back-end (code generation). This allows optimizations that are independent of the target machine and lets one front-end target many architectures."
+    },
+    {
+      "stage": "pre",
+      "question": "In three-address code, what does 'three-address' refer to?",
+      "options": [
+        "Each instruction references three memory locations",
+        "Each instruction has at most two operands and one result",
+        "Each instruction can jump to three different labels",
+        "Instructions are stored in a three-dimensional array"
+      ],
+      "correct": 1,
+      "explanation": "Three-address instructions have the form `dest = src1 op src2` — at most two source operands and one destination. This maps naturally to register-based hardware."
+    },
+    {
+      "stage": "post",
+      "question": "When lowering `a + b * c` to three-address code, what temporary names would be generated?",
+      "options": [
+        "t1 = a + b; t2 = t1 * c",
+        "t1 = b * c; t2 = a + t1",
+        "t1 = a + b * c",
+        "t1 = a; t2 = b; t3 = c; t4 = t1 + t2 * t3"
+      ],
+      "correct": 1,
+      "explanation": "The generator recursively processes subexpressions. It first flattens `b * c` into `t1 = b * c`, then uses `t1` as an operand in `t2 = a + t1`. Each temporary holds exactly one intermediate result."
+    },
+    {
+      "stage": "post",
+      "question": "What is a basic block?",
+      "options": [
+        "A single IR instruction",
+        "A maximal sequence of instructions with one entry point and one exit point",
+        "Any sequence of instructions between two labels",
+        "A function body without loops"
+      ],
+      "correct": 1,
+      "explanation": "A basic block is a straight-line sequence where control enters only at the first instruction and leaves only at the last. It is the fundamental unit for data-flow analysis and optimization."
+    },
+    {
+      "stage": "pre",
+      "question": "Why do compilers use an intermediate representation (IR) instead of generating target code directly from the AST?",
+      "options": [
+        "Because the AST is too small to hold all information",
+        "Because IR enables target-independent optimizations and retargeting to different architectures",
+        "Because direct code generation is impossible",
+        "Because ASTs are only used during parsing"
+      ],
+      "correct": 1,
+      "explanation": "An IR decouples the frontend (parsing, type checking) from the backend (code generation). Optimizations like constant folding, dead code elimination, and loop unrolling work on the IR without knowing the target. To support a new CPU, only the backend needs to change."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A divide-and-conquer algorithm splits a problem of size n into 3 subproblems of size n/2 and spends O(n) combining results. What recurrence describes it?",
+      "options": [
+        "T(n) = 2T(n/3) + O(n)",
+        "T(n) = 3T(n/2) + O(n)",
+        "T(n) = 3T(n/2) + O(n^2)",
+        "T(n) = 2T(n/2) + O(n)"
+      ],
+      "correct": 1,
+      "explanation": "Three subproblems of size n/2 means a=3, b=2. The combine step costs O(n), so f(n) = O(n). The recurrence is T(n) = 3T(n/2) + O(n), which the Master Theorem resolves to Theta(n^(log_2 3)) ≈ Theta(n^1.585)."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of the following is NOT a step in the divide-and-conquer paradigm?",
+      "options": [
+        "Divide the problem into smaller subproblems of the same type",
+        "Sort the subproblems by difficulty before solving them",
+        "Solve each subproblem recursively (or directly if small enough)",
+        "Combine the subproblem solutions into a solution for the original problem"
+      ],
+      "correct": 1,
+      "explanation": "D&C has three canonical steps: divide, conquer (solve recursively), and combine. Sorting subproblems by difficulty is not part of the paradigm — the subproblems are typically of equal size or determined by the problem structure, not ranked by difficulty."
+    },
+    {
+      "stage": "post",
+      "question": "Strassen's algorithm uses 7 recursive multiplications instead of the naive 8 on n/2 × n/2 blocks. What is its recurrence and running time?",
+      "options": [
+        "T(n) = 8T(n/2) + O(n^2) → O(n^3)",
+        "T(n) = 7T(n/2) + O(n^2) → O(n^2.81)",
+        "T(n) = 7T(n/2) + O(n) → O(n^2.81)",
+        "T(n) = 7T(n/3) + O(n^2) → O(n^2.81)"
+      ],
+      "correct": 1,
+      "explanation": "Strassen makes 7 recursive calls on size n/2 (a=7, b=2) and does O(n^2) work for additions. T(n) = 7T(n/2) + O(n^2). By the Master Theorem: n^(log_2 7) ≈ n^2.807, and f(n) = n^2 is O(n^(2.807 - epsilon)), so Case 1 applies: T(n) = Theta(n^log_2 7) ≈ Theta(n^2.81)."
+    },
+    {
+      "stage": "post",
+      "question": "The maximum subarray problem admits both a D&C solution at O(n log n) and Kadane's algorithm at O(n). What does this teach us about divide-and-conquer?",
+      "options": [
+        "D&C always gives the optimal solution; Kadane's must be wrong",
+        "D&C is never useful for array problems",
+        "D&C is a general pattern but not always the best fit — simpler approaches may exploit structure D&C misses",
+        "Kadane's is itself a divide-and-conquer algorithm"
+      ],
+      "correct": 2,
+      "explanation": "Kadane's O(n) single-pass approach exploits the contiguous-sum structure (reset when running sum goes negative) in a way that D&C's recursive splitting doesn't. D&C is a powerful general pattern, but it isn't always the optimal strategy. Recognising when a problem admits a simpler, non-recursive solution is a critical skill."
+    },
+    {
+      "stage": "pre",
+      "question": "In a divide-and-conquer algorithm, what are the three phases of each recursive step?",
+      "options": [
+        "Initialize, execute, terminate",
+        "Divide, conquer, combine",
+        "Push, process, pop",
+        "Parse, transform, emit"
+      ],
+      "correct": 1,
+      "explanation": "Divide-and-conquer works by (1) dividing the problem into smaller subproblems, (2) conquering each subproblem recursively, and (3) combining the subproblem solutions into the final answer. Merge sort is the canonical example: split, recursively sort halves, merge."
+    }
+  ],
+  "_meta": {
+    "phase": 4,
+    "lesson": 7,
+    "title": "Divide Conquer Patterns"
+  }
+}

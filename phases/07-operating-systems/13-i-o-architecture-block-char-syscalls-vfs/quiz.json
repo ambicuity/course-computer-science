@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 13,
+    "title": "I O Architecture Block Char Syscalls Vfs"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary difference between block devices and character devices?",
+      "options": [
+        "Block devices are faster than character devices",
+        "Block devices transfer data in fixed-size sectors; character devices transfer a byte stream",
+        "Only block devices support read/write operations",
+        "Character devices cannot be accessed by the kernel"
+      ],
+      "correct": 1,
+      "explanation": "Block devices (disks, SSDs) operate on fixed-size sectors (e.g., 512 bytes or 4 KiB). Character devices (keyboards, serial ports) produce or consume an unbounded byte stream with no concept of sectors."
+    },
+    {
+      "stage": "pre",
+      "question": "When a process calls `open()`, the kernel allocates entries in three tables. What is the correct order?",
+      "options": [
+        "File descriptor table → inode table → file table",
+        "Inode table → file table → file descriptor table",
+        "File table → file descriptor table → inode table",
+        "VFS → inode/vnode → file table entry → file descriptor table"
+      ],
+      "correct": 3,
+      "explanation": "The kernel resolves the path via VFS to find the inode/vnode, allocates a file table entry (tracking offset, mode, and a pointer to the vnode), then installs that entry into the process's file descriptor table and returns the fd index."
+    },
+    {
+      "stage": "post",
+      "question": "Why does `epoll` outperform `select()` and `poll()` for servers with many connections?",
+      "options": [
+        "epoll uses less memory per file descriptor",
+        "epoll returns only the ready file descriptors in O(1) time, while select/poll scan all fds in O(n)",
+        "epoll supports more file descriptor flags",
+        "epoll can monitor network sockets but not files"
+      ],
+      "correct": 1,
+      "explanation": "select() and poll() require the application to pass the full set of fds and the kernel scans all of them each time — O(n). epoll maintains a kernel-side event list and returns only the subset of ready fds — O(ready). This makes it dramatically faster at scale."
+    },
+    {
+      "stage": "post",
+      "question": "What is the purpose of buffered I/O (e.g., `fread` / `fwrite`) compared to unbuffered I/O (`read` / `write`)?",
+      "options": [
+        "Buffered I/O provides stronger data integrity guarantees",
+        "Buffered I/O reduces the number of syscalls by accumulating data in a user-space buffer before issuing kernel calls",
+        "Buffered I/O bypasses the VFS layer entirely",
+        "Buffered I/O is only used for network sockets"
+      ],
+      "correct": 1,
+      "explanation": "Each `read()`/`write()` syscall crosses the user-kernel boundary, which is expensive. Buffered I/O (stdio) accumulates small reads/writes in a user-space buffer and issues fewer, larger syscalls, improving throughput for fine-grained I/O patterns."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between block devices and character devices?",
+      "options": [
+        "Block devices are faster than character devices",
+        "Block devices transfer data in fixed-size blocks with random access; character devices transfer data as a byte stream",
+        "Block devices are always on disk; character devices are always in memory",
+        "Character devices can only be read, not written"
+      ],
+      "correct": 1,
+      "explanation": "Block devices (disks, SSDs) transfer data in fixed-size blocks and support random access — you can read block 100 without reading blocks 0-99. Character devices (terminals, serial ports, /dev/random) provide a sequential byte stream with no random access. The kernel handles them through different subsystems."
+    }
+  ]
+}

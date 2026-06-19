@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is Alloy best suited for?",
+      "options": ["High-performance numerics", "Relational modeling and bounded counterexample search", "Deployment automation", "Bytecode optimization"],
+      "correct": 1,
+      "explanation": "Alloy focuses on relational constraints and quickly finding small counterexample structures."
+    },
+    {
+      "stage": "pre",
+      "question": "How does Alloy differ from TLA+ in modeling approach?",
+      "options": ["Alloy uses temporal logic, TLA+ uses relations", "Alloy models static relational structures; TLA+ models state machines over time", "They are identical tools", "Alloy only works for hardware"],
+      "correct": 1,
+      "explanation": "Alloy's relational logic excels at structural constraints (graphs, schemas), while TLA+ focuses on temporal behavior of stateful systems."
+    },
+    {
+      "stage": "post",
+      "question": "What does `no s: Service | s in s.^deps` express?",
+      "options": ["Every service has a dependency", "No cyclic dependency paths", "Gateway has no deps", "All services are roots"],
+      "correct": 1,
+      "explanation": "Transitive closure `^deps` captures reachability; forbidding `s` in its own closure enforces acyclicity."
+    },
+    {
+      "stage": "post",
+      "question": "Why can Alloy still be useful despite bounded scope?",
+      "options": ["Bounded analysis is equivalent to full proof", "Many design bugs manifest in small counterexample instances", "Scope has no effect", "It only checks syntax"],
+      "correct": 1,
+      "explanation": "Early design inconsistencies often appear in small models, making bounded search very practical."
+    },
+    {
+      "stage": "post",
+      "question": "What is the 'scope' parameter in Alloy?",
+      "options": ["The number of files to analyze", "The maximum number of atoms per signature in the search", "The depth of recursion", "The timeout in seconds"],
+      "correct": 1,
+      "explanation": "Scope bounds the universe size — Alloy checks all instances up to that many atoms per type, trading completeness for tractability."
+    }
+  ],
+  "_meta": { "phase": 17, "lesson": 13, "title": "Alloy and Lightweight Modeling" }
+}

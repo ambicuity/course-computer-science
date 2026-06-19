@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Course: Computer Science">
+  <defs>
+    <radialGradient id="sunny" cx="0.85" cy="0.1" r="0.6">
+      <stop offset="0" stop-color="#F5C45E" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#F5C45E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sage-blob" cx="0.05" cy="0.95" r="0.5">
+      <stop offset="0" stop-color="#6FAF9E" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#6FAF9E" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .display { font-family: 'Fraunces', 'Source Serif 4', Georgia, serif; font-weight: 600; font-style: italic; }
+      .body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 400; }
+      .mono { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 500; letter-spacing: 0.18em; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="630" fill="#FFF7EC"/>
+  <rect width="1200" height="630" fill="url(#sunny)"/>
+  <rect width="1200" height="630" fill="url(#sage-blob)"/>
+
+  <!-- decorative squiggles -->
+  <path d="M 90 110 q 22 -22 44 0 t 44 0 t 44 0 t 44 0"
+        fill="none" stroke="#6FAF9E" stroke-width="4" stroke-linecap="round" stroke-opacity="0.75"/>
+  <path d="M 90 560 q 24 -20 48 0 t 48 0 t 48 0 t 48 0 t 48 0"
+        fill="none" stroke="#E2557A" stroke-width="4" stroke-linecap="round" stroke-opacity="0.7"/>
+
+  <!-- scattered sparkles -->
+  <g fill="#E2557A">
+    <path d="M 1040 180 l 9 -32 l 9 32 l 32 9 l -32 9 l -9 32 l -9 -32 l -32 -9 z"/>
+  </g>
+  <g fill="#F5C45E">
+    <path d="M 1100 420 l 6 -20 l 6 20 l 20 6 l -20 6 l -6 20 l -6 -20 l -20 -6 z"/>
+  </g>
+  <g fill="#6FAF9E">
+    <path d="M 980 520 l 5 -16 l 5 16 l 16 5 l -16 5 l -5 16 l -5 -16 l -16 -5 z"/>
+  </g>
+
+  <!-- eyebrow -->
+  <g class="mono" font-size="18" fill="#5A4458">
+    <text x="100" y="170">A SELF-PACED CURRICULUM</text>
+  </g>
+
+  <!-- "Course:" -->
+  <g class="display" fill="#6FAF9E">
+    <text x="100" y="270" font-size="80">Course:</text>
+  </g>
+
+  <!-- Computer Science -->
+  <g class="display" fill="#2A1A2E">
+    <text x="100" y="400" font-size="132" letter-spacing="2">Computer Science</text>
+  </g>
+
+  <!-- inline sparkle -->
+  <g fill="#E2557A">
+    <path d="M 100 460 l 7 -24 l 7 24 l 24 7 l -24 7 l -7 24 l -7 -24 l -24 -7 z"/>
+  </g>
+
+  <!-- subhead -->
+  <g class="body" fill="#5A4458">
+    <text x="160" y="478" font-size="26">Build production-grade AI systems from first principles.</text>
+  </g>
+
+  <!-- footer rule -->
+  <line x1="100" y1="560" x2="1100" y2="560" stroke="#E8D9C2" stroke-width="1.5"/>
+
+  <!-- footer left: byline -->
+  <g class="body" fill="#2A1A2E" font-weight="500">
+    <text x="100" y="600" font-size="20">by Ritesh Rana</text>
+  </g>
+
+  <!-- footer right: meta -->
+  <g class="mono" font-size="14" fill="#5A4458" text-anchor="end">
+    <text x="1100" y="600">20 PHASES · 416 LESSONS · OPEN SOURCE</text>
+  </g>
+</svg>

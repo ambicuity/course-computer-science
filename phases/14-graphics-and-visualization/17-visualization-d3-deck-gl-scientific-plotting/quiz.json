@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 14,
+    "lesson": 17,
+    "title": "Visualization — D3, deck.gl, scientific plotting"
+  },
+  "questions": [
+    {
+      "question": "According to Cleveland's hierarchy, which visual encoding is the most accurate for representing quantitative data?",
+      "options": [
+        "Position on a common scale",
+        "Color hue across a spectrum",
+        "Area of a shape",
+        "Angle in a pie chart"
+      ],
+      "correct": 0,
+      "explanation": "Cleveland and McGill's experiments showed that position on a common scale is the most accurately perceived visual encoding. This is why bar charts and scatter plots (which use position) are more effective than pie charts (angle) or bubble charts (area) for quantitative comparisons.",
+      "stage": "pre"
+    },
+    {
+      "question": "Why should you avoid the rainbow (jet) colormap for quantitative data?",
+      "options": [
+        "It uses too many colors and slows rendering",
+        "It creates artificial boundaries because luminance varies non-uniformly, making some data transitions appear sharper than they are",
+        "It does not support alpha transparency",
+        "It cannot represent negative values"
+      ],
+      "correct": 1,
+      "explanation": "The rainbow/jet colormap has sharp luminance spikes (especially in the green-yellow range) that create the illusion of boundaries where none exist in the data. Perceptually uniform colormaps like viridis ensure equal steps in data produce equal steps in perceived brightness, preventing false structure.",
+      "stage": "pre"
+    },
+    {
+      "question": "In D3's data join pattern, what happens to DOM elements in the 'exit' selection?",
+      "options": [
+        "They are moved to the update phase for re-rendering",
+        "They are typically removed from the DOM because their data is no longer in the new dataset",
+        "They are reassigned new data from the 'enter' selection",
+        "They are animated to the center of the viewport"
+      ],
+      "correct": 1,
+      "explanation": "The exit selection contains DOM elements whose data keys are no longer present in the new data array. The standard pattern is to transition them out (e.g., shrink opacity to 0) and then remove them from the DOM. This is how D3 efficiently handles data changes without redrawing everything.",
+      "stage": "pre"
+    },
+    {
+      "question": "When should you choose deck.gl over D3 for a visualization project?",
+      "options": [
+        "When you need smooth animated transitions between chart states",
+        "When you have over 100,000 data points, especially geospatial data, and need GPU-accelerated rendering",
+        "When you need fine-grained control over individual SVG element styling",
+        "When building a small dashboard with fewer than 1,000 points"
+      ],
+      "correct": 1,
+      "explanation": "deck.gl renders on the GPU via WebGL, making it orders of magnitude faster than D3's SVG approach for large datasets. D3 excels at fine-grained DOM manipulation and animated transitions for smaller datasets (<10K), but becomes sluggish at scale. For geospatial data with millions of points, deck.gl's layer-based architecture is the right choice.",
+      "stage": "post"
+    },
+    {
+      "question": "You have a dataset with monthly revenue for 5 product categories over 12 months. What is the most effective chart type and why?",
+      "options": [
+        "A single pie chart showing the average revenue share per category, because pie charts show proportions clearly",
+        "A stacked bar chart or small multiples of line charts, because they use position (the strongest encoding) for the quantitative revenue variable and position/color for categories",
+        "A 3D bar chart, because depth adds a third visual encoding channel",
+        "A heatmap with months on one axis and categories on the other, because color is the strongest encoding for quantitative data"
+      ],
+      "correct": 1,
+      "explanation": "Stacked bar charts or line chart small multiples use position to encode revenue — the strongest visual channel per Cleveland's hierarchy. A pie chart uses angle (weak encoding). 3D charts add volume (very weak, distorts perception). Heatmaps use color for quantities (weak for precise comparison), though they're fine for showing patterns.",
+      "stage": "post"
+    },
+    {
+      "question": "What is the 'grammar of graphics' philosophy shared by ggplot2 and matplotlib's higher-level APIs?",
+      "options": [
+        "Charts should be drawn using only geometric primitives (lines, circles, rectangles)",
+        "A plot is the composition of orthogonal components: data, mapping, geometry, scale, coordinate system, and facets",
+        "All visualizations must follow a strict template with fixed defaults",
+        "Graphics should be described in a declarative markup language like SVG rather than procedurally"
+      ],
+      "correct": 1,
+      "explanation": "The grammar of graphics (Leland Wilkinson, popularized by Hadley Wickham's ggplot2) decomposes plots into independent, composable layers: data, aesthetic mappings (which data columns map to which visual channels), geometries (bar, point, line), scales (how data values map to visual values), coordinate systems, and facets. This lets you build complex plots by combining simple, orthogonal pieces.",
+      "stage": "post"
+    }
+  ]
+}

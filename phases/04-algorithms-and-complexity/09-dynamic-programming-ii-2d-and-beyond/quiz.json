@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 4,
+    "lesson": 9,
+    "title": "Dynamic Programming II — 2D and Beyond"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In 2D DP, if dp[i][j] depends only on dp[i-1][j], dp[i][j-1], and dp[i-1][j-1], which space optimization is possible?",
+      "options": [
+        "Reduce from O(mn) to O(m + n) using two rows",
+        "No optimization is possible",
+        "Reduce from O(mn) to O(min(m,n)) using a single rolling row and one variable",
+        "Reduce from O(mn) to O(1) using mathematical formulas"
+      ],
+      "correct": 2,
+      "explanation": "Since dp[i][j] only needs the previous row (i-1), we can keep just one row of length n and update it in-place, reducing space to O(n) or O(min(m,n)) after swapping to keep the shorter dimension as the inner one."
+    },
+    {
+      "stage": "post",
+      "question": "When performing traceback in the LCS algorithm, if a[i-1] != b[j-1] and dp[i-1][j] >= dp[i][j-1], which direction do you move?",
+      "options": [
+        "Move diagonally to dp[i-1][j-1]",
+        "Move up to dp[i-1][j] (skip character in a)",
+        "Move left to dp[i][j-1] (skip character in b)",
+        "Either direction is valid — the LCS is not unique"
+      ],
+      "correct": 1,
+      "explanation": "When characters don't match, you follow the direction of the larger subproblem. Since dp[i-1][j] >= dp[i][j-1], the optimal LCS is in the upper cell, meaning you skip a[i-1] by moving up."
+    },
+    {
+      "stage": "post",
+      "question": "The 0/1 knapsack recurrence is dp[i][w] = max(dp[i-1][w], dp[i-1][w-wt[i]] + val[i]). What changes in the unbounded knapsack?",
+      "options": [
+        "The second term becomes dp[i][w-wt[i]] + val[i] (same row, not previous row)",
+        "The first term becomes dp[i+1][w] (next row)",
+        "Nothing changes — unbounded is identical to 0/1",
+        "Both terms use dp[i][w] on the right side"
+      ],
+      "correct": 0,
+      "explanation": "In unbounded knapsack, items can be reused, so including item i means you stay on the same row i (can use it again). In 0/1, you move to row i-1 to prevent reuse."
+    },
+    {
+      "stage": "post",
+      "question": "Matrix chain multiplication has state dp[i][j] = min cost to multiply A_i through A_j. What is the time complexity and why?",
+      "options": [
+        "O(n²) because there are n² subproblems",
+        "O(n³) because each of the O(n²) subproblems tries O(n) split points",
+        "O(n⁴) because each split requires merging two O(n²) tables",
+        "O(2^n) because each matrix can be grouped in exponentially many ways"
+      ],
+      "correct": 1,
+      "explanation": "There are O(n²) pairs (i,j) and for each you try up to O(n) split points k, giving O(n³) total. The O(n²) subproblem count alone ignores the O(n) work per subproblem."
+    },
+    {
+      "stage": "pre",
+      "question": "In the classic longest common subsequence (LCS) problem, what does dp[i][j] typically represent?",
+      "options": [
+        "The length of the longest common prefix of the first i and j characters",
+        "The length of the LCS of the first i characters of one string and first j of the other",
+        "The edit distance between the two strings",
+        "The number of matching characters at positions i and j"
+      ],
+      "correct": 1,
+      "explanation": "In the standard LCS DP formulation, dp[i][j] stores the length of the longest common subsequence between the first i characters of string X and the first j characters of string Y. This builds up from dp[0][0] = 0 using the recurrence based on whether characters match."
+    }
+  ]
+}

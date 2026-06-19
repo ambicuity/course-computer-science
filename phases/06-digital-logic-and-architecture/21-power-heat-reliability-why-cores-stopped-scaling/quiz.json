@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 21,
+    "title": "Power, Heat, Reliability — Why Cores Stopped Scaling"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "According to Dennard scaling, what happens to power density when transistors are shrunk by a factor k?",
+      "options": [
+        "Power density stays constant because V, I, and C all scale proportionally",
+        "Power density increases by k² because more transistors are packed per area",
+        "Power density decreases by k because each transistor uses less current",
+        "Power density doubles with every process node regardless of k"
+      ],
+      "correct": 0,
+      "explanation": "Dennard's key insight was that shrinking length, voltage, current, and capacitance by the same factor k causes per-transistor power to drop by k² while transistor density rises by k² — cancelling out so power density remains constant."
+    },
+    {
+      "stage": "post",
+      "question": "In the dynamic power equation P = α·C·V²·f, which variable has the strongest effect on power consumption and why?",
+      "options": [
+        "f (frequency), because it directly multiplies the result",
+        "V (voltage), because it is squared — a 2× increase in V causes a 4× increase in power",
+        "C (capacitance), because it depends on wire length which grows with die size",
+        "α (switching activity), because it ranges from 0 to 1 and dominates in active circuits"
+      ],
+      "correct": 1,
+      "explanation": "Voltage appears squared in the equation, making it the single biggest lever. Doubling frequency roughly requires doubling V to maintain timing, which causes 2× × 2² = 8× power increase — the primary reason clock speeds plateaued."
+    },
+    {
+      "stage": "pre",
+      "question": "What is 'dark silicon'?",
+      "options": [
+        "Silicon wafers that have been doped with dark-colored impurities",
+        "Transistors on a die that exist but are left unpowered because the thermal budget cannot support activating them",
+        "A manufacturing defect where metal layers block light during photolithography",
+        "The portion of a chip that has been placed in a low-power sleep state but can wake in nanoseconds"
+      ],
+      "correct": 1,
+      "explanation": "Dark silicon refers to transistors that are physically present on the die but intentionally left unpowered. At advanced nodes (e.g., 7 nm), 50–80% of the die may be dark at any moment because activating all transistors would exceed the chip's thermal design power."
+    },
+    {
+      "stage": "post",
+      "question": "What does a CPU do during thermal throttling to reduce heat?",
+      "options": [
+        "Shuts down the entire chip and waits for the temperature to drop below ambient",
+        "Reduces the clock frequency (and often voltage) so that dynamic power — and therefore heat — decreases",
+        "Redirects computation to idle cores that are cooler",
+        "Increases the fan speed to compensate without changing clock speed"
+      ],
+      "correct": 1,
+      "explanation": "Thermal throttling works by reducing clock frequency, and typically voltage as well. Since P = αCV²f, lowering both V and f produces a cubic reduction in dynamic power, which directly reduces heat generation at the source."
+    },
+    {
+      "stage": "pre",
+      "question": "What is 'Dennard scaling' and why did it stop?",
+      "options": [
+        "The observation that transistor density doubles every two years",
+        "The observation that power density stays constant as transistors shrink, which broke down around 2006 due to leakage currents",
+        "The rule that clock speeds must double every generation",
+        "A law about memory capacity growth"
+      ],
+      "correct": 1,
+      "explanation": "Dennard scaling said that as transistors shrink, voltage and current scale down proportionally, keeping power density constant. Around 2006, leakage currents became significant at small feature sizes, causing power density to increase. This ended the era of easy frequency scaling and forced the industry toward multi-core designs."
+    }
+  ]
+}

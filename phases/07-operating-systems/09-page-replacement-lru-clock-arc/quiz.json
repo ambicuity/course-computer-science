@@ -1,0 +1,78 @@
+{
+  "lesson": "09-page-replacement-lru-clock-arc",
+  "questions": [
+    {
+      "id": 1,
+      "type": "mcq",
+      "question": "Bélády's anomaly (more frames causing more page faults) affects which algorithm?",
+      "options": [
+        "A) LRU",
+        "B) Optimal",
+        "C) FIFO",
+        "D) Clock"
+      ],
+      "explanation": "FIFO is not a stack algorithm and can exhibit Bélády's anomaly. LRU, Optimal, and Clock are stack algorithms and are immune to it.",
+      "stage": "pre",
+      "correct": "C"
+    },
+    {
+      "id": 2,
+      "type": "mcq",
+      "question": "The clock page replacement algorithm approximates LRU using:",
+      "options": [
+        "A) A timestamp for each page",
+        "B) A reference bit and a circular list with a sweep hand",
+        "C) A counter of how many times each page was accessed",
+        "D) A priority queue sorted by page age"
+      ],
+      "explanation": "Clock uses a circular list of frames with a reference bit per frame. The hand sweeps forward: if the reference bit is 1, it clears it and moves on; if 0, it evicts that page.",
+      "stage": "pre",
+      "correct": "B"
+    },
+    {
+      "id": 3,
+      "type": "mcq",
+      "question": "In ARC (Adaptive Replacement Cache), what happens when a cache miss hits the B1 (ghost recency) list?",
+      "options": [
+        "A) The parameter p is decreased to favor frequency",
+        "B) The parameter p is increased to favor recency",
+        "C) The entire T2 list is flushed",
+        "D) The algorithm switches to pure FIFO"
+      ],
+      "explanation": "A hit in B1 indicates the page was recently evicted from T1, suggesting recency is important. ARC responds by increasing p, giving more cache space to the recency list T1.",
+      "stage": "post",
+      "correct": "B"
+    },
+    {
+      "id": 4,
+      "type": "mcq",
+      "question": "In the enhanced clock algorithm, which page is evicted first?",
+      "options": [
+        "A) Reference=1, Dirty=1",
+        "B) Reference=1, Dirty=0",
+        "C) Reference=0, Dirty=1",
+        "D) Reference=0, Dirty=0"
+      ],
+      "explanation": "Pages with reference=0 and dirty=0 are both unreferenced and clean. Evicting them first avoids the cost of writing dirty pages to disk.",
+      "stage": "post",
+      "correct": "D"
+    },
+    {
+      "stage": "pre",
+      "question": "What is Belady's anomaly?",
+      "options": [
+        "A bug in the LRU replacement algorithm",
+        "Adding more page frames can increase the number of page faults for FIFO replacement",
+        "LRU always outperforms all other algorithms",
+        "Page replacement algorithms fail on small memories"
+      ],
+      "correct": 1,
+      "explanation": "Belady's anomaly shows that FIFO page replacement can produce more page faults with more frames — a counterintuitive result. LRU and optimal algorithms are 'stack algorithms' that never exhibit this anomaly: more frames always means fewer or equal faults."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 9,
+    "title": "Page Replacement Lru Clock Arc"
+  }
+}

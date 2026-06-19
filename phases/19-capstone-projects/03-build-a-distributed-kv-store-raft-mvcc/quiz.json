@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why separate consensus and storage layers in a distributed KV design?",
+      "options": ["To avoid networking", "To isolate ordering correctness from versioned state mechanics", "To remove logs", "To bypass testing"],
+      "correct": 1,
+      "explanation": "Consensus (Raft) ensures all nodes apply the same commands in the same order. Storage (MVCC) ensures versions are correctly maintained. Separating them lets you verify each independently and debug issues at the right layer."
+    },
+    {
+      "stage": "pre",
+      "question": "What does 'commit' mean in a Raft-based system?",
+      "options": ["Write to disk", "A majority of nodes have stored the log entry, so it will never be lost", "Send a response to the client", "Delete old entries"],
+      "correct": 1,
+      "explanation": "An entry is committed when a majority of nodes have acknowledged it. Once committed, the entry is guaranteed to survive any minority failure. The leader then applies it to the state machine."
+    },
+    {
+      "stage": "post",
+      "question": "What does MVCC add over single-value storage?",
+      "options": ["No writes needed", "Multiple versions enabling snapshot reads and historical queries", "No consistency guarantees", "No indexing capability"],
+      "correct": 1,
+      "explanation": "MVCC retains historical versions per key. This enables snapshot reads (read at a specific version), lock-free reads (readers don't block writers), and temporal queries (what was the value at time T?)."
+    },
+    {
+      "stage": "post",
+      "question": "Why must the apply function be deterministic?",
+      "options": ["To make code shorter", "So all nodes that apply the same committed entries reach the same final state", "To avoid using Raft", "To reduce memory usage"],
+      "correct": 1,
+      "explanation": "Raft guarantees all nodes apply the same entries in the same order. If the apply function is deterministic, all nodes converge to identical state. If it's non-deterministic (e.g., uses timestamps), nodes can diverge despite identical inputs."
+    },
+    {
+      "stage": "post",
+      "question": "What is a tombstone in MVCC storage?",
+      "options": ["A dead process", "A version entry marking a key as deleted, distinguishing it from 'never written'", "A corrupted log entry", "An uncommitted write"],
+      "correct": 1,
+      "explanation": "A tombstone is a special version with Deleted=true. Without tombstones, GetAt() can't distinguish between 'key was never written' and 'key was deleted at version 5.' Tombstones are compacted during garbage collection."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 3, "title": "Build a Distributed KV Store (Raft + MVCC)" }
+}

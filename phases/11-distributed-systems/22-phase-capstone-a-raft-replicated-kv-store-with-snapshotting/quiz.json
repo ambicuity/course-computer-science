@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 11,
+    "lesson": 22,
+    "title": "Phase Capstone — A Raft-Replicated KV Store with Snapshotting"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why are snapshots needed in long-running Raft clusters?",
+      "options": [
+        "To compact old log entries and bound replay time",
+        "To elect leaders faster than heartbeats",
+        "To bypass quorum requirements",
+        "To avoid writing state machines"
+      ],
+      "correct": 0,
+      "explanation": "Snapshots compact committed history so recovery and storage stay bounded."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the relationship between Raft's log and the state machine?",
+      "options": [
+        "The log is the state machine",
+        "The log contains commands; applying them to the state machine produces the current state",
+        "The state machine generates the log",
+        "They are independent and synchronized periodically"
+      ],
+      "correct": 1,
+      "explanation": "Raft replicates a log of commands. Each node applies committed log entries to its local state machine deterministically. The state machine is the application's data; the log is the sequence of operations that produced it."
+    },
+    {
+      "stage": "post",
+      "question": "When can a follower safely install a snapshot from the leader?",
+      "options": [
+        "When snapshot metadata is newer than follower's compacted index",
+        "Only when follower has no log entries",
+        "Only after forcing a new election",
+        "Only if term numbers are equal to 0"
+      ],
+      "correct": 0,
+      "explanation": "Install when snapshot carries a sufficiently new lastIncludedIndex/term boundary."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the leader send InstallSnapshot instead of just replaying log entries to a lagging follower?",
+      "options": [
+        "InstallSnapshot is faster than AppendEntries",
+        "The leader may have already compacted the entries the follower needs, so the log gap cannot be filled from the log alone",
+        "InstallSnapshot requires fewer network round trips",
+        "AppendEntries doesn't work for lagging followers"
+      ],
+      "correct": 1,
+      "explanation": "After the leader compacts its log via snapshotting, entries before the snapshot's lastIncludedIndex are discarded. A follower whose log starts before that point cannot receive those entries via AppendEntries — they no longer exist on the leader. InstallSnapshot transfers the state machine snapshot directly, allowing the follower to catch up."
+    },
+    {
+      "stage": "post",
+      "question": "What invariant must hold when a leader takes a snapshot?",
+      "options": [
+        "All followers must be online",
+        "The snapshot must include all committed entries up to the snapshot index, and the lastIncludedIndex must be committed (replicated to a majority)",
+        "The leader must first replicate the snapshot to all followers",
+        "The snapshot must be taken at a term boundary"
+      ],
+      "correct": 1,
+      "explanation": "A snapshot only compacts committed entries — entries that have been replicated to a majority and applied to the state machine. The lastIncludedIndex in the snapshot metadata must correspond to a committed entry. Taking a snapshot of uncommitted entries would risk losing data if the leader fails and a new leader is elected with a different log prefix."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 12,
+    "lesson": 24,
+    "title": "Phase Capstone — A TLS 1.3 Library + a Mini-CTF"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of this phase capstone?",
+      "options": [
+        "To build a single cryptographic primitive in isolation",
+        "To integrate concepts from all prior Phase 12 lessons into a working TLS 1.3 library and a security CTF",
+        "To implement only the TLS handshake without encryption",
+        "To write a theoretical paper about TLS vulnerabilities"
+      ],
+      "correct": 1,
+      "explanation": "The capstone synthesizes every prior lesson: symmetric ciphers, hash functions, MACs, AEAD, key exchange (X25519), RSA, ECC, signatures (Ed25519), KDFs (HKDF), the TLS handshake, PKI, side-channels, and memory safety. It has two deliverables: a working TLS 1.3 library and a mini-CTF with 5 vulnerability challenges."
+    },
+    {
+      "stage": "pre",
+      "question": "In the AES-ECB byte-at-a-time attack, how does the attacker recover unknown plaintext bytes?",
+      "options": [
+        "By measuring the time it takes to encrypt each byte",
+        "By crafting inputs that align one unknown byte as the last byte of an ECB block, then brute-forcing all 256 values and comparing ciphertext blocks",
+        "By exploiting the padding oracle to reveal each byte",
+        "By factoring the block cipher key from known plaintext-ciphertext pairs"
+      ],
+      "correct": 1,
+      "explanation": "ECB encrypts each block independently. The attacker feeds a prefix of length (block_size - 1 - position) to push the target unknown byte into the last position of a block. They then encrypt prefix + known bytes + guess and compare the resulting block to a reference. The deterministic nature of ECB makes the correct guess produce an identical ciphertext block."
+    },
+    {
+      "stage": "post",
+      "question": "What is the consequence of reusing the same nonce for two AES-CTR encryptions with the same key?",
+      "options": [
+        "The cipher is weakened but the plaintexts remain confidential",
+        "The keystream is identical for both encryptions, so XORing the ciphertexts cancels the keystream and reveals the XOR of the plaintexts",
+        "Only the first block of each message is compromised",
+        "The encryption becomes reversible with known plaintext on either message"
+      ],
+      "correct": 1,
+      "explanation": "CTR mode generates a keystream KS = AES_CTR(key, nonce) and computes ct = pt XOR KS. With the same key and nonce, both ciphertexts use the same KS, so ct1 XOR ct2 = pt1 XOR pt2. If one plaintext is known, the other is immediately recoverable. This is called the 'two-time pad' problem."
+    },
+    {
+      "stage": "post",
+      "question": "What two conditions must be met for a padding oracle attack to succeed against AES-CBC?",
+      "options": [
+        "The attacker must know the key and have access to the decrypted plaintext",
+        "The server must reveal whether padding is valid, and the attacker must have access to a ciphertext and its IV",
+        "The cipher must be in CTR mode and the nonce must be zero",
+        "The attacker must be able to encrypt arbitrary plaintexts under the same key"
+      ],
+      "correct": 1,
+      "explanation": "A padding oracle attack requires: (1) a server that decrypts CBC-encrypted ciphertexts and reveals (directly or indirectly) whether the PKCS7 padding is valid, and (2) the IV and ciphertext of the target message. The attacker iteratively modifies the previous ciphertext block byte-by-byte, using the oracle's padding response to deduce intermediate values, then XORs with the original ciphertext to recover plaintext."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is implementing your own TLS library a valuable learning exercise despite not being recommended for production?",
+      "options": [
+        "Self-written TLS is faster than OpenSSL",
+        "It forces you to understand every detail of the handshake, record layer, cipher suites, and certificate verification",
+        "Production TLS libraries are too complex to understand",
+        "It eliminates the need for certificates"
+      ],
+      "correct": 1,
+      "explanation": "Building a TLS library requires implementing key exchange, symmetric encryption, HMAC verification, certificate chain validation, and the record protocol — touching nearly every concept in applied cryptography. The exercise reveals why subtle bugs (like timing attacks or padding oracles) are so dangerous in real implementations."
+    }
+  ]
+}

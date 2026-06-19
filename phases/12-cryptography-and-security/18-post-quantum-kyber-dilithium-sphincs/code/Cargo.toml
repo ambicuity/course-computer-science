@@ -1,0 +1,10 @@
+[package]
+name = "post-quantum-demo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pqcrypto-kyber = "0.8"
+pqcrypto-dilithium = "0.5"
+pqcrypto-sphincsplus = "0.7"
+hex = "0.4"

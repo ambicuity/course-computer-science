@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 30,
+    "title": "Phase Capstone — Algorithm Cookbook + Benchmark Harness",
+    "note": "4 MCQs: 2 pre-lesson, 2 post-lesson."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You need to sort 1 million integers where 90% of values are the same. Which algorithm and why?",
+      "options": [
+        "Merge sort — guaranteed O(n log n) regardless of input",
+        "Quicksort with 3-way partition — groups all duplicates in one pass, O(n) on high-duplicate inputs",
+        "Insertion sort — O(n) on nearly sorted data",
+        "Heap sort — O(1) extra space"
+      ],
+      "correct": 1,
+      "explanation": "3-way partition (Dutch National Flag) groups all equal elements together in a single pass, so recursive calls only process the ~10% distinct values. This gives O(n) performance on inputs with many duplicates, whereas standard merge sort still does O(n log n) work."
+    },
+    {
+      "stage": "pre",
+      "question": "A benchmark reports that Algorithm X runs in 5.3ms on input size 10,000. What is the most important thing missing from this result?",
+      "options": [
+        "The algorithm's source code",
+        "The programming language used",
+        "The input distribution (sorted, random, adversarial) and measurement variance across multiple runs",
+        "The Big-O complexity of the algorithm"
+      ],
+      "correct": 2,
+      "explanation": "A single timing measurement without specifying the input distribution is nearly meaningless. An algorithm might be 5.3ms on random data but 500ms on adversarial input. You also need multiple runs to report variance — a single run could be affected by OS scheduling, cache state, or GC pauses."
+    },
+    {
+      "stage": "post",
+      "question": "You need to find the shortest path in a weighted graph where some edges have negative weights. Which algorithm do you use and what additional information does it provide?",
+      "options": [
+        "Dijkstra — it handles negative weights if you use a Fibonacci heap",
+        "BFS — it finds shortest paths in O(V+E)",
+        "Bellman-Ford — O(VE) time but it also detects negative-weight cycles",
+        "Floyd-Warshall — O(V³) handles all cases"
+      ],
+      "correct": 2,
+      "explanation": "Bellman-Ford works with negative weights and runs in O(VE). Crucially, after V-1 relaxation rounds, one more pass detects negative-weight cycles — if any edge can still be relaxed, a negative cycle exists. Dijkstra fails with negative weights because its greedy assumption (shortest path to settled nodes is final) breaks. Floyd-Warshall works but is overkill for single-source."
+    },
+    {
+      "stage": "post",
+      "question": "When deciding between a greedy algorithm and dynamic programming for an optimization problem, what is the key distinguishing property?",
+      "options": [
+        "DP is always faster because it uses memoization",
+        "Greedy works when the greedy choice property holds — a locally optimal choice leads to a globally optimal solution — and subproblems don't interact",
+        "Greedy should be tried first and DP is the fallback if greedy gives wrong answers",
+        "DP uses more memory, so greedy is preferred when memory is limited"
+      ],
+      "correct": 1,
+      "explanation": "The greedy choice property means you can make the locally optimal choice at each step and arrive at a global optimum. This works for problems like Huffman coding, Dijkstra, and Kruskal where choices don't affect future subproblem structure. When choices interact (picking item i affects what's available for item j), you need DP with overlapping subproblems. The decision isn't about speed or memory — it's about correctness."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is it important to benchmark algorithms on multiple input sizes and distributions?",
+      "options": [
+        "Because big-O notation tells you exact running times",
+        "Because constant factors, cache effects, and input patterns can cause real performance to differ significantly from asymptotic predictions",
+        "Because all algorithms perform the same on any input",
+        "Because benchmarks are required by academic standards"
+      ],
+      "correct": 1,
+      "explanation": "Big-O hides constant factors and lower-order terms that dominate at practical sizes. Cache behavior, branch prediction, and input distribution (sorted vs random vs adversarial) all affect real performance. A benchmark harness exposes these hidden factors."
+    }
+  ]
+}

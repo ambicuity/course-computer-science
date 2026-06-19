@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is move generation correctness a first milestone in chess engine development?",
+      "options": ["It is optional for basic play", "Search quality is meaningless if legal moves are wrong", "It only affects the UI display", "It replaces the evaluation function"],
+      "correct": 1,
+      "explanation": "If the move generator produces illegal moves or misses legal ones, every search result is suspect. Perft testing (counting legal moves at known depths) verifies move generator correctness before search is even added."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the minimax algorithm assume about both players?",
+      "options": ["Both players make random moves", "Both players play optimally, maximizing/minimizing the evaluation score", "Only one player has a strategy", "The game is always a draw"],
+      "correct": 1,
+      "explanation": "Minimax assumes the opponent plays optimally. At each level, the side to move picks the move that maximizes its score; the opponent picks the move that minimizes it. This guarantees finding the best move against a perfect opponent."
+    },
+    {
+      "stage": "post",
+      "question": "What does alpha-beta pruning improve?",
+      "options": ["Board rendering quality", "Search efficiency by skipping provably irrelevant branches", "Network communication speed", "Rule complexity"],
+      "correct": 1,
+      "explanation": "Alpha-beta maintains two bounds: alpha (best score the maximizer can guarantee) and beta (best score the minimizer can guarantee). When alpha >= beta, the current branch can't improve the result and is pruned. In the best case, this doubles the searchable depth."
+    },
+    {
+      "stage": "post",
+      "question": "Why start with simple material-only evaluation?",
+      "options": ["To maximize final engine strength immediately", "To establish a stable baseline before adding positional complexity", "To avoid writing tests", "To remove the search entirely"],
+      "correct": 1,
+      "explanation": "A simple evaluation (just material counting) lets you verify that the search works correctly. If the engine hangs pieces with material-only eval, the bug is in search or move generation, not evaluation. Adding positional terms later is easier when the baseline is stable."
+    },
+    {
+      "stage": "post",
+      "question": "What is perft testing and why is it essential?",
+      "options": ["Performance benchmarking of the search", "Counting legal moves at known depths to verify move generator correctness", "Testing the evaluation function", "Measuring memory usage"],
+      "correct": 1,
+      "explanation": "Perft(pos, depth) counts the total number of legal move sequences up to the given depth. Known perft values for standard positions (like the starting position) are published. If your perft counts match, your move generator is correct."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 7, "title": "Build a Chess Engine with Search & Eval" }
+}

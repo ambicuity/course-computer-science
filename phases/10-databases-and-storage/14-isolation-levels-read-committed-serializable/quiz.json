@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 10,
+    "lesson": 14,
+    "title": "Isolation Levels — Read Committed → Serializable"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which anomaly does Read Committed isolation prevent?",
+      "options": [
+        "Dirty read",
+        "Non-repeatable read",
+        "Phantom read",
+        "All of the above"
+      ],
+      "correct": 0,
+      "explanation": "Read Committed prevents dirty reads by ensuring a transaction only sees data that has been committed. It does NOT prevent non-repeatable reads (same row can change between reads) or phantom reads (new rows can appear in range scans)."
+    },
+    {
+      "stage": "pre",
+      "question": "At which SQL isolation level does a transaction see the same value for a row every time it reads it, but may still see a different set of rows when re-executing a range query?",
+      "options": [
+        "Read Uncommitted",
+        "Read Committed",
+        "Repeatable Read",
+        "Serializable"
+      ],
+      "correct": 2,
+      "explanation": "Repeatable Read ensures that if you read the same row twice within a transaction, you get the same value (no non-repeatable read). However, the SQL standard allows phantom reads at Repeatable Read — new rows inserted by other transactions matching the same WHERE clause may appear on re-execution. (PostgreSQL is stronger: its MVCC implementation also prevents phantoms at Repeatable Read.)"
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between Snapshot Isolation and Serializable isolation?",
+      "options": [
+        "Snapshot Isolation is always slower than Serializable",
+        "Snapshot Isolation may allow write skew anomalies",
+        "Snapshot Isolation allows dirty reads",
+        "Snapshot Isolation requires row-level locking while Serializable uses MVCC"
+      ],
+      "correct": 1,
+      "explanation": "Snapshot Isolation provides a consistent point-in-time snapshot but does not detect read-write conflicts between concurrent transactions. This allows write skew: two transactions each read overlapping data and make writes that individually preserve an invariant (e.g., 'at least one doctor on call') but together violate it. Serializable isolation adds conflict detection (PostgreSQL uses SSI — a conflict graph with cycle detection) to prevent write skew and all other anomalies."
+    },
+    {
+      "stage": "post",
+      "question": "PostgreSQL treats READ UNCOMMITTED as READ COMMITTED and never allows dirty reads. What is the technical reason for this?",
+      "options": [
+        "It is a bug that PostgreSQL has never fixed",
+        "PostgreSQL's MVCC architecture reads from snapshots and cannot expose uncommitted writes without breaking the visibility model",
+        "The SQL standard requires all databases to treat READ UNCOMMITTED as READ COMMITTED",
+        "PostgreSQL only supports Serializable isolation"
+      ],
+      "correct": 1,
+      "explanation": "PostgreSQL uses MVCC where every query operates on a snapshot of committed data at a specific point in time. The visibility rules (tracked via xmin/xmax in tuple headers) determine which row versions a transaction can see. Supporting true dirty reads would require exposing uncommitted tuple versions from concurrent transactions, which contradicts the snapshot-based visibility model. PostgreSQL's developers chose to always provide at minimum Read Committed guarantees rather than implement a special fast path for dirty reads."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a 'dirty read' in database transactions?",
+      "options": [
+        "Reading data that has been committed by another transaction",
+        "Reading data that has been modified by another transaction but not yet committed",
+        "Reading data from a corrupted disk",
+        "Reading data without proper authentication"
+      ],
+      "correct": 1,
+      "explanation": "A dirty read occurs when transaction T1 reads data modified by transaction T2 before T2 commits. If T2 later rolls back, T1 has read data that never officially existed. The READ COMMITTED isolation level prevents dirty reads by only showing committed data."
+    }
+  ]
+}

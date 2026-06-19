@@ -1,0 +1,14 @@
+[workspace]
+
+[package]
+name = "occ-validator"
+version = "0.1.0"
+edition = "2021"
+description = "OCC Validator — lesson 10.15 Concurrency Control"
+autobins = false
+
+[[bin]]
+name = "occ-validator"
+path = "main.rs"
+
+[dependencies]

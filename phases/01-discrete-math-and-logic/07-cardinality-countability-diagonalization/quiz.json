@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does it mean for an infinite set A to be 'countable'?",
+      "options": [
+        "It has finitely many elements",
+        "There is a bijection (or surjection) from ℕ onto A — its elements can be enumerated as a₀, a₁, a₂, …",
+        "It is a subset of ℚ",
+        "Its elements are all integers"
+      ],
+      "correct": 1,
+      "explanation": "Countable means 'finite or in bijection with ℕ.' Equivalently: there is a surjection ℕ → A (you can enumerate, with possible repeats). ℤ, ℚ, and ℕᵏ are all countable; ℝ and 𝒫(ℕ) are not."
+    },
+    {
+      "stage": "pre",
+      "question": "Is the set ℕ × ℕ countable?",
+      "options": [
+        "No — it's a product of infinite sets",
+        "Yes — the Cantor pairing function gives a bijection to ℕ",
+        "Only if both copies are bounded",
+        "Only for finite n"
+      ],
+      "correct": 1,
+      "explanation": "ℕ × ℕ is countable via Cantor's zigzag. The formula `(x+y)(x+y+1)/2 + y` is one explicit bijection. By induction, ℕᵏ is countable for every k. ℚ is countable as a corollary (every rational is a (numerator, denominator) pair)."
+    },
+    {
+      "stage": "post",
+      "question": "Cantor's diagonal proof shows that ℝ is uncountable. What's the core construction?",
+      "options": [
+        "Multiply all real numbers together",
+        "Assume an enumeration r₀, r₁, … of [0,1); construct d whose i-th digit differs from rᵢ's i-th digit. Then d ∉ enumeration, contradicting completeness.",
+        "Show ℝ is bigger than ℂ",
+        "Count primes"
+      ],
+      "correct": 1,
+      "explanation": "Diagonalization: list the candidate reals, flip the digit on the diagonal, produce a real that disagrees with every row. Contradiction. The same construction underlies Cantor's theorem |𝒫(A)| > |A|, the halting-problem proof, Gödel's incompleteness, and Russell's paradox."
+    },
+    {
+      "stage": "post",
+      "question": "Why are there only countably many programs but uncountably many functions ℕ → ℕ?",
+      "options": [
+        "Programs are short and functions are long",
+        "Programs are finite strings over a finite alphabet (countable union of finite sets), but ℕ → ℕ corresponds to ℕ-indexed sequences of naturals, which has cardinality at least 2^ℵ₀ (uncountable, like the reals)",
+        "Functions are slower than programs",
+        "Both are countable"
+      ],
+      "correct": 1,
+      "explanation": "Source code is a finite string → at most countably many programs. The set of all functions ℕ → {0, 1} alone is in bijection with 𝒫(ℕ) (uncountable, by Cantor). So most functions have no program — including, by a deeper diagonal argument, the halting decider."
+    },
+    {
+      "stage": "post",
+      "question": "Russell's paradox ('the set of all sets that don't contain themselves leads to contradiction') is structurally what?",
+      "options": [
+        "A proof by induction",
+        "A diagonalization argument — define D = {x : x ∉ f(x)} for an alleged surjection f, then ask whether the witness for D is in D",
+        "A pigeonhole argument",
+        "A counting argument"
+      ],
+      "correct": 1,
+      "explanation": "Russell's paradox is Cantor's theorem applied to the universe-as-set: a 'set of all sets' would force a contradiction by the same diagonal construction as the powerset proof. The fix in modern set theory (ZFC) is to disallow forming arbitrary sets-of-things; you can only form subsets of existing sets."
+    },
+    {
+      "stage": "post",
+      "question": "If A is countable and B is countable, is A × B countable?",
+      "options": [
+        "No — it's twice as large",
+        "Yes — compose the bijections A↔ℕ, B↔ℕ, and the Cantor pairing ℕ×ℕ↔ℕ",
+        "Only when both are finite",
+        "Only if one is empty"
+      ],
+      "correct": 1,
+      "explanation": "Cartesian product of two countable sets is countable. Hence ℤ × ℤ, ℚ × ℚ, ℕ¹⁰⁰, and similar are countable. Finite unions and disjoint unions of countable sets are also countable. The dividing line is 2^ℕ — once you go to the power set, you're uncountable."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 7,
+    "title": "Cardinality Countability Diagonalization"
+  }
+}

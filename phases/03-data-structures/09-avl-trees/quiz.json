@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What invariant does an AVL tree enforce?",
+      "options": [
+        "Keys are sorted",
+        "For every node, |height(left) − height(right)| ≤ 1. Strict height balance, restored after every insert/delete via rotations.",
+        "Tree has even depth",
+        "Same color rule as RB"
+      ],
+      "correct": 1,
+      "explanation": "The balance factor bf(N) = h(left) - h(right) is constrained to {-1, 0, +1}. This forces the tree to be 'almost as short as possible' — height ≤ 1.44 log₂(n+2). When an insert or delete makes |bf|=2, we rotate to bring it back to {-1, 0, +1}."
+    },
+    {
+      "stage": "pre",
+      "question": "How many rotations does an AVL insert require in the worst case?",
+      "options": [
+        "O(log n)",
+        "1 (single rotation, LL/RR) or 2 (double rotation, LR/RL). After rebalancing, the subtree's height returns to what it was before the insert, so no further ancestor is unbalanced.",
+        "O(n)",
+        "n / 2"
+      ],
+      "correct": 1,
+      "explanation": "Insert pinpoints the imbalance to one node on the way back up. The 1-or-2 rotation fix restores both balance AND height — so ancestors don't need fixing. Delete is harder: it can chain rebalancing up the tree, O(log n) rotations in the worst case."
+    },
+    {
+      "stage": "post",
+      "question": "What are the 4 rebalance cases (LL, LR, RR, RL)?",
+      "options": [
+        "Random labels",
+        "First letter = side of unbalance (Left/Right); second letter = side of child's imbalance. LL = single rotate_right; RR = single rotate_left; LR/RL = double rotation (rotate child first, then root).",
+        "Color rules",
+        "Tree heights"
+      ],
+      "correct": 1,
+      "explanation": "LL: parent left-heavy (bf=+2), left-child left-heavy → straight chain, single rotate_right. LR: parent left-heavy, left-child right-heavy → zigzag, must rotate_left on left-child first to straighten, then rotate_right on parent. RR and RL are mirrors. Memorize: 'name describes the chain shape from the unbalanced node'."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the AVL height bound exactly 1.44 log₂(n+2) and not 2 log₂(n+2) (as for red-black)?",
+      "options": [
+        "Different formula",
+        "The minimum-node AVL tree of height h has F(h) = F(h-1) + F(h-2) + 1 nodes (Fibonacci recurrence). Solving: h ≤ log_φ(n) ≈ 1.44 log₂(n). AVL's strictness gives a tighter bound than RB.",
+        "More rotations",
+        "Better cache"
+      ],
+      "correct": 1,
+      "explanation": "AVL's worst-case 'thinnest' tree is the Fibonacci tree: the left and right subtrees of every node differ in height by 1. The recurrence F(h) = F(h-1) + F(h-2) + 1 gives Fib(h+2)−1 nodes. Inverting: h ≤ log_φ(n+2) ≈ 1.44 log₂(n+2). Red-black trees admit thinner-on-one-side trees, so their bound is looser at 2 log₂(n+1)."
+    },
+    {
+      "stage": "post",
+      "question": "When should you choose AVL over red-black?",
+      "options": [
+        "Never",
+        "Read-heavy workloads where lookup latency matters: AVL's tighter height ⇒ ~30% fewer cache misses on lookup. Choose RB for write-heavy: fewer rotations per op.",
+        "Always",
+        "When data is sorted"
+      ],
+      "correct": 1,
+      "explanation": "AVL's strict balance gives shorter lookups but costs more rotations on writes. RB's looser balance does fewer rotations per write (max 2 vs AVL's max 1, but RB rebalances less often via color flips). Empirical guideline: AVL for read-heavy (search engines, DNS), RB for general-purpose (std::map, Linux kernel). The difference is usually <30% either way; pick by interface fit, not microbenchmark."
+    },
+    {
+      "stage": "post",
+      "question": "Which production systems actually use AVL trees?",
+      "options": [
+        "All hash tables",
+        "Rarely in production today — RB, B-trees, and skip lists dominate. AVL appears in some embedded systems (libavl), in academic textbooks, and as a stepping-stone for understanding rotations and balance.",
+        "Linux kernel",
+        "Postgres"
+      ],
+      "correct": 1,
+      "explanation": "AVL has been overtaken by RB (C++/Java std libs, Linux kernel) and B-trees (databases) in production. Why? RB is slightly cheaper to maintain; B-trees better match cache/page sizes. AVL remains the cleanest demonstration of rotation-based balancing and is the foundation for understanding WAVL, Treaps, and other balanced-BST variants."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 9,
+    "title": "Avl Trees"
+  }
+}

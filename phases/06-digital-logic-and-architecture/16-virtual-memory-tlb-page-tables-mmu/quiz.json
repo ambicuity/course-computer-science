@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 16,
+    "title": "Virtual Memory — TLB, Page Tables, MMU"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A 32-bit system uses 4 KB pages. How many bits are used for the page offset?",
+      "options": [
+        "10 bits",
+        "12 bits",
+        "20 bits",
+        "32 bits"
+      ],
+      "correct": 1,
+      "explanation": "4 KB = 2^12, so the offset needs 12 bits. The remaining 20 bits form the virtual page number."
+    },
+    {
+      "stage": "pre",
+      "question": "In a TLB with 4-way set associativity and 64 total entries, how many sets are there?",
+      "options": [
+        "4",
+        "16",
+        "64",
+        "256"
+      ],
+      "correct": 1,
+      "explanation": "Sets = total entries / associativity = 64 / 4 = 16 sets. Each set holds 4 entries (ways)."
+    },
+    {
+      "stage": "post",
+      "question": "A 2-level page table is used instead of a single-level table primarily because:",
+      "options": [
+        "It is always faster to look up",
+        "It wastes less memory on unused (sparse) regions of the address space",
+        "It eliminates the need for a TLB",
+        "It reduces the page offset size"
+      ],
+      "correct": 1,
+      "explanation": "A single-level 32-bit table with 4 KB pages needs 4 MB always. A 2-level table only allocates page tables for directory entries that are actually used, saving memory for sparse address spaces."
+    },
+    {
+      "stage": "post",
+      "question": "When a page fault occurs, what is the approximate cost compared to a TLB hit?",
+      "options": [
+        "~10× slower",
+        "~100× slower",
+        "~1,000× slower",
+        "~10,000,000× slower"
+      ],
+      "correct": 3,
+      "explanation": "A TLB hit takes ~1 cycle. A page fault requires a disk access (~10 ms ≈ 10,000,000 cycles at 1 GHz). This is roughly 10 million times slower, which is why avoiding page faults is critical."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the purpose of the TLB (Translation Lookaside Buffer)?",
+      "options": [
+        "To store frequently used data values",
+        "To cache recent virtual-to-physical address translations, avoiding slow page table walks",
+        "To translate between different ISAs",
+        "To buffer I/O operations to disk"
+      ],
+      "correct": 1,
+      "explanation": "The TLB is a small, fast cache that stores recent page table entries. Every memory access requires a virtual-to-physical translation, and a full page table walk (4 levels on x86-64) is expensive. The TLB typically hits in 1 cycle, making this translation nearly free."
+    }
+  ]
+}

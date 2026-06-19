@@ -1,0 +1,93 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 6,
+    "title": "False Sharing and NUMA"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Two threads each increment their own separate atomic variable, but both variables happen to reside on the same 64-byte cache line. What performance effect does this cause?",
+      "options": [
+        "No effect: the variables are separate, so there is no contention",
+        "The cache line bounces between cores on every write, causing slowdowns similar to true sharing",
+        "The compiler can optimize this away since the variables are independent",
+        "Only L3 cache is affected; L1 and L2 caches are immune"
+      ],
+      "correct": 1,
+      "explanation": "When two threads write to different variables on the same cache line, the coherence protocol invalidates the entire line on every write. The line ping-pongs between cores just as if the threads were sharing the same variable — hence 'false' sharing."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the typical cache line size on modern x86-64 processors?",
+      "options": [
+        "16 bytes",
+        "32 bytes",
+        "64 bytes",
+        "128 bytes"
+      ],
+      "correct": 2,
+      "explanation": "Most modern x86-64 and ARM processors use 64-byte cache lines. This is the fundamental unit of cache coherence: the CPU manages and transfers data in 64-byte chunks."
+    },
+    {
+      "stage": "pre",
+      "question": "On a NUMA system with two sockets, a thread running on Socket 0 accesses memory allocated on Socket 1. Compared to accessing local memory, the remote access has approximately:",
+      "options": [
+        "The same latency",
+        "1.5–2× higher latency",
+        "5–10× higher latency",
+        "100× higher latency"
+      ],
+      "correct": 1,
+      "explanation": "Remote NUMA access traverses the inter-socket interconnect (UPI or Infinity Fabric), adding ~1.5–2× latency. This is measurable and significant for latency-sensitive work, but not as extreme as going to disk."
+    },
+    {
+      "stage": "post",
+      "question": "You observe that adding more threads to your counter program makes it *slower*. `perf stat` shows a high L1-dcache-load-miss count that grows with thread count. What is the most likely cause?",
+      "options": [
+        "True sharing: threads are correctly synchronizing on the same variable",
+        "False sharing: independent per-thread variables share a cache line",
+        "NUMA remote access: all threads are running on the wrong socket",
+        "Memory allocation failure: the heap is fragmenting"
+      ],
+      "correct": 1,
+      "explanation": "The hallmark of false sharing is scalability inversion (more threads = slower) combined with high L1-dcache-load-misses. Each thread's writes invalidate the shared cache line on other cores, and the miss count grows linearly with thread count."
+    },
+    {
+      "stage": "post",
+      "question": "In C++, how do you ensure an atomic counter occupies its own cache line?",
+      "options": [
+        "Declare it as `volatile std::atomic<uint64_t>`",
+        "Wrap it in a struct with `alignas(64)`",
+        "Use `std::atomic<uint64_t>` directly — it is already cache-line sized",
+        "Allocate it with `new` instead of on the stack"
+      ],
+      "correct": 1,
+      "explanation": "`alignas(64)` forces the struct to start on a 64-byte boundary, ensuring the atomic variable does not share a cache line with any adjacent data. `volatile` does not affect cache layout, `std::atomic<uint64_t>` is only 8 bytes, and heap vs. stack allocation does not change alignment."
+    },
+    {
+      "stage": "post",
+      "question": "Which Linux command shows the NUMA topology of your machine (number of nodes, CPUs per node, memory per node)?",
+      "options": [
+        "`numastat -m`",
+        "`numactl --hardware`",
+        "`perf top`",
+        "`lscpu`"
+      ],
+      "correct": 1,
+      "explanation": "`numactl --hardware` prints the full NUMA topology: node count, CPU ranges per node, and memory sizes. `numastat -m` shows per-node memory allocation statistics, not topology. `perf top` is for profiling hot functions. `lscpu` shows CPU info but not NUMA memory layout."
+    },
+    {
+      "stage": "post",
+      "question": "Under Linux's default 'first touch' memory allocation policy, where is a page of memory placed?",
+      "options": [
+        "On the NUMA node with the most free memory",
+        "On the NUMA node of the thread that first writes to the page",
+        "On the NUMA node closest to the I/O device that allocated it",
+        "Round-robin across all NUMA nodes for load balancing"
+      ],
+      "correct": 1,
+      "explanation": "Linux's default policy is 'first touch': the page is allocated on the NUMA node of the thread that first writes to it. This means initialization code placement matters — if Thread 0 on Node 0 initializes an entire array, the whole array lives on Node 0, even if Thread 5 on Node 1 does all the later processing."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "According to Fitts's Law, what makes a button easier to click?",
+      "options": [
+        "Making it a bright color",
+        "Making it larger and closer to the current cursor position",
+        "Adding a tooltip",
+        "Placing it in a menu"
+      ],
+      "correct": 1,
+      "explanation": "Fitts's Law: T = a + b·log₂(D/W + 1). Movement time decreases when distance D decreases or width W increases. This is why the Start button in Windows is in the corner — the screen edge acts as an infinite-width barrier, making it an 'infinitely large' target. Touch interfaces need larger buttons because fingers are less precise than mouse cursors."
+    },
+    {
+      "stage": "pre",
+      "question": "What does Hick's Law predict about a menu with 50 items?",
+      "options": [
+        "Users will read all 50 items",
+        "Decision time increases logarithmically; users will take longer to choose and may feel overwhelmed",
+        "Users will ignore the menu",
+        "The menu will load slowly"
+      ],
+      "correct": 1,
+      "explanation": "Hick's Law: T = b·log₂(n+1). A 50-item menu takes ~5.7× longer to scan than a 2-item menu. Combined with Miller's Law (7±2 chunks in working memory), users will feel overwhelmed. Solutions: progressive disclosure, search/filter, grouping, or a command palette that filters as you type."
+    },
+    {
+      "stage": "post",
+      "question": "Which of Nielsen's heuristics does this violate: 'Error 0x80070005: Operation failed'",
+      "options": [
+        "Visibility of system status",
+        "Match between system and real world — uses system-centric language instead of user's mental model",
+        "Consistency and standards",
+        "Error prevention"
+      ],
+      "correct": 1,
+      "explanation": "The error code 0x80070005 means nothing to users. 'Match between system and real world' says to use the user's vocabulary, not internal codes. Good: 'Permission denied: you need admin access to modify this file.' This tells users what went wrong and what to do about it. Rust's compiler is excellent at this — it explains errors in plain English and suggests fixes."
+    },
+    {
+      "stage": "post",
+      "question": "Why are screen corners and edges special targets in Fitts's Law?",
+      "options": [
+        "They are always visible",
+        "The cursor stops at the edge, making the target effectively infinite in width — the fastest possible target to acquire",
+        "They have the shortest distance",
+        "Users naturally look at corners"
+      ],
+      "correct": 1,
+      "explanation": "When the cursor hits a screen edge, it can't go further — the effective width W is infinite. This makes corner/edge targets have minimum movement time regardless of where the cursor starts. This is why Windows puts Start in the corner, macOS puts the Apple menu in the corner, and hot corners work for screen savers. It's also why edge-scrolling in lists is fast."
+    },
+    {
+      "stage": "post",
+      "question": "What is 'progressive disclosure' and when should you use it?",
+      "options": [
+        "Showing all options at once",
+        "Showing common options first, hiding advanced options behind a toggle — use when the interface has many options but most users need only a few",
+        "Disclosing information gradually over time",
+        "Hiding all options until the user asks"
+      ],
+      "correct": 1,
+      "explanation": "Progressive disclosure reduces Hick's Law impact by showing only common choices initially. VS Code's settings UI shows common settings first with an 'Advanced' toggle. The macOS Finder shows basic file info by default, with detailed info behind 'Get Info'. The key insight: most users need 20% of features 80% of the time — optimize for that 20%."
+    }
+  ],
+  "_meta": {
+    "phase": 16,
+    "lesson": 23,
+    "title": "Human Computer Interaction Design Principles"
+  }
+}

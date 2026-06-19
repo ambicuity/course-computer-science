@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In `fn longest<'a>(s1: &'a str, s2: &'a str) -> &'a str`, what does `'a` mean?",
+      "options": [
+        "A type parameter",
+        "A lifetime parameter: 'for some scope 'a, s1, s2, and the return reference are all valid'. The compiler picks 'a as the shorter of the input lifetimes.",
+        "A pointer modifier",
+        "An optional annotation"
+      ],
+      "correct": 1,
+      "explanation": "Lifetimes are generic parameters over scopes. The compiler chooses 'a to be the intersection of the input lifetimes — the period when ALL relevant references are valid. The returned reference's lifetime is then guaranteed not to outlive any input."
+    },
+    {
+      "stage": "pre",
+      "question": "What does RAII stand for and what does it guarantee?",
+      "options": [
+        "Random Access Interrupt Implementation",
+        "Resource Acquisition Is Initialization: the constructor acquires a resource; the destructor releases it. Scope exit always runs the destructor, including on exception unwinding.",
+        "Recursive Application Iterative Inversion",
+        "Re-Allocating Interrupt Indirection"
+      ],
+      "correct": 1,
+      "explanation": "RAII binds resource lifetime to object scope. C++ destructors run automatically; Rust's `Drop` trait is the same idea. Exception-safe code follows: even if a function throws midway, every constructed local has its destructor called during stack unwinding, releasing files, locks, memory."
+    },
+    {
+      "stage": "post",
+      "question": "When are Rust lifetime annotations REQUIRED on a function?",
+      "options": [
+        "Always",
+        "When the lifetime elision rules can't unambiguously infer them: multiple input references and an output reference that doesn't trivially correspond to one input.",
+        "Only for safety-critical code",
+        "Only when crossing module boundaries"
+      ],
+      "correct": 1,
+      "explanation": "Elision rules: (1) each input ref gets its own lifetime; (2) one input lifetime → output gets it; (3) `&self` present → output gets `self`'s lifetime. When these don't unambiguously assign an output lifetime — e.g., `fn f(a: &str, b: &str) -> &str` — the compiler forces you to annotate."
+    },
+    {
+      "stage": "post",
+      "question": "What does C++'s `std::unique_ptr<T>` provide?",
+      "options": [
+        "A reference-counted pointer",
+        "RAII wrapper for sole heap ownership: deletes the underlying object in its destructor. No copy; only move. Replacement for naked `new`/`delete`.",
+        "A shared atomic pointer",
+        "A pointer to immutable data"
+      ],
+      "correct": 1,
+      "explanation": "unique_ptr is move-only. Exactly one unique_ptr owns the resource; transferring ownership is explicit (`std::move`). On destruction, it calls `delete` on the pointee. Modern C++ uses unique_ptr (or shared_ptr) instead of naked new/delete — eliminating leaks and double-free bugs in well-written code."
+    },
+    {
+      "stage": "post",
+      "question": "Rust's `Box<T>`, `Rc<T>`, and `Arc<T>` differ how?",
+      "options": [
+        "Speed",
+        "Box: sole ownership (= unique_ptr). Rc: reference-counted shared ownership (single-threaded; non-atomic refcount). Arc: same but with atomic refcount, safe across threads.",
+        "Only Box owns the value",
+        "They're interchangeable"
+      ],
+      "correct": 1,
+      "explanation": "Box<T>: one owner; minimal overhead. Rc<T>: cheap refcount but not Send (single-threaded only). Arc<T>: atomic refcount (~10× slower than Rc) but thread-safe; Send + Sync. Choose by use-case: Box almost always; Rc for shared graphs in a single thread; Arc for cross-thread sharing."
+    },
+    {
+      "stage": "post",
+      "question": "What is Rust's `'static` lifetime?",
+      "options": [
+        "Compile-time constant",
+        "A lifetime that lasts for the entire program. String literals have it; so do `const` and `static` items. Don't reach for `'static` to silence the borrow checker — it's a real claim.",
+        "An attribute",
+        "Just a convention"
+      ],
+      "correct": 1,
+      "explanation": "`'static` means 'lives forever.' Genuinely-static things (string literals, leaked memory, global statics) have this lifetime. Putting `'static` everywhere defeats the type system — you'd often need to `clone` or `Box::leak` the data. Use it only when the value really lives that long."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 11,
+    "title": "Lifetimes References Raii"
+  }
+}

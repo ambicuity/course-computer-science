@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="166" viewBox="0 0 1000 132">
+<style>
+  rect { stroke: #999; stroke-width: 0.5; cursor: pointer; }
+  rect:hover { stroke: #000; stroke-width: 2; }
+  text { font-family: monospace; font-size: 11px; fill: #333; pointer-events: none; }
+  .title { font-size: 14px; font-weight: bold; fill: #000; }
+</style>
+<script type="text/javascript"><![CDATA[
+function details(evt) {
+  var r = evt.target;
+  var info = document.getElementById("info");
+  info.textContent = r.getAttribute("name") + " (" + r.getAttribute("samples") + " samples, " + r.getAttribute("pct") + "%)";
+}
+]]></script>
+<rect x="0" y="0" width="1000" height="166" fill="#f8f8f8" rx="4"/>
+<text x="500" y="16" text-anchor="middle" class="title">Off-CPU Flamegraph (Synthetic)</text>
+<text id="info" x="500" y="122" text-anchor="middle" style="font-size:12px;fill:#666;">Hover over a bar for details</text>
+  <rect x="0.00" y="25" width="1000.00" height="18" fill="#4466197" name="main" samples="1000" pct="100.0" onmouseover="details(evt)"/>
+  <text x="2" y="38">main</text>
+  <rect x="0.00" y="43" width="40.00" height="18" fill="#4466184" name="main;alloc" samples="40" pct="4.0" onmouseover="details(evt)"/>
+  <text x="2" y="56">all..</text>
+  <rect x="40.00" y="43" width="80.00" height="18" fill="#4466165" name="main;compress" samples="80" pct="8.0" onmouseover="details(evt)"/>
+  <text x="42" y="56">compre..</text>
+  <rect x="120.00" y="43" width="20.00" height="18" fill="#4466145" name="main;gc" samples="20" pct="2.0" onmouseover="details(evt)"/>
+  <rect x="140.00" y="43" width="800.00" height="18" fill="#4466187" name="main;io" samples="800" pct="80.0" onmouseover="details(evt)"/>
+  <text x="142" y="56">io</text>
+  <rect x="940.00" y="43" width="60.00" height="18" fill="#4466196" name="main;parse" samples="60" pct="6.0" onmouseover="details(evt)"/>
+  <text x="942" y="56">parse</text>
+  <rect x="0.00" y="61" width="40.00" height="18" fill="#4466172" name="main;alloc;malloc_large" samples="40" pct="4.0" onmouseover="details(evt)"/>
+  <text x="2" y="74">mal..</text>
+  <rect x="40.00" y="61" width="80.00" height="18" fill="#4466158" name="main;compress;lz4" samples="80" pct="8.0" onmouseover="details(evt)"/>
+  <text x="42" y="74">lz4</text>
+  <rect x="120.00" y="61" width="20.00" height="18" fill="#4466194" name="main;gc;mark_sweep" samples="20" pct="2.0" onmouseover="details(evt)"/>
+  <rect x="140.00" y="61" width="650.00" height="18" fill="#4466149" name="main;io;read_block" samples="650" pct="65.0" onmouseover="details(evt)"/>
+  <text x="142" y="74">read_block</text>
+  <rect x="790.00" y="61" width="150.00" height="18" fill="#4466153" name="main;io;write_block" samples="150" pct="15.0" onmouseover="details(evt)"/>
+  <text x="792" y="74">write_block</text>
+  <rect x="940.00" y="61" width="60.00" height="18" fill="#4466149" name="main;parse;tokenize" samples="60" pct="6.0" onmouseover="details(evt)"/>
+  <text x="942" y="74">token..</text>
+  <rect x="0.00" y="79" width="40.00" height="18" fill="#4466150" name="main;alloc;malloc_large;mmap_brk" samples="40" pct="4.0" onmouseover="details(evt)"/>
+  <text x="2" y="92">mma..</text>
+  <rect x="40.00" y="79" width="80.00" height="18" fill="#4466114" name="main;compress;lz4;mutex_lock" samples="80" pct="8.0" onmouseover="details(evt)"/>
+  <text x="42" y="92">mutex_..</text>
+  <rect x="120.00" y="79" width="20.00" height="18" fill="#4466161" name="main;gc;mark_sweep;stop_the_world" samples="20" pct="2.0" onmouseover="details(evt)"/>
+  <rect x="140.00" y="79" width="200.00" height="18" fill="#4466146" name="main;io;read_block;epoll_wait" samples="200" pct="20.0" onmouseover="details(evt)"/>
+  <text x="142" y="92">epoll_wait</text>
+  <rect x="340.00" y="79" width="450.00" height="18" fill="#4466130" name="main;io;read_block;futex_wait" samples="450" pct="45.0" onmouseover="details(evt)"/>
+  <text x="342" y="92">futex_wait</text>
+  <rect x="790.00" y="79" width="150.00" height="18" fill="#4466130" name="main;io;write_block;futex_wait" samples="150" pct="15.0" onmouseover="details(evt)"/>
+  <text x="792" y="92">futex_wait</text>
+  <rect x="940.00" y="79" width="60.00" height="18" fill="#4466157" name="main;parse;tokenize;cond_wait" samples="60" pct="6.0" onmouseover="details(evt)"/>
+  <text x="942" y="92">cond_..</text>
+</svg>

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 6,
+    "title": "Parsing Iii Lr Slr Lalr Glr"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a 'shift' action in an LR parser?",
+      "options": [
+        "Remove the top production from the stack and replace it with its left-hand side",
+        "Push the current input token and its new state onto the stack, then advance the input",
+        "Accept the input because the start symbol has been recognized",
+        "Skip the current token because it is not expected"
+      ],
+      "correct": 1,
+      "explanation": "A shift action pushes the current lookahead token and the state reached by GOTO(current state, token) onto the parser stack, then advances the input pointer. It is used when more input is needed before a reduction can be performed."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key difference between SLR(1) and LALR(1) parsing?",
+      "options": [
+        "SLR uses FOLLOW sets to decide reduce actions; LALR uses per-state lookahead sets refined from LR(1) items",
+        "SLR handles ambiguous grammars; LALR cannot",
+        "LALR requires a much larger number of states than SLR",
+        "SLR works bottom-up; LALR works top-down"
+      ],
+      "correct": 0,
+      "explanation": "SLR uses FOLLOW(A) globally to decide when to reduce by A → α, which can be too coarse and cause spurious conflicts. LALR(1) computes lookaheads per state from LR(1) items, then merges states with the same core. This yields more precise reduce decisions with the same number of states as SLR."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the dangling-else grammar produce a shift-reduce conflict in an SLR parser?",
+      "options": [
+        "The grammar contains left recursion",
+        "The FOLLOW set of the non-terminal overlaps with the shift target — the parser cannot decide whether to shift 'e' or reduce the completed 'if-then'",
+        "There are two reduce actions for the same state and lookahead",
+        "The grammar has an ε-production"
+      ],
+      "correct": 1,
+      "explanation": "In state containing [S → i E t S ·] (complete), the FOLLOW set of S includes 'e'. But there is also a transition on 'e' from this state (for the S → i E t S e S production). So both shift and reduce are valid for lookahead 'e' — a shift-reduce conflict. Standard resolution: prefer shift (which gives the else to the innermost if)."
+    },
+    {
+      "stage": "post",
+      "question": "How does a GLR parser handle an ambiguous grammar?",
+      "options": [
+        "It picks one production arbitrarily and hopes for the best",
+        "It forks the parser into parallel stacks at conflict points, exploring all valid parses simultaneously, and prunes invalid paths",
+        "It transforms the grammar into an equivalent unambiguous form automatically",
+        "It requires the user to provide precedence declarations to resolve all conflicts"
+      ],
+      "correct": 1,
+      "explanation": "GLR (Generalized LR) forks the parser stack at each shift-reduce or reduce-reduce conflict, creating parallel parser instances. Each continues independently. Paths that hit errors are discarded. If multiple paths reach accept, the grammar is genuinely ambiguous and multiple parse trees are produced. This is the approach used by tree-sitter."
+    },
+    {
+      "stage": "pre",
+      "question": "What advantage does LR parsing have over LL parsing?",
+      "options": [
+        "LR parsers are always simpler to implement",
+        "LR parsers can handle a larger class of grammars, including left-recursive productions",
+        "LR parsers run in linear time while LL parsers are quadratic",
+        "LR parsers don't need a lookahead"
+      ],
+      "correct": 1,
+      "explanation": "LR (bottom-up) parsing can handle all deterministic context-free languages, while LL (top-down) parsing cannot handle left-recursion and requires left-factoring. LR parsers shift tokens onto a stack and reduce by productions, building the parse tree from leaves up."
+    }
+  ]
+}

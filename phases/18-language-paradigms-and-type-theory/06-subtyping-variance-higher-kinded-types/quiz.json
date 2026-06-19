@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "When is covariance generally safe?",
+      "options": ["Mutable write-heavy positions", "Read-only output positions", "Any position", "Only primitive types"],
+      "correct": 1,
+      "explanation": "Covariance is typically safe for producers/outputs where values are only read."
+    },
+    {
+      "stage": "pre",
+      "question": "What is contravariance?",
+      "options": ["Subtyping preserved in output positions", "Subtyping reversed in input/consumer positions", "No subtyping at all", "Subtyping only for functions"],
+      "correct": 1,
+      "explanation": "Contravariance means if A is a subtype of B, then a consumer of B is a subtype of a consumer of A — the direction flips for inputs."
+    },
+    {
+      "stage": "post",
+      "question": "Why are mutable containers often invariant?",
+      "options": ["They have no methods", "Both read and write positions can make subtype substitution unsound", "Variance is not implemented", "They are always contravariant"],
+      "correct": 1,
+      "explanation": "Writes can violate assumptions if subtype substitution is allowed in mutable contexts."
+    },
+    {
+      "stage": "post",
+      "question": "What is a higher-kinded type intuition?",
+      "options": ["A runtime object", "A type constructor abstracted over another type", "A pointer optimization", "A parser combinator"],
+      "correct": 1,
+      "explanation": "HKTs talk about constructors like `f` where `f a` is a type, enabling abstractions over containers/effects."
+    },
+    {
+      "stage": "post",
+      "question": "Why does `List<Dog>` not safely subtype `List<Animal>` in mutable contexts?",
+      "options": ["Because Dog is not an Animal", "Because someone could insert a Cat into the List<Animal> reference", "Because lists are immutable", "Because generics don't exist"],
+      "correct": 1,
+      "explanation": "If a List<Dog> were treated as List<Animal>, you could insert a Cat through the Animal reference, violating the Dog-only invariant."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 6, "title": "Subtyping, Variance, Higher-Kinded Types" }
+}

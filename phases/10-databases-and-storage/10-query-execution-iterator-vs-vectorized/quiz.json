@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 10,
+    "lesson": 10,
+    "title": "Query Execution Iterator Vs Vectorized"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the Volcano iterator model, which three methods does every operator implement?",
+      "options": [
+        "init(), process(), finalize()",
+        "start(), get(), stop()",
+        "open(), next(), close()",
+        "begin(), fetch(), end()"
+      ],
+      "correct": 2,
+      "explanation": "The Volcano model defines every operator with open() (initialize state and children), next() (return the next tuple or EOF), and close() (clean up). Tuples flow one-at-a-time up the tree via repeated next() calls."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary advantage of the vectorized (batch) execution model over the tuple-at-a-time iterator model?",
+      "options": [
+        "Vectorized models use less memory because batches are compressed",
+        "Vectorized models amortize function call overhead, enable SIMD instructions, and have better cache behavior by processing arrays of tuples",
+        "Vectorized models are easier to implement for all join algorithms",
+        "Vectorized models eliminate the need for query optimization"
+      ],
+      "correct": 1,
+      "explanation": "Processing batches of tuples (e.g., 1024 at a time) reduces the number of function calls by 1024x, allows tight loops over contiguous arrays that the CPU can SIMD-vectorize, and keeps the cache hotter since operator code runs uninterrupted for thousands of tuples."
+    },
+    {
+      "stage": "pre",
+      "question": "Which execution model does PostgreSQL primarily use?",
+      "options": [
+        "Push-based dataflow execution",
+        "Fully vectorized columnar batch execution",
+        "The Volcano iterator model (pull-based, tuple-at-a-time)",
+        "Compiled JIT execution only"
+      ],
+      "correct": 2,
+      "explanation": "PostgreSQL uses the Volcano iterator model. Every plan node (SeqScan, IndexScan, HashJoin, etc.) implements an Exec* function that returns one tuple per call via the standard next() interface."
+    },
+    {
+      "stage": "post",
+      "question": "What is a pipeline-breaking operator, and why does it matter for execution models?",
+      "options": [
+        "An operator that crashes the database when given invalid input",
+        "An operator like Sort or HashJoin that must consume all input before producing any output, forcing a materialization boundary in the pipeline",
+        "An operator that only works with columnar storage formats",
+        "An operator that splits data across multiple CPU cores"
+      ],
+      "correct": 1,
+      "explanation": "Sort and HashJoin are pipeline-breakers: they must see all input (to sort or build a hash table) before emitting any output. In the Volcano model, Sort is simply a blocking operator that materializes all child tuples in open(). In push-based execution, pipeline breakers are explicit exchange points where dataflow changes direction."
+    },
+    {
+      "stage": "post",
+      "question": "ClickHouse achieves analytical query speed primarily through:",
+      "options": [
+        "Using only hash indexes for all data access",
+        "A fully vectorized columnar execution engine that processes data in column-oriented batches with SIMD instructions",
+        "Caching all query results indefinitely",
+        "Using the traditional Volcano iterator model with faster hardware"
+      ],
+      "correct": 1,
+      "explanation": "ClickHouse is built on a fully vectorized columnar execution engine. Instead of processing rows one at a time, it reads column batches (blocks) and applies operations to entire column arrays using SIMD instructions, making it extremely fast for analytical aggregations and scans."
+    },
+    {
+      "stage": "post",
+      "question": "In a push-based execution model, how does data flow between operators compared to the pull-based Volcano model?",
+      "options": [
+        "Both models use identical pull-based semantics; only the API names differ",
+        "In push-based, data flows from the root down to the leaves",
+        "In push-based, child operators push tuples to parent operators via callbacks or exchange buffers, enabling tighter compiled pipelines",
+        "Push-based execution is only used for write operations, never for reads"
+      ],
+      "correct": 2,
+      "explanation": "In push-based execution, the child operator pushes its output tuples into the parent operator (often via a callback or exchange buffer). This allows the database to compile a complete operator pipeline into a single tight loop, eliminating function call overhead entirely. Systems like Hyper and Umbra use this approach combined with JIT compilation."
+    }
+  ]
+}

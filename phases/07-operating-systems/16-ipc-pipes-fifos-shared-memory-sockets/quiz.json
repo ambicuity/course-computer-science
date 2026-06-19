@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 16: IPC — Pipes, FIFOs, Shared Memory, Sockets",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Which IPC mechanism is the fastest because it avoids copying data between kernel and user space?",
+      "options": [
+        "Unnamed pipes",
+        "FIFOs (named pipes)",
+        "Shared memory",
+        "Unix domain sockets"
+      ],
+      "explanation": "Shared memory maps the same physical page into multiple processes' address spaces, eliminating the kernel-to-user copy that pipes, FIFOs, and sockets require.",
+      "stage": "pre",
+      "correct": 2
+    },
+    {
+      "id": 2,
+      "question": "What is the key limitation of an unnamed pipe created with pipe()?",
+      "options": [
+        "It can only transfer 4 KB of data total",
+        "It is unidirectional and limited to parent-child relationships",
+        "It requires root privileges to create",
+        "It cannot be used with fork()"
+      ],
+      "explanation": "Unnamed pipes are unidirectional (data flows in one direction) and only work between related processes (parent and child after fork). FIFOs remove the parent-child restriction but are still unidirectional.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "Why does shared memory require explicit synchronization (e.g., semaphores) while pipes do not?",
+      "options": [
+        "Shared memory is slower, so synchronization is needed for correctness",
+        "Pipes are managed by the kernel which handles synchronization internally; shared memory has no kernel mediation",
+        "Shared memory cannot be accessed by multiple processes simultaneously",
+        "Pipes automatically serialize all read/write operations without kernel involvement"
+      ],
+      "explanation": "The kernel mediates all pipe reads and writes, providing implicit synchronization. Shared memory gives processes direct access to the same physical memory — the kernel is not involved in access, so processes must synchronize themselves.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "What unique capability do Unix domain sockets have that other IPC mechanisms lack?",
+      "options": [
+        "They can only be used on Linux",
+        "They can pass file descriptors between processes via SCM_RIGHTS",
+        "They require no kernel involvement",
+        "They automatically serialize all data structures"
+      ],
+      "explanation": "Unix domain sockets support ancillary data (cmsg) with SCM_RIGHTS, allowing one process to pass open file descriptors to another — something pipes, FIFOs, shared memory, and message queues cannot do.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What is the fastest IPC mechanism on a single machine?",
+      "options": [
+        "TCP sockets",
+        "Shared memory, because data doesn't need to be copied between processes",
+        "Pipes",
+        "Message queues"
+      ],
+      "correct": 1,
+      "explanation": "Shared memory is the fastest IPC because both processes map the same physical pages into their address spaces. Data is shared without any copy — one process writes, the other reads directly. Synchronization (via semaphores or mutexes in the shared region) is still needed."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 16,
+    "title": "Ipc Pipes Fifos Shared Memory Sockets"
+  }
+}

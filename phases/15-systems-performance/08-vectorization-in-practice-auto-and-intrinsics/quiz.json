@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 8
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "How many 32-bit floats can fit in a single AVX (256-bit) vector register?",
+      "options": [
+        "4",
+        "8",
+        "16",
+        "32"
+      ],
+      "correct": 1,
+      "explanation": "AVX registers are 256 bits wide. Each float32 is 32 bits, so 256 / 32 = 8 floats fit in one AVX register."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of these loop patterns is most likely to be auto-vectorized by the compiler?",
+      "options": [
+        "for (i=1; i<n; i++) a[i] = a[i-1] + 1;",
+        "for (i=0; i<n; i++) a[i] = b[i] * c[i];",
+        "for (i=0; i<n; i++) a[i] = rand();",
+        "for (i=0; i<n; i++) if (a[i] > 0) break;"
+      ],
+      "correct": 1,
+      "explanation": "The second loop has no loop-carried dependencies, no function calls, and simple control flow — all conditions for auto-vectorization. The first has a dependency, the third calls rand(), and the fourth has a break."
+    },
+    {
+      "stage": "post",
+      "question": "What does the __restrict__ keyword do in C/C++ that helps auto-vectorization?",
+      "options": [
+        "It forces the compiler to use SIMD instructions",
+        "It tells the compiler the pointed-to memory doesn't overlap with other restrict pointers",
+        "It aligns the pointer to a 32-byte boundary",
+        "It prevents the compiler from unrolling the loop"
+      ],
+      "correct": 1,
+      "explanation": "__restrict__ (or restrict in C) is a promise that the pointer doesn't alias other restrict-qualified pointers. Without it, the compiler must assume pointers may overlap, blocking vectorization."
+    },
+    {
+      "stage": "post",
+      "question": "What is the difference between _mm_load_ps and _mm_loadu_ps in SSE intrinsics?",
+      "options": [
+        "_mm_load_ps loads 8 floats; _mm_loadu_ps loads 4",
+        "_mm_load_ps requires 16-byte alignment; _mm_loadu_ps works with any alignment",
+        "_mm_load_ps is for integers; _mm_loadu_ps is for floats",
+        "There is no difference; they are aliases"
+      ],
+      "correct": 1,
+      "explanation": "_mm_load_ps (movaps) requires the address to be 16-byte aligned and faults if not. _mm_loadu_ps (movups) works at any alignment. On modern CPUs, the performance difference is minimal, but aligned loads are semantically stricter."
+    },
+    {
+      "stage": "post",
+      "question": "AVX-512 added 8 mask registers (k0–k7). What is their primary purpose?",
+      "options": [
+        "They store loop counters for vectorized loops",
+        "They hold per-lane predicates for conditional SIMD execution without branches",
+        "They replace the zmm registers for integer operations",
+        "They manage cache line prefetching"
+      ],
+      "correct": 1,
+      "explanation": "AVX-512 mask registers hold per-lane boolean values (one bit per SIMD lane). They enable masked operations like _mm512_mask_add_ps that only operate on selected lanes, eliminating the need for scalar fallback code."
+    },
+    {
+      "stage": "post",
+      "question": "You benchmark a dot product and find that the auto-vectorized version (compiled with -O3) runs just as fast as your hand-written AVX intrinsics version. What is the most likely explanation?",
+      "options": [
+        "Your intrinsics code has a bug and isn't actually using SIMD",
+        "The compiler auto-vectorizer is good enough for this simple pattern — intrinsics don't always beat it",
+        "AVX intrinsics are always slower than scalar code",
+        "The benchmark is wrong because -O3 disables SIMD"
+      ],
+      "correct": 1,
+      "explanation": "For simple patterns like dot product (no gather/scatter, no masking, just multiply-accumulate), modern auto-vectorizers generate code equivalent to hand-written intrinsics. Intrinsics provide value when the compiler can't prove vectorization is safe, or when you need gather/scatter, masked ops, or specific instruction sequences."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does unification do in Prolog execution?",
+      "options": ["Compiles clauses", "Binds variables to make terms match", "Optimizes tail calls", "Generates bytecode"],
+      "correct": 1,
+      "explanation": "Unification is the variable-binding mechanism that enables goal matching against facts/rules."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a Horn clause in Prolog?",
+      "options": ["A type error", "A clause with at most one head (conclusion) and a body of goals (conditions)", "A loop construct", "A variable declaration"],
+      "correct": 1,
+      "explanation": "Horn clauses are the logical foundation of Prolog: `Head :- Body1, Body2, ...` means Head is true if all body goals succeed."
+    },
+    {
+      "stage": "post",
+      "question": "Why is backtracking useful?",
+      "options": ["It avoids recursion", "It explores alternative rule paths when a branch fails", "It removes variables", "It enforces static typing"],
+      "correct": 1,
+      "explanation": "Backtracking enables Prolog to search multiple derivation paths automatically."
+    },
+    {
+      "stage": "post",
+      "question": "What is a good fit for logic-programming style?",
+      "options": ["Pixel shaders", "Relationship and rule-heavy inference problems", "Binary serialization speed tuning", "Manual memory allocators"],
+      "correct": 1,
+      "explanation": "Logic programming excels when knowledge is naturally expressed as relations and rules."
+    },
+    {
+      "stage": "post",
+      "question": "What is the 'occurs check' in Prolog unification?",
+      "options": ["A syntax validator", "A check preventing a variable from being unified with a term containing itself", "A memory profiler", "A tail-call optimizer"],
+      "correct": 1,
+      "explanation": "Without the occurs check, unifying X with f(X) would create an infinite term, leading to unsound reasoning."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 12, "title": "Logic Programming - Prolog and Unification" }
+}

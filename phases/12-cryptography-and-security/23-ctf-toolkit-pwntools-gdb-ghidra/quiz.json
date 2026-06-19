@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 12,
+    "lesson": 23,
+    "title": "CTF Toolkit — pwntools, GDB, Ghidra"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of pwntools' flat() function in CTF exploit development?",
+      "options": [
+        "To flatten nested list structures into a single continuous payload with automatic padding at specified offsets",
+        "To decompress compressed binary sections for analysis",
+        "To flatten the stack frame of a running process into a linear address space",
+        "To convert a flat binary file into an ELF executable"
+      ],
+      "correct": 0,
+      "explanation": "flat() takes a dictionary or list of {offset: value} pairs and produces a single byte string with automatic zero-padding between offsets. This eliminates manual padding calculations like b'A' * 72 + p64(addr)."
+    },
+    {
+      "stage": "pre",
+      "question": "Which of the following binary protections prevents direct execution of shellcode on the stack?",
+      "options": [
+        "PIE (Position-Independent Executable)",
+        "NX (Non-Executable stack) / DEP",
+        "RELRO (Relocation Read-Only)",
+        "Stack canary"
+      ],
+      "correct": 1,
+      "explanation": "NX (also called DEP or W^X) marks the stack as non-executable. When NX is enabled, the CPU will not execute code placed on the stack, forcing attackers to use ROP or ret2libc instead of direct shellcode injection."
+    },
+    {
+      "stage": "post",
+      "question": "In a ret2libc attack, why must the attacker first leak a GOT entry (e.g., puts@GOT) before calling system()?",
+      "options": [
+        "ASLR randomizes the base address of libc; leaking a known symbol's GOT entry lets the attacker compute the randomized libc base and derive system()'s address",
+        "The GOT entry contains the actual system() function code that the attacker must copy",
+        "The GOT entry must be overwritten with /bin/sh string address before system() can work",
+        "GOT entries are the only writable memory regions in a PIE binary"
+      ],
+      "correct": 0,
+      "explanation": "ASLR randomizes the base address of shared libraries (including libc) at each run. By leaking the GOT entry for puts (which contains puts' actual address in libc), the attacker computes the libc base as leaked_puts - puts_offset, then derives system and /bin/sh addresses relative to that base."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between Ghidra's decompiler and a traditional disassembler like objdump?",
+      "options": [
+        "The decompiler converts assembly into C-like pseudocode, reconstructing high-level control flow, while a disassembler only shows raw assembly mnemonics per instruction",
+        "The decompiler only works on source code, while a disassembler works on binaries",
+        "The decompiler can modify binary files, while a disassembler is read-only",
+        "There is no difference; the terms are interchangeable"
+      ],
+      "correct": 0,
+      "explanation": "Ghidra's decompiler performs static analysis to reconstruct high-level C-like pseudocode from assembly, identifying function boundaries, variables, control flow structures (loops, conditionals), and calling conventions. A disassembler like objdump only translates individual machine code bytes to assembly mnemonics without reconstructing high-level structure."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a CTF (Capture The Flag) competition in cybersecurity?",
+      "options": [
+        "A networking protocol competition",
+        "A security competition where participants solve challenges involving reverse engineering, exploitation, cryptography, and forensics to find hidden 'flags'",
+        "A programming speed-coding contest",
+        "A hardware design competition"
+      ],
+      "correct": 1,
+      "explanation": "CTFs are gamified security competitions. Participants exploit vulnerabilities, crack crypto, reverse-engineer binaries, analyze forensics, and solve web challenges to find flag strings (like flag{...}). They build practical offensive and defensive security skills that transfer directly to real-world security work."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is unification in HM inference?",
+      "options": ["Runtime optimization", "Constraint solving via substitutions between type expressions", "Garbage collection", "Module linking"],
+      "correct": 1,
+      "explanation": "Unification computes substitutions that make generated type constraints consistent."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a type variable in Hindley-Milner inference?",
+      "options": ["A runtime value", "A placeholder that gets refined as constraints are solved", "A module name", "A memory address"],
+      "correct": 1,
+      "explanation": "Type variables represent unknown types that unification gradually specializes as it processes the program."
+    },
+    {
+      "stage": "post",
+      "question": "What does principal type mean?",
+      "options": ["Most specialized type only", "Most general type from which valid specializations derive", "Any inferred type", "Only annotated type"],
+      "correct": 1,
+      "explanation": "Principal type captures maximal generality while remaining valid for the expression."
+    },
+    {
+      "stage": "post",
+      "question": "Why is occurs check needed?",
+      "options": ["To speed parser", "To prevent infinite self-referential types", "To enforce mutability", "To disable polymorphism"],
+      "correct": 1,
+      "explanation": "Occurs check avoids constructing types where a variable contains itself recursively."
+    },
+    {
+      "stage": "post",
+      "question": "What is the 'let-polymorphism' restriction in HM?",
+      "options": ["Let bindings cannot use functions", "Let-bound variables are generalized to polymorphic types, but lambda-bound ones are not", "All lets are monomorphic", "Let is only for integers"],
+      "correct": 1,
+      "explanation": "HM generalizes type schemes at let bindings, enabling polymorphic reuse, while lambda parameters remain monomorphic within their body."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 5, "title": "Type Inference - Hindley-Milner Reconstruction" }
+}

@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 10: The Kernel Heap — slab and slub allocators",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Why is a slab allocator faster than malloc for kernel objects like task_struct?",
+      "options": [
+        "It uses less memory overall",
+        "It pre-allocates fixed-size objects and uses a free list for O(1) alloc/free",
+        "It bypasses virtual memory entirely",
+        "It compiles allocation into machine code at boot time"
+      ],
+      "explanation": "A slab cache pre-allocates pages of identical objects. The free list is a simple pointer chain — allocating means popping from the list (O(1)), freeing means pushing back (O(1)). No searching, no splitting, no coalescing on every call.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "In the buddy allocator, what happens when you free an 8 KB block and its buddy is also free?",
+      "options": [
+        "The block is added to the order-1 free list as-is",
+        "The two buddies merge into a single 16 KB block (order 2)",
+        "Both blocks are zeroed and returned to the page cache",
+        "The allocator splits the block into four 4 KB pages"
+      ],
+      "explanation": "Buddy coalescing: when a freed block's buddy (the adjacent block of the same size) is also free, they merge into one block of twice the size, moving up one order. This continues recursively, reducing external fragmentation for large allocations.",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 3,
+      "question": "What is the primary simplification that SLUB makes over SLAB?",
+      "options": [
+        "SLUB removes the free list entirely and uses bitmaps instead",
+        "SLUB eliminates per-slab metadata structures and stores free pointers directly in page memory",
+        "SLUB uses a different page size than SLAB",
+        "SLUB only works on NUMA systems"
+      ],
+      "explanation": "SLAB tracked each slab page with a separate metadata object (struct slab) plus per-object bitmaps. SLUB stores the free-list pointer directly in the first word of each page and embeds free pointers in the objects themselves, removing all per-slab metadata overhead.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "What does 'coloring' achieve in a slab allocator?",
+      "options": [
+        "It assigns different colors to free and used objects for debugging",
+        "It staggers object start offsets across slabs to distribute cache-line usage",
+        "It compresses the free list to use fewer bits",
+        "It prioritizes allocating hot (recently used) objects first"
+      ],
+      "explanation": "Without coloring, every slab page aligns objects at the same offsets, so the same cache lines are always hot. Coloring adds a per-slab offset (padding) so that object fields land in different cache lines across slabs, improving cache utilization.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "Why can't the kernel use the standard malloc() for its own memory allocation?",
+      "options": [
+        "malloc() is too slow for any use",
+        "The kernel runs before any userspace allocator exists, and needs special handling for different object sizes, alignment, and hardware constraints",
+        "malloc() only works with virtual memory",
+        "The kernel doesn't need dynamic memory"
+      ],
+      "correct": 1,
+      "explanation": "The kernel must provide its own allocators because: (1) there's no libc when the kernel starts, (2) kernel allocations often have alignment and DMA constraints, (3) many small fixed-size objects benefit from slab/slub caches, and (4) the kernel must avoid fragmentation in non-swappable memory."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 10,
+    "title": "The Kernel Heap Slab And Slub Allocators"
+  }
+}

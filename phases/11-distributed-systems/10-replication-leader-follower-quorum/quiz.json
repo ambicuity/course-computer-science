@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why is replication used in distributed systems? Select the most complete answer.",
+      "options": [
+        "Only to improve read performance by serving requests from nearby replicas",
+        "Only to prevent data loss when a disk fails",
+        "To provide availability (survive node failures), durability (data survives disk failures), and latency (read from nearby replicas)",
+        "To enforce strong consistency across all nodes at all times"
+      ],
+      "correct": 2,
+      "explanation": "Replication serves three purposes: availability (the system stays up when nodes fail), durability (data survives disk or node failures), and latency (clients read from the nearest replica). Strong consistency is a property you choose via replication mode — not the reason replication exists."
+    },
+    {
+      "stage": "pre",
+      "question": "In single-leader replication, what happens if the primary (leader) node fails?",
+      "options": [
+        "Followers continue accepting writes independently",
+        "No writes can be processed until a new leader is elected or the primary recovers",
+        "Reads continue to work from followers with strong consistency guarantees",
+        "The system automatically switches to multi-leader mode"
+      ],
+      "correct": 1,
+      "explanation": "In single-leader replication, only the primary accepts writes. If it fails, writes are blocked until leader election produces a new primary (this is what Raft does) or the original recovers. Reads from followers return stale data (eventual consistency) since followers are not receiving updates."
+    },
+    {
+      "stage": "post",
+      "question": "In a 5-node leaderless replication system with N=5, R=3, W=3, you write a value and then kill 2 nodes. You then read with R=3. What guarantees does the quorum condition R+W>N provide?",
+      "options": [
+        "The read returns the latest value because at least 1 replica in the R=3 read set overlaps with the W=3 write set",
+        "The read returns stale data because 2 nodes are down",
+        "The read fails because R+W=6 requires all 6 replicas to respond",
+        "The read returns the latest value only if the 2 killed nodes were not in the write quorum"
+      ],
+      "correct": 0,
+      "explanation": "The quorum condition R+W>N guarantees that any read quorum of R replicas overlaps with any write quorum of W replicas by at least R+W−N = 3+3−5 = 1 replica. So at least one of the 3 replicas you read from has the latest write. Even with 2 nodes down, 3 of the remaining 3 nodes respond, and at least one has the latest value."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key difference between synchronous and asynchronous replication?",
+      "options": [
+        "Synchronous replication uses TCP; asynchronous uses UDP",
+        "Synchronous replication waits for follower acknowledgment before confirming the write to the client; asynchronous confirms to the client immediately and replicates in the background",
+        "Asynchronous replication provides stronger consistency guarantees than synchronous",
+        "Synchronous replication only works with leaderless architectures"
+      ],
+      "correct": 1,
+      "explanation": "In synchronous replication, the primary waits for followers to acknowledge the write before telling the client 'done.' This means no data is lost if the primary crashes, but writes are slower. In asynchronous replication, the primary tells the client 'done' immediately and replicates in the background — fast writes, but data loss risk if the primary crashes before replication completes."
+    },
+    {
+      "stage": "post",
+      "question": "A read from R=3 replicas in an N=5 cluster returns stale data from 1 replica. What mechanism repairs the stale replica?",
+      "options": [
+        "Anti-entropy: the primary periodically sends full state snapshots to all followers",
+        "Read-repair: after returning the latest value to the client, the system propagates it to the stale replica",
+        "Compaction: the stale replica discards its old data and re-fetches everything from the primary",
+        "Quorum rebalancing: the system reassigns R to exclude the stale replica"
+      ],
+      "correct": 1,
+      "explanation": "Read-repair fixes stale data at read time: when R replicas disagree, the system identifies the latest value (highest log index), returns it to the client, and propagates it to stale replicas. Anti-entropy is a separate background process that syncs replicas periodically — it handles data that isn't actively being read."
+    },
+    {
+      "stage": "post",
+      "question": "Why does multi-leader replication require conflict resolution, while single-leader replication does not?",
+      "options": [
+        "Multi-leader systems use slower networks, causing more conflicts",
+        "In multi-leader replication, two leaders can simultaneously write different values to the same key; single-leader systems serialize all writes through one node",
+        "Single-leader systems never have network failures, so they never need conflict resolution",
+        "Multi-leader systems don't actually require conflict resolution — last-writer-wins is always correct"
+      ],
+      "correct": 1,
+      "explanation": "In single-leader replication, all writes go through one primary, so the primary can order them serially. In multi-leader replication, two leaders (e.g., in different datacenters) can accept concurrent writes to the same key. Without a global order, these conflicting writes must be resolved — via last-writer-wins, custom merge functions, or CRDTs. This is the fundamental trade-off of multi-leader: write availability in each region comes at the cost of potential conflicts."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 10,
+    "title": "Replication Leader Follower Quorum"
+  }
+}

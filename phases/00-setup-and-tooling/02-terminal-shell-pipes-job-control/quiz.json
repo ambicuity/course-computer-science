@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You run `cmd > out.txt`. The command prints both normal output and errors. What ends up in `out.txt`?",
+      "options": [
+        "Both normal output and errors",
+        "Only the normal output; errors print to the terminal",
+        "Only the errors; normal output prints to the terminal",
+        "Nothing — the redirect captures nothing"
+      ],
+      "correct": 1,
+      "explanation": "`>` redirects fd 1 (stdout) only. Errors flow on fd 2 (stderr), which is still attached to the terminal. To capture both, use `cmd > out.txt 2>&1` or `cmd &> out.txt`."
+    },
+    {
+      "stage": "pre",
+      "question": "What does `Ctrl-Z` do to the foreground job?",
+      "options": [
+        "Terminates it (SIGINT)",
+        "Suspends it (SIGTSTP) so it can be resumed with `fg`/`bg`",
+        "Backgrounds it permanently",
+        "Sends EOF to its stdin"
+      ],
+      "correct": 1,
+      "explanation": "Ctrl-Z sends SIGTSTP, which stops the foreground process group. The shell now tracks it as a suspended job; resume with `fg %N` (foreground) or `bg %N` (background)."
+    },
+    {
+      "stage": "post",
+      "question": "A pipeline `false | true` exits with what status by default in bash, and how do you change it?",
+      "options": [
+        "Exits 1; can't change",
+        "Exits 0 (the last command's exit code); use `set -o pipefail` to make it return the rightmost non-zero",
+        "Exits 1 because of `set -e`",
+        "Exits 0 always; pipeline status is undefined"
+      ],
+      "correct": 1,
+      "explanation": "Without `pipefail`, a pipeline's exit code is the last command's exit code, so `false | true` returns 0 and hides the failure. `set -o pipefail` makes the pipeline return the rightmost non-zero exit — essential for CI scripts."
+    },
+    {
+      "stage": "post",
+      "question": "You run `tail -f log | grep ERROR | tee out.txt` and nothing appears in `out.txt` even though errors are being logged. What's the most likely cause?",
+      "options": [
+        "tee is broken",
+        "grep is block-buffering its stdout because it's piped, so tee never sees data until grep's 4-8 KiB buffer fills",
+        "tail can't follow that file",
+        "ERROR isn't a valid pattern"
+      ],
+      "correct": 1,
+      "explanation": "When stdout is a pipe (not a terminal), libc switches stdio to block-buffered mode by default. grep accumulates output until its internal buffer fills. Fix: `grep --line-buffered ERROR` or `stdbuf -oL grep ERROR`."
+    },
+    {
+      "stage": "post",
+      "question": "What's the difference between `kill 12345` and `kill %1`?",
+      "options": [
+        "They're identical",
+        "`kill 12345` targets the OS PID 12345; `kill %1` targets the shell's job 1, which may be a multi-process pipeline",
+        "`kill %1` only works on Linux",
+        "`kill 12345` requires root"
+      ],
+      "correct": 1,
+      "explanation": "`%N` is the shell's job notation — it resolves to the whole process group of job N, so it kills every process in the pipeline. PID-based kill targets only one process. In practice, prefer `%N` inside an interactive shell because it can't get the wrong PID after history scrollback."
+    },
+    {
+      "stage": "post",
+      "question": "Why does `2>&1 > file` redirect differently than `> file 2>&1`?",
+      "options": [
+        "It doesn't; bash treats them the same",
+        "Redirects apply left to right. `2>&1` first dups stderr to whatever fd 1 currently points to (the terminal). Then `> file` redirects fd 1 to file — but fd 2 still points to the terminal",
+        "The first form is invalid syntax",
+        "The first form uses a different shell"
+      ],
+      "correct": 1,
+      "explanation": "Redirects are evaluated left to right and `2>&1` snapshots fd 1's current destination at that moment. To send both to a file, you must redirect fd 1 first, then dup fd 2 to it: `> file 2>&1`."
+    }
+  ],
+  "_meta": {
+    "phase": 0,
+    "lesson": 2,
+    "title": "Terminal Shell Pipes Job Control"
+  }
+}

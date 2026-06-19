@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 17,
+    "title": "I/O — DMA, MMIO, Interrupts"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In programmed I/O, what does the CPU do while waiting for a slow device?",
+      "options": [
+        "Executes other threads from the run queue",
+        "Busy-waits by repeatedly polling the device status register",
+        "Switches to DMA mode automatically",
+        "Suspends itself until the next clock interrupt"
+      ],
+      "correct": 1,
+      "explanation": "Programmed I/O (polling) has the CPU spin in a loop reading the status register until the device signals READY. No other work gets done during this time."
+    },
+    {
+      "stage": "pre",
+      "question": "MMIO maps device registers into:",
+      "options": [
+        "A separate I/O address space accessible only with special instructions",
+        "The physical address space, accessible via normal load/store instructions",
+        "The virtual address space of the kernel only",
+        "A reserved region of the TLB"
+      ],
+      "correct": 1,
+      "explanation": "With MMIO, device registers occupy addresses in the physical address space. The CPU uses ordinary load and store instructions (with volatile pointers) to read/write them."
+    },
+    {
+      "stage": "post",
+      "question": "A DMA controller transfers 1 MB from disk to memory at 200 MB/s. During this transfer, the CPU:",
+      "options": [
+        "Must execute one load instruction per byte transferred",
+        "Is free to execute other instructions — it programmed the transfer and waits for one completion interrupt",
+        "Polls the DMA status register every cycle",
+        "Halts until the transfer finishes"
+      ],
+      "correct": 1,
+      "explanation": "After programming the DMA controller (source, destination, byte count), the CPU is free. The DMA controller handles the transfer independently and raises a single interrupt on completion."
+    },
+    {
+      "stage": "post",
+      "question": "Interrupt coalescing is used to:",
+      "options": [
+        "Prevent higher-priority interrupts from preempting lower-priority ones",
+        "Combine multiple interrupt events into a single interrupt to reduce context-switch overhead",
+        "Eliminate the need for an interrupt vector table",
+        "Ensure every device gets exactly one interrupt per millisecond"
+      ],
+      "correct": 1,
+      "explanation": "Interrupt coalescing batches multiple events (e.g., network packets) into a single interrupt, reducing the overhead of context save/restore at the cost of slightly increased latency."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does DMA (Direct Memory Access) solve?",
+      "options": [
+        "It makes memory access faster",
+        "It allows I/O devices to transfer data directly to/from memory without CPU involvement for each byte",
+        "It encrypts data in transit",
+        "It provides a virtual memory interface for devices"
+      ],
+      "correct": 1,
+      "explanation": "Without DMA, the CPU must read/write each byte during I/O transfers (programmed I/O), wasting cycles. DMA lets the device controller transfer entire blocks directly to memory. The CPU sets up the transfer, is free to do other work, and gets an interrupt when complete."
+    }
+  ]
+}

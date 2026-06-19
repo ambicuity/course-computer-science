@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 14,
+    "title": "Graph Algorithms II — Dijkstra, Bellman-Ford, A*"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Dijkstra's algorithm produces incorrect shortest paths when the graph contains:",
+      "options": [
+        "Cycles with total weight greater than zero",
+        "Negative edge weights",
+        "Parallel edges between the same pair of vertices",
+        "Edges with weight zero"
+      ],
+      "correct": 1,
+      "explanation": "Dijkstra greedily finalizes the vertex with minimum tentative distance, assuming no later path can improve it. A negative edge from an unfinalized vertex can violate this assumption, producing an incorrect (too-large) distance for the finalized vertex."
+    },
+    {
+      "stage": "post",
+      "question": "In Bellman-Ford, running a V-th relaxation pass after V-1 iterations detects negative cycles because:",
+      "options": [
+        "The V-th pass finds all shortest paths using exactly V edges",
+        "If any distance still improves, some vertex is reachable via a cycle that reduces cost indefinitely",
+        "The V-th pass ensures all unreachable vertices are marked infinity",
+        "It recalculates the predecessor array to avoid stale pointers"
+      ],
+      "correct": 1,
+      "explanation": "Without negative cycles, the shortest path to any vertex uses at most V-1 edges, so V-1 iterations suffice. If a distance improves on the V-th pass, there exists a path with V or more edges that is cheaper — this implies a negative cycle along that path."
+    },
+    {
+      "stage": "post",
+      "question": "An admissible heuristic in A* search guarantees optimality because:",
+      "options": [
+        "It is always exactly equal to the true shortest distance",
+        "It never underestimates the true cost, so the algorithm explores in the correct order",
+        "It never overestimates the true cost, so no optimal path is pruned prematurely",
+        "It reduces the time complexity to O(V log V) in all cases"
+      ],
+      "correct": 2,
+      "explanation": "Admissibility means h(u) ≤ true_cost(u, goal). This ensures that f(u) = d(u) + h(u) never exceeds the true cost of the optimal path through u. If a suboptimal path were returned, some vertex on the optimal path would have f-value less than the suboptimal cost, and would have been expanded first — a contradiction."
+    },
+    {
+      "stage": "post",
+      "question": "Which algorithm should you choose to detect currency arbitrage opportunities (negative profit cycles) in an exchange rate graph?",
+      "options": [
+        "Dijkstra's algorithm, because it finds shortest paths efficiently",
+        "A* search, because it can be guided toward profit",
+        "Bellman-Ford, because it detects negative cycles after V-1 relaxations",
+        "BFS, because all exchange rates have equal weight"
+      ],
+      "correct": 2,
+      "explanation": "Currency arbitrage is modeled by negating the log of exchange rates as edge weights. A negative cycle means you can convert through the cycle and end with more than you started. Bellman-Ford detects these negative cycles in the V-th relaxation pass, making it the correct tool."
+    },
+    {
+      "stage": "pre",
+      "question": "Why can't Dijkstra's algorithm handle negative edge weights?",
+      "options": [
+        "It uses a priority queue that doesn't support negative numbers",
+        "It assumes a vertex's shortest distance is finalized when extracted from the queue, which fails if a later negative edge shortens it",
+        "Negative weights create cycles that cause infinite loops",
+        "The algorithm's time complexity becomes exponential"
+      ],
+      "correct": 1,
+      "explanation": "Dijkstra greedily extracts the vertex with minimum distance and marks it as finalized. A negative edge from an unvisited vertex could later reduce that distance, violating the greedy invariant. Bellman-Ford handles negative weights by relaxing all edges n-1 times."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 22,
+    "title": "Phase Capstone — A Work-Stealing Scheduler + Lock-Free Queue"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of work stealing in a thread pool scheduler?",
+      "options": [
+        "To distribute tasks evenly across threads at startup by dividing the task list into equal-sized chunks",
+        "To allow idle threads to steal tasks from busy threads' deques, providing dynamic load balancing without a centralized coordinator",
+        "To reduce the number of context switches by having threads voluntarily surrender their tasks to a global queue",
+        "To ensure every thread executes exactly the same number of tasks by using a round-robin scheduling policy"
+      ],
+      "correct": 1,
+      "explanation": "Work stealing is a distributed load-balancing strategy: each worker thread maintains its own deque of tasks. When a worker runs out of work, it steals from the top of a randomly selected victim's deque. This avoids the contention of a centralized shared queue while naturally balancing load — busy threads have many tasks to steal, idle threads find them. The key insight is that in a well-designed work-stealing scheduler, the cost of stealing is only paid when a thread would otherwise be idle."
+    },
+    {
+      "stage": "post",
+      "question": "In the Chase-Lev work-stealing deque, the owner pops from the bottom and thieves steal from the top. What memory ordering guarantee is essential in the owner's pop operation to prevent a race with thieves on the last item?",
+      "options": [
+        "The owner must use a SeqCst store when incrementing bottom before reading the value from the buffer",
+        "The owner must decrement bottom with Relaxed ordering, then issue a SeqCst fence before reading top, so that the decrement is globally visible before the top comparison",
+        "The owner must use Acquire ordering on both the bottom decrement and the top load, ensuring a synchronizes-with relationship",
+        "The owner must never decrement bottom below 0, using a CAS loop to atomically decrement bottom and read the value"
+      ],
+      "correct": 1,
+      "explanation": "In the Chase-Lev pop algorithm, the owner does: (1) Relaxed-load bottom, subtract 1, Relaxed-store bottom; (2) SeqCst fence; (3) Relaxed-load top. The SeqCst fence ensures that the bottom decrement is globally visible before top is read. This is critical for the last-item race: if a thief concurrently reads top (old value) then bottom (already decremented by owner), the thief sees bottom <= top and backs off, while the owner's CAS on top decides who gets the item. Without this fence, the thief could see stale bottom and attempt to steal an item the owner has already claimed."
+    },
+    {
+      "stage": "post",
+      "question": "Why does the Michael-Scott queue use a dummy (sentinel) node that is always present in the queue, even when it is empty?",
+      "options": [
+        "The dummy node stores the queue's size, allowing O(1) size queries without traversing the list",
+        "The dummy node provides backpressure by limiting the total number of nodes that can be allocated",
+        "The dummy node eliminates the need for special-case CAS logic when the queue transitions between empty and non-empty states, because head and tail are never null",
+        "The dummy node is required for ABA protection, since its address never changes"
+      ],
+      "correct": 2,
+      "explanation": "The Michael-Scott queue invariant is that head always points to a dummy node (even when empty) and tail points to the last node (or the dummy). This means head and tail are never null. Without the dummy, an empty queue would have head = null and tail = null, requiring special-case CAS handling: enqueue would need to CAS both head and tail from null, and dequeue would need to handle head == null. The dummy eliminates these special cases: enqueue always CAS tail->next; dequeue always CAS head from old dummy to the next node. The design is described in Michael & Scott's PODC 1996 paper."
+    },
+    {
+      "stage": "post",
+      "question": "A work-stealing thread pool with 4 workers processes 800 tasks. The statistics report: tasks_executed_locally = 600, tasks_stolen = 150, tasks_external = 50. What does this tell you about the workload and scheduler behavior?",
+      "options": [
+        "The scheduler is broken: stolen + local + external = 800, but most tasks should be stolen in an ideal system; 600 local means workers are hoarding work",
+        "Most tasks (600/800 = 75%) were popped from the owning worker's deque, 150 were stolen by other workers, and 50 came from the external submission queue. This indicates that workers mostly found work in their own deques (good cache locality), but stealing successfully redistributed 150 tasks (18.75%), and 50 tasks were submitted from external threads",
+        "The steal attempts exceeded successes by a large margin, indicating the Chase-Lev deque's CAS is too contended and the scheduler should use a mutex-based queue instead",
+        "The external submission queue handled only 50 tasks, meaning 750 tasks were spawned from worker threads — this implies the initial tasks recursively spawned sub-tasks, which is the expected pattern for fork-join workloads"
+      ],
+      "correct": 1,
+      "explanation": "The statistics show a healthy work-stealing distribution. The majority (600) of tasks were executed by their owning worker (LIFO pop), which is optimal for cache locality. The 150 stolen tasks demonstrate that load balancing is working: idle workers found work on busy peers. The 50 external tasks came from the main thread's initial spawns. The 18.75% steal rate is reasonable — higher steal rates might indicate insufficient initial work distribution, while much lower rates (<5%) could mean the workload is perfectly balanced or workers are rarely idle."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is the Chase-Lev deque the preferred data structure for work-stealing schedulers?",
+      "options": [
+        "It uses the least memory of any queue",
+        "It allows the owner to push/pop from one end (lock-free) while thieves steal from the other end with minimal contention",
+        "It guarantees FIFO ordering for all operations",
+        "It works only on a single CPU core"
+      ],
+      "correct": 1,
+      "explanation": "The Chase-Lev deque is a lock-free work-stealing deque: the owner pushes/pops from the bottom (using simple atomic operations), while thieves steal from the top (using CAS). The owner rarely contends with thieves because they operate on opposite ends, making it extremely efficient."
+    }
+  ]
+}

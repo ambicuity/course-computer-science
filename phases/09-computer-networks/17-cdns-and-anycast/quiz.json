@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 9,
+    "lesson": 17,
+    "title": "CDNs and Anycast",
+    "total_questions": 4
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary benefit of a CDN?",
+      "options": [
+        "It encrypts all traffic between the client and origin",
+        "It caches content at edge locations near users, reducing latency",
+        "It compresses all responses using Brotli by default",
+        "It replaces the need for DNS resolution"
+      ],
+      "correct": 1,
+      "explanation": "CDNs place cached copies of content at geographically distributed edge nodes. Serving from a nearby node reduces round-trip time and transfer latency, improving load times for users worldwide."
+    },
+    {
+      "stage": "pre",
+      "question": "How does Anycast routing direct a client to the nearest server?",
+      "options": [
+        "The client's browser selects the server with the lowest ping",
+        "DNS returns different IPs based on geographic location",
+        "BGP advertises the same IP from multiple locations; routers choose the shortest AS-path",
+        "A central load balancer redirects requests to the closest data center"
+      ],
+      "correct": 2,
+      "explanation": "With Anycast, the same IP prefix is announced from multiple locations via BGP. Each router on the Internet independently selects the path with the shortest AS-path, naturally directing clients to the topologically nearest instance."
+    },
+    {
+      "stage": "post",
+      "question": "What does `Cache-Control: public, max-age=31536000, immutable` tell a CDN?",
+      "options": [
+        "Cache the response for 5 minutes, then always revalidate",
+        "Cache the response for 1 year and never revalidate; the content will never change at this URL",
+        "Never cache this response; always fetch from origin",
+        "Cache only on the client, not on any intermediary CDN node"
+      ],
+      "correct": 1,
+      "explanation": "`max-age=31536000` sets TTL to 365 days. `immutable` tells caches not to revalidate even after the TTL expires, because the content at this URL will never change (typically used with cache-busted filenames like `app.abc123.js`)."
+    },
+    {
+      "stage": "post",
+      "question": "Why is Anycast well-suited for DNS but problematic for long-lived TCP connections?",
+      "options": [
+        "Anycast does not support UDP, which DNS uses",
+        "DNS queries are stateless and short-lived; if a BGP route change redirects a TCP connection mid-flow, the new server has no connection state",
+        "Anycast adds too much latency for TCP's three-way handshake",
+        "DNS uses multicast, which is incompatible with TCP"
+      ],
+      "correct": 1,
+      "explanation": "DNS queries are single request/response over UDP — stateless. If BGP shifts traffic to another Anycast node, the next query simply arrives at a different server that can answer it. Long-lived TCP connections carry state (sequence numbers, buffers). A BGP route change mid-connection sends packets to a server that doesn't know about the connection, breaking it."
+    },
+    {
+      "stage": "pre",
+      "question": "How does a CDN (Content Delivery Network) reduce latency?",
+      "options": [
+        "By compressing all content to zero bytes",
+        "By caching content at edge servers geographically close to users, reducing round-trip distance",
+        "By using a faster internet backbone",
+        "By eliminating the need for DNS"
+      ],
+      "correct": 1,
+      "explanation": "CDNs place copies of content (images, videos, APIs) on servers worldwide. When a user requests content, DNS or anycast routing directs them to the nearest edge server. This reduces latency from hundreds of milliseconds (cross-continent) to tens of milliseconds (local)."
+    }
+  ]
+}

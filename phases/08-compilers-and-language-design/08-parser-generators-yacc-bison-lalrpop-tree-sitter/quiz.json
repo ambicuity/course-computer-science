@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 8,
+    "lesson": 8,
+    "title": "Parser Generators Yacc Bison Lalrpop Tree Sitter"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What parsing algorithm does Yacc/Bison use by default, and how does it resolve shift-reduce conflicts?",
+      "options": [
+        "LL(1) — conflicts are resolved by always choosing the first production",
+        "LALR(1) — conflicts are resolved using precedence/associativity declarations (%left, %right, %prec), with shift winning by default",
+        "GLR — conflicts are resolved by forking the parser into all valid paths",
+        "PEG — conflicts cannot arise because ordered choice eliminates ambiguity"
+      ],
+      "correct": 1,
+      "explanation": "Bison uses LALR(1) by default. When a shift-reduce conflict arises (e.g., the dangling-else), Bison resolves it using operator precedence declarations or defaults to shift. The `%left`, `%right`, and `%prec` directives assign precedence levels to terminals and productions, letting Bison pick the correct action."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the key advantage of tree-sitter's concrete syntax tree (CST) over a traditional abstract syntax tree (AST)?",
+      "options": [
+        "CSTs are smaller and more efficient to store",
+        "CSTs preserve all tokens including whitespace, comments, and punctuation — essential for editor tooling like syntax highlighting and refactoring",
+        "CSTs enforce type safety during parsing",
+        "CSTs eliminate all parsing conflicts"
+      ],
+      "correct": 1,
+      "explanation": "A CST (concrete syntax tree) retains every token from the source, including whitespace, comments, parentheses, and semicolons. An AST drops these because the compiler doesn't need them. But for editors — syntax highlighting, code folding, precise rename — you need the exact source structure, which is why tree-sitter produces CSTs."
+    },
+    {
+      "stage": "post",
+      "question": "How does LALRPOP differ from Bison in terms of type safety?",
+      "options": [
+        "LALRPOP generates C code, Bison generates Rust code — the types are language-level",
+        "LALRPOP checks that grammar actions return the correct Rust types at generation time; Bison actions are untyped C code that may fail at runtime",
+        "LALRPOP uses dynamic typing, Bison uses static typing",
+        "There is no difference — both have the same type system"
+      ],
+      "correct": 1,
+      "explanation": "LALRPOP grammar rules are annotated with Rust types (e.g., `Expr: i32`). The generator verifies that all productions for a non-terminal produce the same type, and that action expressions type-check. This catches errors at generation time. Bison actions are C code snippets — type mismatches appear as runtime errors or C compiler warnings."
+    },
+    {
+      "stage": "post",
+      "question": "In the dangling-else grammar, after parsing `IF expr THEN stmt` and seeing `ELSE`, what does Bison do by default?",
+      "options": [
+        "Reduce `IF expr THEN stmt` to `stmt`, so the `else` belongs to an outer `if`",
+        "Shift the `ELSE` token, so the `else` binds to the nearest `if`",
+        "Report a compile error and refuse to generate a parser",
+        "Fork the parser into two paths (GLR mode) and explore both"
+      ],
+      "correct": 1,
+      "explanation": "Bison's default conflict resolution is shift-over-reduce. So when the parser has completed `IF expr THEN stmt` and sees `ELSE`, it shifts the `ELSE`, binding it to the innermost `if`. This produces the intuitively correct behavior: `if a then if b then c else d` is parsed as `if a then (if b then c else d)`."
+    },
+    {
+      "stage": "pre",
+      "question": "What does a parser generator like Bison produce from a grammar specification?",
+      "options": [
+        "A lexer",
+        "A parser (usually a shift-reduce or LR parser) implemented as a state machine with action tables",
+        "An AST directly from source code",
+        "An optimized executable"
+      ],
+      "correct": 1,
+      "explanation": "Bison reads a grammar file with embedded actions and generates a parser — typically an LALR(1) parser implemented as a table-driven shift-reduce automaton. The generated parser reads tokens from the lexer, shifts them onto a stack, and reduces by grammar rules to build an AST."
+    }
+  ]
+}

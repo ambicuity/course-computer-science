@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 10,
+    "lesson": 5,
+    "title": "Physical Storage \u2014 Pages, Slotted Pages"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary reason databases use fixed-size pages (4\u201316 KB) as the unit of I/O rather than writing individual records to disk?",
+      "options": [
+        "Pages allow variable-length records to be stored without padding",
+        "Pages batch many operations into a single I/O to amortize the high latency of disk/SSD access",
+        "Pages are required by the filesystem; databases cannot write directly to disk blocks",
+        "Pages eliminate the need for a buffer pool"
+      ],
+      "correct": 1,
+      "explanation": "Disk I/O latency is dominated by seek/access time (~10 \u00b5s for SSD, ~5 ms for HDD). Reading or writing a single 8 KB page costs nearly the same as reading or writing 100 bytes. Batching operations into page-sized I/Os is how databases bridge the 100\u00d7\u201350,000\u00d7 latency gap between RAM and persistent storage."
+    },
+    {
+      "stage": "pre",
+      "question": "In a slotted page layout, how does the page prevent internal fragmentation when records of varying sizes are inserted and deleted?",
+      "options": [
+        "Each record gets a pre-allocated fixed-size slot regardless of its actual size",
+        "Records are stored in a linked list within the page, and free space is managed by a garbage collector",
+        "The slot array grows from the page header toward the end, and record data grows from the page end backward, meeting in the middle",
+        "The page is divided into equal-sized cells, and records that don't fit overflow to a separate page"
+      ],
+      "correct": 2,
+      "explanation": "In a slotted page, the slot array at the front and the record data at the back grow toward each other, using a single contiguous free space in between. This naturally accommodates variable-length records without pre-allocating fixed space for each slot."
+    },
+    {
+      "stage": "post",
+      "question": "A record with RID (page_id=3, slot_number=5) has been updated with a longer value, causing it to be moved to a new position within the same page. What happens to the slot entry for slot 5?",
+      "options": [
+        "The slot number changes to reflect the new position",
+        "The offset in slot 5 is updated to point to the new location, but the slot number stays the same",
+        "A new RID is generated and the old RID becomes invalid",
+        "The page is defragmented immediately, reassigning all slot numbers"
+      ],
+      "correct": 1,
+      "explanation": "Slot numbers within a page are stable and never change during the lifetime of a record. When a record is updated and moved, only the (offset, length) pair in the slot entry is updated. The RID (page_id, slot_number) remains valid for the lifetime of the record."
+    },
+    {
+      "stage": "post",
+      "question": "What is a 'torn page' and how does a checksum help?",
+      "options": [
+        "A page fragmented across multiple disk sectors; checksums reassemble fragments",
+        "A page that contains records from multiple transactions; checksums isolate transaction boundaries",
+        "A page only partially written due to a crash during I/O; the checksum stored in the page header will not match a recalculated checksum on read, signaling corruption",
+        "A page that has been evicted from the buffer pool before its writes completed; checksums prevent eviction"
+      ],
+      "correct": 2,
+      "explanation": "If the system crashes while a page is being written to disk, only part of the page may be written, leaving it in an inconsistent state. Each page stores a checksum (e.g., CRC-32) in its header. When the page is read back, the database recalculates the checksum over the page contents. If it doesn't match the stored checksum, the page is considered torn and must be recovered from the WAL or double-write buffer."
+    },
+    {
+      "stage": "post",
+      "question": "How does PostgreSQL's page format differ from InnoDB's in terms of record organization within a page?",
+      "options": [
+        "PostgreSQL stores records as a flat slot array, while InnoDB organizes records as a sorted singly-linked list with a page directory for binary search",
+        "PostgreSQL uses variable-size pages (4\u201332 KB), while InnoDB uses only 16 KB pages",
+        "PostgreSQL does not use a slot array; it stores records in a B-tree directly",
+        "InnoDB does not use page headers; all metadata is stored in the tablespace"
+      ],
+      "correct": 0,
+      "explanation": "PostgreSQL uses a classic slotted page with ItemIdData (offset + flags + length) as a flat array. Each tuple is independent. InnoDB also has a slotted structure but links user records into a singly-linked list sorted by primary key, and maintains a page directory with pointers to every Nth record for binary search within the page."
+    },
+    {
+      "stage": "post",
+      "question": "In a heap file organization, what happens when a new record is inserted and no existing page has enough free space?",
+      "options": [
+        "The database sorts all existing pages and merges them to create free space",
+        "The database allocates a new page, appends it to the file, and inserts the record there",
+        "The record is rejected with a 'page full' error",
+        "The database triggers a defragmentation of all pages in the file"
+      ],
+      "correct": 1,
+      "explanation": "In a heap file, pages are independent. When all existing pages are full (or too fragmented to accommodate a new record), the storage engine appends a fresh page and inserts the record. This is O(1) amortized. New pages are tracked in the page directory, which maps page IDs to file offsets."
+    }
+  ]
+}

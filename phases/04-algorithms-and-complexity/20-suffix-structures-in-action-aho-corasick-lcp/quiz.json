@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 20,
+    "title": "Suffix Structures in Action — Aho-Corasick, LCP"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In the suffix array doubling algorithm, what is sorted in each round?",
+      "options": [
+        "Suffixes are sorted from scratch by their full string value",
+        "Suffixes are sorted by a key of (rank[i], rank[i + 2^k]) using the previous round's ranking",
+        "Characters of the string are sorted alphabetically",
+        "Suffixes are sorted by their starting position in the text"
+      ],
+      "correct": 1,
+      "explanation": "Each doubling round sorts suffixes using the composite key (rank[i], rank[i + k]) where rank[] is the ranking from the previous round and k = 2^(round-1). This refines the sort: after ceil(log2(n)) rounds, all suffixes are uniquely ranked and fully sorted."
+    },
+    {
+      "stage": "pre",
+      "question": "In Kasai's algorithm, why does processing suffixes in text order (not sorted order) still compute the LCP array in O(n)?",
+      "options": [
+        "Because text order is always the same as sorted order for the LCP computation",
+        "Because the LCP between consecutive sorted suffixes is always at most 1",
+        "Because moving from suffix i to suffix i-1 in text order, the running LCP drops by at most 1, limiting total character comparisons to O(n)",
+        "Because Kasai's algorithm uses hashing to compare suffixes in O(1)"
+      ],
+      "correct": 2,
+      "explanation": "When we move from suffix i to suffix i-1 in text order, the LCP with the previous sorted neighbor is at least h-1 (where h is the running LCP). We only need to compare characters beyond that. Since h increases by at most 1 per step and decreases to 0 at most n times, total work is O(n)."
+    },
+    {
+      "stage": "post",
+      "question": "What is the total time complexity of Aho-Corasick for searching a text of length n with patterns totaling length m, producing z matches?",
+      "options": [
+        "O(n * m)",
+        "O(n * log m)",
+        "O(n + m + z)",
+        "O(m * log n + z)"
+      ],
+      "correct": 2,
+      "explanation": "Aho-Corasick runs in O(n + m + z). Trie construction takes O(m), failure-link BFS takes O(m), and the search phase takes O(n + z): each text character advances at most one trie level (possibly after following failure links whose total work is bounded by n), and each of the z matches is reported in O(1)."
+    },
+    {
+      "stage": "post",
+      "question": "How many distinct substrings does a string of length n have, and how can the LCP array compute this?",
+      "options": [
+        "Always n^2; subtract the maximum LCP value from n^2",
+        "n*(n+1)/2 minus the sum of lcp[1..n-1], because each LCP value counts duplicate prefixes between adjacent sorted suffixes",
+        "2^n minus the sum of all LCP values",
+        "n minus the number of zero entries in the LCP array"
+      ],
+      "correct": 1,
+      "explanation": "A string of length n has n*(n+1)/2 total substrings. The LCP array tells us how many are shared between adjacent sorted suffixes. Summing lcp[1] through lcp[n-1] counts every duplicate prefix exactly once, so distinct substrings = n*(n+1)/2 - sum(lcp[1..n-1])."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does the Aho-Corasick algorithm solve?",
+      "options": [
+        "Finding the longest palindromic substring",
+        "Matching multiple patterns simultaneously in a single text traversal",
+        "Computing the edit distance between two strings",
+        "Compressing a string using suffix trees"
+      ],
+      "correct": 1,
+      "explanation": "Aho-Corasick builds a trie of all patterns with failure links (like KMP failure function generalized to a trie). It then processes the text once, matching all patterns simultaneously in O(n + m + z) time where n is text length, m is total pattern length, and z is matches."
+    }
+  ]
+}

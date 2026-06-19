@@ -1,0 +1,13 @@
+[package]
+name = "parallel-patterns"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+rayon = "1"
+
+[[bin]]
+name = "parallel-patterns"
+path = "main.rs"

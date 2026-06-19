@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A problem L is NP-complete if it satisfies which two conditions?",
+      "options": [
+        "L is in P and L is NP-hard",
+        "L is in NP and every problem in NP reduces to L in polynomial time",
+        "L is decidable and L is NP-hard",
+        "L is in EXP and L reduces to SAT"
+      ],
+      "correct": 1,
+      "explanation": "NP-complete requires: (1) L ∈ NP — yes-instances have poly-time verifiable witnesses, and (2) L is NP-hard — every problem in NP poly-time reduces to L. Being in P alone is insufficient; being decidable alone is insufficient."
+    },
+    {
+      "stage": "pre",
+      "question": "What does A ≤_p B (A polynomial-time reduces to B) mean?",
+      "options": [
+        "A is easier than B",
+        "There is a poly-time function f where x ∈ A ⟺ f(x) ∈ B",
+        "A and B have the same time complexity",
+        "B can solve A in logarithmic time"
+      ],
+      "correct": 1,
+      "explanation": "A ≤_p B means there exists a polynomial-time computable function f that maps instances of A to instances of B, preserving membership. If you can solve B fast, you can solve A fast by transforming the input and calling B's solver."
+    },
+    {
+      "stage": "post",
+      "question": "The Cook-Levin theorem proves NP-completeness of which problem, and by what technique?",
+      "options": [
+        "3-SAT, via graph reduction",
+        "SAT, via tableau construction encoding NTM computations as Boolean formulas",
+        "Vertex Cover, via gadget construction",
+        "Halting Problem, via diagonalization"
+      ],
+      "correct": 1,
+      "explanation": "Cook-Levin proves SAT is NP-complete by taking any NP problem's NTM and constructing a Boolean formula whose satisfying assignments correspond to accepting tableau rows. The formula has cell, transition, start, and accept constraints — all polynomial-size."
+    },
+    {
+      "stage": "post",
+      "question": "If you reduce SAT to 3-SAT and then to Vertex Cover, what can you conclude about Vertex Cover?",
+      "options": [
+        "Vertex Cover is in P",
+        "Vertex Cover is NP-complete",
+        "Vertex Cover is undecidable",
+        "Vertex Cover is in EXP but not NP"
+      ],
+      "correct": 1,
+      "explanation": "The chain SAT ≤_p 3-SAT ≤_p Vertex Cover proves Vertex Cover is NP-hard. Since Vertex Cover is clearly in NP (a subset of k vertices is a verifiable witness), it is NP-complete. This is exactly how the NP-completeness landscape is built: one seed problem (SAT) and chains of reductions."
+    },
+    {
+      "stage": "post",
+      "question": "You discover your scheduling problem is NP-complete. What is the most practical engineering response?",
+      "options": [
+        "Give up — the problem is unsolvable",
+        "Use a SAT/SMT solver, an approximation algorithm, or heuristic search",
+        "Wait for someone to prove P = NP",
+        "Only solve instances with fewer than 3 variables"
+      ],
+      "correct": 1,
+      "explanation": "NP-completeness means no known polynomial algorithm exists, but the problem is still decidable. Practical responses: encode as SAT/Z3, use approximation algorithms (Vertex Cover has a 2-approx), use parameterized algorithms (FPT), or apply heuristics like simulated annealing."
+    }
+  ],
+  "_meta": {
+    "phase": 5,
+    "lesson": 16,
+    "title": "Np Completeness Cook Levin And Reductions"
+  }
+}

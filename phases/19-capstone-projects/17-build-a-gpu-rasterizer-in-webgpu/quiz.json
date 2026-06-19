@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the direct output of the vertex shader stage?",
+      "options": ["Clip-space position and per-vertex varyings", "Final framebuffer pixels", "Compiled GPU binary cache", "Swapchain texture handle"],
+      "correct": 0,
+      "explanation": "The vertex shader transforms each vertex's position to clip space and passes through (or computes) per-vertex attributes (varyings) like color and UV coordinates. The rasterizer interpolates these varyings across the triangle."
+    },
+    {
+      "stage": "pre",
+      "question": "What does the rasterizer do between the vertex and fragment shaders?",
+      "options": ["Compiles shaders", "Converts triangles into fragments by determining which pixels are covered", "Uploads textures", "Submits commands to the GPU"],
+      "correct": 1,
+      "explanation": "The rasterizer is a fixed-function stage that determines which pixels are inside each triangle. For each covered pixel, it creates a fragment and interpolates the vertex attributes (color, UV, etc.) using barycentric coordinates."
+    },
+    {
+      "stage": "post",
+      "question": "In a triangle demo, what command actually requests triangle rendering?",
+      "options": ["draw(3)", "setPipeline()", "createShaderModule()", "getCurrentTexture()"],
+      "correct": 0,
+      "explanation": "draw(3) tells the GPU to process 3 vertices using the currently set pipeline and vertex buffers. With triangle-list topology, 3 vertices form one triangle. drawIndexed(6) would draw 2 triangles from an index buffer."
+    },
+    {
+      "stage": "post",
+      "question": "Why are pipeline state objects expensive to create but cheap to use?",
+      "options": ["They are stored on disk", "Creating compiles shaders and configures fixed-function state; switching just changes a pointer", "They are always cached", "They use no GPU memory"],
+      "correct": 1,
+      "explanation": "Creating a pipeline compiles WGSL to GPU machine code and configures blend, depth, and vertex layout. This is expensive (milliseconds). Switching pipelines just selects a different configuration. Production engines sort draw calls to minimize pipeline switches."
+    },
+    {
+      "stage": "post",
+      "question": "What is clip space and why does the vertex shader output positions in it?",
+      "options": ["Screen pixel coordinates", "A homogeneous coordinate system [-1,1] used for clipping and perspective division", "World-space coordinates", "Texture coordinates"],
+      "correct": 1,
+      "explanation": "Clip space is a 4D homogeneous coordinate system. The GPU clips triangles to the [-1,1] cube, then performs perspective divide (x/w, y/w, z/w) to get normalized device coordinates. This is mathematically correct for perspective projection."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 17, "title": "Build a GPU Rasterizer in WebGPU" }
+}

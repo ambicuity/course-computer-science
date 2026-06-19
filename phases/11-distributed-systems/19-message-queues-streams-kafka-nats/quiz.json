@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental difference between point-to-point (queue) and publish/subscribe (topic) messaging?",
+      "options": [
+        "Point-to-point is faster; pub/sub is more reliable.",
+        "In point-to-point, each message is delivered to exactly one consumer in a group; in pub/sub, every subscriber receives every message.",
+        "Point-to-point requires a broker; pub/sub does not.",
+        "Pub/sub guarantees ordering; point-to-point does not."
+      ],
+      "correct": 1,
+      "explanation": "Point-to-point (queue) distributes work: each message goes to one consumer, enabling parallel processing. Publish/subscribe (topic) broadcasts events: every subscriber independently receives every message. The choice depends on whether you want work distribution (point-to-point) or event notification (pub/sub)."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does Kafka guarantee FIFO ordering only per partition rather than globally across a topic?",
+      "options": [
+        "Kafka brokers don't have enough memory to maintain global order.",
+        "Global ordering requires coordinating all writes through a single partition, which limits throughput to what one broker can handle.",
+        "Consumers can't handle globally ordered messages.",
+        "Kafka uses eventual consistency, so global ordering isn't possible."
+      ],
+      "correct": 1,
+      "explanation": "A topic with a single partition gives total ordering but bottleneck throughput on one broker. Adding partitions increases throughput by distributing writes across brokers, but breaks global ordering. Messages within a partition are FIFO, and messages with the same key always go to the same partition, so per-key ordering is preserved."
+    },
+    {
+      "stage": "post",
+      "question": "In a Kafka consumer group with 3 consumers reading a 6-partition topic, what happens when one consumer crashes?",
+      "options": [
+        "The crashed consumer's messages are lost.",
+        "The remaining two consumers each take over half of the crashed consumer's partitions through rebalancing, and consumption continues after a brief pause.",
+        "A new consumer is automatically created to replace the crashed one.",
+        "The topic is reduced to 4 partitions to match the remaining consumers."
+      ],
+      "correct": 1,
+      "explanation": "Kafka consumer groups redistribute partitions among surviving consumers when membership changes (this is rebalancing). The two remaining consumers take over the crashed consumer's 2 partitions, giving them 3 partitions each instead of 2. During rebalancing, consumption pauses briefly. No messages are lost — they remain in the partitions with their committed offsets."
+    },
+    {
+      "stage": "post",
+      "question": "You need at-least-once delivery semantics in Kafka. What must you ensure?",
+      "options": [
+        "Set producer acks=0 and consumer auto-commit enabled.",
+        "Set producer acks=all and make consumers idempotent, committing offsets only after processing.",
+        "Use a single partition and exactly-once transactions.",
+        "Disable consumer groups so each consumer reads all partitions."
+      ],
+      "correct": 1,
+      "explanation": "At-least-once delivery requires: (1) The producer waits for acknowledgment from all in-sync replicas (acks=all) so messages aren't lost. (2) The consumer processes messages before committing offsets. If the consumer crashes after processing but before committing, it re-reads those messages — hence duplicates. Making consumers idempotent (processing the same message twice has the same effect as once) handles these duplicates."
+    },
+    {
+      "stage": "post",
+      "question": "When would you choose NATS core over Kafka?",
+      "options": [
+        "When you need to replay messages from a historical log.",
+        "When you need exactly-once delivery for financial transactions.",
+        "When you need sub-millisecond latency for real-time fan-out and can tolerate at-most-once delivery (messages may be lost if no subscriber is connected).",
+        "When you need durable storage for regulatory compliance."
+      ],
+      "correct": 2,
+      "explanation": "NATS core is fire-and-forget: if no subscriber is connected, messages are dropped. This makes it ideal for real-time fan-out (market data, live telemetry) where latency matters more than durability. Kafka's strength is durable, replayable logs — the opposite trade-off. If you need both speed and durability with NATS, you'd use JetStream, not core."
+    },
+    {
+      "stage": "post",
+      "question": "What makes exactly-once semantics expensive in Kafka?",
+      "options": [
+        "It requires all consumers to read from a single partition to avoid duplicates.",
+        "It requires idempotent producers (sequence numbers per partition) and transactional consumer-read-process-write cycles, where the consumer only reads committed transaction markers — adding coordination overhead and reducing throughput.",
+        "It requires ZooKeeper to maintain a global deduplication index across all brokers.",
+        "Exactly-once is impossible in distributed systems, so you should always use at-most-once instead."
+      ],
+      "correct": 1,
+      "explanation": "Exactly-once in Kafka requires: (1) Idempotent producers that assign sequence numbers per producer-partition pair to detect and discard duplicates. (2) Transactional producers that group multiple sends and a commit marker into an atomic transaction. (3) Transactional consumers that only read messages from committed transactions. This coordination across brokers and the commit protocol adds significant latency and reduces throughput — which is why most systems use at-least-once with idempotent consumers instead."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 19,
+    "title": "Message Queues Streams Kafka Nats"
+  }
+}

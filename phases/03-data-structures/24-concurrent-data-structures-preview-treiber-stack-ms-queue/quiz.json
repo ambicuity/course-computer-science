@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is compare-and-swap (CAS)?",
+      "options": [
+        "A sorting algorithm",
+        "An atomic CPU instruction: if memory[ptr] == expected, write new_value; else write actual value into expected. Returns success/fail. The fundamental lock-free primitive.",
+        "Memory allocation",
+        "Hash collision"
+      ],
+      "correct": 1,
+      "explanation": "CAS is what makes lock-free programming possible. On x86: LOCK CMPXCHG instruction. On ARM: LDREX/STREX pair. Atomically compares + conditionally writes. The CAS loop pattern: load → modify locally → CAS → retry if changed. Provides progress without holding locks; multiple threads can race but at least one succeeds per iteration."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is the Treiber stack 'lock-free'?",
+      "options": [
+        "It uses fewer locks",
+        "Operations use only atomic CAS on the head pointer; no mutex held. Guarantees system-wide progress — at least one thread always makes progress, no deadlock possible.",
+        "It's faster",
+        "It uses Hashing"
+      ],
+      "correct": 1,
+      "explanation": "Treiber stack push: read head, set new_node.next = head, CAS(head, head, new_node). Two pushes race: one's CAS succeeds, the other retries with new head. No thread is blocked waiting for another. 'Lock-free' is a PROGRESS guarantee, not necessarily a speed claim. The lesson's bench shows mutex can be FASTER under high contention due to CAS-retry storms."
+    },
+    {
+      "stage": "post",
+      "question": "What is the ABA problem in lock-free programming?",
+      "options": [
+        "Out of memory",
+        "A thread reads pointer A, gets paused. Other threads pop A, pop B, push A back. First thread resumes, CAS sees head==A, succeeds — but the structure has changed underneath. Corruption.",
+        "Race condition",
+        "Type mismatch"
+      ],
+      "correct": 1,
+      "explanation": "ABA is the headline subtle bug of pointer-based lock-free. The CAS sees the SAME pointer value but the world's changed. Example: node A is popped, freed, reallocated as a new entry; head now points at (different) A. The CAS succeeds, threading the stale reference into the structure. Fixes: hazard pointers (Michael 2004), epoch-based GC (crossbeam), tagged pointers with version counters."
+    },
+    {
+      "stage": "post",
+      "question": "What's `memory_order_release` paired with `memory_order_acquire` for?",
+      "options": [
+        "Hardware-specific tricks",
+        "Establishes a happens-before relationship: writes made BEFORE the release are visible to threads AFTER they acquire. Critical for correctness on weakly-ordered CPUs (ARM, POWER).",
+        "Faster than seq_cst",
+        "Same as relaxed"
+      ],
+      "correct": 1,
+      "explanation": "On x86, all loads/stores are roughly sequentially consistent — release/acquire mostly free. On ARM/POWER, the CPU can reorder loads and stores past each other. Without release/acquire annotations, a Treiber stack writes the new node's data, then the CAS — the CAS could be visible to other CPUs BEFORE the data write. Result: torn reads. Release/acquire fences ensure ordering. Modern atomics expose this explicitly."
+    },
+    {
+      "stage": "post",
+      "question": "Under heavy contention, is a Treiber stack always faster than a mutex?",
+      "options": [
+        "Always faster",
+        "No. CAS retry storms under contention can make Treiber slower than a well-tuned mutex. The lesson's benchmark shows mutex ~2× faster on 4-thread push/pop contention. Lock-free wins on PROGRESS guarantees, not always throughput.",
+        "Slower if contended",
+        "Only on x86"
+      ],
+      "correct": 1,
+      "explanation": "Lock-free guarantees progress (no deadlock, no priority inversion) but admits CAS retries. Under N-thread contention, each push has ~N retries on average. Modern OS mutexes have fast paths (uncontended ~ atomic) and block on contention (no busy retry). Choose lock-free when: real-time/no priority inversion / cannot tolerate deadlock. Choose mutex when: throughput on contention is the metric, or correctness simplicity matters."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the Michael-Scott queue more complex than the Treiber stack?",
+      "options": [
+        "It's not",
+        "Two pointers to update (head and tail), and enqueue is non-atomic over them. The 'helping' protocol must handle a state where one thread set tail.next but didn't yet swing tail. Other threads help advance tail before proceeding.",
+        "Different language",
+        "Encryption"
+      ],
+      "correct": 1,
+      "explanation": "Treiber stack: one atomic pointer (head) per op. MS queue: enqueue must update both tail.next AND advance tail — but these CAN'T be done atomically. Solution: enqueue first appends a new node (CAS tail.next from null), then attempts to advance tail. If a competing thread sees the new node but old tail, it 'helps' by advancing tail before its own enqueue. ~80 lines of careful code vs ~30 for Treiber."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 24,
+    "title": "Concurrent Data Structures Preview Treiber Stack Ms Queue"
+  }
+}

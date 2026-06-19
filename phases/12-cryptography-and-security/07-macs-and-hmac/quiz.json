@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between a hash function and a MAC?",
+      "options": [
+        "A MAC is faster to compute than a hash",
+        "A MAC requires a secret key to produce a valid tag, providing authenticity; a hash only provides integrity",
+        "A MAC produces a longer output than a hash",
+        "A hash can only operate on fixed-length inputs, while a MAC handles any length"
+      ],
+      "correct": 1,
+      "explanation": "A hash function is keyless and only verifies integrity — anyone can recompute the hash. A MAC requires a secret key to produce and verify the tag, which provides both integrity and authenticity. Only parties with the key can produce a valid tag."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is H(K || M) (hashing key concatenated with message) insecure as a MAC?",
+      "options": [
+        "It is too slow because the key must be hashed every time",
+        "An attacker who knows the hash output can forge a valid tag for a longer message using the length extension attack on Merkle-Damgård hashes",
+        "The key length is limited to the hash's block size",
+        "It leaks the key through the hash output"
+      ],
+      "correct": 1,
+      "explanation": "SHA-256 and other Merkle-Damgård hashes allow length extension: given H(X), an attacker can compute H(X || padding || extension) without knowing X. This means H(K || M) is forgeable — an attacker can produce a valid tag for M || padding || extension without knowing K."
+    },
+    {
+      "stage": "post",
+      "question": "In HMAC(K, m) = H((K ⊕ opad) || H((K ⊕ ipad) || m)), why does the double-hash construction resist length extension attacks?",
+      "options": [
+        "The XOR operations scramble the key so the attacker cannot recover it",
+        "The inner hash's output hides the internal state, so an attacker cannot extend the outer hash without knowing K ⊕ opad",
+        "HMAC uses SHA-3 internally which is immune to length extension",
+        "The opad and ipad values are randomly generated for each message"
+      ],
+      "correct": 1,
+      "explanation": "The length extension attack works because Merkle-Damgård outputs the full internal state. In HMAC, an attacker sees the outer hash output, but to extend it they would need to extend the outer hash — which requires knowledge of K ⊕ opad (the key mixed with opad). The inner hash result is hidden inside the outer hash, so extending the outer hash without the key is infeasible."
+    },
+    {
+      "stage": "post",
+      "question": "CBC-MAC is secure only for fixed-length messages. What attack does it suffer from on variable-length messages?",
+      "options": [
+        "A birthday attack that finds two messages with the same tag",
+        "Given CBC-MAC(K, M₁) and CBC-MAC(K, M₂), an attacker can forge a valid tag for a combined message without knowing K",
+        "The IV is disclosed, allowing decryption of the message",
+        "Replay attacks where the same message is sent twice"
+      ],
+      "correct": 1,
+      "explanation": "Given tag₁ = CBC-MAC(K, M₁) and tag₂ = CBC-MAC(K, M₂), an attacker can construct M' = M₁ || (M₂[1] ⊕ tag₁) || M₂[2:] || ... and compute CBC-MAC(K, M') = tag₂ without knowing K. The attacker uses tag₁ to cancel the chaining, making the second block encrypt as if starting fresh."
+    },
+    {
+      "stage": "post",
+      "question": "Why must Poly1305 use a fresh key (r, s) for every message?",
+      "options": [
+        "Because the key is derived from the message length",
+        "Because reusing the same (r, s) pair for two messages allows an attacker to recover r and forge tags for any message",
+        "Because the polynomial evaluation overflows if the key is reused",
+        "Because Poly1305 uses AES internally and AES requires unique keys per message"
+      ],
+      "correct": 1,
+      "explanation": "Poly1305 is a one-time authenticator. If the same (r, s) is used for two messages (m₁, tag₁) and (m₂, tag₂), an attacker gets two equations with one unknown (r) in GF(2¹³⁰ - 5), and can solve for r. With r and any tag, s is trivially recovered. This is why Poly1305 is always paired with a cipher like ChaCha20 that provides a fresh key per nonce."
+    },
+    {
+      "stage": "post",
+      "question": "Why is comparing a MAC tag byte-by-byte (returning early on first mismatch) a security vulnerability?",
+      "options": [
+        "It uses more CPU cycles than constant-time comparison",
+        "An attacker can measure response timing to recover the tag byte-by-byte, starting from the first byte",
+        "It produces incorrect results when the tags differ in length",
+        "It allows hash collisions to be exploited"
+      ],
+      "correct": 1,
+      "explanation": "A byte-by-byte comparison that short-circuits on mismatch leaks timing information proportional to the number of matching prefix bytes. An attacker can recover the tag one byte at a time: guess all 256 values for byte 0, observe which takes longest (indicating a match), then move to byte 1, and so on. Use hmac.compare_digest() in Python or subtle::ConstantTimeEq in Rust."
+    }
+  ],
+  "_meta": {
+    "phase": 12,
+    "lesson": 7,
+    "title": "Macs And Hmac"
+  }
+}

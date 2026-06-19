@@ -1,0 +1,8 @@
+[package]
+name = "raft-consensus"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "raft"
+path = "main.rs"

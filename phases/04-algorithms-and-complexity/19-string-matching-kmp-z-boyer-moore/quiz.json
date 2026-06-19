@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 19,
+    "title": "String Matching — KMP, Z, Boyer-Moore"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "For the KMP failure function, what does lps[j] = 3 mean for pattern[0..j]?",
+      "options": [
+        "The pattern has 3 matching characters starting at position j",
+        "The longest proper prefix of pattern[0..j] that is also a suffix has length 3",
+        "There are exactly 3 occurrences of the pattern up to position j",
+        "The pattern can be shifted by 3 positions on mismatch"
+      ],
+      "correct": 1,
+      "explanation": "The failure function lps[j] stores the length of the longest proper prefix of pattern[0..j] that is also a suffix of pattern[0..j]. A value of 3 means we can safely resume matching from pattern index 3 after a mismatch at position j."
+    },
+    {
+      "stage": "pre",
+      "question": "In the Z-algorithm, what does Z[i] = 5 indicate?",
+      "options": [
+        "There are 5 matches of the pattern in the string",
+        "The substring starting at position i has length 5",
+        "The longest substring starting at i that matches a prefix of S has length 5",
+        "Position i is the 5th occurrence of a repeated character"
+      ],
+      "correct": 2,
+      "explanation": "Z[i] is the length of the longest substring starting at position i that matches a prefix of the string S. Z[i] = 5 means S[i..i+4] == S[0..4]."
+    },
+    {
+      "stage": "post",
+      "question": "Why can Boyer-Moore examine fewer than n characters when searching a text of length n?",
+      "options": [
+        "It skips characters that appear in both the text and the pattern",
+        "On a mismatch, the bad-character heuristic can shift the pattern by its full length, skipping many text positions without examining them",
+        "It only checks every other character using a hash function",
+        "It pre-sorts the text to enable binary search"
+      ],
+      "correct": 1,
+      "explanation": "Boyer-Moore scans the pattern right-to-left. When a mismatched text character does not appear in the pattern, the bad-character heuristic shifts the pattern by its full length m, meaning the algorithm skips m positions without examining intermediate text characters. This gives sublinear average-case performance."
+    },
+    {
+      "stage": "post",
+      "question": "What is the guaranteed worst-case time complexity of KMP search on a text of length n and pattern of length m?",
+      "options": [
+        "O(n * m)",
+        "O(n log n)",
+        "O(n + m)",
+        "O(m * log n)"
+      ],
+      "correct": 2,
+      "explanation": "KMP guarantees O(n + m) in all cases. Building the failure function takes O(m), and the search phase takes O(n) because the text pointer never moves backward — each text character is examined at most twice (once when matched, once when a mismatch forces a failure-function lookup)."
+    },
+    {
+      "stage": "pre",
+      "question": "Why does the naive string matching algorithm have O(nm) worst-case complexity?",
+      "options": [
+        "Because it sorts the pattern first",
+        "Because on each mismatch it shifts the pattern by one position, potentially comparing every character of the text with every character of the pattern",
+        "Because it uses extra memory proportional to the pattern length",
+        "Because it must scan the text twice"
+      ],
+      "correct": 1,
+      "explanation": "The naive approach tries the pattern at every position in the text. On a mismatch at the last character, it shifts by one and starts over. For inputs like text='aaaa...a' and pattern='aaaab', almost every comparison fails at the last character, giving O(nm)."
+    }
+  ]
+}

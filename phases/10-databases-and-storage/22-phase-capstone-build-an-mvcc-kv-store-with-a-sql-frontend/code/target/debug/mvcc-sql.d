@@ -1,0 +1,1 @@
+/Users/ritesh/Downloads/submission_folder/course-computer-science/phases/10-databases-and-storage/22-phase-capstone-build-an-mvcc-kv-store-with-a-sql-frontend/code/target/debug/mvcc-sql: /Users/ritesh/Downloads/submission_folder/course-computer-science/phases/10-databases-and-storage/22-phase-capstone-build-an-mvcc-kv-store-with-a-sql-frontend/code/main.rs

@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 16,
+    "lesson": 4,
+    "title": "GoF Patterns That Still Matter"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You need to notify multiple dashboard components whenever a stock price changes, without the price source knowing which dashboards exist. Which pattern is the best fit?",
+      "options": [
+        "Observer",
+        "Strategy",
+        "Command",
+        "Mediator"
+      ],
+      "correct": 0,
+      "explanation": "Observer creates a one-to-many dependency: the subject emits events and any number of listeners subscribe independently. Mediator centralizes communication between objects, which adds coupling that isn't needed here."
+    },
+    {
+      "stage": "pre",
+      "question": "A payment processor needs to support credit cards, PayPal, and crypto — and the payment method must be swappable at runtime without changing the processor code. Which pattern applies?",
+      "options": [
+        "Factory Method",
+        "Strategy",
+        "State",
+        "Decorator"
+      ],
+      "correct": 1,
+      "explanation": "Strategy encapsulates interchangeable algorithms behind a common interface and lets you swap them at runtime. Factory Method creates objects but doesn't handle the algorithm-swapping concern."
+    },
+    {
+      "stage": "post",
+      "question": "You're building a text editor with undo/redo. Each operation must be stored so it can be reversed. Which pattern treats operations as reversible objects?",
+      "options": [
+        "Iterator",
+        "Command",
+        "Strategy",
+        "Memento"
+      ],
+      "correct": 1,
+      "explanation": "Command encapsulates a request as an object with both execute() and undo() methods, enabling undo/redo stacks. Memento saves and restores state snapshots but doesn't represent the operation itself."
+    },
+    {
+      "stage": "post",
+      "question": "Which GoF pattern is best replaced by dependency injection in modern code?",
+      "options": [
+        "Observer",
+        "Decorator",
+        "Singleton",
+        "Adapter"
+      ],
+      "correct": 2,
+      "explanation": "Singleton hides global state, makes testing hard, and breaks in concurrent environments. DI passes the needed instance explicitly, giving you the same 'single instance' guarantee without the hidden coupling."
+    },
+    {
+      "stage": "post",
+      "question": "Your app uses a UserRepository interface, but you must integrate a legacy service that returns LegacyUser objects with different field names. Which pattern bridges the gap?",
+      "options": [
+        "Decorator",
+        "Strategy",
+        "Adapter",
+        "Proxy"
+      ],
+      "correct": 2,
+      "explanation": "Adapter converts one interface into another that the client expects, letting incompatible systems cooperate. Decorator adds behavior; Strategy swaps algorithms; Proxy controls access — none of them translate interface shapes."
+    },
+    {
+      "stage": "post",
+      "question": "In Python, what language feature makes the Iterator pattern nearly trivial to implement?",
+      "options": [
+        "Class inheritance",
+        "Generator functions (yield)",
+        "Abstract base classes",
+        "Monkey-patching"
+      ],
+      "correct": 1,
+      "explanation": "Python's generator functions (yield/yield from) automatically implement the iterator protocol (__iter__/__next__), producing lazy sequences without exposing internal structure. No class hierarchy needed."
+    }
+  ]
+}

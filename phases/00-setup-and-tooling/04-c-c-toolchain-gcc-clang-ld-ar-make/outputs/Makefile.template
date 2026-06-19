@@ -1,0 +1,71 @@
+# Makefile.template — drop-in starter for a C/C++ project.
+# Tested on macOS (clang) and Linux (gcc).
+#
+# Conventions:
+#   src/      — translation units (.c, .cpp)
+#   include/  — public headers
+#   build/    — auto-generated objects + binaries (gitignored)
+#
+# Targets:
+#   make / make all   — build the default binary (release flags)
+#   make debug        — debug build with -O0 -g into build/debug/
+#   make release      — optimized build into build/release/
+#   make test         — build and run tests/
+#   make clean        — wipe build/
+#   make compile_commands.json — emit compile_commands.json (for LSPs/clangd)
+
+# ── Project name ─────────────────────────────────────────────────────
+PROJECT  ?= myprog
+
+# ── Tools ────────────────────────────────────────────────────────────
+CC        ?= cc
+CFLAGS    ?= -Wall -Wextra -Wpedantic -std=c11
+INCLUDES   = -Iinclude
+
+# ── Source / build paths ─────────────────────────────────────────────
+SRC_DIR    := src
+BUILD_DIR  := build
+SRCS       := $(wildcard $(SRC_DIR)/*.c)
+OBJS       := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRCS))
+DEPS       := $(OBJS:.o=.d)
+
+.PHONY: all debug release test clean compile_commands.json
+
+# Default = release
+all: release
+
+debug:   BUILD_DIR := build/debug
+debug:   CFLAGS += -O0 -g3 -fsanitize=address,undefined
+debug:   $(BUILD_DIR)/$(PROJECT)
+	@echo "→ $(BUILD_DIR)/$(PROJECT)"
+
+release: BUILD_DIR := build/release
+release: CFLAGS += -O3 -DNDEBUG
+release: $(BUILD_DIR)/$(PROJECT)
+	@echo "→ $(BUILD_DIR)/$(PROJECT)"
+
+$(BUILD_DIR)/$(PROJECT): $(OBJS) | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(OBJS) -o $@
+
+# Pattern rule: per-source compile with auto-generated dep files (-MMD -MP).
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -MMD -MP -c $< -o $@
+
+$(BUILD_DIR):
+	mkdir -p $@
+
+# Pull in auto-generated header deps so editing a header rebuilds the right .o files.
+-include $(DEPS)
+
+test: debug
+	@if [ -d tests ]; then for t in tests/*.sh; do bash "$$t" || exit 1; done; fi
+	@echo "  ✓ tests passed"
+
+# Emit compile_commands.json (for clangd / IDE integration) using bear, if installed.
+compile_commands.json:
+	@command -v bear >/dev/null || { echo "install 'bear' first (apt/brew install bear)"; exit 1; }
+	$(MAKE) clean
+	bear -- $(MAKE) debug
+
+clean:
+	rm -rf build/ compile_commands.json

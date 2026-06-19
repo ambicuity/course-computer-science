@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 7,
+    "lesson": 14,
+    "title": "Synchronization In The Kernel Spinlocks Rcu"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Why are spinlocks preferred over mutexes for very short critical sections in the kernel?",
+      "options": [
+        "Spinlocks use less memory than mutexes",
+        "The spin-wait overhead is less than the context switch cost required by a sleeping mutex",
+        "Spinlocks can be held across interrupt handlers without additional measures",
+        "Mutexes cannot protect shared data in the kernel"
+      ],
+      "correct": 1,
+      "explanation": "A mutex puts the waiting thread to sleep, requiring a context switch on lock and unlock. If the critical section is shorter than the context switch cost (nanoseconds to low microseconds), spinning wastes less time than sleeping."
+    },
+    {
+      "stage": "pre",
+      "question": "In RCU (Read-Copy-Update), when is the old version of data freed?",
+      "options": [
+        "Immediately after the writer publishes the new pointer",
+        "After the next context switch on every CPU",
+        "After a grace period during which all pre-existing readers have finished",
+        "When the writer calls kfree() before publishing"
+      ],
+      "correct": 2,
+      "explanation": "RCU defers freeing the old data until all readers that may have obtained a reference to it have exited their read-side critical sections. This grace period is detected when every CPU has passed through at least one quiescent state (context switch, idle loop, or user mode)."
+    },
+    {
+      "stage": "post",
+      "question": "What happens when a seqlock reader detects that a write was in progress or occurred during its read?",
+      "options": [
+        "The reader blocks until the writer finishes",
+        "The reader acquires the writer's lock and retries",
+        "The reader discards its data and retries the read from the beginning",
+        "The reader returns stale data with a warning flag"
+      ],
+      "correct": 2,
+      "explanation": "Seqlock readers never block or acquire locks. They check the sequence counter: if it is odd (write in progress) or has changed since they started (write completed during read), they simply discard whatever they read and retry."
+    },
+    {
+      "stage": "post",
+      "question": "What problem do memory barriers (`smp_mb()`, `smp_rmb()`, `smp_wmb()`) solve?",
+      "options": [
+        "They prevent cache coherency protocol failures",
+        "They prevent the CPU and compiler from reordering memory operations across the barrier, ensuring ordering guarantees for lock-free code",
+        "They flush the entire CPU cache to main memory",
+        "They disable interrupts on the local CPU"
+      ],
+      "correct": 1,
+      "explanation": "Modern CPUs and compilers reorder loads and stores for performance. Without memory barriers, a pointer might become visible to another CPU before the object it points to is fully initialized. Memory barriers enforce ordering so that lock-free algorithms see consistent state."
+    },
+    {
+      "stage": "pre",
+      "question": "Why can't the kernel use regular mutexes in interrupt handlers?",
+      "options": [
+        "Interrupt handlers don't need synchronization",
+        "Interrupt handlers can't sleep (they run in interrupt context), so only spinlocks or lock-free mechanisms work",
+        "Mutexes are too slow for the kernel",
+        "Interrupt handlers always run on a separate CPU"
+      ],
+      "correct": 1,
+      "explanation": "A mutex may put the calling thread to sleep while waiting. Interrupt handlers run in a special context where sleeping is forbidden — there's no scheduler to wake them up. Spinlocks busy-wait instead of sleeping, making them suitable for interrupt context and very short critical sections."
+    }
+  ]
+}

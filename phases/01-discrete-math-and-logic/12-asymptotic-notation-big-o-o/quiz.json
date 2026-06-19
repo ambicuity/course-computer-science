@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which one of these is the formal definition of `f(n) = O(g(n))`?",
+      "options": [
+        "f(n) ≤ g(n) for all n",
+        "∃ c, n₀ > 0 such that for all n ≥ n₀, f(n) ≤ c · g(n)",
+        "lim f(n) / g(n) = 1",
+        "f and g have the same leading term"
+      ],
+      "correct": 1,
+      "explanation": "Big-O is defined by 'eventually bounded by a constant multiple.' The two existence quantifiers (∃ c) and (∃ n₀) — and the universal (∀ n ≥ n₀) — capture 'up to a constant, for large enough n.' This single definition implies all the algebraic rules."
+    },
+    {
+      "stage": "pre",
+      "question": "Is `3n² + 5n + 7` in Θ(n²)?",
+      "options": [
+        "No — the constant 3 is in the way",
+        "Yes — lower-order terms and constants are dropped by Θ",
+        "Only Ω(n²)",
+        "Only O(n²)"
+      ],
+      "correct": 1,
+      "explanation": "Θ-notation discards constants and lower-order terms. (3n²+5n+7)/n² → 3 (a positive constant) as n → ∞. So the polynomial is Θ(n²). The polynomial is also O(n²), Ω(n²), and o(n^2.5)."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the base of the logarithm irrelevant inside O(log n)?",
+      "options": [
+        "Because log functions are slow",
+        "Change of base: log_a(n) = log_b(n) / log_b(a) — the ratio is a positive constant — so O(log_a n) and O(log_b n) describe the same set.",
+        "It's a convention without mathematical basis",
+        "Only true for natural log"
+      ],
+      "correct": 1,
+      "explanation": "log_a(n) = log_b(n) · (1 / log_b(a)). For constant a, b > 1 the factor 1/log_b(a) is just a positive constant — and Big-O absorbs constants. So inside O(...), all logs are equivalent. The same is NOT true for 2^n vs 3^n: those differ by a function, not a constant."
+    },
+    {
+      "stage": "post",
+      "question": "An algorithm A runs in 1000n nanoseconds; algorithm B runs in 0.01n² nanoseconds. For which n does A become faster?",
+      "options": [
+        "A is always faster — it's O(n)",
+        "When 1000n < 0.01n² → n > 100,000. Before that, B is faster despite being O(n²).",
+        "When n > 10",
+        "Never"
+      ],
+      "correct": 1,
+      "explanation": "Big-O describes the limit, not pre-asymptotic behavior. With c_A = 1000 and c_B = 0.01, B is faster until n ≈ 100,000. This is why algorithm analysis must include constants: 'better asymptotic' doesn't mean 'better for production input sizes.'"
+    },
+    {
+      "stage": "post",
+      "question": "Which is correct?",
+      "options": [
+        "O(n) ⊆ O(n²)",
+        "O(n²) ⊆ O(n)",
+        "Both",
+        "Neither — O(n) and O(n²) are disjoint"
+      ],
+      "correct": 0,
+      "explanation": "Every function bounded by c·n is also bounded by c·n² (for sufficiently large n). So O(n) is a *subset* of O(n²). The reverse is false: n² is in O(n²) but not in O(n). Big-O ⊆ relations encode dominance: faster-growth bounds are bigger sets."
+    },
+    {
+      "stage": "post",
+      "question": "Show: `log(n!) = Θ(n log n)`.",
+      "options": [
+        "False — log(n!) = Θ(n)",
+        "True — by Stirling's approximation, n! ≈ √(2πn)·(n/e)ⁿ, so log(n!) ≈ n log n - n + O(log n) which is Θ(n log n).",
+        "True only for small n",
+        "Cannot be determined"
+      ],
+      "correct": 1,
+      "explanation": "Stirling: log(n!) ≈ n log n - n + (1/2) log(2πn). The dominant term is n log n; everything else is lower order. So log(n!) = Θ(n log n). This is the basis of the comparison-sort lower bound: any sort that compares pairs must make Ω(log(n!)) = Ω(n log n) comparisons."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 12,
+    "title": "Asymptotic Notation Big O O"
+  }
+}

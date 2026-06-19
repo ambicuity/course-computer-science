@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 20,
+    "title": "Memory-Safety Attacks — Stack Smash, ROP, ASLR"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A stack buffer overflow occurs when:",
+      "options": [
+        "A program reads past the end of a dynamically allocated heap buffer, causing a segmentation fault",
+        "A program writes data beyond the bounds of a stack-allocated buffer, potentially overwriting the saved return address and hijacking control flow",
+        "A program uses uninitialized stack memory, reading garbage values that happen to be valid pointers",
+        "The stack segment grows into the heap segment due to excessive recursion, causing an out-of-memory condition"
+      ],
+      "correct": 1,
+      "explanation": "Stack buffer overflows happen when a program writes past the end of a buffer allocated on the stack (e.g., via gets() or strcpy() without length checks). Because the stack layout places the return address at a higher address than local variables, the overflow can overwrite the return address, redirecting execution when the function returns."
+    },
+    {
+      "stage": "pre",
+      "question": "What does marking the stack as non-executable (NX/DEP) prevent?",
+      "options": [
+        "Buffer overflows from occurring in the first place, since the NX bit adds bounds checking to every memory write",
+        "Direct execution of attacker-supplied shellcode placed on the stack, because the CPU will fault when trying to fetch instructions from a non-executable page",
+        "Return-oriented programming attacks, since gadgets rely on the stack being executable to chain return addresses",
+        "Stack canary bypasses, because the NX bit protects the canary value stored before the return address"
+      ],
+      "correct": 1,
+      "explanation": "NX/DEP is a page-table permission bit that marks the stack (and optionally heap) as non-executable. If the CPU tries to fetch an instruction from a non-executable page, it raises a page-fault. This prevents direct shellcode injection — an attacker cannot put machine code on the stack and jump to it. However, NX does not prevent the overflow itself, and it can be bypassed via ROP, which reuses existing executable code."
+    },
+    {
+      "stage": "post",
+      "question": "How does Return-Oriented Programming (ROP) bypass a non-executable (NX) stack?",
+      "options": [
+        "ROP calls mprotect() to mark the stack executable, then executes shellcode placed there — the mprotect call itself is injected via the overflow",
+        "ROP overwrites the return address with a chain of addresses pointing to short instruction sequences (gadgets) that already exist in executable memory and end with ret, composing arbitrary computation without injecting new code",
+        "ROP uses a timing side channel to leak the canary value, then overwrites the return address with a valid target while preserving the canary",
+        "ROP corrupts the page table entries directly via a kernel exploit, removing the NX bit from the stack page"
+      ],
+      "correct": 1,
+      "explanation": "ROP works by flooding the stack with return addresses, each pointing to a short gadget (typically 2-6 instructions ending in ret). Each gadget performs a small operation (e.g., pop a register, add two values, load from memory) and then ret pops the next gadget address. By chaining gadgets, the attacker can perform arbitrary computation. Since all gadgets are valid code in the binary or loaded libraries, NX does not block them."
+    },
+    {
+      "stage": "post",
+      "question": "Which combination of mitigations provides the strongest defense against stack-based control-flow hijacking in a modern compiled C program?",
+      "options": [
+        "Stack canaries alone, which detect all buffer overflows before the return address is used",
+        "ASLR alone, which randomizes addresses so the attacker cannot predict where code or data resides",
+        "Stack canaries + NX/DEP + ASLR + PIE + Full RELRO, providing defense-in-depth: canaries detect overflows, NX prevents shellcode execution, ASLR+PIE randomizes all code locations, and Full RELRO prevents GOT overwrites",
+        "NX/DEP + stack canaries, which together prevent both code injection and return-address overwrite detection"
+      ],
+      "correct": 2,
+      "explanation": "No single mitigation is sufficient. Stack canaries detect simple sequential overflows but can be bypassed with information leaks. NX/DEP stops shellcode injection but not ROP. ASLR + PIE randomizes code and data addresses but can be bypassed with an information leak or on 32-bit systems via brute force. Full RELRO prevents GOT overwrite attacks. Defense-in-depth using all mitigations raises the bar significantly: an attacker typically needs at least two separate vulnerabilities (an information leak + a write primitive) to achieve reliable code execution."
+    },
+    {
+      "stage": "pre",
+      "question": "What is Return-Oriented Programming (ROP)?",
+      "options": [
+        "A programming paradigm for return values",
+        "An exploitation technique that chains together small instruction sequences ending in 'ret' to execute arbitrary operations without injecting code",
+        "A method for optimizing function returns",
+        "A way to reverse-engineer compiled programs"
+      ],
+      "correct": 1,
+      "explanation": "ROP chains 'gadgets' — short instruction sequences already in memory that end with a 'ret' instruction. By overwriting the return address stack, an attacker chains gadgets to perform arbitrary computation without injecting new code, bypassing W^X (non-executable stack) protections."
+    }
+  ]
+}

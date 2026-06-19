@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 2,
+    "title": "Transistors → Logic Gates"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A NAND gate has inputs A=1 and B=1. What is the output?",
+      "options": [
+        "0",
+        "1",
+        "Undefined",
+        "High-impedance"
+      ],
+      "correct": 0,
+      "explanation": "NAND outputs 0 only when both inputs are 1. Since A=1 and B=1, ~(1 & 1) = ~1 = 0."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is NAND considered a 'universal' gate?",
+      "options": [
+        "It is the fastest gate in CMOS technology",
+        "Any Boolean function can be built using only NAND gates",
+        "It uses the fewest transistors of any gate",
+        "It is the only gate that works at high frequencies"
+      ],
+      "correct": 1,
+      "explanation": "NAND (and NOR) are functionally complete: NOT, AND, and OR can all be constructed from NAND alone, which means any combinational logic function can be implemented."
+    },
+    {
+      "stage": "post",
+      "question": "In a CMOS inverter, when the input is HIGH (1), which transistor conducts?",
+      "options": [
+        "The PMOS pull-up transistor",
+        "The NMOS pull-down transistor",
+        "Both transistors conduct equally",
+        "Neither transistor conducts"
+      ],
+      "correct": 1,
+      "explanation": "NMOS conducts when gate is HIGH (pulls output to GND = 0). PMOS conducts when gate is LOW. When input is HIGH, NMOS turns on and PMOS turns off."
+    },
+    {
+      "stage": "post",
+      "question": "A chain of 8 NAND gates is connected in series. If each gate has a propagation delay of 50 ps, what is the worst-case delay from input to output?",
+      "options": [
+        "50 ps",
+        "100 ps",
+        "400 ps",
+        "800 ps"
+      ],
+      "correct": 2,
+      "explanation": "Propagation delays add in a combinational chain. 8 gates × 50 ps = 400 ps worst-case delay."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a transistor's fundamental function in digital circuits?",
+      "options": [
+        "It stores data permanently",
+        "It acts as an electronically controlled switch",
+        "It generates clock signals",
+        "It converts analog signals to digital"
+      ],
+      "correct": 1,
+      "explanation": "A transistor is a voltage-controlled switch: a small voltage at the gate (or base) controls whether current flows between the other two terminals. By combining these switches, we build logic gates (NOT, AND, OR), which are the building blocks of all digital circuits."
+    }
+  ]
+}

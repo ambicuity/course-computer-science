@@ -1,0 +1,77 @@
+{
+  "_meta": { "phase": 15, "lesson": 15 },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A single `new int` on the hot path of a latency-critical system can cause a P99 spike of 10+ microseconds. What is the primary mechanism for this spike?",
+      "options": [
+        "The new expression itself compiles to hundreds of instructions",
+        "Heap allocation may trigger a page fault or contend on the allocator's internal lock",
+        "The int must be zero-initialized which is slow on most CPUs",
+        "new always triggers a system call to mmap a new page"
+      ],
+      "correct": 1,
+      "explanation": "Heap allocation is non-deterministic: it may hit a free-list quickly (fast path) or trigger a page fault, coalesce free blocks, or contend on an internal mutex (slow path). This bimodal distribution is exactly what blows the P99 tail."
+    },
+    {
+      "stage": "pre",
+      "question": "In a lock-free SPSC ring buffer, the producer stores data before incrementing write_pos with `memory_order_release`, and the consumer loads write_pos with `memory_order_acquire`. What guarantee does this provide?",
+      "options": [
+        "All threads see the write in the same order",
+        "The consumer sees all data written before the producer's release store to write_pos",
+        "No reordering of any kind is possible",
+        "The buffer will never overflow"
+      ],
+      "correct": 1,
+      "explanation": "release-acquire forms a synchronization pair: the consumer's acquire load on write_pos guarantees it sees all writes that happened before the producer's release store on write_pos. This is cheaper than seq_cst because it doesn't require a global total order."
+    },
+    {
+      "stage": "post",
+      "question": "You have two atomic counters incremented by different threads. P99 latency is terrible despite using `memory_order_relaxed`. Adding `alignas(64)` to each counter fixes it. Why?",
+      "options": [
+        "alignas(64) makes the atomic operations faster on x86",
+        "The two counters were on the same 64-byte cache line, causing false sharing; padding puts them on separate lines",
+        "aligned memory is required for relaxed atomics to work correctly",
+        "The compiler generates better code for aligned atomics"
+      ],
+      "correct": 1,
+      "explanation": "Without padding, both counters share a cache line. Each increment invalidates the line in the other core's cache, causing ping-pong traffic (false sharing). alignas(64) forces each counter onto its own cache line, eliminating the invalidation traffic."
+    },
+    {
+      "stage": "post",
+      "question": "CRTP eliminates virtual dispatch overhead. What is the trade-off?",
+      "options": [
+        "CRTP requires runtime type information (RTTI)",
+        "Each derived type instantiation creates a separate Base template instantiation, increasing code size (binary bloat)",
+        "CRTP can only be used with a single derived class",
+        "CRTP makes the code slower due to template recursion"
+      ],
+      "correct": 1,
+      "explanation": "CRTP generates a separate copy of Base<Derived> for each Derived type. This allows inlining and static dispatch but bloats the binary. In tight latency loops the I-cache savings from inlining usually outweigh code-size costs, but for rarely-used types with large base implementations, the trade-off may not be worth it."
+    },
+    {
+      "stage": "post",
+      "question": "A seqlock reader sees an odd sequence number, then yields and retries. Why does this guarantee a consistent read without any locks?",
+      "options": [
+        "Odd sequence numbers are impossible so the reader never actually retries",
+        "An odd sequence means a write is in progress; the reader waits until the writer finishes (even sequence) and then re-reads, verifying the sequence number hasn't changed between two reads",
+        "The seqlock uses a mutex internally that the reader acquires",
+        "Memory ordering prevents the reader from seeing partial writes"
+      ],
+      "correct": 1,
+      "explanation": "The writer increments seq (odd), writes data, then increments seq (even). A reader captures seq before and after reading data. If seq changed (or was odd), the data may be inconsistent so the reader retries. This is lock-free for readers — they never block, only spin-retry."
+    },
+    {
+      "stage": "post",
+      "question": "Why does replacing `pos % size` with `pos & (size - 1)` in a ring buffer matter for low-latency code?",
+      "options": [
+        "It doesn't matter; compilers optimize both identically",
+        "Bitwise AND is a single-cycle instruction on most CPUs while modulo requires division, which can take 20-40 cycles and is variable-latency",
+        "The modulo can overflow for large values of pos",
+        "The bitwise AND prevents integer promotion bugs"
+      ],
+      "correct": 1,
+      "explanation": "Division/modulo is one of the slowest integer operations (20-40 cycles on x86, variable latency). Bitwise AND is 1 cycle and pipelined. For a power-of-2 ring buffer, this substitution eliminates a latency-variable operation from the hot path. The size must be a power of 2 for the equivalence to hold."
+    }
+  ]
+}

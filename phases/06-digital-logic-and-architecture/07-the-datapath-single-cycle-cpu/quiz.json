@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 7,
+    "title": "The Datapath — Single-Cycle CPU"
+  },
+  "questions": [
+    {
+      "stage": "post",
+      "question": "In a single-cycle CPU, why does the CPI equal 1 for every instruction?",
+      "options": [
+        "Because the clock runs very fast",
+        "Because every instruction — fetch, decode, execute, memory, writeback — completes within one clock cycle",
+        "Because pipelining overlaps all stages",
+        "Because the ALU is combinational"
+      ],
+      "correct": 1,
+      "explanation": "By definition, a single-cycle CPU completes all five stages of every instruction in one clock period. CPI = 1 always, but the clock period must accommodate the slowest instruction (typically lw)."
+    },
+    {
+      "stage": "post",
+      "question": "Which instruction determines the minimum clock period (critical path) in a single-cycle CPU?",
+      "options": [
+        "add — it uses the ALU for arithmetic",
+        "beq — it requires a comparison and possible PC update",
+        "lw (load word) — it traverses instruction memory, register file, ALU, data memory, and writeback MUX",
+        "sw (store word) — it writes to data memory"
+      ],
+      "correct": 2,
+      "explanation": "lw has the longest path: PC → instruction memory → register file read → ALU address computation → data memory read → MUX → register file write setup. This dominates the clock period."
+    },
+    {
+      "stage": "post",
+      "question": "For a `sw` (store word) instruction, which control signals are asserted?",
+      "options": [
+        "ALUSrc=0, MemWrite=1, RegWrite=1",
+        "ALUSrc=1, MemWrite=1, RegWrite=0",
+        "ALUSrc=1, MemRead=1, RegWrite=1",
+        "ALUSrc=0, MemWrite=1, RegWrite=0, Branch=1"
+      ],
+      "correct": 1,
+      "explanation": "sw uses ALUSrc=1 (immediate for address computation), MemWrite=1 (write to data memory), and RegWrite=0 (no register writeback). MemRead, Branch, and MemToReg are all 0."
+    },
+    {
+      "stage": "post",
+      "question": "In the RISC-V instruction `add x1, x2, x3` (R-type, opcode 0110011), which fields from the instruction are used to determine the ALU operation?",
+      "options": [
+        "Only the opcode",
+        "opcode and rd",
+        "funct3 and funct7",
+        "rs1 and rs2"
+      ],
+      "correct": 2,
+      "explanation": "The opcode (0110011) tells the control unit this is an R-type (ALUOp=10). The ALU control unit then uses funct3 and funct7 to select the specific operation: add (000/0000000), sub (000/0100000), and (111/0000000), or (110/0000000), slt (010/0000000)."
+    },
+    {
+      "stage": "pre",
+      "question": "In a single-cycle CPU, how long does every instruction take?",
+      "options": [
+        "Each instruction takes a different number of cycles",
+        "Every instruction completes in exactly one clock cycle, set to the slowest instruction's delay",
+        "Each instruction takes exactly one nanosecond",
+        "The fastest instruction sets the clock period"
+      ],
+      "correct": 1,
+      "explanation": "In a single-cycle design, the clock period must accommodate the slowest instruction (typically a load-word: instruction fetch + register read + ALU + memory access + register write). Faster instructions waste the remaining time, making this design inefficient."
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+[package]
+name = "pal"
+version = "0.1.0"
+edition = "2021"
+description = "pal — a self-hosting compiler for a Pascal-ish language targeting RISC-V"
+
+[[bin]]
+name = "pal"
+path = "../code/main.rs"

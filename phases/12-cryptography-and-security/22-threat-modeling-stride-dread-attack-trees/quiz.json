@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 12,
+    "lesson": 22,
+    "title": "Threat Modeling — STRIDE, DREAD, attack trees"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of the following is NOT one of the six STRIDE threat categories?",
+      "options": [
+        "Spoofing",
+        "Tampering",
+        "Replication",
+        "Elevation of Privilege"
+      ],
+      "correct": 2,
+      "explanation": "The six STRIDE categories are Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, and Elevation of Privilege. 'Replication' is not a STRIDE category — it is a concept in distributed systems (data replication)."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of a trust boundary in a Data Flow Diagram (DFD) used for threat modeling?",
+      "options": [
+        "To separate different programming languages used in the system",
+        "To indicate where data moves from one security trust level to another",
+        "To mark the physical location of servers in a datacenter",
+        "To draw a line between frontend and backend code"
+      ],
+      "correct": 1,
+      "explanation": "A trust boundary (drawn as a dashed line in DFDs) marks where data crosses from one trust level to another — e.g., from the public internet to an internal network. Every crossing is a point where security properties (authentication, encryption, access control) may change and should be examined for threats."
+    },
+    {
+      "stage": "post",
+      "question": "When scoring a threat with DREAD, which category specifically addresses how easy it is for an attacker to reproduce the threat?",
+      "options": [
+        "Damage Potential",
+        "Exploitability",
+        "Reproducibility",
+        "Discoverability"
+      ],
+      "correct": 2,
+      "explanation": "Reproducibility (the 'R' in DREAD) measures how reliably an attacker can trigger the threat. A score of 1 means it is very hard (race condition, timing-dependent), 2 means complex multi-step, and 3 means it works reliably every time (one click, always succeeds)."
+    },
+    {
+      "stage": "post",
+      "question": "In an attack tree, what is the semantic difference between an OR node and an AND node?",
+      "options": [
+        "OR nodes represent cheaper attacks; AND nodes represent expensive ones",
+        "OR nodes require all child conditions; AND nodes require any one child",
+        "OR nodes represent a choice (any child is sufficient); AND nodes require all children simultaneously",
+        "OR nodes are for network attacks; AND nodes are for physical attacks"
+      ],
+      "correct": 2,
+      "explanation": "In attack trees, OR means logical disjunction — the parent is achievable if any one child is satisfied (the attacker can choose the easiest path). AND means logical conjunction — all children must be satisfied for the parent to be achievable (all sub-goals are necessary). This distinction is critical for correctly modeling whether an attacker needs multiple simultaneous conditions or just one path."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the STRIDE threat model used for?",
+      "options": [
+        "Testing network speed",
+        "Systematically categorizing security threats into Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, and Elevation of privilege",
+        "Encrypting data at rest",
+        "Monitoring network traffic for intrusions"
+      ],
+      "correct": 1,
+      "explanation": "STRIDE is a mnemonic for six threat categories: Spoofing identity, Tampering with data, Repudiation, Information disclosure, Denial of service, Elevation of privilege. It helps systematically analyze a system by asking 'what if an attacker could do X?' for each category."
+    }
+  ]
+}

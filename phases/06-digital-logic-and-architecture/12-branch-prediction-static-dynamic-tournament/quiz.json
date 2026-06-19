@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 12,
+    "title": "Branch Prediction Static Dynamic Tournament"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a 2-bit saturating counter predictor, if the current state is 'weakly taken' (10) and the branch is not-taken, what is the next state?",
+      "options": [
+        "Strongly taken (11)",
+        "Weakly not-taken (01)",
+        "Weakly taken (10) — no change",
+        "Strongly not-taken (00)"
+      ],
+      "correct": 1,
+      "explanation": "A not-taken outcome decrements the counter. From 'weakly taken' (10) the counter moves to 'weakly not-taken' (01). It takes two consecutive not-taken outcomes to reach 'strongly not-taken' (00)."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the main advantage of gshare over a simple bimodal (PC-indexed) 2-bit predictor?",
+      "options": [
+        "Gshare uses fewer bits of storage",
+        "Gshare captures correlation between different branches by XORing global history with the PC",
+        "Gshare never mispredicts",
+        "Gshare does not need to be updated after each branch"
+      ],
+      "correct": 1,
+      "explanation": "Bimodal prediction is based only on each branch's own PC. Gshare incorporates the outcomes of recent branches (global history) into the index, allowing it to learn correlations such as 'if branch A was not-taken, branch B is likely taken.'"
+    },
+    {
+      "stage": "post",
+      "question": "In a tournament predictor, the selector table's 2-bit counter is at state 01 (weakly prefer global). The local predictor was correct but the global predictor was wrong. What does the selector do?",
+      "options": [
+        "Moves toward local (increment toward 11)",
+        "Moves toward global (decrement toward 00)",
+        "Does not change",
+        "Resets to 00"
+      ],
+      "correct": 0,
+      "explanation": "The selector rewards whichever sub-predictor was correct. Since local was right and global was wrong, the selector increments toward state 11 (prefer local). Counter value goes from 01 to 10."
+    },
+    {
+      "stage": "post",
+      "question": "A Branch Target Buffer (BTB) is indexed by:",
+      "options": [
+        "The branch target address",
+        "The predicted direction (taken/not-taken)",
+        "The current instruction's PC",
+        "The global history register"
+      ],
+      "correct": 2,
+      "explanation": "The BTB is a small cache indexed by the fetch PC. On a hit, it provides the predicted target address. It works alongside the direction predictor: the direction predictor says 'taken,' and the BTB supplies 'where to.'"
+    },
+    {
+      "stage": "pre",
+      "question": "Why is branch prediction necessary in pipelined processors?",
+      "options": [
+        "To reduce the number of instructions in a program",
+        "To speculatively fetch and execute instructions after a branch before the branch outcome is known",
+        "To eliminate branches from the instruction stream",
+        "To ensure branches always take the same path"
+      ],
+      "correct": 1,
+      "explanation": "In a pipelined processor, the next instruction must be fetched before the current branch is resolved. Without prediction, the pipeline would stall on every branch. Modern predictors achieve 95-99% accuracy, keeping the pipeline full and avoiding costly flushes."
+    }
+  ]
+}

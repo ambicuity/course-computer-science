@@ -1,0 +1,8 @@
+[package]
+name = "chacha20-stream-cipher"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "chacha20"
+path = "main.rs"

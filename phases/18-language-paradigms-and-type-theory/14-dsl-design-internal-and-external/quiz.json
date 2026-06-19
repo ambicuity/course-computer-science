@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is a core advantage of internal DSLs?",
+      "options": ["No host language constraints", "Reuse of host tooling and type checks", "No syntax choices", "No runtime semantics"],
+      "correct": 1,
+      "explanation": "Internal DSLs benefit from existing language parser, IDE, and type system support."
+    },
+    {
+      "stage": "pre",
+      "question": "What is an example of an internal DSL?",
+      "options": ["SQL queries in a database", "A fluent API builder pattern in the host language", "A custom file format", "A bytecode instruction set"],
+      "correct": 1,
+      "explanation": "Fluent builders like `query.select('name').where('age > 18')` are internal DSLs — they use host-language syntax to create domain-specific expressions."
+    },
+    {
+      "stage": "post",
+      "question": "When might an external DSL be justified?",
+      "options": ["Never", "When domain syntax needs freedom beyond host language ergonomics", "Only for tests", "Only for binary protocols"],
+      "correct": 1,
+      "explanation": "External DSLs are useful when domain users need a dedicated notation with tailored grammar."
+    },
+    {
+      "stage": "post",
+      "question": "What is a DSL design risk?",
+      "options": ["Guaranteed simplicity", "Semantic drift between notation and implementation", "No parsing needed", "No documentation required"],
+      "correct": 1,
+      "explanation": "DSLs can become confusing if syntax evolves without clear semantic discipline."
+    },
+    {
+      "stage": "post",
+      "question": "What is the key tradeoff when choosing between internal and external DSLs?",
+      "options": ["Speed vs memory", "Tooling reuse vs syntactic freedom", "Type safety vs runtime safety", "Parsing vs compilation"],
+      "correct": 1,
+      "explanation": "Internal DSLs get free tooling but are constrained by host syntax; external DSLs allow custom grammar but require building parsers and editors."
+    }
+  ],
+  "_meta": { "phase": 18, "lesson": 14, "title": "DSL Design - Internal and External" }
+}

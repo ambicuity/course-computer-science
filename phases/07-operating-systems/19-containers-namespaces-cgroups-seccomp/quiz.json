@@ -1,0 +1,74 @@
+{
+  "title": "Lesson 19: Containers — Namespaces, cgroups, seccomp",
+  "questions": [
+    {
+      "id": 1,
+      "question": "What three Linux primitives combine to create a container?",
+      "options": [
+        "chroot, signals, pipes",
+        "namespaces, cgroups, seccomp",
+        "fork, exec, wait",
+        "virtual memory, page tables, TLB"
+      ],
+      "explanation": "Containers are a composition of three Linux kernel features: namespaces (isolation of what a process can see — PIDs, mounts, network, etc.), cgroups (limits on how much CPU, memory, I/O a process can use), and seccomp (filtering which system calls a process can make).",
+      "stage": "pre",
+      "correct": 1
+    },
+    {
+      "id": 2,
+      "question": "In a new PID namespace, what PID does the first process see itself as?",
+      "options": [
+        "The same PID as the host sees it",
+        "PID 0",
+        "PID 1 (it becomes the init process of that namespace)",
+        "PID -1 (undefined)"
+      ],
+      "explanation": "The first process created in a new PID namespace becomes PID 1 — the init process for that namespace. It cannot see processes outside the namespace, and when it exits, all processes in that namespace are killed (just like init on a real system).",
+      "stage": "pre",
+      "correct": 2
+    },
+    {
+      "id": 3,
+      "question": "What happens when a process violates a seccomp filter that uses SECCOMP_RET_KILL?",
+      "options": [
+        "The syscall returns an error (EPERM)",
+        "The process is immediately terminated by the kernel",
+        "The kernel logs a warning and allows the syscall",
+        "The process is paused and sent SIGSTOP"
+      ],
+      "explanation": "SECCOMP_RET_KILL causes the kernel to immediately terminate the offending process with SIGSYS (bad system call). This is the most restrictive action — the process gets no chance to handle the error. Other actions include SECCOMP_RET_ERRNO (return an error), SECCOMP_RET_TRAP (send SIGSYS for a handler), and SECCOMP_RET_LOG (allow but log).",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "id": 4,
+      "question": "Why is chroot alone NOT considered a security boundary?",
+      "options": [
+        "chroot only works on ext4 filesystems",
+        "A root user can escape chroot via various techniques, and chroot provides no PID, network, or resource isolation",
+        "chroot modifies the kernel permanently",
+        "chroot requires a reboot to take effect"
+      ],
+      "explanation": "chroot only changes the apparent root filesystem. It provides no isolation for PIDs, network, IPC, or users. A root process can escape chroot using techniques like creating a device node and chrooting into it, or using fchdir to get a file descriptor outside the chroot. Real containers use mount namespaces + pivot_root instead.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "How do Linux containers achieve isolation without a full virtual machine?",
+      "options": [
+        "By running each container on a separate CPU core",
+        "Using namespaces to isolate what a process can see and cgroups to limit what resources it can use",
+        "By compiling programs differently for each container",
+        "By using different operating systems for each container"
+      ],
+      "correct": 1,
+      "explanation": "Containers use namespaces (PID, network, mount, user, etc.) to give each container its own view of the system — its own PID 1, network stack, and filesystem. Cgroups limit CPU, memory, and I/O. Together they provide isolation without the overhead of running a full guest OS."
+    }
+  ],
+  "_meta": {
+    "phase": 7,
+    "lesson": 19,
+    "title": "Containers Namespaces Cgroups Seccomp"
+  }
+}

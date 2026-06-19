@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What was the primary design goal of the Raft consensus algorithm compared to Paxos?",
+      "options": [
+        "Higher throughput than Paxos in wide-area networks",
+        "Understandability — making consensus easier to explain and implement correctly",
+        "Tolerating more failures than Paxos (Byzantine instead of crash failures)",
+        "Reducing the number of messages required for consensus"
+      ],
+      "correct": 1,
+      "explanation": "Raft's co-authors explicitly state that understandability was the primary design goal. Every design decision was evaluated by whether it made the algorithm easier to explain. Raft provides the same safety guarantee as Paxos but decomposes the problem into independently understandable pieces."
+    },
+    {
+      "stage": "pre",
+      "question": "In Raft's leader election, what prevents a stale follower (one missing recent log entries) from winning an election?",
+      "options": [
+        "The leader sends heartbeats that block elections on stale nodes",
+        "RequestVote RPCs from stale candidates are rejected by a quorum in the election timeout calculation",
+        "The election restriction: a node only grants its vote if the candidate's log is at least as up-to-date as its own",
+        "Term numbers are monotonically increasing, so stale nodes always have lower terms"
+      ],
+      "correct": 2,
+      "explanation": "The election restriction requires that a candidate's log be at least as up-to-date (by comparing last_log_term first, then last_log_index) as any voter's log. A stale node missing committed entries will have a shorter or lower-term log, so majority nodes reject its RequestVote, preventing it from becoming leader."
+    },
+    {
+      "stage": "post",
+      "question": "Raft's log matching property states that if two logs have an entry at the same index with the same term, then all preceding entries are identical. What mechanism enforces this invariant?",
+      "options": [
+        "The leader serializes all writes, so there can only be one entry per index per term",
+        "AppendEntries includes prev_log_index and prev_log_term; followers reject the RPC if their log doesn't match, preventing divergence",
+        "Each follower maintains a hash chain of all previous entries and rejects any entry whose hash doesn't match",
+        "Leaders assign globally unique sequence numbers to every entry, making duplicates impossible"
+      ],
+      "correct": 1,
+      "explanation": "The consistency check in AppendEntries (prev_log_index + prev_log_term) is the enforcement mechanism. If a follower's log disagrees at prev_log_index, it rejects the RPC and the leader decrements next_index and retries. This inductive check, combined with the fact that a leader never overwrites its own log, ensures the matching property holds for all entries."
+    },
+    {
+      "stage": "post",
+      "question": "A Raft leader commits entry 5 at term 2. It then crashes before sending heartbeats. A new leader in term 3 has entries 1-5 in its log (matching term 2 at index 5). What must the new leader do before it can advance commit_index past 5?",
+      "options": [
+        "Nothing — entry 5 was already committed by the previous leader, so the new leader can advance commit_index immediately",
+        "It must commit at least one entry from its own current term (term 3); committing that entry transitively commits entry 5 by the log matching property",
+        "It must resend entry 5 to all followers and wait for a majority acknowledgment before advancing commit_index",
+        "It must run a special Phase 1 (prepare) round, like in Paxos, before committing any entries from a previous term"
+      ],
+      "correct": 1,
+      "explanation": "This is the subtlest part of Raft (Figure 8 in the paper). A leader can only directly commit entries from its current term by counting replicas. Entries from previous terms are committed only indirectly — when a current-term entry at a higher index is committed, the log matching property guarantees all prior entries (including those from previous terms) are also committed. This prevents a scenario where an entry from a previous term could be overwritten by a new leader."
+    },
+    {
+      "stage": "post",
+      "question": "When a follower has fallen far behind and the leader has already truncated log entries the follower needs, what mechanism does Raft use to bring the follower up to date?",
+      "options": [
+        "The leader maintains an infinite log and always has all entries available",
+        "Followers replay commands from the beginning of the leader's log using a full resync protocol",
+        "The leader sends an InstallSnapshot RPC containing a serialized state machine snapshot, replacing the follower's entire log up to last_included_index",
+        "The cluster temporarily reduces the quorum size so the lagging follower can be removed and re-added"
+      ],
+      "correct": 2,
+      "explanation": "When the leader has already discarded log entries (via snapshotting) that a lagging follower needs, it sends an InstallSnapshot RPC. The follower replaces its log up to last_included_index with the snapshot data and applies it to its state machine. This is more efficient than replaying all commands and is necessary because the leader can't send entries it no longer has."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Raft use joint consensus (C_old,new) for membership changes that add or remove multiple nodes, but allows single-node changes without it?",
+      "options": [
+        "Single-node changes don't need consensus because the leader can apply them unilaterally",
+        "Adding or removing a single node always preserves majority overlap between the old and new configurations, so split-brain is impossible; adding or removing multiple nodes can create a window where disjoint majorities form",
+        "Joint consensus is only needed for removing nodes, not adding them; single-node additions are always safe",
+        "The C_old,new transition is an optimization that reduces message count for single-node changes but is required for correctness in both cases"
+      ],
+      "correct": 1,
+      "explanation": "Safety during membership changes requires that no two disjoint majorities can form at any point. When you change one node at a time (e.g., going from {A,B,C} to {A,B,C,D}), any majority of C_old (2 nodes) overlaps any majority of C_new (3 nodes). But if you change two nodes at once (e.g., {A,B,C} → {D,E,F}), there's a point where {A,B} from C_old and {D,E} from C_new are disjoint majorities — split-brain. Joint consensus prevents this by requiring overlapping majorities from both configs simultaneously."
+    }
+  ],
+  "_meta": {
+    "phase": 11,
+    "lesson": 9,
+    "title": "Consensus Iii Raft With A Working Implementation"
+  }
+}

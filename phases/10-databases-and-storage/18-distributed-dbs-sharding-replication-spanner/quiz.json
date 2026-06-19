@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In consistent hashing, when a node is added to the ring, which keys are remapped?",
+      "options": [
+        "All keys are remapped to new positions",
+        "Only keys that hash in the range between the new node and its successor on the ring",
+        "Only keys belonging to the new node's virtual replicas",
+        "No keys are remapped — the new node starts empty"
+      ],
+      "correct": 1,
+      "explanation": "In consistent hashing, the ring is circular. When a node joins, it takes over keys from its successor (the next node clockwise). Only keys in the arc from the new node to its successor move — all other keys stay put."
+    },
+    {
+      "stage": "pre",
+      "question": "What problem does Two-Phase Commit (2PC) have that motivated Three-Phase Commit (3PC)?",
+      "options": [
+        "2PC can commit a transaction that should abort",
+        "2PC is vulnerable to blocking if the coordinator fails after the prepare phase",
+        "2PC requires all participants to vote 'commit' within a single network round trip",
+        "2PC cannot handle more than two participants"
+      ],
+      "correct": 1,
+      "explanation": "If the coordinator crashes after sending prepare requests but before sending the commit/abort decision, participants holding locks are blocked indefinitely. 3PC adds a pre-commit phase to make this non-blocking (though it introduces liveness issues under network partitions)."
+    },
+    {
+      "stage": "post",
+      "question": "A Dynamo-style database has N=3 replicas, W=2 write quorum, and R=1 read quorum. A write succeeds on 2 nodes, then the third node goes down. A subsequent read of that key reaches only the live node. What does the read return?",
+      "options": [
+        "The correct value — the read quorum of 1 is satisfied and that node has the data",
+        "Stale data — the read reached a node that may not have received the write (R+W < N)",
+        "An error — the database requires all 3 replicas to be available",
+        "A conflict error — the client must merge versions"
+      ],
+      "correct": 0,
+      "explanation": "With N=3, W=2, R=1, the condition R+W > N is NOT met (1+2 = 3, not > 3). The read quorum of 1 can be satisfied by a node that wasn't part of the write quorum, potentially returning stale data. Dynamo-style systems require R+W > N for strong read guarantees."
+    },
+    {
+      "stage": "post",
+      "question": "How does Google Spanner achieve external consistency (linearizability across datacenters)?",
+      "options": [
+        "By using a global leader that serializes all transactions",
+        "By assigning commit timestamps from TrueTime intervals that guarantee transaction ordering respects real-time causality",
+        "By running all transactions through a single Paxos group per datacenter",
+        "By using vector clocks to detect concurrent transactions"
+      ],
+      "correct": 1,
+      "explanation": "Spanner's TrueTime API returns a time interval [earliest, latest] with bounded uncertainty (~7ms). Spanner waits out the uncertainty window before committing, ensuring that if transaction A finishes before B starts, A's commit timestamp is strictly less than B's. This provides external consistency without a centralized sequencer."
+    },
+    {
+      "stage": "post",
+      "question": "What distinguishes CockroachDB's approach from Spanner's?",
+      "options": [
+        "CockroachDB uses Raft instead of Paxos, and Hybrid Logical Clocks (HLC) instead of TrueTime",
+        "CockroachDB uses only range-based sharding while Spanner uses only hash-based sharding",
+        "CockroachDB does not support distributed transactions across shards",
+        "CockroachDB uses a single leader for all writes while Spanner uses multi-leader replication"
+      ],
+      "correct": 0,
+      "explanation": "Both are Spanner-inspired, but CockroachDB replaces TrueTime (which requires GPS clocks + atomic clocks in each datacenter) with HLC — a software clock that combines wall clock + logical counter for causally-consistent timestamps. Both use 2PC + consensus (Raft for Cockroach, Paxos for Spanner) for distributed transactions."
+    },
+    {
+      "stage": "pre",
+      "question": "Which statement about virtual nodes (vnodes) in consistent hashing is true?",
+      "options": [
+        "Vnodes eliminate the need for rebalancing when nodes join or leave",
+        "Vnodes improve load distribution by assigning each physical node multiple positions on the hash ring",
+        "Vnodes are physical nodes that store virtual machine data",
+        "Vnodes replace the hash ring with a flat lookup table"
+      ],
+      "correct": 1,
+      "explanation": "Virtual nodes assign each physical node multiple points on the hash ring (e.g., node-a:0, node-a:1, node-a:2). This smooths out distribution, especially with heterogeneous node capacities (a powerful node gets more vnodes). When a node leaves, its load is spread across many nodes rather than just one neighbor."
+    }
+  ],
+  "_meta": {
+    "phase": 10,
+    "lesson": 18,
+    "title": "Distributed Dbs Sharding Replication Spanner"
+  }
+}

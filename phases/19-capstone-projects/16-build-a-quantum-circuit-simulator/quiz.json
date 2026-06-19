@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a state-vector simulator with n qubits, how many amplitudes are stored?",
+      "options": ["2^n", "n^2", "n", "log2(n)"],
+      "correct": 0,
+      "explanation": "Each qubit doubles the number of basis states. For n qubits, the state vector has 2^n complex amplitudes. This is why quantum simulation is exponentially expensive: 30 qubits need 2^30 ≈ 1 billion amplitudes."
+    },
+    {
+      "stage": "pre",
+      "question": "What does it mean for a quantum gate to be unitary?",
+      "options": ["It destroys information", "It preserves total probability (the matrix times its conjugate transpose equals identity)", "It measures the qubit", "It creates entanglement"],
+      "correct": 1,
+      "explanation": "Unitary means U * U^dagger = I. This ensures the gate preserves the norm of the state vector (total probability stays 1). It also means the gate is reversible: you can undo it by applying U^dagger."
+    },
+    {
+      "stage": "post",
+      "question": "What does applying a Hadamard gate to |0> produce?",
+      "options": ["Equal superposition of |0> and |1>", "Always |1>", "No change", "An unnormalized state"],
+      "correct": 0,
+      "explanation": "H|0> = (|0> + |1>)/sqrt(2). The Hadamard gate creates an equal superposition: measuring gives |0> with 50% probability and |1> with 50% probability. This is the foundation of quantum parallelism."
+    },
+    {
+      "stage": "post",
+      "question": "How does the CNOT gate create entanglement?",
+      "options": ["It measures both qubits", "When the control qubit is in superposition, CNOT creates a joint state that can't be factored into individual qubit states", "It copies the control qubit to the target", "It destroys the target qubit"],
+      "correct": 1,
+      "explanation": "If the control is in superposition (|0> + |1>)/sqrt(2), CNOT produces (|00> + |11>)/sqrt(2). This Bell state is entangled: measuring the first qubit as 0 forces the second to be 0, and vice versa."
+    },
+    {
+      "stage": "post",
+      "question": "Why is quantum simulation limited to ~30-40 qubits on classical hardware?",
+      "options": ["Quantum gates are too slow", "The state vector has 2^n entries, requiring exponential memory", "Measurement is the bottleneck", "Classical computers can't do complex arithmetic"],
+      "correct": 1,
+      "explanation": "A 30-qubit state vector has 2^30 ≈ 1 billion complex numbers (16 GB). A 40-qubit state needs 16 TB. Beyond 40 qubits, you need distributed simulators, tensor networks (which exploit circuit structure), or actual quantum hardware."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 16, "title": "Build a Quantum Circuit Simulator" }
+}

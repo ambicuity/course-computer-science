@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 13,
+    "lesson": 10,
+    "title": "Software Transactional Memory"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the fundamental problem with lock-based synchronization that STM solves?",
+      "options": [
+        "Locks are too slow for concurrent programming",
+        "Lock-based operations do not compose — combining two correct lock-based operations can produce incorrect or deadlocking behavior",
+        "Locks cannot be used with more than two threads",
+        "Lock-based programming requires garbage collection"
+      ],
+      "correct": 1,
+      "explanation": "The composability problem: with locks, you cannot take two individually correct concurrent operations (like withdraw and deposit) and combine them into a larger correct operation (like transfer) without knowing their internal locking details. STM transactions compose trivially — any two correct transactions can be combined and remain correct."
+    },
+    {
+      "stage": "post",
+      "question": "What happens when you call `retry` inside an `atomically` block in GHC Haskell?",
+      "options": [
+        "The thread spins in a busy-wait loop until the TVar changes",
+        "The transaction aborts and the thread blocks until any previously read TVar is written to, at which point the transaction re-runs automatically",
+        "The runtime throws a RetryException that must be caught",
+        "The thread sleeps for a fixed 100ms and then retries"
+      ],
+      "correct": 1,
+      "explanation": "`retry` aborts the current transaction and registers the calling thread as blocked on all TVars read so far. When another thread commits a write to any of those TVars, the blocked thread is woken and re-executes from the start of the `atomically` block. This is efficient (no spinning) and composable."
+    },
+    {
+      "stage": "post",
+      "question": "Given the following Haskell code, what is the behavior of `orElse`?",
+      "options": [
+        "It executes both transactions in parallel and returns both results",
+        "It executes the first transaction forever until it succeeds, ignoring the second",
+        "It tries the first transaction; if that transaction calls `retry`, it discards the first transaction's effects and runs the second transaction instead",
+        "It rolls back the first transaction if it succeeds and runs the second"
+      ],
+      "correct": 2,
+      "explanation": "`orElse` is the STM composition operator for alternatives. The first transaction runs to completion. If it calls `retry`, all its effects are discarded and the second transaction executes. This enables composable fallback logic (e.g., try checking account, fall back to credit card) that is impossible to write correctly with locks."
+    },
+    {
+      "stage": "post",
+      "question": "In GHC's STM implementation, when does conflict detection occur?",
+      "options": [
+        "At every read of a TVar (encounter-time / eager detection)",
+        "Only at commit time (commit-time / lazy detection), after the transaction has finished executing",
+        "At compile time via the type system",
+        "At every write of a TVar"
+      ],
+      "correct": 1,
+      "explanation": "GHC STM uses commit-time (optimistic) conflict detection. The transaction runs to completion without checking for conflicts. Only at the commit point does the runtime validate that no TVars read have been modified by another transaction. If a conflict is detected, the transaction aborts and re-runs from scratch. This works well when conflicts are rare."
+    },
+    {
+      "stage": "pre",
+      "question": "What is Software Transactional Memory (STM)?",
+      "options": [
+        "A hardware feature for fast memory access",
+        "A concurrency mechanism where memory operations are grouped into transactions that commit atomically or roll back on conflict",
+        "A way to share memory between computers",
+        "A database transaction system"
+      ],
+      "correct": 1,
+      "explanation": "STM applies database-style transactions to shared memory: reads and writes are logged, and on commit, the system checks for conflicts. If another transaction modified the same data, one rolls back and retries. This provides composable atomic operations without explicit locks."
+    }
+  ]
+}

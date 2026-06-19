@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "You hash 1,000 distinct items into a hash table of size 999. By the pigeonhole principle, what does that guarantee?",
+      "options": [
+        "No collisions",
+        "At least one collision (some bucket holds ≥ 2 items)",
+        "Exactly one collision",
+        "The table will need resizing"
+      ],
+      "correct": 1,
+      "explanation": "Pigeonhole guarantees existence: 1000 items into 999 boxes → some box has ≥ 2. It doesn't tell you which bucket or how many — only that at least one collision is unavoidable. This is the foundation of birthday-paradox-style attacks on n-bit hashes."
+    },
+    {
+      "stage": "pre",
+      "question": "Inclusion-exclusion for two events: |A ∪ B| = ?",
+      "options": [
+        "|A| + |B|",
+        "|A| + |B| - |A ∩ B|",
+        "|A| · |B|",
+        "max(|A|, |B|)"
+      ],
+      "correct": 1,
+      "explanation": "|A ∪ B| = |A| + |B| - |A ∩ B|. The naïve sum |A| + |B| double-counts elements in both; subtract |A ∩ B| once to correct. For three sets, you also add back the triple intersection — sign alternates."
+    },
+    {
+      "stage": "post",
+      "question": "Catalan numbers Cₙ count balanced parentheses, binary trees, lattice paths under the diagonal, and many other objects. Why are all those counts equal?",
+      "options": [
+        "Coincidence",
+        "Each object can be put in bijection with the next — a constructive recipe maps one to another. Equality of counts follows from existence of bijections.",
+        "They all satisfy the same recurrence Cₙ = Σ Cₖ · Cₙ₋₁₋ₖ — and recurrences with the same base case have the same solution.",
+        "Both B and C"
+      ],
+      "correct": 3,
+      "explanation": "Both: each object class admits the same recursive decomposition (split-at-pivot), giving the same recurrence and base case → same numbers. Additionally, explicit bijections (paren ↔ tree ↔ lattice path) prove the equality structurally. This is the essence of bijective combinatorics."
+    },
+    {
+      "stage": "post",
+      "question": "Generalized pigeonhole: 100 items into 30 boxes. Some box must contain at least how many?",
+      "options": [
+        "2",
+        "3",
+        "⌈100/30⌉ = 4",
+        "10"
+      ],
+      "correct": 2,
+      "explanation": "⌈n/k⌉ is the floor on the largest box. ⌈100/30⌉ = 4. Existence-only — you don't know which box, and at most one box achieves it (the others might have 3). Pigeonhole gives lower bounds, not upper."
+    },
+    {
+      "stage": "post",
+      "question": "How many integers in [1, 100] are divisible by NONE of {2, 3, 5}?",
+      "options": [
+        "26",
+        "25",
+        "100 - 74 = 26",
+        "Both A and C — they're equal"
+      ],
+      "correct": 3,
+      "explanation": "Inclusion-exclusion gives |div 2 ∪ div 3 ∪ div 5| = 74. The complement is 100 - 74 = 26 numbers divisible by none. (Quick check: these are 1, 7, 11, 13, 17, …, 97 — coprime-to-30 in [1,100].)"
+    },
+    {
+      "stage": "post",
+      "question": "Why is C₄ = 14? Quick interpretation:",
+      "options": [
+        "14 ways to parenthesize four pairs of brackets: ()()()(),  ()()(()),  ()(())(),  ((()))(),  etc.",
+        "14 distinct binary trees with 4 internal nodes",
+        "14 lattice paths from (0,0) to (4,4) staying below the diagonal",
+        "All of the above"
+      ],
+      "correct": 3,
+      "explanation": "C₄ = 14 — that's the count of every one of those objects (and many more). Stanley's book lists 200+ classes of objects whose count is Cₙ; all in bijection with one another. C₄'s 14 parenthesis strings are exactly the 14 binary trees of 4 nodes via the recursive split bijection."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 9,
+    "title": "Pigeonhole Inclusion Exclusion Catalan"
+  }
+}

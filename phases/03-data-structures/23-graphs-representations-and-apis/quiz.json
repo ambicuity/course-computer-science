@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What's the memory cost of an adjacency MATRIX for a graph with n vertices?",
+      "options": [
+        "O(m)",
+        "O(n²) — regardless of how few edges there actually are. Bad for sparse graphs; great for dense.",
+        "O(n)",
+        "O(log n)"
+      ],
+      "correct": 1,
+      "explanation": "An n×n matrix uses n² bits (or bytes). For n=10⁶, that's 10¹² bits = 125 GB. Adjacency list uses O(n + m) = much smaller for sparse graphs (m << n²). Most real-world graphs (social, road, web) are sparse. Matrix wins only for dense graphs (m approaches n²) or algorithms doing 'for each pair' computations like Floyd-Warshall."
+    },
+    {
+      "stage": "pre",
+      "question": "What is CSR (Compressed Sparse Row) format?",
+      "options": [
+        "Compressed file",
+        "Two arrays: row_starts[i] gives the start of vertex i's neighbors in a flattened neighbors[] array. Cache-friendly contiguous iteration, expensive to mutate.",
+        "Encryption",
+        "Random access"
+      ],
+      "correct": 1,
+      "explanation": "CSR is the standard layout for sparse matrices and large static graphs. Neighbors of vertex u live in neighbors[row_starts[u] .. row_starts[u+1]] — contiguous memory, perfect for SIMD or cache prefetching. Adding edges requires shifting; CSR is best for build-once-then-query graphs (road networks, compiled web crawl, scientific computing)."
+    },
+    {
+      "stage": "post",
+      "question": "When does adjacency MATRIX beat adjacency list?",
+      "options": [
+        "Always",
+        "Dense graphs (m close to n²) and algorithms with 'for each pair' loops like Floyd-Warshall (all-pairs shortest path) or transitive closure. O(1) edge lookup also wins for some algorithms.",
+        "Small graphs",
+        "Random access"
+      ],
+      "correct": 1,
+      "explanation": "Floyd-Warshall: for k = 1..n, for i = 1..n, for j = 1..n. Each access is dist[i][j] — natural fit for a matrix. Doing this in adjacency list would require has_edge(i, j) lookups → O(deg) each. Matrix gives O(1). Similarly: transitive closure on a small graph. Trade memory for query time. Only viable for small or dense graphs."
+    },
+    {
+      "stage": "post",
+      "question": "What's the BFS complexity per edge for adjacency list vs matrix on a SPARSE graph?",
+      "options": [
+        "Same",
+        "Adjacency list: O(m) total — visits each edge once. Matrix: O(n²) — scans every row exhaustively. For sparse graphs (m << n²), matrix is dramatically slower despite both being 'BFS'.",
+        "Matrix faster",
+        "Doesn't matter"
+      ],
+      "correct": 1,
+      "explanation": "BFS visits each edge once. Adjacency list iterates only the actual neighbors → O(degree) per vertex → O(m) total. Matrix has no way to know which entries are 1 without scanning all n → O(n) per vertex → O(n²) total. For n=10⁶, m=10⁷: matrix BFS does 10¹² ops; list does 10⁷. Difference of 100K×. The lesson's main.c measures 52× slowdown on a 1000-node graph."
+    },
+    {
+      "stage": "post",
+      "question": "Why do production HPC and GPU graph libraries use CSR?",
+      "options": [
+        "Tradition",
+        "Cache-friendly contiguous memory enables SIMD, prefetch, GPU memory coalescing. Mutation is expensive but irrelevant for static algorithms (PageRank, shortest paths on a fixed graph).",
+        "Smaller binaries",
+        "Better compression"
+      ],
+      "correct": 1,
+      "explanation": "GPU memory loads are 128-byte transactions; CSR's contiguous neighbor lists fit this perfectly. CPU SIMD instructions like AVX-512 want 32-element aligned arrays — CSR's neighbors[] qualifies. Boost.Graph, GraphBLAS, cuGraph, gunrock all rely on CSR. The cost: rebuilding CSR on edge insert is O(m). Pattern: use adjacency list while building, freeze to CSR before running algorithms."
+    },
+    {
+      "stage": "post",
+      "question": "Why does NetworkX (Python) use dict-of-dicts despite being slow?",
+      "options": [
+        "Speed",
+        "Maximum flexibility: each edge/vertex can carry arbitrary attribute dicts. Trade 10-50× perf for easy API. petgraph (Rust), Boost.Graph (C++) trade flexibility for speed.",
+        "Python required it",
+        "Single dependency"
+      ],
+      "correct": 1,
+      "explanation": "NetworkX is the 'pandas of graphs' — maximally pliable for prototyping and analysis. Want to add a string attribute per edge? Just do `g[u][v]['color'] = 'red'`. The cost: dict lookups, Python object overhead, no cache locality. For production graph processing (millions of edges), people switch to igraph (C-backed) or graph-tool (C++-backed). NetworkX is for the exploratory phase."
+    }
+  ],
+  "_meta": {
+    "phase": 3,
+    "lesson": 23,
+    "title": "Graphs Representations And Apis"
+  }
+}

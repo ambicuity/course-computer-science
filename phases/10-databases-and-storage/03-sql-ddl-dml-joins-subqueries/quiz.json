@@ -1,0 +1,82 @@
+{
+  "_meta": {
+    "scaffold_stub": false,
+    "phase": 10,
+    "lesson": 3,
+    "title": "SQL \u2014 DDL, DML, Joins, Subqueries"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the key difference between INNER JOIN and LEFT JOIN?",
+      "options": [
+        "INNER JOIN returns rows where the join condition matches in at least one table; LEFT JOIN returns all rows from the left table with NULLs for non-matching right-side columns",
+        "INNER JOIN returns only rows where the join condition matches in both tables; LEFT JOIN returns all rows from the left table with NULLs where no right-side match exists",
+        "INNER JOIN is faster than LEFT JOIN because it uses a hash table; LEFT JOIN always does a nested loop",
+        "LEFT JOIN returns all rows from both tables; INNER JOIN returns only exact matches"
+      ],
+      "correct": 1,
+      "explanation": "INNER JOIN returns rows only when the join predicate finds a match in BOTH tables. LEFT JOIN returns every row from the left table; when no match exists in the right table, the right-side columns are filled with NULL. This is the fundamental semantic difference — the Venn diagram for INNER is the intersection, for LEFT it's the full left circle."
+    },
+    {
+      "stage": "pre",
+      "question": "A correlated subquery differs from a non-correlated subquery because:",
+      "options": [
+        "A correlated subquery can only return one row; a non-correlated subquery can return multiple rows",
+        "A correlated subquery references columns from the outer query and is re-executed for each row of the outer query; a non-correlated subquery is independent and executed once",
+        "A correlated subquery is written with the CORRELATED keyword; a non-correlated subquery uses the SUBQUERY keyword",
+        "A correlated subquery always uses EXISTS; a non-correlated subquery always uses IN"
+      ],
+      "correct": 1,
+      "explanation": "A correlated subquery references one or more columns from the outer query (e.g., WHERE o.user_id = u.id where u is from the outer FROM clause). The database must re-evaluate it for each row of the outer result. A non-correlated (independent) subquery can be evaluated once and its result reused. CTEs (WITH) are an alternative that avoid correlation overhead."
+    },
+    {
+      "stage": "pre",
+      "question": "Which statement is true about NULL in SQL?",
+      "options": [
+        "NULL = NULL evaluates to TRUE because NULL represents 'no value' and two absences are equal",
+        "NULL is treated as 0 in arithmetic and as an empty string in comparisons",
+        "NULL IS NULL is TRUE; NULL = NULL is neither TRUE nor FALSE (it's UNKNOWN)",
+        "COUNT(*) and COUNT(col) produce the same result because NULL columns are counted as rows"
+      ],
+      "correct": 2,
+      "explanation": "NULL is not a value but the absence of a value, so any comparison with NULL using =, <, >, IN, etc. yields UNKNOWN (not TRUE or FALSE). The only correct way to test for NULL is IS NULL / IS NOT NULL. Aggregate functions like SUM, AVG, COUNT(col) skip NULLs, while COUNT(*) includes every row regardless of NULLs."
+    },
+    {
+      "stage": "pre",
+      "question": "What distinguishes DDL from DML in SQL?",
+      "options": [
+        "DDL is used for querying data; DML is used for defining data structures",
+        "DDL statements (CREATE, ALTER, DROP) define and modify schema objects; DML statements (INSERT, UPDATE, DELETE, SELECT) manipulate and query the data within those objects",
+        "DDL requires superuser privileges; DML can be run by any user",
+        "DDL statements cannot be rolled back; DML statements are always transactional"
+      ],
+      "correct": 1,
+      "explanation": "DDL (Data Definition Language) includes CREATE, ALTER, DROP, TRUNCATE — these define the structure of database objects (tables, indexes, views). DML (Data Manipulation Language) includes INSERT, UPDATE, DELETE, SELECT — these work with the data inside the structures. Some DDL commands are not transactional in all databases (e.g., MySQL auto-commits DDL), but PostgreSQL wraps DDL in transactions."
+    },
+    {
+      "stage": "post",
+      "question": "What does ROW_NUMBER() OVER (PARTITION BY dept_id ORDER BY salary DESC) do?",
+      "options": [
+        "Assigns a unique rank to each row globally, ordered by salary descending, resetting to 1 for each department",
+        "Assigns a unique incrementing integer to each row within a department, ordered by salary descending, with no ties sharing the same number",
+        "Returns the salary value from the row immediately before the current row within each department",
+        "Groups rows by department and returns one row per department with the highest salary"
+      ],
+      "correct": 1,
+      "explanation": "ROW_NUMBER() assigns a unique, incrementing integer to each row within a partition. Unlike RANK() or DENSE_RANK(), ROW_NUMBER() never produces ties — even if two rows have identical salary values, they each get a distinct number (the tie-breaking order is undefined unless you add more ORDER BY columns). The PARTITION BY resets the numbering for each department."
+    },
+    {
+      "stage": "post",
+      "question": "Given tables A(id) with rows (1,2,3) and B(id) with rows (2,3,4), what does SELECT id FROM A INTERSECT SELECT id FROM B return?",
+      "options": [
+        "(1, 2, 3, 4)",
+        "(2, 3)",
+        "(1, 4)",
+        "(2, 3, 4)"
+      ],
+      "correct": 1,
+      "explanation": "INTERSECT returns rows that appear in both result sets. A has (1,2,3), B has (2,3,4). The intersection is (2,3). Note that INTERSECT removes duplicates by default (like UNION does). If you wanted just the A side minus the overlap, you would use EXCEPT instead."
+    }
+  ]
+}

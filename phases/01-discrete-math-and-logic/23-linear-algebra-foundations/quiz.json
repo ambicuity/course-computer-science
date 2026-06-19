@@ -1,0 +1,69 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does the dot product of two vectors tell you geometrically?",
+      "options": [
+        "The area of the parallelogram they span",
+        "The projection of one onto the other; related to the cosine of the angle between them",
+        "The cross product magnitude",
+        "The sum of their components"
+      ],
+      "correct": 1,
+      "explanation": "The dot product u·v = |u||v|cos θ. When normalized, it gives the cosine of the angle. A dot product of 0 means the vectors are perpendicular. This is fundamental to lighting calculations (Lambert's law uses dot product of light direction and surface normal)."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is matrix multiplication not commutative (AB ≠ BA in general)?",
+      "options": [
+        "It's a bug in the definition",
+        "Matrices represent transformations; applying rotation then translation gives different results than translation then rotation",
+        "Only square matrices commute",
+        "It actually is commutative for all real matrices"
+      ],
+      "correct": 1,
+      "explanation": "Matrix multiplication represents function composition. Rotating a point 90° then translating right gives a different position than translating right then rotating 90°. This is why the order of transformations in a graphics pipeline matters: Model → View → Projection."
+    },
+    {
+      "stage": "post",
+      "question": "What does det(A) = 0 mean for a matrix A?",
+      "options": [
+        "A is the identity matrix",
+        "A collapses at least one dimension; no unique solution exists for Ax = b; A has no inverse",
+        "A is diagonal",
+        "All entries of A are zero"
+      ],
+      "correct": 1,
+      "explanation": "det(A) = 0 means the transformation represented by A maps some non-zero vectors to zero — it collapses dimension. The matrix is 'singular': Ax = b has either no solution or infinitely many. In graphics, this means your projection matrix is degenerate. In ML, this means your feature matrix has linearly dependent columns."
+    },
+    {
+      "stage": "post",
+      "question": "How does Google's PageRank use eigenvectors?",
+      "options": [
+        "It computes eigenvalues of the HTML",
+        "The PageRank vector is the dominant eigenvector of the web graph's transition matrix — the steady-state probability of landing on each page",
+        "It uses eigenvectors to compress images",
+        "Eigenvectors are not used in PageRank"
+      ],
+      "correct": 1,
+      "explanation": "The web graph is a Markov chain. The transition matrix M has a dominant eigenvalue λ=1, and its corresponding eigenvector gives the stationary distribution — the probability of being on each page after infinite random walks. Power iteration (repeatedly multiplying M by a vector) converges to this eigenvector."
+    },
+    {
+      "stage": "post",
+      "question": "What is the time complexity of solving Ax = b via Gaussian elimination for an n×n system?",
+      "options": [
+        "O(n)",
+        "O(n²)",
+        "O(n³)",
+        "O(2ⁿ)"
+      ],
+      "correct": 2,
+      "explanation": "Gaussian elimination has three nested loops, each up to n, giving O(n³). This is why large systems use iterative methods (conjugate gradient, GMRES) which can be faster for sparse matrices. LU decomposition is also O(n³) but allows solving multiple right-hand sides in O(n²) each."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 23,
+    "title": "Linear Algebra Foundations"
+  }
+}

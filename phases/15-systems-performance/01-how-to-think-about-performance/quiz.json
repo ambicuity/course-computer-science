@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 15,
+    "lesson": 1,
+    "title": "How to Think About Performance"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A program spends 80% of its time in function X and 20% in function Y. You optimize function Y to run 5x faster. What is the overall speedup of the program?",
+      "options": [
+        "1.25x — S = 1 / (0.80 + 0.20/5) = 1 / 0.84 ≈ 1.19, but Amdahl says you only speed up the 20%: new total = 0.80 + 0.04 = 0.84, so 1/0.84 ≈ 1.19x ≈ 1.25x range",
+        "2.5x — you sped up 20% by 5x, so 5 × 0.20 = 1.0, plus the unchanged 0.80",
+        "5x — the improvement is 5x, so the whole program is 5x faster",
+        "The speedup cannot be determined without knowing the absolute time of function X"
+      ],
+      "correct": 0,
+      "explanation": "Amdahl's Law: S = 1 / ((1-P) + P/N) where P = 0.20 (fraction improved), N = 5 (speedup of that fraction). S = 1 / (0.80 + 0.04) = 1 / 0.84 ≈ 1.19x. Speeding up a small fraction by a large factor gives a small overall improvement — this is why you must optimize the bottleneck first."
+    },
+    {
+      "stage": "pre",
+      "question": "An L1 cache hit takes ~0.5 ns. A DRAM access takes ~100 ns. A program does 1,000,000 random memory accesses that all miss L1 and L2 but hit DRAM. How much slower is this than if all accesses hit L1?",
+      "options": [
+        "~200x slower — each DRAM access is ~200x the latency of an L1 hit",
+        "~100x slower — DRAM is 100 ns vs 1 ns (approximately) for L1",
+        "~2x slower — memory accesses are pipelined so the latency difference doesn't matter",
+        "~1,000x slower — 1,000,000 accesses × 100 ns = 100 ms total vs 0.5 ms for L1"
+      ],
+      "correct": 0,
+      "explanation": "The ratio is ~100 ns / ~0.5 ns ≈ 200x per access. While accesses can be partially pipelined, random accesses defeat prefetching and each one stalls the pipeline. The key insight: 200x per-access slowdown is the motivation for cache optimization — keeping data in L1 is the single highest-impact optimization for memory-bound code."
+    },
+    {
+      "stage": "post",
+      "question": "You profile a program and find it spends 90% of time in a function that does 0.5 FLOPs per byte of data read from memory. The peak bandwidth is 50 GB/s and peak compute is 200 GFLOP/s. Is this function compute-bound or memory-bound?",
+      "options": [
+        "Memory-bound — operational intensity is 0.5 FLOP/byte, which falls on the slope (below the ridge point at 4 FLOP/byte), so bandwidth limits performance",
+        "Compute-bound — 0.5 FLOP/byte means it does significant computation per memory access",
+        "Neither — the function is I/O bound since it reads data from memory",
+        "It depends on the number of cores — with enough cores, it becomes compute-bound"
+      ],
+      "correct": 0,
+      "explanation": "Ridge point = Peak compute / Peak bandwidth = 200 GFLOP/s / 50 GB/s = 4 FLOP/byte. An operational intensity of 0.5 FLOP/byte is well below 4, placing this on the slope of the roofline model — memory bandwidth is the bottleneck. Adding more compute (SIMD, higher frequency) won't help because the CPU is already waiting for data. The fix is to reduce memory traffic (cache blocking, better data layout)."
+    },
+    {
+      "stage": "post",
+      "question": "An algorithm with O(n log n) comparisons has random memory access (CPI ≈ 5). An alternative with O(n²) comparisons has sequential memory access (CPI ≈ 1). Each comparison takes 1 cycle (before CPI multiplier). At approximately what n does the O(n log n) algorithm become faster?",
+      "options": [
+        "n ≈ 25 — solving n log n × 5 = n² × 1 gives the crossover point where the better constant factor of sequential access no longer wins",
+        "n ≈ 5 — O(n log n) is always faster for n > 5 regardless of CPI",
+        "n ≈ 1000 — the 5x CPI penalty makes O(n log n) much worse until very large n",
+        "n ≈ 0 — O(n log n) is always slower when it has a worse CPI"
+      ],
+      "correct": 0,
+      "explanation": "Using the performance equation: Time = Instructions × CPI. For O(n log n) with CPI 5: Time = 5n log n. For O(n²) with CPI 1: Time = n². Setting equal: 5n log n = n² → 5 log n = n → n ≈ 25. Below this crossover, the O(n²) algorithm with better cache behavior wins. This is why real quicksorts switch to insertion sort for small subarrays — the constant factor and cache behavior of insertion sort dominate at small n."
+    },
+    {
+      "stage": "post",
+      "question": "You measure a service's latency and find: p50 = 10 ms, p99 = 500 ms, p99.9 = 5 seconds. Your SLA requires p99 < 200 ms. A colleague suggests optimizing the average case by making the common path 20% faster. What should you do instead?",
+      "options": [
+        "Profile the p99 requests specifically — the tail latency is your bottleneck. Making the p50 faster doesn't help p99. Find what makes 1% of requests slow (GC pauses, lock contention, slow disk, rare code path) and optimize that.",
+        "Optimize the common path first — most requests benefit, and that should bring down p99 too",
+        "Add more servers — horizontal scaling always fixes tail latency",
+        "Switch to a faster programming language — the 5-second p99.9 suggests the language runtime is the problem"
+      ],
+      "correct": 0,
+      "explanation": "The p50 is 10 ms and p99 is 500 ms — a 50x gap. This means 99% of requests are fast but 1% are extremely slow. Optimizing the common path by 20% makes p50 = 8 ms (irrelevant) while p99 stays at 500 ms. The SLA violation is in the tail, not the average. You must profile the slow requests: what makes them different? Likely causes: rare cache misses, GC pauses, lock contention on a hot path, or a slow downstream service that some requests hit. This is Amdahl's Law applied to latency: optimize the fraction that accounts for the SLA violation."
+    },
+    {
+      "stage": "post",
+      "question": "Using the performance equation Time = Instructions × CPI × Clock_period, you find that a program takes 10 seconds on a 3 GHz CPU, executing 30 billion instructions with an average CPI of 1.0. You replace the CPU with a 4 GHz model. How much faster is the program, and what assumption might be wrong?",
+      "options": [
+        "Theoretically 1.33x faster (4/3), but CPI may increase on the faster CPU because more cache misses occur per unit time, and the memory bottleneck (which doesn't speed up) becomes relatively worse",
+        "1.33x faster with no caveats — Clock_period decreased, so time decreases proportionally",
+        "The program will be exactly the same speed — Instructions and CPI are unchanged",
+        "It depends on whether the CPU supports turbo boost"
+      ],
+      "correct": 0,
+      "explanation": "The performance equation says Time = Instructions × CPI × (1/frequency). If Instructions and CPI stay the same, reducing Clock_period by 3/4 gives 3/4 the time = 1.33x speedup. But the assumption that CPI stays the same is often wrong: a faster CPU generates more memory requests per unit time, which can increase cache miss rates and stall cycles. If the program was already memory-bound (high CPI), the faster CPU spends more time waiting for memory. This is why buying a faster CPU often gives less speedup than expected — the memory hierarchy doesn't speed up, only the CPU does."
+    }
+  ]
+}

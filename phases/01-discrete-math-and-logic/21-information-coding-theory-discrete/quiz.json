@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the entropy of a fair coin?",
+      "options": [
+        "0 bits",
+        "0.5 bits",
+        "1 bit",
+        "2 bits"
+      ],
+      "correct": 2,
+      "explanation": "H(coin) = -0.5 log₂(0.5) - 0.5 log₂(0.5) = 1 bit. Maximum entropy for a binary variable. A biased coin (0.9, 0.1) has H ≈ 0.47 — far less information per flip."
+    },
+    {
+      "stage": "pre",
+      "question": "Shannon's source coding theorem says the average length L of any prefix code satisfies:",
+      "options": [
+        "L = 1 bit always",
+        "H(X) ≤ L < H(X) + 1 (entropy is the lower bound; achievable to within 1 bit per symbol)",
+        "L ≥ 8 bits per symbol",
+        "L is the number of distinct symbols"
+      ],
+      "correct": 1,
+      "explanation": "Entropy is the absolute lower bound on lossless prefix-code length: you can't compress below H(X) bits per symbol on average. Huffman achieves L < H + 1 by always merging the two least-frequent symbols. Arithmetic coding can get arbitrarily close to H."
+    },
+    {
+      "stage": "post",
+      "question": "Why does Huffman coding merge the two LEAST frequent symbols at each step?",
+      "options": [
+        "Just convention",
+        "To minimize the average codeword length: rarely-used symbols get long codes; frequent symbols get short codes. This is locally + globally optimal (exchange argument)",
+        "It's the fastest order",
+        "To maximize compression ratio"
+      ],
+      "correct": 1,
+      "explanation": "Huffman is a greedy algorithm. At each merge, combining the two lowest frequencies pushes the longest codeword length onto the *rarest* symbols, minimizing weighted total length. Exchange argument: any other strategy gives a code that can be improved by swapping back to the greedy order."
+    },
+    {
+      "stage": "post",
+      "question": "What is the Hamming distance between '11010' and '10110'?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correct": 1,
+      "explanation": "Hamming distance = number of positions where the strings differ. Position 2 (1 vs 0) and position 3 (0 vs 1) differ → distance 2. Min distance d → corrects ⌊(d-1)/2⌋ errors, detects d-1. Hamming (7,4) has d=3 → corrects 1, detects 2."
+    },
+    {
+      "stage": "post",
+      "question": "The Hamming (7,4) code transmits 7 bits to encode 4 data bits. What's the 'rate' (information per channel use)?",
+      "options": [
+        "1.0",
+        "4/7 ≈ 0.571 (4 useful bits per 7 transmitted)",
+        "7/4",
+        "0"
+      ],
+      "correct": 1,
+      "explanation": "Rate = (data bits) / (channel bits) = 4/7. Lower rate = more redundancy = more error correction. Shannon's noisy-channel theorem says you can transmit at rates arbitrarily close to the channel capacity with arbitrarily low error — modern LDPC and Polar codes (5G) approach the theoretical limit."
+    },
+    {
+      "stage": "post",
+      "question": "Binary symmetric channel with bit-flip probability p = 0.1. What's the channel capacity?",
+      "options": [
+        "0.1 bits / channel use",
+        "0.9",
+        "1 - H(0.1) ≈ 0.531",
+        "1.0 (lossless)"
+      ],
+      "correct": 2,
+      "explanation": "C = 1 - H(p) for the binary symmetric channel. H(0.1) ≈ 0.469, so C ≈ 0.531 bits per channel use. To send 1 reliable bit you need ≥ 1/0.531 ≈ 1.88 channel uses on average. This is the *limit* — no code can do better, but good codes (LDPC) get within tenths of a decibel."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 21,
+    "title": "Information Coding Theory Discrete"
+  }
+}

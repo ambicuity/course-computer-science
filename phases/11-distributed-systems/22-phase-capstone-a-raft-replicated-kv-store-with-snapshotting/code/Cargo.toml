@@ -1,0 +1,8 @@
+[package]
+name = "raft-kv-capstone"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "raft-kv"
+path = "main.rs"

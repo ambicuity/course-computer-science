@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "The Structured Program Theorem says any computable function can be expressed with just:",
+      "options": [
+        "if and goto",
+        "Sequence, selection (if/else), and iteration (while)",
+        "Functions and recursion only",
+        "switch statements"
+      ],
+      "correct": 1,
+      "explanation": "Böhm & Jacopini (1966): three control-flow constructs — sequence, selection, iteration — suffice. This is the formal basis for 'goto considered harmful' and modern structured programming. Dijkstra's 1968 paper translated the theorem into engineering practice."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a loop invariant?",
+      "options": [
+        "A constant in the loop body",
+        "A logical statement that's true every time control reaches the top of the loop",
+        "The loop counter",
+        "A specific compiler optimization"
+      ],
+      "correct": 1,
+      "explanation": "A loop invariant is the working tool for proving loops correct. State it at the top, check that it's (1) true initially, (2) preserved by each iteration, (3) along with the negation of the loop condition, implies the postcondition. This is Hoare logic in miniature."
+    },
+    {
+      "stage": "post",
+      "question": "Why is binary search's midpoint computed as `lo + (hi - lo) / 2` instead of `(lo + hi) / 2`?",
+      "options": [
+        "Style",
+        "To avoid integer overflow when lo + hi would exceed INT_MAX (a famous bug in Java's standard library until 2006)",
+        "It's required by C",
+        "It's faster"
+      ],
+      "correct": 1,
+      "explanation": "`(lo + hi) / 2` can overflow when both indices are large positive ints. `lo + (hi - lo) / 2` computes the same midpoint without the intermediate large sum. Joshua Bloch's 'Nearly All Binary Searches and Mergesorts Are Broken' (2006) is the famous explanation."
+    },
+    {
+      "stage": "post",
+      "question": "Which form of recursion can a compiler typically convert to a loop (constant stack)?",
+      "options": [
+        "Any recursion",
+        "Tail recursion — when the recursive call is the very last operation in the function. The current stack frame can be reused.",
+        "Only direct recursion",
+        "Only recursion in pure-functional languages"
+      ],
+      "correct": 1,
+      "explanation": "Tail-call optimization (TCO) requires the recursive call to be in tail position — i.e., its return value is the function's return value, with no further work to do. C compilers do TCO opportunistically; Scheme and Haskell mandate it; Python and JavaScript intentionally don't, preferring readable stack traces."
+    },
+    {
+      "stage": "post",
+      "question": "When choosing between a `for` loop and recursion for tree traversal, what's the main consideration?",
+      "options": [
+        "Performance",
+        "Recursion is the natural fit (the data is recursive). For very deep trees (depth > ~10⁴), convert to an explicit stack to avoid blowing the call stack.",
+        "for loops are always better",
+        "Recursion is never used in real code"
+      ],
+      "correct": 1,
+      "explanation": "Tree-shaped data → recursion reads naturally. The risk is stack overflow on very deep or pathological inputs (linear lists encoded as trees, malicious deep nesting in untrusted input). For production code handling arbitrary depth, use an explicit stack — same algorithm, bounded memory."
+    },
+    {
+      "stage": "post",
+      "question": "A `switch` statement on a dense range of cases compiles to:",
+      "options": [
+        "A chain of if-else statements (slow)",
+        "A jump table — array of code addresses indexed by the case value; O(1) dispatch regardless of case count",
+        "A linear scan",
+        "A binary tree of comparisons"
+      ],
+      "correct": 1,
+      "explanation": "Compilers heuristically pick: dense, contiguous case values → jump table (one indexed jump). Sparse cases → if-chain or balanced-tree comparison (O(log n)). Knowing this is why VM interpreter loops are often written as huge switch statements — the dispatch is one jump."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 3,
+    "title": "Control Flow Branches Loops Recursion"
+  }
+}

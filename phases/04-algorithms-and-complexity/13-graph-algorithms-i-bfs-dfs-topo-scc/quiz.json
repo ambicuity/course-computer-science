@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "phase": 4,
+    "lesson": 13,
+    "title": "Graph Algorithms I — BFS, DFS, Topo, SCC",
+    "note": "4 MCQs: 2 pre-lesson, 2 post-lesson."
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the time complexity of BFS on a graph with V vertices and E edges represented as an adjacency list?",
+      "options": [
+        "O(V²)",
+        "O(V log V)",
+        "O(V + E)",
+        "O(V · E)"
+      ],
+      "correct": 2,
+      "explanation": "BFS visits each vertex exactly once (O(V) dequeues) and scans each edge exactly once when examining neighbors (O(E) edge scans). The total is O(V + E), assuming an adjacency list representation."
+    },
+    {
+      "stage": "pre",
+      "question": "During DFS on a directed graph, an edge from vertex u to vertex v is classified as a back edge when:",
+      "options": [
+        "v has already been fully processed (finished) before u discovers it",
+        "v is currently on the DFS stack — it is a GRAY ancestor of u",
+        "v is a direct child of u in the DFS tree",
+        "v has a higher discovery time than u but is not a tree edge"
+      ],
+      "correct": 1,
+      "explanation": "A back edge points from a vertex to an ancestor still on the recursion stack (GRAY in a 3-color DFS). Back edges are the defining indicator of cycles in directed graphs — a directed graph has a cycle if and only if its DFS produces a back edge."
+    },
+    {
+      "stage": "post",
+      "question": "Kahn's topological sort algorithm detects that a graph contains a cycle when:",
+      "options": [
+        "Any vertex has in-degree greater than V/2",
+        "The BFS queue empties before all vertices have been added to the ordering",
+        "Two vertices have the same in-degree",
+        "A vertex is discovered twice during BFS"
+      ],
+      "correct": 1,
+      "explanation": "Kahn's algorithm enqueues vertices with in-degree 0 and removes them from the graph. If a cycle exists, every vertex in the cycle retains in-degree ≥ 1, so the queue empties prematurely. The check is: if the output order contains fewer than V vertices, a cycle exists."
+    },
+    {
+      "stage": "post",
+      "question": "How do Tarjan's and Kosaraju's SCC algorithms differ?",
+      "options": [
+        "Tarjan's uses BFS while Kosaraju's uses DFS",
+        "Tarjan's requires O(V²) space for an adjacency matrix; Kosaraju's uses adjacency lists",
+        "Tarjan's finds SCCs in a single DFS pass using low-link values on a stack; Kosaraju's runs two DFS passes and requires computing the transpose graph",
+        "Tarjan's only works on undirected graphs; Kosaraju's handles directed graphs"
+      ],
+      "correct": 2,
+      "explanation": "Tarjan's algorithm uses one DFS pass, maintaining a stack and low-link values to identify SCC roots when low[v] == disc[v]. Kosaraju's first DFS records finish order, then runs a second DFS on the transpose graph in reverse finish order — each tree in the second DFS is one SCC. Both are O(V+E), but Tarjan's avoids building the explicit transpose."
+    },
+    {
+      "stage": "pre",
+      "question": "What does topological sorting produce, and on what type of graph?",
+      "options": [
+        "A shortest path on an undirected graph",
+        "A linear ordering of vertices respecting edge directions in a DAG",
+        "A minimum spanning tree of a weighted graph",
+        "A coloring of a bipartite graph"
+      ],
+      "correct": 1,
+      "explanation": "Topological sorting orders the vertices of a directed acyclic graph (DAG) so that for every edge (u, v), u appears before v. It is only possible on DAGs — any cycle makes a valid topological order impossible."
+    }
+  ]
+}

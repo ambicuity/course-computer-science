@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 6,
+    "lesson": 22,
+    "title": "Phase Capstone — A 5-Stage Pipelined RISC-V CPU in HDL"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In a 5-stage pipeline, the instruction sequence `LW x1, 0(x2)` followed by `ADD x3, x1, x4` causes a load-use hazard. What is the correct handling?",
+      "options": [
+        "Forward the load result from the MEM/WB register back to the EX stage input",
+        "Stall the pipeline for one cycle by inserting a bubble into ID/EX, because no forwarding path can deliver the load result before ADD reaches EX",
+        "Flush both instructions and restart fetch from the LW",
+        "No special handling is needed — the ALU can re-read the register file during EX"
+      ],
+      "correct": 1,
+      "explanation": "A load's data is not available until the end of the MEM stage. The dependent ADD needs it at the start of EX — one cycle too early. Forwarding from MEM/WB arrives at the EX input of the *next* cycle, not this one. So a 1-cycle stall (bubble) is required to delay the ADD by one cycle, after which forwarding from MEM/WB can supply the loaded value."
+    },
+    {
+      "stage": "post",
+      "question": "A 5-stage pipeline runs a program with 100 instructions. 15 are taken branches (each causing a 2-cycle flush), and 8 are load-use hazards (each causing a 1-cycle stall). What is the CPI?",
+      "options": [
+        "1.00 — CPI is always 1 in an ideal pipeline",
+        "1.23 — each branch adds 2 wasted cycles, each stall adds 1: (100 + 30 + 8) / 100 = 1.38, but stalls overlap with branches so net is 1.23",
+        "1.38 — (100 instructions + 30 branch penalty cycles + 8 stall cycles) / 100 instructions",
+        "1.53 — branches and stalls each add their full penalty on top of the 100 base cycles"
+      ],
+      "correct": 2,
+      "explanation": "Total cycles = instructions + penalties = 100 + (15 × 2 flush cycles) + (8 × 1 stall cycles) = 100 + 30 + 8 = 138. CPI = 138 / 100 = 1.38. The forwarding unit and hazard unit operate independently, so their penalties add directly (in this simplified model where no overlap is assumed)."
+    },
+    {
+      "stage": "post",
+      "question": "The forwarding unit checks `ex_mem_RegWrite && ex_mem_rd != 0 && ex_mem_rd == id_ex_rs1`. Why is the `ex_mem_rd != 0` check necessary?",
+      "options": [
+        "Register x0 is read-only, so writing to it would cause an error",
+        "x0 is hardwired to zero; if a previous instruction writes x0, forwarding its (undefined) result would corrupt instructions that use x0 as a source, even though they should always read 0",
+        "The check prevents structural hazards on the register file write port",
+        "It is an optimization — skipping forwarding to x0 saves one MUX level"
+      ],
+      "correct": 1,
+      "explanation": "x0 is hardwired to zero in the RISC-V ISA. Instructions that 'write' x0 (e.g., NOP encoded as ADDI x0, x0, 0) must not actually write the register file, and the forwarding unit must not route a potentially garbage value from the EX/MEM pipeline register to an instruction that reads x0. The `rd != 0` guard ensures forwarding is only applied to registers x1-x31."
+    },
+    {
+      "stage": "post",
+      "question": "When a BEQ is resolved as taken in the EX stage, the pipeline must flush wrong-path instructions. How many pipeline registers are cleared, and what is the branch penalty?",
+      "options": [
+        "1 register (IF/ID) is flushed; penalty is 1 cycle",
+        "2 registers (IF/ID and ID/EX) are flushed; penalty is 2 cycles",
+        "3 registers (IF/ID, ID/EX, EX/MEM) are flushed; penalty is 3 cycles",
+        "No registers are flushed; the fetch stage simply redirects on the same cycle"
+      ],
+      "correct": 1,
+      "explanation": "When branch resolution happens in EX, the instruction behind the branch is in ID (in IF/ID) and the one behind that is being fetched. Flushing IF/ID and ID/EX squashes the 2 wrong-path instructions. The penalty is 2 cycles — the pipeline loses 2 slots of throughput per taken branch. This is why real CPUs move branch resolution earlier or add branch prediction."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the critical path in a CPU, and why does it determine the clock frequency?",
+      "options": [
+        "The path that carries the most data",
+        "The longest combinational delay between any two pipeline registers, setting the minimum clock period",
+        "The path from the power supply to the ALU",
+        "The connection between L1 and L2 cache"
+      ],
+      "correct": 1,
+      "explanation": "The critical path is the slowest combinational logic path between pipeline registers. The clock period must be long enough for signals to propagate through this path. Shortening the critical path (by adding pipeline stages or optimizing logic) allows a higher clock frequency."
+    }
+  ]
+}

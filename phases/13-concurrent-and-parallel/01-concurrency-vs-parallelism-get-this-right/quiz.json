@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 13,
+    "lesson": 1,
+    "title": "Concurrency vs Parallelism — Get This Right"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "A single-core CPU runs a web browser with 10 open tabs, rapidly switching between them so each tab makes progress. This system is:",
+      "options": [
+        "Concurrent but not parallel — tabs are structured independently but only one runs at a time",
+        "Parallel but not concurrent — tabs execute simultaneously on the single core",
+        "Both concurrent and parallel — tabs are independent and execute at the same time",
+        "Neither — the tabs are just sequential programs being swapped by the OS"
+      ],
+      "correct": 0,
+      "explanation": "The browser structures 10 independent tasks (tabs), which is concurrency. But with one core, only one task executes at any instant via time-slicing — no parallelism. This is the canonical example of the Pike distinction."
+    },
+    {
+      "stage": "pre",
+      "question": "A program spends 80% of its time in a perfectly parallelizable function and 20% in serial code. Using Amdahl's Law, what is the maximum theoretical speedup regardless of how many cores you add?",
+      "options": [
+        "5x — the reciprocal of the serial fraction (1 / 0.20)",
+        "1.25x — Amdahl's Law says the parallel fraction barely helps",
+        "80x — just give it 80 cores and the parallel part goes away",
+        "Infinite — with enough cores, the parallel part runs in zero time"
+      ],
+      "correct": 0,
+      "explanation": "Amdahl's Law: S(N) = 1 / ((1-P) + P/N). As N→∞, S → 1/(1-P) = 1/0.20 = 5x. The serial 20% fundamentally limits the speedup. This is why optimizing the serial bottleneck matters more than adding cores."
+    },
+    {
+      "stage": "post",
+      "question": "Match the concurrency model to its communication mechanism: (1) Processes, (2) Async/await, (3) Actors, (4) CSP",
+      "options": [
+        "IPC — Futures — Message passing — Synchronous channels",
+        "Message passing — IPC — Synchronous channels — Futures",
+        "Synchronous channels — Futures — IPC — Message passing",
+        "Futures — IPC — Message passing — Synchronous channels"
+      ],
+      "correct": 0,
+      "explanation": "Processes communicate via IPC (pipes, sockets, shared memory). Async/await uses futures/promises. Actors use asynchronous message passing through mailboxes. CSP uses synchronous channels where sender blocks until receiver is ready."
+    },
+    {
+      "stage": "post",
+      "question": "A developer parallelizes a computation across 64 cores. Each work item takes 50 ns, and the synchronization barrier at the end of each iteration takes 500 ns. What is the dominant problem?",
+      "options": [
+        "Synchronization overhead dominates — the sync cost (500 ns) is 10x the work per item (50 ns), so parallelism hurts throughput",
+        "This is perfectly fine — 64 cores give approximately 64x speedup",
+        "Memory bandwidth saturation — all 64 cores reading simultaneously will saturate the bus",
+        "Amdahl's Law — the serial fraction of the sync will limit speedup to about 10x"
+      ],
+      "correct": 0,
+      "explanation": "The work-to-sync ratio is 50:500 = 0.1. Adding parallelism here adds cost (synchronization) that exceeds the computation. The rule of thumb is that work per sync should be > 10,000 cycles. This is a textbook case of when NOT to parallelize."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the difference between concurrency and parallelism?",
+      "options": [
+        "They are the same thing",
+        "Concurrency is about dealing with multiple things at once (structure); parallelism is about doing multiple things at once (execution)",
+        "Parallelism is always faster than concurrency",
+        "Concurrency requires multiple CPUs; parallelism does not"
+      ],
+      "correct": 1,
+      "explanation": "Concurrency is a program structure — multiple tasks making progress by interleaving (one CPU can still be concurrent via time-slicing). Parallelism is simultaneous execution — multiple tasks literally running at the same time on multiple cores. You can have concurrency without parallelism."
+    }
+  ]
+}

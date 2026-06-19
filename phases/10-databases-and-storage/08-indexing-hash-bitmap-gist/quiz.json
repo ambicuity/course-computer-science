@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "phase": 10,
+    "lesson": 8,
+    "title": "Indexing — Hash, Bitmap, GiST"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "When would a hash index be a better choice than a B-tree index?",
+      "options": [
+        "When the query uses ORDER BY on the indexed column",
+        "When the query performs only equality comparisons (=, IN) on the indexed column",
+        "When the column has low cardinality (few distinct values)",
+        "When the query uses range comparisons (<, >, BETWEEN)"
+      ],
+      "correct": 1,
+      "explanation": "Hash indexes support only equality lookups. They cannot return sorted output or handle range scans. B-trees handle all of these but are slightly slower for pure equality. Low cardinality is a bitmap index strength, not a hash strength."
+    },
+    {
+      "stage": "pre",
+      "question": "In extendible hashing, what happens when a bucket overflows and its local depth becomes greater than the global depth?",
+      "options": [
+        "The system doubles the directory size and increments global depth",
+        "The bucket is merged with its neighbor",
+        "A new hash function is selected",
+        "The overflow key is stored in an overflow page linked from the bucket"
+      ],
+      "correct": 0,
+      "explanation": "When local depth exceeds global depth, the directory must double in size. All entries are duplicated, then the split bucket's two new locations are updated to point to different buckets. This is 'directory doubling' — the defining feature of extendible hashing."
+    },
+    {
+      "stage": "post",
+      "question": "A bitmap index on a column with 100 distinct values and 1 million rows uses run-length encoding. If 80% of rows have one of 3 values, what compression ratio is approximately achieved by a Roaring Bitmap for those 3 value bitmaps?",
+      "options": [
+        "No compression — bitmaps always use 1 bit per row",
+        "Compression only helps high-cardinality columns",
+        "Each value's bitmap compresses nearly 256:1 because Roaring uses 2^16 chunks — dense chunks auto-convert to bitsets, sparse chunks store sorted arrays",
+        "RLE only compresses when the bitmap is all zeros"
+      ],
+      "correct": 2,
+      "explanation": "Roaring divides the 32-bit space into 2^16-element chunks. Dense chunks (>4096 set bits) store a bitset; sparse chunks store sorted int16 arrays. For the 3 most-frequent values at 80% density, each of their bitmaps would be nearly all ones, so most chunks are dense bitsets — much more compact than a naive 1M-bit bitmap per value."
+    },
+    {
+      "stage": "post",
+      "question": "Which of the following is NOT an operator class or use case supported by PostgreSQL GiST indexes?",
+      "options": [
+        "Geometric containment queries with PostGIS (ST_Contains, ST_Within)",
+        "Full-text search with tsvector @@ tsquery",
+        "Primary key uniqueness enforcement",
+        "Range type overlap queries (&& operator)"
+      ],
+      "correct": 2,
+      "explanation": "GiST does not support uniqueness enforcement. Only B-tree indexes can enforce UNIQUE constraints in PostgreSQL. GiST excels at complex predicate types: R-tree spatial ops, full-text, range containment, and array containment."
+    },
+    {
+      "stage": "post",
+      "question": "What distinguishes GiST's approach from a B-tree's approach for organizing tree nodes?",
+      "options": [
+        "GiST nodes hold key ranges; B-tree nodes hold arbitrary predicates",
+        "GiST nodes hold arbitrary predicates; B-tree nodes hold key ranges ordered by a total order",
+        "GiST is always faster than B-tree for all query types",
+        "GiST stores data only at leaf nodes; B-tree stores data at internal nodes"
+      ],
+      "correct": 1,
+      "explanation": "B-tree requires a total ordering and stores key ranges (min-max). GiST stores user-defined predicates and uses user-defined functions (consistent, union, penalty, picksplit) instead of comparison operators. This allows GiST to index data types that have no natural total order, like geometric shapes or text search vectors."
+    },
+    {
+      "stage": "pre",
+      "question": "What is the primary advantage of Roaring Bitmaps over simple run-length encoding (RLE) for bitmap storage?",
+      "options": [
+        "Roaring Bitmaps use adaptive chunk-level encoding: dense chunks use bitsets, sparse chunks use sorted arrays, automatically switching at a threshold",
+        "Roaring Bitmaps are always uncompressed for faster querying",
+        "RLE cannot encode the value zero",
+        "Roaring Bitmaps only work with 32-bit integer keys"
+      ],
+      "correct": 0,
+      "explanation": "Roaring divides the key space into 2^16 chunks. Each chunk independently chooses its representation: if >4096 set bits, it uses a dense bitset (fast AND/OR); if <=4096, it stores a sorted array (compact). This hybrid approach outperforms pure RLE schemes (WAH, BBC) on both compression ratio and query speed."
+    }
+  ]
+}

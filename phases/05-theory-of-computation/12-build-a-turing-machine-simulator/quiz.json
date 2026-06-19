@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "phase": 5,
+    "lesson": 12,
+    "title": "Build A Turing Machine Simulator"
+  },
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is the primary purpose of a Universal Turing Machine?",
+      "options": [
+        "To solve the halting problem",
+        "To simulate any other TM given its encoding and input",
+        "To prove that P ≠ NP",
+        "To minimize the number of states in a TM"
+      ],
+      "correct": 1,
+      "explanation": "A UTM takes an encoding ⟨M, w⟩ and simulates TM M on input w, acting as a general-purpose programmable machine."
+    },
+    {
+      "stage": "pre",
+      "question": "In a TM simulator, what does a 'breakpoint' feature allow?",
+      "options": [
+        "Modifying the transition function at runtime",
+        "Pausing execution when the machine enters a specific state",
+        "Reversing the tape direction",
+        "Limiting the tape to a finite number of cells"
+      ],
+      "correct": 1,
+      "explanation": "A breakpoint pauses execution when a specified state is entered, enabling step-by-step debugging and inspection."
+    },
+    {
+      "stage": "post",
+      "question": "What format is commonly used to export TM definitions for interoperability?",
+      "options": [
+        "CSV",
+        "JSON",
+        "YAML only",
+        "SQL"
+      ],
+      "correct": 1,
+      "explanation": "JSON is the standard interchange format for TM definitions, supporting states, transitions, and metadata in a structured, language-agnostic way."
+    },
+    {
+      "stage": "post",
+      "question": "The 3-state Busy Beaver problem asks for a TM that:",
+      "options": [
+        "Halts on every input in minimum time",
+        "Writes the maximum number of 1s on a blank tape before halting",
+        "Accepts the longest possible input string",
+        "Uses the fewest transitions to recognize a language"
+      ],
+      "correct": 1,
+      "explanation": "The Busy Beaver function BB(n) asks: among all n-state TMs that halt on blank tape, which writes the most 1s?"
+    },
+    {
+      "stage": "pre",
+      "question": "What are the components of a Turing machine's formal definition?",
+      "options": [
+        "An input alphabet, an output alphabet, and a function",
+        "A set of states, a tape alphabet, a transition function, a start state, and accept/reject states",
+        "A stack, a queue, and a heap",
+        "A program counter and a register file"
+      ],
+      "correct": 1,
+      "explanation": "A Turing machine is formally defined as a 7-tuple (Q, Σ, Γ, δ, q0, q_accept, q_reject): states Q, input alphabet Σ, tape alphabet Γ, transition function δ, start state q0, and halting states. The transition function δ maps (state, tape symbol) to (new state, symbol to write, direction to move)."
+    }
+  ]
+}

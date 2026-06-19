@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "In C, what does `errno` represent?",
+      "options": [
+        "A counter of errors since program start",
+        "A thread-local integer set by failing POSIX functions; you read it after a failure to learn the cause (via `strerror(errno)`)",
+        "A return value of every function",
+        "A compile-time constant"
+      ],
+      "correct": 1,
+      "explanation": "POSIX functions return a sentinel value (-1 or NULL) on failure and set the thread-local `errno`. The caller must check the return AND read `errno` to learn why. errno is brittle: an unrelated call can clobber it before you read it; defensive code saves it immediately."
+    },
+    {
+      "stage": "pre",
+      "question": "Rust's `?` operator does what?",
+      "options": [
+        "Aborts the program",
+        "If the expression is `Err(e)`, returns it from the current function. If `Ok(v)`, evaluates to `v`. Errors propagate up the call stack in one character.",
+        "Throws an exception",
+        "Reverses the value"
+      ],
+      "correct": 1,
+      "explanation": "`x?` is sugar for `match x { Ok(v) => v, Err(e) => return Err(e.into()) }`. It also auto-converts via `From`, so error-type unification is cheap. The `?` operator is what makes Rust's pervasive `Result<T, E>` ergonomic — you don't need explicit match for every step."
+    },
+    {
+      "stage": "post",
+      "question": "Compare exceptions and Rust's `Result<T, E>`:",
+      "options": [
+        "Exceptions are always better",
+        "Exceptions: non-local control flow; happy path stays clean; resource cleanup needs RAII/try-finally. Result: explicit; compiler enforces handling; `?` propagates. Different trade-offs, both legitimate.",
+        "Result is just exceptions in disguise",
+        "Neither is used in production"
+      ],
+      "correct": 1,
+      "explanation": "Exceptions (C++, Python, Java) let the happy path stay clean but errors travel via non-local jumps — surprising and requiring careful resource management. Result types (Rust, Haskell) keep error paths visible in the type signature; the compiler forces you to handle Err arms. Go's multi-return splits the difference."
+    },
+    {
+      "stage": "post",
+      "question": "When should you `panic!()` in Rust rather than return an `Err`?",
+      "options": [
+        "Whenever something might fail",
+        "When the failure indicates a BUG in your code (a violated invariant) or an unrecoverable state. For expected runtime failures (file not found, network down), return Err.",
+        "Never — always return Err",
+        "Only in tests"
+      ],
+      "correct": 1,
+      "explanation": "panic = 'this shouldn't happen; the program is broken.' Examples: array index out of bounds, divide by zero in code that was supposed to validate the divisor, unreachable match arm. Result = 'this *could* happen at runtime; the caller should decide what to do.' Examples: file I/O, parsing user input, network calls."
+    },
+    {
+      "stage": "post",
+      "question": "Why is the C goto-cleanup pattern the canonical way to handle errors with resources?",
+      "options": [
+        "It's the fastest",
+        "C has no destructors, so you need a centralized cleanup. goto with labels at descending cleanup-depth lets each error path jump to the right set of cleanups without nested if-else.",
+        "It uses the fewest characters",
+        "It's required by POSIX"
+      ],
+      "correct": 1,
+      "explanation": "Without RAII (C++) or `defer` (Go) or `Drop` (Rust), C error paths must explicitly free everything allocated up to the point of failure. A single-exit function with labeled cleanups (cleanup_a, cleanup_b, cleanup_c) is far cleaner than deeply nested if-else with copy-pasted free() calls. The Linux kernel uses this pattern extensively."
+    },
+    {
+      "stage": "post",
+      "question": "Go uses `if err != nil { return err }` everywhere. Why didn't it adopt exceptions or Result?",
+      "options": [
+        "Go's designers had a strong preference for explicitness over implicit control flow; errors as values keep the call graph visible. The verbosity is a deliberate cost.",
+        "Go uses Rust's Result internally",
+        "Exceptions are slow",
+        "Go did adopt exceptions"
+      ],
+      "correct": 0,
+      "explanation": "Rob Pike (Go designer): 'errors are values.' Multi-return + manual if-checks make every error path explicit in the source. Critics call it verbose (Go 2 explored a `try` proposal that was withdrawn); proponents say the verbosity prevents the 'hidden error path' bugs of exception-using languages."
+    }
+  ],
+  "_meta": {
+    "phase": 2,
+    "lesson": 9,
+    "title": "Errors Returns Errno Exceptions Result Types"
+  }
+}

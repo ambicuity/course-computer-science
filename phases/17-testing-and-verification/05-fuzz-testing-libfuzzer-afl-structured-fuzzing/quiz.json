@@ -1,0 +1,44 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What does coverage-guided fuzzing primarily use to prioritize new inputs?",
+      "options": ["Wall clock time", "Execution coverage and interesting program behavior", "Code style violations", "Thread count"],
+      "correct": 1,
+      "explanation": "Coverage-guided fuzzers keep or mutate inputs that explore new execution paths or trigger noteworthy outcomes."
+    },
+    {
+      "stage": "pre",
+      "question": "Why are sanitizers commonly paired with fuzzing?",
+      "options": ["To compress seed corpora", "To make crashes deterministic", "To expose memory and undefined-behavior defects as actionable failures", "To avoid writing harnesses"],
+      "correct": 2,
+      "explanation": "Sanitizers surface latent low-level bugs as explicit failures with traces, greatly improving fuzzing effectiveness."
+    },
+    {
+      "stage": "post",
+      "question": "Which fuzz target is usually most effective?",
+      "options": ["A deterministic parser function with bounded side effects", "An endpoint requiring live third-party APIs", "A function dependent on system clock and network jitter", "A test that writes to production DB"],
+      "correct": 0,
+      "explanation": "Deterministic, side-effect-bounded targets maximize execution throughput and reproducibility, which are central for useful fuzz campaigns."
+    },
+    {
+      "stage": "post",
+      "question": "What is the right next step after finding a crash reproducer?",
+      "options": ["Ignore unless user-visible", "Minimize, fix root cause, and convert to regression test", "Increase random seed count only", "Delete the input to keep corpus clean"],
+      "correct": 1,
+      "explanation": "A crash has value only if triaged and converted into durable protection; minimization and regression backfill prevent recurrence."
+    },
+    {
+      "stage": "post",
+      "question": "When does structured fuzzing generally outperform pure byte mutation?",
+      "options": ["Never", "When format-aware generation helps reach deeper semantic paths", "Only for image files", "Only in languages without memory safety"],
+      "correct": 1,
+      "explanation": "Structured generators preserve syntactic validity so deeper parser and semantic logic can be exercised more consistently."
+    }
+  ],
+  "_meta": {
+    "phase": 17,
+    "lesson": 5,
+    "title": "Fuzz Testing - libFuzzer, AFL++, structured fuzzing"
+  }
+}

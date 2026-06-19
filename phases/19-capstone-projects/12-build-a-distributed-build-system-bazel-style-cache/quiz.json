@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "What is essential for reliable remote build cache hits?",
+      "options": ["Randomized keys", "Deterministic action key computation from all relevant inputs", "Large binary storage", "Manual retries on miss"],
+      "correct": 1,
+      "explanation": "Cache hits depend on stable, deterministic digests of semantically relevant inputs. If the action key changes due to non-deterministic factors (timestamps, random values), the cache always misses. If it doesn't capture all inputs, it returns stale results."
+    },
+    {
+      "stage": "pre",
+      "question": "What is a Content-Addressable Store (CAS)?",
+      "options": ["A database indexed by filename", "A storage system where data is indexed by its content hash", "A network file system", "A build script parser"],
+      "correct": 1,
+      "explanation": "In a CAS, the key is the hash of the content, not a filename or path. If two files have identical content, they're stored once. This deduplicates artifacts and guarantees that the same key always returns the same content."
+    },
+    {
+      "stage": "post",
+      "question": "Why are hermetic build inputs important?",
+      "options": ["To increase nondeterminism", "To ensure outputs depend only on declared inputs and tools, preventing hidden dependencies", "To avoid dependency graphs", "To disable caching entirely"],
+      "correct": 1,
+      "explanation": "If an action depends on an undeclared input (a hidden file, an environment variable, the current time), the action key won't capture it. The cache returns stale results for 'identical' builds. Hermeticity prevents this by sandboxing actions to only access declared inputs."
+    },
+    {
+      "stage": "post",
+      "question": "What does a distributed build scheduler primarily coordinate?",
+      "options": ["Syntax highlighting", "Execution of dependency-ordered build actions across workers", "Compiler parsing", "File system mounting"],
+      "correct": 1,
+      "explanation": "The scheduler topologically sorts the build DAG and executes actions respecting dependencies. Independent actions run in parallel; dependent actions wait for their inputs. The scheduler also manages cache lookups and stores."
+    },
+    {
+      "stage": "post",
+      "question": "How does content hashing detect input changes better than path-based caching?",
+      "options": ["Content hashing is faster", "Content hashing detects when a file's content changes even if its path stays the same", "Path-based caching is always correct", "Content hashing uses less memory"],
+      "correct": 1,
+      "explanation": "If you cache by file path, modifying a file at the same path doesn't invalidate the cache. Content hashing (SHA256 of file contents) detects any change. This is why Bazel hashes file contents rather than using file modification times."
+    }
+  ],
+  "_meta": { "phase": 19, "lesson": 12, "title": "Build a Distributed Build System (Bazel-style cache)" }
+}

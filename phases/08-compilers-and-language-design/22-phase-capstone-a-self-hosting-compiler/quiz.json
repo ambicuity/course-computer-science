@@ -1,0 +1,70 @@
+{
+  "title": "Lesson 22: Phase Capstone — A Self-Hosting Compiler",
+  "questions": [
+    {
+      "question": "What does it mean for a compiler to be self-hosting?",
+      "options": [
+        "The compiler can compile itself — its source language is the same as the language it compiles",
+        "The compiler runs without an operating system",
+        "The compiler does not require any external dependencies",
+        "The compiler can only compile one language"
+      ],
+      "explanation": "A self-hosting compiler is written in the same language it compiles. For example, the Rust compiler (rustc) is written in Rust. The bootstrap problem is solved by initially using a compiler written in another language (e.g., rustc was originally written in OCaml), then using that to compile the Rust-written compiler.",
+      "stage": "pre",
+      "correct": 0
+    },
+    {
+      "question": "In three-address IR, why is each instruction limited to at most one operator?",
+      "options": [
+        "To reduce code size",
+        "To make instruction scheduling easier for the backend",
+        "To simplify the instruction set and enable straightforward mapping to machine registers",
+        "To prevent stack overflow during compilation"
+      ],
+      "explanation": "Three-address code (z = x op y) maps naturally to machine registers and simplifies optimization. Each operation produces one result in a named temporary, making data flow explicit and enabling easy analysis for optimizations like constant propagation and dead code elimination.",
+      "stage": "pre",
+      "correct": 2
+    },
+    {
+      "question": "What is the purpose of constant folding in an optimizer?",
+      "options": [
+        "To replace variables with constant values",
+        "To evaluate expressions with constant operands at compile time, replacing them with the computed result",
+        "To remove unused constant declarations",
+        "To convert all literals to a single constant pool"
+      ],
+      "explanation": "Constant folding evaluates expressions whose operands are all compile-time constants. For example, `t0 = 3 + 4` becomes `t0 = 7`. This reduces runtime computation and can enable further optimizations like dead code elimination when folded constants make branches always-taken or never-taken.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "question": "In a recursive descent parser, how is precedence typically handled?",
+      "options": [
+        "By using a separate precedence table for each operator",
+        "By having a separate parsing function for each precedence level, with lower-precedence functions calling higher-precedence ones",
+        "By sorting operators by precedence before parsing",
+        "By using an LR parser table internally"
+      ],
+      "explanation": "Recursive descent encodes precedence through the call chain. In pal's parser, `parse_expr` handles `and`/`or`, calls `parse_comp` for comparisons, which calls `parse_arith` for `+`/`-`, which calls `parse_term` for `*`/`/`, which calls `parse_factor` for atoms. Deeper in the call stack means higher precedence.",
+      "stage": "post",
+      "correct": 1
+    },
+    {
+      "stage": "pre",
+      "question": "What does it mean for a compiler to be 'self-hosting'?",
+      "options": [
+        "It can compile itself — the compiler for language X is written in language X",
+        "It runs without an operating system",
+        "It can compile any programming language",
+        "It uses no external libraries"
+      ],
+      "correct": 0,
+      "explanation": "A self-hosting compiler is written in the language it compiles. The first version is typically compiled by a compiler written in another language (bootstrapping). After that, new versions can be compiled by the previous version. This validates the language's expressiveness and the compiler's correctness."
+    }
+  ],
+  "_meta": {
+    "phase": 8,
+    "lesson": 22,
+    "title": "Phase Capstone A Self Hosting Compiler"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "BFS and DFS differ in which data structure they use to track the frontier?",
+      "options": [
+        "BFS uses a stack, DFS uses a queue",
+        "BFS uses a queue (FIFO), DFS uses a stack (LIFO, often via recursion)",
+        "Both use heaps",
+        "DFS uses a dictionary"
+      ],
+      "correct": 1,
+      "explanation": "Queue (FIFO) gives level-by-level expansion — BFS. Stack (LIFO) gives depth-first expansion — DFS. The recursion stack in a recursive DFS plays exactly that role. Swap the data structure and you transform one algorithm into the other."
+    },
+    {
+      "stage": "pre",
+      "question": "What's the time complexity of BFS or DFS on a graph stored as an adjacency list?",
+      "options": [
+        "O(V²)",
+        "O(V + E)",
+        "O(E log V)",
+        "O(V · E)"
+      ],
+      "correct": 1,
+      "explanation": "Each vertex is visited once (O(V)); each edge is examined at most twice in undirected graphs or once in directed (O(E)). Total O(V + E). With an adjacency matrix, each vertex's neighbor lookup is O(V) so total becomes O(V²)."
+    },
+    {
+      "stage": "post",
+      "question": "Why does BFS find shortest paths in an unweighted graph but Dijkstra is needed for weighted graphs?",
+      "options": [
+        "BFS is faster",
+        "BFS treats each edge as weight 1; vertices are dequeued in increasing distance order. In a weighted graph, a higher-weight edge could be the first one BFS would dequeue, but it shouldn't extend the path — a priority queue (Dijkstra) is needed to always pop the closest unvisited vertex.",
+        "BFS only works on trees",
+        "Dijkstra is just BFS"
+      ],
+      "correct": 1,
+      "explanation": "BFS's FIFO queue gives correct shortest paths only when each edge contributes the same cost. With weights, you need to extract the smallest-distance vertex next — that's a priority queue. Dijkstra ≈ BFS + priority queue. Phase 04 Lesson 14 builds it from scratch."
+    },
+    {
+      "stage": "post",
+      "question": "Which traversal naturally yields topological order on a DAG?",
+      "options": [
+        "BFS",
+        "DFS — reverse the order in which nodes finish (turn black). Equivalent to Kahn's BFS-style algorithm, but DFS-based is more concise.",
+        "Random walk",
+        "Neither"
+      ],
+      "correct": 1,
+      "explanation": "After DFS completes, reverse-finish-time gives a topological order. Why? A node finishes only after all its descendants finish; so reversing puts ancestors before descendants. Kahn's BFS algorithm achieves the same via in-degree counting (Lesson 06)."
+    },
+    {
+      "stage": "post",
+      "question": "A tree on n vertices has how many edges?",
+      "options": [
+        "n",
+        "n - 1",
+        "n + 1",
+        "n²/2"
+      ],
+      "correct": 1,
+      "explanation": "Trees have exactly n - 1 edges. Proof by induction on n: base case is one vertex (0 edges). Each new leaf added contributes one edge. Equivalent characterizations: connected with n-1 edges, or acyclic with n-1 edges — either implies the other for an n-vertex graph."
+    },
+    {
+      "stage": "post",
+      "question": "Why does 3-color DFS (white/gray/black) detect cycles in a directed graph?",
+      "options": [
+        "Magic",
+        "A gray vertex is on the current DFS stack. Reaching a gray vertex from one of its descendants means following a back-edge — a cycle. Black vertices have finished and can be ignored.",
+        "Because of the BFS frontier",
+        "It doesn't detect cycles"
+      ],
+      "correct": 1,
+      "explanation": "Three-color DFS classifies edges: tree edges (white target), forward / cross edges (black target — no cycle), back edges (gray target — cycle). A gray target means you're looking at an ancestor still on the DFS call stack — by definition a cycle through u and v."
+    }
+  ],
+  "_meta": {
+    "phase": 1,
+    "lesson": 17,
+    "title": "Graph Theory I Basics Traversals Trees"
+  }
+}
