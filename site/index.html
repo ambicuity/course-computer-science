@@ -19,6 +19,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="i18n/languages.js"></script>
+  <script src="i18n/i18n.js"></script>
   <style>
     .manual-masthead {
       padding: 96px 0 24px;
@@ -536,16 +538,16 @@
         <span class="logo-icon" aria-hidden="true"></span> COURSE / COMPUTER SCIENCE
       </a>
       <nav class="header-nav">
-        <a href="#contents">Contents</a>
-        <a href="catalog.html">Catalog</a>
-        <a href="prereqs.html">Roadmap</a>
-        <a href="glossary.html">Glossary</a>
+        <a href="#contents" data-i18n="nav.contents">Contents</a>
+        <a href="catalog.html" data-i18n="nav.catalog">Catalog</a>
+        <a href="prereqs.html" data-i18n="nav.roadmap">Roadmap</a>
+        <a href="glossary.html" data-i18n="nav.glossary">Glossary</a>
         <a href="https://github.com/ambicuity/course-computer-science" target="_blank" rel="noopener" class="header-github">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-          <span class="star-count" data-loading="true" aria-label="GitHub stars">…</span>
+          <span class="star-count" data-loading="true" aria-label="GitHub stars" data-i18n-attr="aria-label:a11y.githubStars">…</span>
         </a>
       </nav>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" type="button">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" data-i18n-attr="aria-label:a11y.toggleTheme" type="button">
         <span class="theme-icon" id="themeIcon">N</span>
       </button>
     </div>
@@ -559,43 +561,43 @@
         <span class="right">open source · MIT</span>
       </div>
       <h1 class="manual-title">Course:<br>Computer Science</h1>
-      <p class="manual-tagline reveal">421 lessons. 20 phases. Every major system built from first principles before production source gets opened.</p>
-      <p class="manual-attribution reveal" style="--stagger-delay: 80ms;">Maintained by Ritesh Rana and contributors. Run on your own machine.</p>
+      <p class="manual-tagline reveal" data-i18n="home.tagline">421 lessons. 20 phases. Every major system built from first principles before production source gets opened.</p>
+      <p class="manual-attribution reveal" style="--stagger-delay: 80ms;" data-i18n="home.attribution">Maintained by Ritesh Rana and contributors. Run on your own machine.</p>
       <div class="ascii-rule" style="margin-top:48px;"></div>
     </section>
 
     <section class="preface container">
       <div class="preface-grid">
-        <div class="preface-eyebrow reveal reveal--left">How this works</div>
+        <div class="preface-eyebrow reveal reveal--left" data-i18n="home.howTitle">How this works</div>
         <div class="preface-body reveal" style="--stagger-delay: 120ms;">
-          <p>Most computer science material teaches in scattered pieces. A data-structures class here, an OS class there, a databases class somewhere else. The pieces rarely line up. You hear “B-tree” in one course and do not see it again until a production query plan is slow.</p>
-          <p>This curriculum is the spine. 20 phases, 421 lessons, and the languages used where they fit: C, C++, Rust, Go, Python, Haskell, SQL, RISC-V assembly, and TLA+. Discrete math sits at one end, distributed systems and capstones at the other. Allocator. Parser. Scheduler. CPU pipeline. TCP state machine. Raft. B-tree. You build the smaller version before reading the production one.</p>
-          <p>Each lesson runs the same loop: read the problem, understand the model, write the code, compare against the production version, ship the artifact. No five-minute videos, no copy-paste deploys, no hand-holding. Free, open source, and built to run on your own laptop.</p>
+          <p data-i18n="home.howP1">Most computer science material teaches in scattered pieces. A data-structures class here, an OS class there, a databases class somewhere else. The pieces rarely line up. You hear “B-tree” in one course and do not see it again until a production query plan is slow.</p>
+          <p data-i18n="home.howP2">This curriculum is the spine. 20 phases, 421 lessons, and the languages used where they fit: C, C++, Rust, Go, Python, Haskell, SQL, RISC-V assembly, and TLA+. Discrete math sits at one end, distributed systems and capstones at the other. Allocator. Parser. Scheduler. CPU pipeline. TCP state machine. Raft. B-tree. You build the smaller version before reading the production one.</p>
+          <p data-i18n="home.howP3">Each lesson runs the same loop: read the problem, understand the model, write the code, compare against the production version, ship the artifact. No five-minute videos, no copy-paste deploys, no hand-holding. Free, open source, and built to run on your own laptop.</p>
         </div>
       </div>
     </section>
 
 
     <section class="stat-block container">
-      <div class="stat-block-title reveal reveal--left">Current Progress</div>
+      <div class="stat-block-title reveal reveal--left" data-i18n="home.progressTitle">Current Progress</div>
       <div class="stat-rows reveal" style="--stagger-delay: 100ms;" id="statRows">
         <div class="stat-row">
-          <span class="stat-row-label">Finished Lessons</span>
+          <span class="stat-row-label" data-i18n="home.statFinished">Finished Lessons</span>
           <span class="stat-row-bar" data-bar="complete" style="--bar-pct:0%;" aria-hidden="true">bar</span>
           <span class="stat-row-value" data-stat="complete-frac">0 / 0</span>
         </div>
         <div class="stat-row">
-          <span class="stat-row-label">Phases</span>
+          <span class="stat-row-label" data-i18n="home.statPhases">Phases</span>
           <span class="stat-row-bar" data-bar="phases" style="--bar-pct:0%;" aria-hidden="true">bar</span>
           <span class="stat-row-value" data-stat="phases-frac">0 / 0</span>
         </div>
         <div class="stat-row">
-          <span class="stat-row-label">Languages</span>
+          <span class="stat-row-label" data-i18n="home.statLanguages">Languages</span>
           <span class="stat-row-bar" data-bar="languages" style="--bar-pct:100%;" aria-hidden="true">bar</span>
           <span class="stat-row-value">9+</span>
         </div>
         <div class="stat-row">
-          <span class="stat-row-label">Glossary Terms</span>
+          <span class="stat-row-label" data-i18n="home.statGlossary">Glossary Terms</span>
           <span class="stat-row-bar" data-bar="glossary" style="--bar-pct:100%;" aria-hidden="true">bar</span>
           <span class="stat-row-value" data-stat="glossary-count">···</span>
         </div>
@@ -603,13 +605,13 @@
     </section>
 
     <section class="toc container" id="contents">
-      <div class="toc-title reveal reveal--left">Curriculum · 20 phases · 421 lessons</div>
-      <div class="toc-subtitle reveal" style="--stagger-delay: 80ms;">Tap a phase to expand its lessons. Each one ships when its math, code, and test are all written.</div>
+      <div class="toc-title reveal reveal--left" data-i18n="home.tocTitle">Curriculum · 20 phases · 421 lessons</div>
+      <div class="toc-subtitle reveal" style="--stagger-delay: 80ms;" data-i18n="home.tocSubtitle">Tap a phase to expand its lessons. Each one ships when its math, code, and test are all written.</div>
       <div class="toc-list" id="phasesGrid"></div>
       <div class="legend">
-        <span class="legend-item"><span class="toc-status complete"></span> Complete</span>
-        <span class="legend-item"><span class="toc-status in-progress"></span> In progress</span>
-        <span class="legend-item"><span class="toc-status planned"></span> Planned</span>
+        <span class="legend-item"><span class="toc-status complete"></span> <span data-i18n="legend.complete">Complete</span></span>
+        <span class="legend-item"><span class="toc-status in-progress"></span> <span data-i18n="legend.inProgress">In progress</span></span>
+        <span class="legend-item"><span class="toc-status planned"></span> <span data-i18n="legend.planned">Planned</span></span>
       </div>
     </section>
 
@@ -625,20 +627,20 @@
         </div>
         <div class="modal-lessons" id="modalLessons"></div>
         <div class="modal-footer">
-          <span class="modal-footer-note">Progress saved in browser only</span>
-          <button class="modal-reset" id="modalReset" type="button">Reset progress</button>
+          <span class="modal-footer-note" data-i18n="modal.progressNote">Progress saved in browser only</span>
+          <button class="modal-reset" id="modalReset" type="button" data-i18n="modal.reset">Reset progress</button>
         </div>
       </div>
     </div>
 
     <section class="colophon container">
       <div class="colophon-grid">
-        <div class="colophon-eyebrow reveal reveal--left">Colophon</div>
+        <div class="colophon-eyebrow reveal reveal--left" data-i18n="home.colophonTitle">Colophon</div>
         <div class="reveal" style="--stagger-delay: 80ms;">
-          <p>The entire curriculum is on GitHub. Clone it, fork it, learn at your own pace. No paywall, no signup. Every lesson has runnable code or artifacts in the language that fits the concept best.</p>
+          <p data-i18n="home.colophonBody">The entire curriculum is on GitHub. Clone it, fork it, learn at your own pace. No paywall, no signup. Every lesson has runnable code or artifacts in the language that fits the concept best.</p>
           <div class="colophon-cmd">
             <code id="cloneCmd">git clone https://github.com/ambicuity/course-computer-science.git</code>
-            <button class="copy-btn" id="copyBtn" aria-label="Copy command" type="button">cp</button>
+            <button class="copy-btn" id="copyBtn" aria-label="Copy command" data-i18n-attr="aria-label:a11y.copyCommand" type="button">cp</button>
           </div>
         </div>
       </div>
@@ -648,12 +650,12 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2026 · open source · free forever</p>
+      <p data-i18n="footer.tagline">© 2026 · open source · free forever</p>
       <div class="footer-links">
         <a href="https://github.com/ambicuity/course-computer-science" target="_blank" rel="noopener">GitHub</a>
-        <a href="catalog.html">Catalog</a>
-        <a href="glossary.html">Glossary</a>
-        <a href="https://github.com/ambicuity/course-computer-science/issues/new/choose" target="_blank" rel="noopener">Report</a>
+        <a href="catalog.html" data-i18n="nav.catalog">Catalog</a>
+        <a href="glossary.html" data-i18n="nav.glossary">Glossary</a>
+        <a href="https://github.com/ambicuity/course-computer-science/issues/new/choose" target="_blank" rel="noopener" data-i18n="footer.report">Report</a>
       </div>
     </div>
   </footer>
