@@ -1,0 +1,13 @@
+# Code owners are automatically requested for review on matching paths.
+# Order matters; the last matching pattern wins.
+
+# Default owner for everything.
+*                       @ambicuity
+
+# Build, CI, and governance surfaces.
+/.github/               @ambicuity
+/scripts/               @ambicuity
+/site/build.js          @ambicuity
+
+# Internationalization runtime and locale files.
+/site/i18n/             @ambicuity

@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Keep GitHub Actions current (also clears the Node-20 action-runtime deprecation).
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "testing"
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # Rust workspace crates (Cargo.toml at the repo root).
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+    labels:
+      - "code"
+    open-pull-requests-limit: 5
