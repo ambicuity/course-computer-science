@@ -14,6 +14,21 @@ Good contributions include:
 
 Avoid unrelated rewrites. If a change affects the curriculum structure, update `README.md`, `ROADMAP.md`, and the relevant phase `README.md` together.
 
+## Reporting Issues & Finding Work
+
+Open issues through the **issue forms** (New issue → choose a template): lesson
+content, lesson code/artifact, translation, website bug, or feature. The forms
+collect the details we need and apply the right labels automatically.
+
+Looking for somewhere to start? Filter the issue list by label:
+
+- [`good first issue`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) — small, well-scoped tasks.
+- [`translation`](../../issues?q=is%3Aissue+is%3Aopen+label%3Atranslation) — translate the UI or a lesson into one of the 16 locales.
+- [`help wanted`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) — anything maintainers would love help with.
+- `content`, `code`, `glossary`, `website`, `accessibility` — scoped by area.
+
+Please comment to claim an issue before starting so we avoid duplicate work.
+
 ## Lesson Standard
 
 Every lesson should include:
@@ -34,6 +49,7 @@ Use `LESSON_TEMPLATE.md` as the canonical structure. The lesson should replace p
 ```bash
 python3 scripts/scaffold_course.py
 node site/build.js
+node --test            # i18n locale parity + integrity tests
 ```
 
 4. If you changed Rust workspace code, also run:

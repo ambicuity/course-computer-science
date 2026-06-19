@@ -1,0 +1,52 @@
+name: "🐛 Website / build bug"
+description: Something on the site (course-computer-science.riteshrana.engineer) or in the build is broken.
+title: "[bug] <short summary>"
+labels: ["bug", "website"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For problems with the static site, the language switcher, the catalog,
+        rendering, or the `node site/build.js` / CI build.
+  - type: input
+    id: where
+    attributes:
+      label: Page or URL
+      placeholder: https://course-computer-science.riteshrana.engineer/catalog.html?lang=ar
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click '...'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs. actual
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Browser / OS
+      placeholder: "Chrome 125 on Windows 11; Safari 17 on iOS"
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors (optional)
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true
+        - label: I can reproduce it on the live site or a fresh local build.
+          required: false

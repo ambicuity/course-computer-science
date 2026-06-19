@@ -1,0 +1,58 @@
+name: "🧩 Lesson code or artifact"
+description: A lesson's runnable code is broken, missing, a stub, or could be improved.
+title: "[code] <phase>/<lesson>: <short summary>"
+labels: ["code"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for files under a lesson's `code/` (or its `outputs/` artifact).
+        Code should run as described in the lesson and leave no `TODO`,
+        `NotImplementedError`, or `unimplemented!` markers behind.
+  - type: input
+    id: lesson-path
+    attributes:
+      label: Lesson path
+      placeholder: phases/07-operating-systems/12-virtual-memory-paging
+    validations:
+      required: true
+  - type: input
+    id: language
+    attributes:
+      label: Language / file
+      placeholder: "Rust — code/main.rs"
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type of issue
+      options:
+        - Does not compile / run
+        - Produces wrong output
+        - Incomplete stub (TODO / NotImplementedError)
+        - Missing artifact in outputs/
+        - Style / clarity improvement
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What happens vs. what should happen
+      description: Include the command you ran and the actual vs. expected result.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment (if a build/run failure)
+      placeholder: "macOS 14, rustc 1.78 / gcc 13 / Python 3.12"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true

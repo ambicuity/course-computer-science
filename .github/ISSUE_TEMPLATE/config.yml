@@ -1,0 +1,16 @@
+# Issue chooser configuration.
+# Blank issues are disabled so every report uses a structured form.
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & Discussions
+    url: https://github.com/ambicuity/course-computer-science/discussions
+    about: Ask a question, share an idea, or get help. Not a bug or a task.
+  - name: 📖 Contributing Guide
+    url: https://github.com/ambicuity/course-computer-science/blob/main/CONTRIBUTING.md
+    about: How to set up, branch, and submit changes before opening an issue.
+  - name: 🌍 Translation Guide
+    url: https://github.com/ambicuity/course-computer-science/blob/main/docs/TRANSLATING.md
+    about: How to translate the website UI and individual lessons.
+  - name: 🤝 Code of Conduct
+    url: https://github.com/ambicuity/course-computer-science/blob/main/CODE_OF_CONDUCT.md
+    about: The standards we hold each other to in this community.

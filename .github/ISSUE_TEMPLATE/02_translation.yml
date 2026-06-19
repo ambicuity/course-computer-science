@@ -1,0 +1,70 @@
+name: "🌍 Translation: claim or report"
+description: Offer to translate (or report a problem with) the UI or a lesson into another language.
+title: "[i18n] <language>: <short summary>"
+labels: ["translation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The site ships 16 UI locales; lesson bodies are translated per lesson, per
+        language. See the [Translation Guide](https://github.com/ambicuity/course-computer-science/blob/main/docs/TRANSLATING.md).
+        **Please claim a language/scope here before opening a PR** so we don't duplicate work.
+  - type: dropdown
+    id: language
+    attributes:
+      label: Language
+      description: Target locale (the locale code is in parentheses).
+      options:
+        - Spanish (es)
+        - French (fr)
+        - German (de)
+        - Portuguese – Brazil (pt-BR)
+        - Italian (it)
+        - Russian (ru)
+        - Chinese – Simplified (zh-Hans)
+        - Japanese (ja)
+        - Korean (ko)
+        - Hindi (hi)
+        - Bengali (bn)
+        - Arabic (ar)
+        - Hebrew (he)
+        - Indonesian (id)
+        - Turkish (tr)
+        - A new language not yet listed
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - Review / refine existing UI strings (locale JSON)
+        - Translate one or more lesson bodies (docs/<locale>.md)
+        - Add a brand-new language (registry + locale file)
+        - Report a wrong or awkward translation
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Which lesson paths or UI keys? If reporting a bad string, quote it and suggest a fix.
+      placeholder: |
+        e.g. Translating Phase 0 lessons 01–04 into Spanish.
+        or: nav.catalog in fr.json reads "X", should be "Catalogue".
+    validations:
+      required: true
+  - type: input
+    id: native
+    attributes:
+      label: Are you a fluent / native speaker?
+      placeholder: "Yes — native; or: conversational; or: using machine help + review"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I read the Translation Guide and will keep all locale keys identical to `en.json`.
+          required: true
+        - label: I'll preserve placeholders ({n}, {command}) and never use a raw double-quote inside a value.
+          required: true

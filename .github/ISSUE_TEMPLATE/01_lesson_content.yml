@@ -1,0 +1,53 @@
+name: "📚 Lesson content: error or improvement"
+description: Report a factual error, unclear explanation, broken link, or typo in a lesson.
+title: "[content] <phase>/<lesson>: <short summary>"
+labels: ["content"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for improving the curriculum. Use this for the **text** of a lesson
+        (`docs/en.md` and its sections). For a lesson's runnable code, use the
+        "Lesson code or artifact" form instead.
+  - type: input
+    id: lesson-path
+    attributes:
+      label: Lesson path
+      description: The folder of the lesson, copied from the repo or the site URL.
+      placeholder: phases/03-data-structures/05-hash-tables-open-addressing
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type of issue
+      options:
+        - Factual error / incorrect claim
+        - Unclear or confusing explanation
+        - Broken or outdated link
+        - Typo / grammar / formatting
+        - Missing section (per LESSON_TEMPLATE.md)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What's wrong?
+      description: Quote the exact sentence or section and explain the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Suggested fix (optional)
+      description: If you know the correction, propose the replacement text.
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this isn't a duplicate.
+          required: true
+        - label: I'm reporting the English source (`docs/en.md`), not a stale translation.
+          required: false
