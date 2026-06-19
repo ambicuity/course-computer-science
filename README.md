@@ -26,10 +26,6 @@
 
 ## How this works
 
-This course is the **complementary spine to `course-ai-engineering`**: AI teaches what a model
-is; CS teaches what the machine running the model is. Both are by the same author, in the
-same shape, and they cross-link where it makes sense.
-
 Most CS material teaches concepts in isolation. A data-structures class here, an OS class
 there, a databases class somewhere else. The pieces rarely line up. You hear "B-tree" in
 data structures and then never see one until you accidentally `EXPLAIN ANALYZE` in
@@ -141,9 +137,8 @@ See [`LESSON_TEMPLATE.md`](LESSON_TEMPLATE.md) for the full lesson shape.
 
 <!-- BEGIN AUTO-GENERATED PHASES -->
 
-### Phase 0: Setup & Tooling `12 lessons`
-
-> Stand up a reproducible C/C++/Rust/Go/Haskell environment so every later phase just works.
+<details>
+<summary><strong>Phase 0: Setup & Tooling</strong> <code>12 lessons</code> &nbsp; <em>Stand up a reproducible C/C++/Rust/Go/Haskell environment so every later phase just works.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -162,9 +157,10 @@ See [`LESSON_TEMPLATE.md`](LESSON_TEMPLATE.md) for the full lesson shape.
 
 _Phase capstone artifact: A reproducible polyglot toolchain. &nbsp;·&nbsp; ~13 h 15 min total._
 
-### Phase 1: Discrete Math & Logic Foundations `24 lessons`
+</details>
 
-> Build the proof, counting, and graph machinery every later phase quietly depends on.
+<details>
+<summary><strong>Phase 1: Discrete Math & Logic Foundations</strong> <code>24 lessons</code> &nbsp; <em>Build the proof, counting, and graph machinery every later phase quietly depends on.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -195,9 +191,10 @@ _Phase capstone artifact: A reproducible polyglot toolchain. &nbsp;·&nbsp; ~13 
 
 _Phase capstone artifact: A proof companion CLI + combinatorics library. &nbsp;·&nbsp; ~23 h 45 min total._
 
-### Phase 2: Programming Foundations & Memory Model `18 lessons`
+</details>
 
-> Internalize the machine model: what a pointer really is, what the stack does, how Rust ownership works.
+<details>
+<summary><strong>Phase 2: Programming Foundations & Memory Model</strong> <code>18 lessons</code> &nbsp; <em>Internalize the machine model: what a pointer really is, what the stack does, how Rust ownership works.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -222,9 +219,10 @@ _Phase capstone artifact: A proof companion CLI + combinatorics library. &nbsp;�
 
 _Phase capstone artifact: A tiny manual-memory library plus ownership demos. &nbsp;·&nbsp; ~20 h 0 min total._
 
-### Phase 3: Data Structures `25 lessons`
+</details>
 
-> Build every workhorse data structure from scratch and prove its invariants.
+<details>
+<summary><strong>Phase 3: Data Structures</strong> <code>25 lessons</code> &nbsp; <em>Build every workhorse data structure from scratch and prove its invariants.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -256,9 +254,10 @@ _Phase capstone artifact: A tiny manual-memory library plus ownership demos. &nb
 
 _Phase capstone artifact: A generic data-structure library in Rust with invariant checks. &nbsp;·&nbsp; ~30 h 45 min total._
 
-### Phase 4: Algorithms & Complexity Analysis `31 lessons`
+</details>
 
-> Master the canon — sorting, DP, graphs, strings, geometry, randomization — and the analysis tools that bound them.
+<details>
+<summary><strong>Phase 4: Algorithms & Complexity Analysis</strong> <code>31 lessons</code> &nbsp; <em>Master the canon — sorting, DP, graphs, strings, geometry, randomization — and the analysis tools that bound them.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -296,9 +295,10 @@ _Phase capstone artifact: A generic data-structure library in Rust with invarian
 
 _Phase capstone artifact: An algorithms cookbook plus a benchmark harness. &nbsp;·&nbsp; ~35 h 45 min total._
 
-### Phase 5: Theory of Computation `18 lessons`
+</details>
 
-> From regular languages to undecidability — know what computers can't do and why.
+<details>
+<summary><strong>Phase 5: Theory of Computation</strong> <code>18 lessons</code> &nbsp; <em>From regular languages to undecidability — know what computers can't do and why.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -323,9 +323,10 @@ _Phase capstone artifact: An algorithms cookbook plus a benchmark harness. &nbsp
 
 _Phase capstone artifact: A regex engine plus a Turing-machine simulator. &nbsp;·&nbsp; ~20 h 30 min total._
 
-### Phase 6: Digital Logic & Computer Architecture `22 lessons`
+</details>
 
-> Walk down from instruction to transistor, then back up: ALU, pipeline, cache, MMU.
+<details>
+<summary><strong>Phase 6: Digital Logic & Computer Architecture</strong> <code>22 lessons</code> &nbsp; <em>Walk down from instruction to transistor, then back up: ALU, pipeline, cache, MMU.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -354,9 +355,10 @@ _Phase capstone artifact: A regex engine plus a Turing-machine simulator. &nbsp;
 
 _Phase capstone artifact: A 5-stage pipelined RISC-V CPU in HDL with assembler. &nbsp;·&nbsp; ~28 h 0 min total._
 
-### Phase 7: Operating Systems `24 lessons`
+</details>
 
-> Write the abstractions you've always used: process, page, file, syscall.
+<details>
+<summary><strong>Phase 7: Operating Systems</strong> <code>24 lessons</code> &nbsp; <em>Write the abstractions you've always used: process, page, file, syscall.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -387,9 +389,10 @@ _Phase capstone artifact: A 5-stage pipelined RISC-V CPU in HDL with assembler. 
 
 _Phase capstone artifact: “nanos”: a bootable mini-kernel. &nbsp;·&nbsp; ~30 h 15 min total._
 
-### Phase 8: Compilers & Programming Language Design `22 lessons`
+</details>
 
-> Lex, parse, type-check, optimize, codegen — and then bootstrap.
+<details>
+<summary><strong>Phase 8: Compilers & Programming Language Design</strong> <code>22 lessons</code> &nbsp; <em>Lex, parse, type-check, optimize, codegen — and then bootstrap.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -418,9 +421,10 @@ _Phase capstone artifact: “nanos”: a bootable mini-kernel. &nbsp;·&nbsp; ~3
 
 _Phase capstone artifact: A self-hosting compiler for a Pascal-ish language. &nbsp;·&nbsp; ~29 h 0 min total._
 
-### Phase 9: Computer Networks `22 lessons`
+</details>
 
-> Build the stack: Ethernet, IP, TCP, TLS, HTTP — by hand.
+<details>
+<summary><strong>Phase 9: Computer Networks</strong> <code>22 lessons</code> &nbsp; <em>Build the stack: Ethernet, IP, TCP, TLS, HTTP — by hand.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -449,9 +453,10 @@ _Phase capstone artifact: A self-hosting compiler for a Pascal-ish language. &nb
 
 _Phase capstone artifact: An HTTP/2 server on a custom userspace TCP/IP stack. &nbsp;·&nbsp; ~27 h 15 min total._
 
-### Phase 10: Databases & Storage Systems `22 lessons`
+</details>
 
-> From relational algebra to MVCC: write the storage engine, write the planner.
+<details>
+<summary><strong>Phase 10: Databases & Storage Systems</strong> <code>22 lessons</code> &nbsp; <em>From relational algebra to MVCC: write the storage engine, write the planner.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -480,9 +485,10 @@ _Phase capstone artifact: An HTTP/2 server on a custom userspace TCP/IP stack. &
 
 _Phase capstone artifact: An MVCC KV store with a SQL frontend. &nbsp;·&nbsp; ~29 h 0 min total._
 
-### Phase 11: Distributed Systems `22 lessons`
+</details>
 
-> Clocks, consensus, replication, CRDTs — and a Raft you can break and watch heal.
+<details>
+<summary><strong>Phase 11: Distributed Systems</strong> <code>22 lessons</code> &nbsp; <em>Clocks, consensus, replication, CRDTs — and a Raft you can break and watch heal.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -511,9 +517,10 @@ _Phase capstone artifact: An MVCC KV store with a SQL frontend. &nbsp;·&nbsp; ~
 
 _Phase capstone artifact: A Raft-replicated KV store with snapshotting. &nbsp;·&nbsp; ~28 h 0 min total._
 
-### Phase 12: Cryptography & Security `24 lessons`
+</details>
 
-> Build the primitives, then the protocols, then the attacks that bypass both.
+<details>
+<summary><strong>Phase 12: Cryptography & Security</strong> <code>24 lessons</code> &nbsp; <em>Build the primitives, then the protocols, then the attacks that bypass both.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -544,9 +551,10 @@ _Phase capstone artifact: A Raft-replicated KV store with snapshotting. &nbsp;·
 
 _Phase capstone artifact: A TLS 1.3 implementation plus a mini-CTF toolkit. &nbsp;·&nbsp; ~30 h 45 min total._
 
-### Phase 13: Concurrent & Parallel Computing `22 lessons`
+</details>
 
-> Get atomic, lock-free, async, and GPU all right — with a memory model in your head.
+<details>
+<summary><strong>Phase 13: Concurrent & Parallel Computing</strong> <code>22 lessons</code> &nbsp; <em>Get atomic, lock-free, async, and GPU all right — with a memory model in your head.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -575,9 +583,10 @@ _Phase capstone artifact: A TLS 1.3 implementation plus a mini-CTF toolkit. &nbs
 
 _Phase capstone artifact: A work-stealing scheduler plus a lock-free queue. &nbsp;·&nbsp; ~28 h 0 min total._
 
-### Phase 14: Computer Graphics & Visualization `18 lessons`
+</details>
 
-> Rasterize. Ray-trace. Path-trace. Make pixels meaningful.
+<details>
+<summary><strong>Phase 14: Computer Graphics & Visualization</strong> <code>18 lessons</code> &nbsp; <em>Rasterize. Ray-trace. Path-trace. Make pixels meaningful.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -602,9 +611,10 @@ _Phase capstone artifact: A work-stealing scheduler plus a lock-free queue. &nbs
 
 _Phase capstone artifact: A path tracer plus a triangle rasterizer. &nbsp;·&nbsp; ~23 h 15 min total._
 
-### Phase 15: Systems Programming & Performance `20 lessons`
+</details>
 
-> Measure honestly. Tune cache, branches, IO. Win 10x by knowing the machine.
+<details>
+<summary><strong>Phase 15: Systems Programming & Performance</strong> <code>20 lessons</code> &nbsp; <em>Measure honestly. Tune cache, branches, IO. Win 10x by knowing the machine.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -631,9 +641,10 @@ _Phase capstone artifact: A path tracer plus a triangle rasterizer. &nbsp;·&nbs
 
 _Phase capstone artifact: A profile-guided optimization walk-through. &nbsp;·&nbsp; ~24 h 15 min total._
 
-### Phase 16: Software Engineering & Architecture `24 lessons`
+</details>
 
-> Make code other people can read, change, and ship — at scale, over years.
+<details>
+<summary><strong>Phase 16: Software Engineering & Architecture</strong> <code>24 lessons</code> &nbsp; <em>Make code other people can read, change, and ship — at scale, over years.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -664,9 +675,10 @@ _Phase capstone artifact: A profile-guided optimization walk-through. &nbsp;·&n
 
 _Phase capstone artifact: A refactored real-world OSS repo with ADRs. &nbsp;·&nbsp; ~23 h 30 min total._
 
-### Phase 17: Testing, Verification & Formal Methods `18 lessons`
+</details>
 
-> Move from unit tests to fuzzers to TLA+ to Coq. Know what each one actually proves.
+<details>
+<summary><strong>Phase 17: Testing, Verification & Formal Methods</strong> <code>18 lessons</code> &nbsp; <em>Move from unit tests to fuzzers to TLA+ to Coq. Know what each one actually proves.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -691,9 +703,10 @@ _Phase capstone artifact: A refactored real-world OSS repo with ADRs. &nbsp;·&n
 
 _Phase capstone artifact: TLA+ models plus a fuzzer plus a property suite. &nbsp;·&nbsp; ~23 h 0 min total._
 
-### Phase 18: Programming Language Paradigms & Type Theory `15 lessons`
+</details>
 
-> Lambda calculus to dependent types to algebraic effects — see why your favorite language behaves the way it does.
+<details>
+<summary><strong>Phase 18: Programming Language Paradigms & Type Theory</strong> <code>15 lessons</code> &nbsp; <em>Lambda calculus to dependent types to algebraic effects — see why your favorite language behaves the way it does.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -715,9 +728,10 @@ _Phase capstone artifact: TLA+ models plus a fuzzer plus a property suite. &nbsp
 
 _Phase capstone artifact: A bidirectional type-checker for STLC with extensions. &nbsp;·&nbsp; ~19 h 0 min total._
 
-### Phase 19: Capstone Projects `18 lessons`
+</details>
 
-> Multi-week builds. Each ships a real working artifact. Pick a track.
+<details>
+<summary><strong>Phase 19: Capstone Projects</strong> <code>18 lessons</code> &nbsp; <em>Multi-week builds. Each ships a real working artifact. Pick a track.</em></summary>
 
 | # | Lesson | Type | Lang |
 |---|--------|------|------|
@@ -741,6 +755,8 @@ _Phase capstone artifact: A bidirectional type-checker for STLC with extensions.
 | 18 | [Open Capstone — Learner-Defined, Mentor-Reviewed](phases/19-capstone-projects/18-open-capstone-learner-defined-mentor-reviewed/) | Build | Markdown |
 
 _Phase capstone artifact: A learner-chosen ambitious build. &nbsp;·&nbsp; ~219 h 0 min total._
+
+</details>
 
 <!-- END AUTO-GENERATED PHASES -->
 
@@ -790,12 +806,6 @@ node site/build.js
 
 Then open `phases/00-setup-and-tooling/01-the-cs-toolchain-what-you-ll-install-and-why/docs/en.md`
 and follow the spine.
-
-## Companion course
-
-If you're here for the systems half, the AI/ML half lives at
-[`../course-ai-engineering`](../course-ai-engineering). The two are designed to be taken in
-parallel or in sequence — they share authorship, lesson shape, and site infrastructure.
 
 ## License
 

@@ -865,9 +865,13 @@ def readme_phase_block() -> str:
     parts: List[str] = [README_BEGIN, ""]
     for p in PHASES:
         total_min = sum(l.minutes for l in p.lessons)
-        parts.append(f"### Phase {p.n}: {p.name} `{len(p.lessons)} lessons`")
-        parts.append("")
-        parts.append(f"> {p.desc}")
+        # Each phase is a collapsed <details> dropdown: click the summary to
+        # reveal the full lesson table. site/build.js parses this summary line.
+        parts.append("<details>")
+        parts.append(
+            f"<summary><strong>Phase {p.n}: {p.name}</strong> "
+            f"<code>{len(p.lessons)} lessons</code> &nbsp; <em>{p.desc}</em></summary>"
+        )
         parts.append("")
         parts.append("| # | Lesson | Type | Lang |")
         parts.append("|---|--------|------|------|")
@@ -878,6 +882,8 @@ def readme_phase_block() -> str:
             parts.append(f"| {l.n:02d} | [{l.title}]({link}) | {l.kind} | {lang_display} |")
         parts.append("")
         parts.append(f"_Phase capstone artifact: {p.artifact} &nbsp;·&nbsp; ~{total_min // 60} h {total_min % 60} min total._")
+        parts.append("")
+        parts.append("</details>")
         parts.append("")
     parts.append(README_END)
     return "\n".join(parts)
