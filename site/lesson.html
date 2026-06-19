@@ -2862,7 +2862,7 @@
             var installId = 'install-hint-' + idx;
             var installHint = '';
             if (type === 'prompt') {
-              installHint = 'Copy this prompt into Claude Code, ChatGPT, or any AI assistant';
+              installHint = 'Copy this prompt into ChatGPT, or any AI assistant';
             } else if (type === 'skill') {
               var skillName = file.name.replace(/\.md$/, '').replace(/^skill-/, '');
               installHint = 'npx skillkit install ' + skillName;
@@ -3018,7 +3018,7 @@
         });
 
         html += '<div class="quiz-score" id="quizScore"><div class="quiz-score-number" id="quizScoreNum">0/' + questions.length + '</div><div class="quiz-score-label">Complete all questions to see your score</div></div>';
-        html += '<div class="quiz-deeper">Want a deeper quiz? Run <code>/check-understanding ' + escapeHtml(phase) + '</code> in Claude Code</div>';
+        html += '<div class="quiz-deeper">Want a deeper quiz? Run <code>/check-understanding ' + escapeHtml(phase) + '</code> in your AI assistant</div>';
         html += '</div>';
 
         panel.innerHTML = html;
@@ -3158,7 +3158,7 @@
         html += '<a class="continue-link" href="catalog.html">Full course catalog</a>';
         html += '</div>';
 
-        html += '<div class="continue-callout">Run <code>/find-your-level</code> in Claude Code to see your full personalized learning path</div>';
+        html += '<div class="continue-callout">Run <code>/find-your-level</code> in your AI assistant to see your full personalized learning path</div>';
         html += '</div>';
 
         panel.innerHTML = html;

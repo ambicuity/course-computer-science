@@ -21,7 +21,7 @@ TITLE="${3:-}"
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
 if [[ -z "$REPO_ROOT" ]]; then
-  echo "error: run this from inside the course-ai-engineering git repo" >&2
+  echo "error: run this from inside the course-computer-science git repo" >&2
   exit 1
 fi
 
