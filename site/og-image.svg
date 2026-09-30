@@ -48,7 +48,7 @@
 
   <!-- Computer Science -->
   <g class="display" fill="#2A1A2E">
-    <text x="100" y="400" font-size="132" letter-spacing="2">Computer Science</text>
+    <text x="100" y="400" font-size="96">Computer Science</text>
   </g>
 
   <!-- inline sparkle -->
@@ -58,7 +58,7 @@
 
   <!-- subhead -->
   <g class="body" fill="#5A4458">
-    <text x="160" y="478" font-size="26">Build production-grade AI systems from first principles.</text>
+    <text x="160" y="478" font-size="26">Build computer science from first principles.</text>
   </g>
 
   <!-- footer rule -->
@@ -71,6 +71,6 @@
 
   <!-- footer right: meta -->
   <g class="mono" font-size="14" fill="#5A4458" text-anchor="end">
-    <text x="1100" y="600">20 PHASES · 416 LESSONS · OPEN SOURCE</text>
+    <text x="1100" y="600">20 PHASES · 421 LESSONS · OPEN SOURCE</text>
   </g>
 </svg>
